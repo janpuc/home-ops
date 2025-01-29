@@ -1,0 +1,36 @@
+# Terraform
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/crash.log
+terraform/crash.*.log
+terraform/*.tfvars
+terraform/*.tfvars.json
+terraform/override.tf
+terraform/override.tf.json
+terraform/*_override.tf
+terraform/*_override.tf.json
+
+# Local .terraform directories
+terraform/**/.terraform/*
+
+# Crash log files
+terraform/crash.log
+terraform/crash.*.log
+
+# Exclude all .tfvars files, which are likely to contain sensitive data
+terraform/*.tfvars
+terraform/*.tfvars.json
+
+# Ignore override files as they are usually used for local dev
+terraform/override.tf
+terraform/override.tf.json
+terraform/*_override.tf
+terraform/*_override.tf.json
+
+# Ignore CLI configuration files
+.terraformrc
+terraform.rc
+
+# Ignore kubeconfig file
+kubeconfig.yaml
