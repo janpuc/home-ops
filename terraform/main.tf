@@ -25,10 +25,10 @@ module "oke" {
 
   compartment_id = data.onepassword_item.oci_credentials.section[0].field[0].value
 
-  oke_cluster_name    = "home-ops"
+  oke_cluster_name    = "aether"
   oke_cluster_version = "v1.31.1"
 
-  oke_node_pool_name = "home-ops-node-pool"
+  oke_node_pool_name = "aether-node-pool"
   oke_node_pool_size = 2
 
   oke_node_linux_version = "8"
@@ -36,8 +36,8 @@ module "oke" {
   oke_pods_cidr     = "10.244.0.0/16"
   oke_services_cidr = "10.96.0.0/16"
 
-  vcn_name      = "home-ops-vcn"
-  vcn_dns_label = "homeops"
+  vcn_name      = "aether-vcn"
+  vcn_dns_label = "aether"
   vcn_cidr      = "10.0.0.0/16"
 }
 
@@ -70,5 +70,5 @@ resource "flux_bootstrap_git" "this" {
   ]
 
   embedded_manifests = true
-  path               = "kubernetes/clusters/"
+  path               = "kubernetes/clusters/aether"
 }
