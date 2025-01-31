@@ -13,5 +13,13 @@ provider "flux" {
 
 provider "github" {
   owner = var.github_organization
-  token = data.onepassword_item.github_token.section[0].field[0].value
+  token = local.github_token
+}
+
+provider "onepassword" {
+  account = "https://my.1password.com"
+}
+
+provider "oci" {
+  region = var.oci_region
 }

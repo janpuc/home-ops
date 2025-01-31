@@ -1,19 +1,24 @@
-provider "onepassword" {
-  account = "https://my.1password.com"
-}
-
-provider "oci" {
-  region = var.oci_region
-}
-
-data "onepassword_item" "oci_credentials" {
+data "onepassword_item" "bootstrap_secrets" {
   vault = "Kubernetes"
-  title = "oci"
+  title = "bootstrap"
 }
 
-data "onepassword_item" "github_token" {
-  vault = "Kubernetes"
-  title = "github"
+locals {
+  sections_by_label = { 
+    for section in data.onepassword_item.bootstrap_secrets.section : 
+    section.label => section 
+  }
+
+  fields_by_section = {
+    for section in data.onepassword_item.bootstrap_secrets.section :
+    section.label => {
+      for field in try(section.field, []) :
+      field.label => field
+    }
+  }
+
+  oracle_compartment_id = try(local.fields_by_section["Oracle"]["compartment_id"].value, null)
+  github_token          = try(local.fields_by_section["Github"]["token"].value, null)
 }
 
 module "oke" {
@@ -23,7 +28,7 @@ module "oke" {
     oci = oci
   }
 
-  compartment_id = data.onepassword_item.oci_credentials.section[0].field[0].value
+  compartment_id = local.oracle_compartment_id
 
   oke_cluster_name    = "aether"
   oke_cluster_version = "v1.31.1"
