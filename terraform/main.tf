@@ -1,17 +1,3 @@
-terraform {
-  required_version = ">= 1.7.0"
-  required_providers {
-    oci = {
-      source  = "oracle/oci"
-      version = ">= 4.0.0"
-    }
-    onepassword = {
-      source = "1Password/onepassword"
-      version = ">= 2.0.0"
-    }
-  }
-}
-
 provider "onepassword" {
   account = "https://my.1password.com"
 }
@@ -55,21 +41,34 @@ module "oke" {
   vcn_cidr      = "10.0.0.0/16"
 }
 
-module "flux" {
-  source = "./modules/flux"
-
-  cluster_region   = var.oci_region
-  cluster_id       = module.oke.id
-  cluster_endpoint = module.oke.endpoint
-  cluster_ca_cert  = module.oke.certificate_authority_data
-
-  github_organization = "janpuc"
-  github_repository   = "home-ops"
-  github_token        = data.onepassword_item.github_token.section[0].field[0].value
-}
-
 resource "local_file" "kubeconfig" {
   content  = yamlencode(module.oke.kubeconfig)
   filename = "${path.root}/../kubeconfig.yaml"
   file_permission = "0600"
+}
+
+data "github_repository" "this" {
+  name = var.github_repository
+}
+
+resource "tls_private_key" "flux" {
+  algorithm   = "ECDSA"
+  ecdsa_curve = "P256"
+}
+
+resource "github_repository_deploy_key" "this" {
+  title      = "Flux"
+  repository = data.github_repository.this.name
+  key        = tls_private_key.flux.public_key_openssh
+  read_only  = "false"
+}
+
+resource "flux_bootstrap_git" "this" {
+  depends_on = [
+    github_repository_deploy_key.this,
+    module.oke
+  ]
+
+  embedded_manifests = true
+  path               = "kubernetes"
 }
