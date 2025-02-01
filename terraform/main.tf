@@ -95,7 +95,7 @@ resource "kubernetes_secret" "op_credentials" {
   }
 
   data = {
-    "1password-credentials.json" = local.op_credentials
+    "1password-credentials.json" = base64encode(local.op_credentials)
   }
 
   type = "opaque"
