@@ -3,4 +3,4 @@ kind: Kustomization
 namespace: external-secrets
 resources:
   - ./namespace.yaml
-  - ./1password-connect/install.yaml
+  - ./1password/install.yaml
