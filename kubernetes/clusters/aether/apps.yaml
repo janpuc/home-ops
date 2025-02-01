@@ -13,5 +13,5 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./kubernetes/repos
+  path: ./kubernetes/apps/aether
   prune: true
