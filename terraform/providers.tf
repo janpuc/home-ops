@@ -11,6 +11,10 @@ provider "flux" {
   }
 }
 
+provider "kubernetes" {
+  config_path = "${path.root}/../kubeconfig.yaml"
+}
+
 provider "github" {
   owner = var.github_organization
   token = local.github_token

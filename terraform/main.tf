@@ -19,6 +19,8 @@ locals {
 
   oracle_compartment_id = try(local.fields_by_section["Oracle"]["compartment_id"].value, null)
   github_token          = try(local.fields_by_section["Github"]["token"].value, null)
+  op_credentials        = try(local.fields_by_section["1Password"]["1password-credentials.json"].value, null)
+  op_token              = try(local.fields_by_section["1Password"]["token"].value, null)
 }
 
 module "oke" {
@@ -76,4 +78,46 @@ resource "flux_bootstrap_git" "this" {
 
   embedded_manifests = true
   path               = "kubernetes/clusters/aether"
+}
+
+resource "kubernetes_namespace" "external_secrets" {
+  metadata {
+    name = "external-secrets"
+  }
+
+  depends_on = [module.oke]
+}
+
+resource "kubernetes_secret" "op_credentials" {
+  metadata {
+    name      = "op-credentials"
+    namespace = "external-secrets"
+  }
+
+  data = {
+    "1password-credentials.json" = local.op_credentials
+  }
+
+  type = "opaque"
+
+  immutable = true
+
+  depends_on = [kubernetes_namespace.external_secrets]
+}
+
+resource "kubernetes_secret" "op_token" {
+  metadata {
+    name      = "op-token"
+    namespace = "external-secrets"
+  }
+
+  data = {
+    "token" = local.op_token
+  }
+
+  type = "opaque"
+
+  immutable = true
+
+  depends_on = [kubernetes_namespace.external_secrets]
 }
