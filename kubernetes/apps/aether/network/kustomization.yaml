@@ -3,4 +3,4 @@ kind: Kustomization
 namespace: network
 resources:
   - ./namespace.yaml
-  - ./tailscale/install.yaml
+  # - ./tailscale/install.yaml
