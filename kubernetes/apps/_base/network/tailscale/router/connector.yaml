@@ -6,4 +6,5 @@ spec:
   hostname: aether
   subnetRouter:
     advertiseRoutes:
-      - "10.0.0.0/16"
+      - "10.244.0.0/16"  # Pods
+      - "10.96.0.0/16"   # Services
