@@ -4,3 +4,4 @@ namespace: external-secrets
 resources:
   - ./namespace.yaml
   - ./1password/install.yaml
+  - ./external-secrets/install.yaml
