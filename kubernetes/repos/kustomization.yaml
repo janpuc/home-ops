@@ -3,4 +3,5 @@ kind: Kustomization
 resources:
   - ./onepassword-connect.yaml
   - ./external-secrets.yaml
+  - ./tailscale.yaml
 
