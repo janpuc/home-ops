@@ -26,6 +26,9 @@ spec:
       image:
         repository: ghcr.io/tailscale/k8s-operator
         tag: v1.78.3
+      securityContext:
+        capabilities:
+          add: [NET_ADMIN]
     proxyConfig:
       image:
         repository: ghcr.io/tailscale/tailscale
