@@ -73,7 +73,9 @@ resource "github_repository_deploy_key" "this" {
 resource "flux_bootstrap_git" "this" {
   depends_on = [
     github_repository_deploy_key.this,
-    module.oke
+    module.oke,
+    local_file.kubeconfig,
+    kubernetes_namespace.external_secrets
   ]
 
   embedded_manifests = true
@@ -85,7 +87,10 @@ resource "kubernetes_namespace" "external_secrets" {
     name = "external-secrets"
   }
 
-  depends_on = [module.oke]
+  depends_on = [
+    module.oke,
+    local_file.kubeconfig
+  ]
 }
 
 resource "kubernetes_secret" "op_credentials" {
