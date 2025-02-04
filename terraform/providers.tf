@@ -15,6 +15,16 @@ provider "kubernetes" {
   config_path = "${path.root}/../kubeconfig.yaml"
 }
 
+# provider "kubernetes" {
+#   host                   = module.oke.endpoint
+#   cluster_ca_certificate = base64decode(module.oke.certificate_authority_data)
+#   exec {
+#     api_version = "client.authentication.k8s.io/v1beta1"
+#     args        = ["ce", "cluster", "generate-token", "--cluster-id", module.oke.id, "--region", var.oci_region]
+#     command     = "/opt/homebrew/bin/oci" # TODO: Change to `oci` once I fix path var issues
+#   }
+# }
+
 provider "github" {
   owner = var.github_organization
   token = local.github_token
