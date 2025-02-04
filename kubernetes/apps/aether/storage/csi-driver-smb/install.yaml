@@ -17,3 +17,32 @@ spec:
   targetNamespace: *namespace
   timeout: 5m
   wait: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app csi-driver-smb-addons
+  namespace: &namespace storage
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: onepassword-store
+      namespace: external-secrets
+    - name: csi-driver-smb
+      namespace: storage
+  interval: 30m
+  path: ./kubernetes/apps/_base/storage/csi-driver-smb/addons
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: *namespace
+  timeout: 5m
+  wait: true
+  postBuild:
+    substituteFrom:
+      - kind: Secret
+        name: hetzner
