@@ -56,7 +56,7 @@ spec:
     - name: csi-driver-smb-secrets
       namespace: storage
   interval: 30m
-  path: ./kubernetes/apps/_base/storage/csi-driver-smb/secrets
+  path: ./kubernetes/apps/_base/storage/csi-driver-smb/addons
   prune: true
   sourceRef:
     kind: GitRepository
