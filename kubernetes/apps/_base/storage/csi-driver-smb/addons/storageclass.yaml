@@ -4,7 +4,7 @@ metadata:
   name: hetzner
 provisioner: smb.csi.k8s.io
 parameters:
-  source: ${share}
+  source: ${source}
   csi.storage.k8s.io/provisioner-secret-name: hetzner
   csi.storage.k8s.io/provisioner-secret-namespace: storage
   csi.storage.k8s.io/node-stage-secret-name: hetzner
