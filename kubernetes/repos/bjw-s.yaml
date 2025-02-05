@@ -1,7 +1,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
-  name: external-secrets
+  name: bjw-s
   namespace: flux-system
 spec:
   type: oci
