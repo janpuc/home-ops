@@ -20,3 +20,6 @@ spec:
     remediation:
       strategy: rollback
       retries: 3
+  values:
+    replica:
+      replicaCount: 1
