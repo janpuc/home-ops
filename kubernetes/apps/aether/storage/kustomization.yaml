@@ -5,3 +5,4 @@ resources:
   - ./namespace.yaml
   - ./cnpg/install.yaml
   - ./csi-driver-smb/install.yaml
+  - ./redis/install.yaml
