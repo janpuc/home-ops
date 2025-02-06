@@ -34,3 +34,11 @@ terraform.rc
 
 # Ignore kubeconfig file
 kubeconfig.yaml
+
+# VSCode
+.vscode
+.vscode/*
+
+# Misc
+*.tmp
+*.tmp/*
