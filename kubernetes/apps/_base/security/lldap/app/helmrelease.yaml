@@ -22,13 +22,9 @@ spec:
       retries: 3
   values:
     controllers:
-      main:
-        replicas: 2
-        strategy: RollingUpdate
-        # annotations:
-        #   reloader.stakater.com/auto: "true"
+      lldap:
         containers:
-          main:
+          app:
             image:
               repository: ghcr.io/lldap/lldap
               tag: v0.6.1
@@ -81,9 +77,6 @@ spec:
                     name: lldap
                     key: db_name
               LLDAP_DATABASE_URL: postgres://$(DB_USER):$(DB_PASS)@$(DB_HOST)/$(DB_NAME)
-            envFrom:
-              - secretRef:
-                  name: lldap-secret
             probes:
               liveness: &probes
                 enabled: true
@@ -104,21 +97,11 @@ spec:
                 cpu: 5m
               limits:
                 memory: 64Mi
-        pod:
-          topologySpreadConstraints:
-            - maxSkew: 1
-              topologyKey: kubernetes.io/hostname
-              whenUnsatisfiable: DoNotSchedule
-              labelSelector:
-                matchLabels:
-                  app.kubernetes.io/name: *app
     service:
-      main:
+      app:
+        controller: lldap
         ports:
           http:
             port: *port
           ldap:
             port: *ldapPort
-    persistence:
-      data:
-        type: emptyDir
