@@ -1,0 +1,23 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: aetherdb
+spec:
+  description: "AetherDB - Main DB for the Aether Cluster"
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.2
+  instances: 2
+  enableSuperuserAccess: true
+  superuserSecret:
+    name: superuser-db
+  storage:
+    size: 10Gi
+  affinity:
+    enablePodAntiAffinity: true
+    topologyKey: failure-domain.beta.kubernetes.io/zone
+  managed:
+    roles:
+    - name: lldap
+      ensure: present
+      login: true
+      passwordSecret:
+        name: lldap-db

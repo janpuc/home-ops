@@ -1,0 +1,18 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: superuser-db
+spec:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: onepassword
+  target:
+    name: superuser-db
+    template:
+      type: kubernetes.io/basic-auth
+      data:
+        username: "{{ .superuser_user }}"
+        password: "{{ .superuser_pass }}"
+  dataFrom:
+    - extract:
+        key: cnpg
