@@ -3,5 +3,4 @@ kind: Kustomization
 namespace: security
 resources:
   - ./namespace.yaml
-  - ./authentik/install.yaml
 
