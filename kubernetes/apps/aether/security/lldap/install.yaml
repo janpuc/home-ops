@@ -10,7 +10,7 @@ spec:
   dependsOn:
     - name: onepassword-store
       namespace: external-secrets
-    - name: cnpg-cluster
+    - name: lldap-db
       namespace: storage
   interval: 30m
   path: ./kubernetes/apps/_base/security/lldap/app
@@ -27,7 +27,7 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app lldap-db
-  namespace: &namespace storage
+  namespace: &namespace storage # TODO: Replace after this is merged https://github.com/cloudnative-pg/cloudnative-pg/issues/6043
 spec:
   commonMetadata:
     labels:
