@@ -22,3 +22,26 @@ spec:
   targetNamespace: *namespace
   timeout: 5m
   wait: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app lldap-db
+  namespace: &namespace storage
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: cnpg-cluster
+      namespace: storage
+  interval: 30m
+  path: ./kubernetes/apps/_base/security/lldap/db
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: *namespace
+  timeout: 5m
+  wait: true
