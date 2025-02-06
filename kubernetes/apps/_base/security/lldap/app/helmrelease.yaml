@@ -1,0 +1,124 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app lldap
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.6.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  values:
+    controllers:
+      main:
+        replicas: 2
+        strategy: RollingUpdate
+        # annotations:
+        #   reloader.stakater.com/auto: "true"
+        containers:
+          main:
+            image:
+              repository: ghcr.io/lldap/lldap
+              tag: v0.6.1
+            env:
+              DOMAIN: # TODO: Switch to global secrets after
+                valueFrom:
+                  secretKeyRef:
+                    name: lldap
+                    key: domain
+              UID: 1001
+              GID: 1001
+              TZ: Europe/Warsaw
+              LLDAP_HTTP_PORT: &port 8080
+              LLDAP_HTTP_URL: https://lldap.$(DOMAIN)
+              LLDAP_LDAP_PORT: &ldapPort 8389
+              LLDAP_JWT_SECRET:
+                valueFrom:
+                  secretKeyRef:
+                    name: lldap
+                    key: jwt_secret
+              LLDAP_LDAP_BASE_DN:
+                valueFrom:
+                  secretKeyRef:
+                    name: lldap
+                    key: base_dn
+              LLDAP_LDAP_USER_DN:
+                valueFrom:
+                  secretKeyRef:
+                    name: lldap
+                    key: user_dn
+              LLDAP_LDAP_USER_PASS:
+                valueFrom:
+                  secretKeyRef:
+                    name: lldap
+                    key: user_pass
+              DB_USER:
+                valueFrom:
+                  secretKeyRef:
+                    name: lldap
+                    key: db_user
+              DB_PASS:
+                valueFrom:
+                  secretKeyRef:
+                    name: lldap
+                    key: db_pass
+              DB_HOST: aetherdb-rw.storage.svc.cluster.local
+              DB_NAME:
+                valueFrom:
+                  secretKeyRef:
+                    name: lldap
+                    key: db_name
+              LLDAP_DATABASE_URL: postgres://$(DB_USER):$(DB_PASS)@$(DB_HOST)/$(DB_NAME)
+            envFrom:
+              - secretRef:
+                  name: lldap-secret
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: *port
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+              startup:
+                enabled: false
+            resources:
+              requests:
+                cpu: 5m
+              limits:
+                memory: 64Mi
+        pod:
+          topologySpreadConstraints:
+            - maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: DoNotSchedule
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: *app
+    service:
+      main:
+        ports:
+          http:
+            port: *port
+          ldap:
+            port: *ldapPort
+    persistence:
+      data:
+        type: emptyDir
