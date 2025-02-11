@@ -28,4 +28,4 @@ spec:
       source: //${source}/${media_vault}
     nodeStageSecretRef:
       name: vault
-      namespace: storage
+      namespace: media
