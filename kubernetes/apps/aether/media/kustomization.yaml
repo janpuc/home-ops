@@ -3,5 +3,5 @@ kind: Kustomization
 namespace: media
 resources:
   - ./namespace.yaml
-  - ./jellyfin/install.yaml
-  - ./vault/install.yaml
+  # - ./jellyfin/install.yaml
+  # - ./vault/install.yaml
