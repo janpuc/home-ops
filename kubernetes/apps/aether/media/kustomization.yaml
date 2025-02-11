@@ -4,4 +4,4 @@ namespace: media
 resources:
   - ./namespace.yaml
   # - ./jellyfin/install.yaml
-  # - ./vault/install.yaml
+  - ./vault/install.yaml
