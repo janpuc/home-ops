@@ -12,6 +12,7 @@ spec:
     name: superuser-db
   storage:
     size: 10Gi
+    storageClass: local-hostpath
   affinity:
     enablePodAntiAffinity: true
     topologyKey: failure-domain.beta.kubernetes.io/zone
