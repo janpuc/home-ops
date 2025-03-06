@@ -32,7 +32,7 @@ spec:
       wal:
         compression: bzip2
         maxParallel: 8
-      destinationPath: s3://aether-s3/
+      destinationPath: s3://aether-s3/aetherdb/
       endpointURL: https://fsn1.your-objectstorage.com/
       # Note: serverName version needs to be inclemented
       # when recovering from an existing cnpg cluster
