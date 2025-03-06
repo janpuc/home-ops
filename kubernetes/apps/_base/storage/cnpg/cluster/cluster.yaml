@@ -6,6 +6,7 @@ spec:
   description: "AetherDB - Main DB for the Aether Cluster"
   imageName: ghcr.io/cloudnative-pg/postgresql:17.2
   instances: 2
+  primaryUpgradeStrategy: unsupervised
   # https://github.com/cloudnative-pg/cloudnative-pg/issues/5032#issuecomment-2491595856
   enableSuperuserAccess: false
   superuserSecret:
@@ -48,10 +49,10 @@ spec:
   # cluster when recovering from an existing cnpg cluster
   bootstrap:
     recovery:
-      source: aetherdb
+      source: &previousCluster aetherdb-v1
   # Note: externalClusters is needed when recovering from an existing cnpg cluster
   externalClusters:
-    - name: aetherdb
+    - name: *previousCluster
       barmanObjectStore:
         <<: *barmanObjectStore
-        serverName: &previousCluster aetherdb-v1
+        serverName: *previousCluster
