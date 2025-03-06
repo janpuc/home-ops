@@ -36,11 +36,11 @@ spec:
       serverName: &currentCluster aetherdb-v1
       s3Credentials:
         accessKeyId:
-          name: cloudnative-pg-secret
-          key: aws-access-key-id
+          name: s3-creds
+          key: access_key
         secretAccessKey:
-          name: cloudnative-pg-secret
-          key: aws-secret-access-key
+          name: s3-creds
+          key: secret_key
 
   # # Note: previousCluster needs to be set to the name of the previous
   # # cluster when recovering from an existing cnpg cluster
