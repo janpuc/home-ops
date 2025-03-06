@@ -49,7 +49,7 @@ module "oke" {
       create           = true,
       ocpus            = 2,
       memory           = 12,
-      boot_volume_size = 50,
+      boot_volume_size = 100,
       os               = "Oracle Linux",
       os_version       = var.oke_node_linux_version,
     }
