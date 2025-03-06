@@ -19,10 +19,10 @@ spec:
             - name: http
               containerPort: 9898
               protocol: TCP
-      #     volumeMounts:
-      #     - name: data
-      #       mountPath: /home/app/pvc
-      # volumes:
-      #   - name: data
-      #     persistentVolumeClaim:
-      #       claimName: podinfo-pvc
+          volumeMounts:
+          - name: data
+            mountPath: /home/app/pvc
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: podinfo-pvc
