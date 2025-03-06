@@ -48,10 +48,10 @@ spec:
   # cluster when recovering from an existing cnpg cluster
   bootstrap:
     recovery:
-      source: &previousCluster aetherdb-v1
+      source: aetherdb
   # Note: externalClusters is needed when recovering from an existing cnpg cluster
   externalClusters:
     - name: aetherdb
       barmanObjectStore:
         <<: *barmanObjectStore
-        serverName: *previousCluster
+        serverName: &previousCluster aetherdb-v1
