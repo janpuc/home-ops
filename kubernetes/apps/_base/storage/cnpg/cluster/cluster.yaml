@@ -24,35 +24,35 @@ spec:
       login: true
       passwordSecret:
         name: lldap-db
-  # backup:
-  #   retentionPolicy: 30d
-  #   barmanObjectStore: &barmanObjectStore
-  #     data:
-  #       compression: bzip2
-  #     wal:
-  #       compression: bzip2
-  #       maxParallel: 8
-  #     destinationPath: s3://aether-s3/
-  #     endpointURL: https://fsn1.your-objectstorage.com/
-  #     # Note: serverName version needs to be inclemented
-  #     # when recovering from an existing cnpg cluster
-  #     serverName: &currentCluster aetherdb-v2
-  #     s3Credentials:
-  #       accessKeyId:
-  #         name: s3-creds
-  #         key: access_key
-  #       secretAccessKey:
-  #         name: s3-creds
-  #         key: secret_key
+  backup:
+    retentionPolicy: 30d
+    barmanObjectStore: &barmanObjectStore
+      data:
+        compression: bzip2
+      wal:
+        compression: bzip2
+        maxParallel: 8
+      destinationPath: s3://aether-s3/
+      endpointURL: https://fsn1.your-objectstorage.com/
+      # Note: serverName version needs to be inclemented
+      # when recovering from an existing cnpg cluster
+      serverName: &currentCluster aetherdb-v2
+      s3Credentials:
+        accessKeyId:
+          name: s3-creds
+          key: access_key
+        secretAccessKey:
+          name: s3-creds
+          key: secret_key
 
-  # # Note: previousCluster needs to be set to the name of the previous
-  # # cluster when recovering from an existing cnpg cluster
-  # bootstrap:
-  #   recovery:
-  #     source: &previousCluster aetherdb-v1
-  # # Note: externalClusters is needed when recovering from an existing cnpg cluster
-  # externalClusters:
-  #   - name: *previousCluster
-  #     barmanObjectStore:
-  #       <<: *barmanObjectStore
-  #       serverName: *previousCluster
+  # Note: previousCluster needs to be set to the name of the previous
+  # cluster when recovering from an existing cnpg cluster
+  bootstrap:
+    recovery:
+      source: &previousCluster aetherdb-v1
+  # Note: externalClusters is needed when recovering from an existing cnpg cluster
+  externalClusters:
+    - name: *previousCluster
+      barmanObjectStore:
+        <<: *barmanObjectStore
+        serverName: *previousCluster
