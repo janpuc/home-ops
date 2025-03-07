@@ -22,7 +22,7 @@ locals {
   op_credentials        = try(local.fields_by_section["1Password"]["1password-credentials.json"].value, null)
   op_token              = try(local.fields_by_section["1Password"]["token"].value, null)
 
-  gateway_api_yamls = [for data in split("---", data.http.gateway_api_crds.body): yamldecode(data)]
+  gateway_api_yamls = [for data in split("---", data.http.gateway_api_crds.response_body): yamldecode(data)]
 }
 
 module "oke" {
@@ -134,7 +134,7 @@ data "http" "gateway_api_crds" {
 }
 
 resource "kubernetes_manifest" "install_gateway_api_crds" {
-  count = length(gateway_api_yamls.yamls)
+  count = length(local.gateway_api_yamls)
   manifest = local.gateway_api_yamls[count.index]
 
   depends_on = [
