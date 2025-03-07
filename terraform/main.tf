@@ -21,6 +21,8 @@ locals {
   github_token          = try(local.fields_by_section["Github"]["token"].value, null)
   op_credentials        = try(local.fields_by_section["1Password"]["1password-credentials.json"].value, null)
   op_token              = try(local.fields_by_section["1Password"]["token"].value, null)
+
+  gateway_api_yamls = [for data in split("---", data.http.gateway_api_crds.body): yamldecode(data)]
 }
 
 module "oke" {
@@ -125,4 +127,18 @@ resource "kubernetes_secret" "op_token" {
   immutable = true
 
   depends_on = [kubernetes_namespace.external_secrets]
+}
+
+data "http" "gateway_api_crds" {
+  url = "https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.0/standard-install.yaml"
+}
+
+resource "kubernetes_manifest" "install_gateway_api_crds" {
+  count = length(gateway_api_yamls.yamls)
+  manifest = local.gateway_api_yamls[count.index]
+
+  depends_on = [
+    module.oke,
+    local_file.kubeconfig
+  ]
 }
