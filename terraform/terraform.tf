@@ -9,6 +9,10 @@ terraform {
       source  = "integrations/github"
       version = "~> 6.1"
     }
+    kubernetes = {
+      source = "hashicorp/kubernetes"
+      version = ">= 2.36.0"
+    }
     tls = {
       source = "hashicorp/tls"
       version = ">= 4.0"

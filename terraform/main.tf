@@ -22,7 +22,13 @@ locals {
   op_credentials        = try(local.fields_by_section["1Password"]["1password-credentials.json"].value, null)
   op_token              = try(local.fields_by_section["1Password"]["token"].value, null)
 
-  gateway_api_yamls = [for data in split("---", data.http.gateway_api_crds.response_body): yamldecode(data)]
+  gateway_api_yamls = provider::kubernetes::manifest_decode_multi(data.http.gateway_api_crds.response_body)
+
+  processed_gateway_api_yamls = [
+    for manifest in local.gateway_api_yamls : {
+      for k, v in manifest : k => v if k != "status"
+    }
+  ]
 }
 
 module "oke" {
@@ -89,6 +95,13 @@ resource "kubernetes_namespace" "external_secrets" {
     name = "external-secrets"
   }
 
+  lifecycle {
+    ignore_changes = [ 
+      metadata["annotations"],
+      metadata["labels"]
+    ]
+  }
+
   depends_on = [
     module.oke,
     local_file.kubeconfig
@@ -134,11 +147,9 @@ data "http" "gateway_api_crds" {
 }
 
 resource "kubernetes_manifest" "install_gateway_api_crds" {
-  count = length(local.gateway_api_yamls)
-  manifest = local.gateway_api_yamls[count.index]
-
-  depends_on = [
-    module.oke,
-    local_file.kubeconfig
-  ]
+  for_each = {
+    for manifest in local.processed_gateway_api_yamls :
+    "${manifest.kind}--${manifest.metadata.name}" => manifest
+  }
+  manifest = each.value
 }
