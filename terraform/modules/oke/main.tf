@@ -32,6 +32,17 @@ module "oke" {
   pods_cidr     = var.oke_pods_cidr
   services_cidr = var.oke_services_cidr
 
+  # Load Balancers
+  allow_rules_public_lb = {
+    # Temporary
+    "Allow TCP ingress to public load balancers for Non-SSL traffic from anywhere" : {
+      protocol = 6, port = 80, source = "0.0.0.0/0", source_type = "CIDR_BLOCK",
+    },
+    "Allow TCP ingress to public load balancers for SSL traffic from anywhere" : {
+      protocol = 6, port = 443, source = "0.0.0.0/0", source_type = "CIDR_BLOCK",
+    },
+  }
+
   # Bastion
   create_bastion = false
 
