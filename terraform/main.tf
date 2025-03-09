@@ -213,7 +213,7 @@ resource "helm_release" "cilium" {
       k8s = {
         requireIPv4PodCIDR = true
       }
-      # k8sServiceHosts
+      # k8sServiceHost = module.oke.endpoint
       k8sServicePort = 6443
       kubeProxyReplacement = false
       operator = {
