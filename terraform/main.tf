@@ -193,6 +193,9 @@ resource "helm_release" "cilium" {
         exclusive = true
         install   = true
       }
+      gatewayAPI = {
+        enabled = true
+      }
       hubble = {
         metrics = {
           dashboards = {
@@ -215,7 +218,7 @@ resource "helm_release" "cilium" {
       }
       # k8sServiceHost = module.oke.endpoint
       k8sServicePort = 6443
-      kubeProxyReplacement = false
+      kubeProxyReplacement = true
       operator = {
         prometheus = {
           enabled = false

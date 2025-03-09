@@ -9,5 +9,3 @@ spec:
     - name: http
       port: 80
       targetPort: 9898
-  # type: LoadBalancer
-  # loadBalancerClass: tailscale
