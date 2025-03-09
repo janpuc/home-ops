@@ -4,6 +4,9 @@ metadata:
   name: podinfo-gateway
 spec:
   gatewayClassName: cilium
+  infrastructure:
+    annotations:
+      oci.oraclecloud.com/load-balancer-type: "nlb"
   listeners:
     - protocol: HTTP
       port: 80
