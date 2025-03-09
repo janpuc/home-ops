@@ -11,6 +11,12 @@ provider "flux" {
   }
 }
 
+provider "helm" {
+  kubernetes {
+    config_path = "${path.root}/../kubeconfig.yaml"
+  }
+}
+
 provider "kubernetes" {
   config_path = "${path.root}/../kubeconfig.yaml"
 }

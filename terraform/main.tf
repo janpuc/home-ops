@@ -152,4 +152,88 @@ resource "kubernetes_manifest" "install_gateway_api_crds" {
     "${manifest.kind}--${manifest.metadata.name}" => manifest
   }
   manifest = each.value
+
+  computed_fields = [
+    "metadata.labels",
+    "metadata.annotations",
+    "metadata.creationTimestamp"
+  ]
+}
+
+resource "helm_release" "cilium" {
+  name       = "cilium"
+  repository = "https://helm.cilium.io/"
+  chart      = "cilium"
+  version    = "1.17.1"
+  namespace  = "kube-system"
+
+  cleanup_on_fail   = false
+  force_update      = true
+  dependency_update = true
+  lint              = true
+  atomic            = false
+  timeout           = 800
+
+  values = [
+    yamlencode({
+      annotateK8sNode = true
+      cluster = {
+        id   = 1
+        name = "aether"
+      }
+      clustermesh = {
+        apiserver = {
+          kvstoremesh = {
+            enabled = false
+          }
+        }
+        useAPIServer = false
+      }
+      cni = {
+        exclusive = true
+        install   = true
+      }
+      hubble = {
+        metrics = {
+          dashboards = {
+            enabled = false
+          }
+        }
+        relay = {
+          enabled = true
+        }
+        ui = {
+          enabled = true
+        }
+      }
+      installNoConntrackIptablesRules = false
+      ipam = {
+        mode = "kubernetes"
+      }
+      k8s = {
+        requireIPv4PodCIDR = true
+      }
+      # k8sServiceHosts
+      k8sServicePort = 6443
+      kubeProxyReplacement = false
+      operator = {
+        prometheus = {
+          enabled = false
+        }
+      }
+      pmtuDiscovery = {
+        enabled = true
+      }
+      rollOutCiliumPods = true
+      tunnelProtocol = "vxlan"
+    })
+  ]
+
+  # lifecycle {
+  #   ignore_changes = [metadata]
+  # }
+
+  depends_on = [
+    kubernetes_manifest.install_gateway_api_crds
+  ]
 }

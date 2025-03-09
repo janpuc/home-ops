@@ -1,6 +1,6 @@
 module "oke" {
   source  = "oracle-terraform-modules/oke/oci"
-  version = "5.2.4-beta.1"
+  version = "5.2.4"
 
   providers = {
     oci.home = oci
@@ -52,10 +52,23 @@ module "oke" {
       boot_volume_size = 100,
       os               = "Oracle Linux",
       os_version       = var.oke_node_linux_version,
+      
+      node_labels = {
+        "oci.oraclecloud.com/custom-k8s-networking" = "true"
+      }
     }
   }
 
   # Misc
   timezone      = "Europe/Warsaw"
   output_detail = true
+
+  # # Cilium
+  # cilium_install           = true
+  # cilium_reapply           = false
+  # cilium_namespace         = "kube-system"
+  # cilium_helm_version      = "1.17.1"
+  # cilium_helm_values       = {
+  #   kubeProxyReplacement = true
+  # }
 }
