@@ -143,7 +143,7 @@ resource "kubernetes_secret" "op_token" {
 }
 
 data "http" "gateway_api_crds" {
-  url = "https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.0/standard-install.yaml"
+  url = "https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.0/experimental-install.yaml"
 }
 
 resource "kubernetes_manifest" "install_gateway_api_crds" {
