@@ -240,3 +240,27 @@ resource "helm_release" "cilium" {
     kubernetes_manifest.install_gateway_api_crds
   ]
 }
+
+data "onepassword_vault" "kubernetes_vault" {
+  name = "Kubernetes"
+}
+
+resource "onepassword_item" "lb_nsg_id" {
+  vault    = data.onepassword_vault.kubernetes_vault.uuid
+  title    = "oke-data"
+  category = "login"
+
+  section {
+    label = "Data"
+
+    field {
+      label = "lb-nsg-id"
+      type  = "STRING"
+      value = module.oke.lb_nsg_id
+    }
+  }
+
+  depends_on = [
+    module.oke
+  ]
+}

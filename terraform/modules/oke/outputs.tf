@@ -17,3 +17,8 @@ output "id" {
   description = "OKE Cluster ID"
   value       = module.oke.cluster_id
 }
+
+output "lb_nsg_id" {
+  description = "OKE Public Load Balancer NSG ID"
+  value = module.oke.pub_lb_nsg_id
+}
