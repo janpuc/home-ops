@@ -254,7 +254,7 @@ resource "onepassword_item" "lb_nsg_id" {
     label = "Data"
 
     field {
-      label = "lb-nsg-id"
+      label = "lb_nsg_id"
       type  = "STRING"
       value = module.oke.lb_nsg_id
     }
