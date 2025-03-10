@@ -5,7 +5,7 @@ metadata:
   namespace: default
 spec:
   parentRefs:
-    - name: podinfo-gateway
+    - name: main-gateway
       namespace: default
   rules:
     - matches:
