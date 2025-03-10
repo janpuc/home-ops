@@ -7,8 +7,6 @@ spec:
   infrastructure:
     annotations:
       oci.oraclecloud.com/load-balancer-type: "nlb"
-      oci-network-load-balancer.oraclecloud.com/oci-network-security-groups: "ocid1.networksecuritygroup.oc1.eu-frankfurt-1.aaaaaaaa4ch7txonumcxbkd7kqwgai3jbyt3c4hqsbo6fnxeqxwluzhbuorq"
-      # oci-network-load-balancer.oraclecloud.com/is-preserve-source: false
   listeners:
     - protocol: HTTP
       port: 80
