@@ -7,6 +7,7 @@ resources:
   - ./cnpg.yaml
   - ./csi-driver-smb.yaml
   - ./democratic-csi.yaml
+  - ./external-dns.yaml
   - ./external-secrets.yaml
   - ./jellyfin.yaml
   - ./onepassword-connect.yaml
