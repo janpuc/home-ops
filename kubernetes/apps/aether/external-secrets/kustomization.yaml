@@ -3,5 +3,6 @@ kind: Kustomization
 namespace: external-secrets
 resources:
   - ./namespace.yaml
+  - ./common-secrets/install.yaml
   - ./external-secrets/install.yaml
   - ./onepassword/install.yaml
