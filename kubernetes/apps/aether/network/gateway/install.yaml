@@ -1,29 +1,29 @@
-# apiVersion: kustomize.toolkit.fluxcd.io/v1
-# kind: Kustomization
-# metadata:
-#   name: &app gateway
-#   namespace: &namespace network
-# spec:
-#   commonMetadata:
-#     labels:
-#       app.kubernetes.io/name: *app
-#   dependsOn:
-#     - name: gateway-secrets
-#       namespace: network
-#   interval: 30m
-#   path: ./kubernetes/apps/_base/network/gateway/app
-#   prune: true
-#   sourceRef:
-#     kind: GitRepository
-#     name: flux-system
-#     namespace: flux-system
-#   targetNamespace: *namespace
-#   timeout: 5m
-#   wait: true
-#   postBuild:
-#     substituteFrom:
-#       - kind: Secret
-#         name: gateway-data
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app gateway
+  namespace: &namespace network
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: gateway-secrets
+      namespace: network
+  interval: 30m
+  path: ./kubernetes/apps/_base/network/gateway/app
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: *namespace
+  timeout: 5m
+  wait: true
+  postBuild:
+    substituteFrom:
+      - kind: Secret
+        name: gateway-data
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
