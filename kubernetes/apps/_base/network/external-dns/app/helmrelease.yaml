@@ -28,7 +28,7 @@ spec:
         valueFrom:
           secretKeyRef:
             name: cloudflare
-            key: api-token
+            key: api_token
     sources:
       - gateway-httproute
       - gateway-grpcroute
