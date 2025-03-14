@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: network
 resources:
   - ./namespace.yaml
+  - ./cert-manager/install.yaml
   - ./external-dns/install.yaml
   - ./gateway/install.yaml
   # - ./tailscale/install.yaml
