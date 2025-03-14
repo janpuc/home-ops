@@ -10,5 +10,6 @@ resources:
   - ./external-dns.yaml
   - ./external-secrets.yaml
   - ./jellyfin.yaml
+  - ./jetstack.yaml
   - ./onepassword-connect.yaml
   - ./tailscale.yaml
