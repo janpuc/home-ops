@@ -2,6 +2,8 @@ apiVersion: gateway.networking.k8s.io/v1beta1
 kind: Gateway
 metadata:
   name: main-gateway
+  annotations:
+    cert-manager.io/issuer: letsencryt-staging
 spec:
   gatewayClassName: cilium
   infrastructure:
@@ -9,9 +11,25 @@ spec:
       oci.oraclecloud.com/load-balancer-type: "nlb"
       oci-network-load-balancer.oraclecloud.com/oci-network-security-groups: ${lb_nsg_id}
   listeners:
-    - protocol: HTTP
-      port: 80
-      name: http
+    - name: domain
+      hostname: ${domain}
+      port: 443
+      protocol: HTTPS
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: domain-tls
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: wildcard-domain
+      hostname: "*.${domain}"
+      port: 443
+      protocol: HTTPS
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: domain-tls
       allowedRoutes:
         namespaces:
           from: All
