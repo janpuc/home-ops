@@ -29,16 +29,11 @@ spec:
               repository: ghcr.io/lldap/lldap
               tag: v0.6.1
             env:
-              DOMAIN: # TODO: Switch to global secrets after
-                valueFrom:
-                  secretKeyRef:
-                    name: lldap
-                    key: domain
               UID: 1001
               GID: 1001
               TZ: Europe/Warsaw
               LLDAP_HTTP_PORT: &port 8080
-              LLDAP_HTTP_URL: https://lldap.$(DOMAIN)
+              LLDAP_HTTP_URL: https://lldap.${domain}
               LLDAP_LDAP_PORT: &ldapPort 8389
               LLDAP_JWT_SECRET:
                 valueFrom:
@@ -105,3 +100,22 @@ spec:
             port: *port
           ldap:
             port: *ldapPort
+    route:
+      app:
+        annotations:
+          external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+          external-dns-managed: "true"
+        parentRefs:
+          - name: main-gateway
+            namespace: network
+            sectionName: wildcard-domain-https
+        hostnames:
+          - "lldap.${domain}"
+        rules:
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /
+            backendRefs:
+              - name: app
+                port: *port
