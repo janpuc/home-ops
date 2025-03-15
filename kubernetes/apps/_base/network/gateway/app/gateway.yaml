@@ -4,6 +4,7 @@ metadata:
   name: main-gateway
   annotations:
     cert-manager.io/issuer: letsencryt
+    external-dns-managed: "true"
 spec:
   gatewayClassName: cilium
   infrastructure:

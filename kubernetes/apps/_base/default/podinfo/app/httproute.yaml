@@ -5,6 +5,7 @@ metadata:
   namespace: default
   annotations:
     external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+    external-dns-managed: "true"
 spec:
   parentRefs:
     - name: main-gateway
