@@ -11,7 +11,7 @@ spec:
     - name: gateway-secrets
       namespace: network
     - name: common-secrets
-      namespace: network
+      namespace: external-secrets
   interval: 30m
   path: ./kubernetes/apps/_base/network/gateway/app
   prune: true
