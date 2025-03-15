@@ -30,8 +30,8 @@ spec:
   dependsOn:
     - name: cert-manager
       namespace: network
-    - name: common-secrets
-      namespace: external-secrets
+    - name: cloudflare-secrets
+      namespace: network
   interval: 30m
   path: ./kubernetes/apps/_base/network/cert-manager/issuers
   prune: true

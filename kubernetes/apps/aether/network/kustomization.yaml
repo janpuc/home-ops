@@ -4,6 +4,7 @@ namespace: network
 resources:
   - ./namespace.yaml
   - ./cert-manager/install.yaml
+  - ./cloudflare-secrets/install.yaml
   - ./external-dns/install.yaml
   - ./gateway/install.yaml
   # - ./tailscale/install.yaml
