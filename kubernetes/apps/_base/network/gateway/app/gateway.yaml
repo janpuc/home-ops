@@ -3,7 +3,7 @@ kind: Gateway
 metadata:
   name: main-gateway
   annotations:
-    cert-manager.io/issuer: letsencryt-staging
+    cert-manager.io/issuer: letsencryt
 spec:
   gatewayClassName: cilium
   infrastructure:
