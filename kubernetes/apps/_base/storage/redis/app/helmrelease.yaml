@@ -25,3 +25,6 @@ spec:
       storageClass: local-hostpath
     replica:
       replicaCount: 1
+    auth:
+      existingSecret: redis
+      existingSecretPasswordKey: password

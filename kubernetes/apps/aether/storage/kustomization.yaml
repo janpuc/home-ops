@@ -6,4 +6,4 @@ resources:
   - ./cnpg/install.yaml
   - ./csi-driver-smb/install.yaml
   - ./democratic-csi/install.yaml
-  - ./redis/install.yaml
+  # - ./redis/install.yaml
