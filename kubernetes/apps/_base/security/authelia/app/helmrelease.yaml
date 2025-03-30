@@ -22,6 +22,7 @@ spec:
       retries: 3
   values:
     configMap:
+      theme: auto
       default_2fa_method: totp
       user_attributes: {}
       authentication_backend:
