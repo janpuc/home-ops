@@ -19,6 +19,11 @@ spec:
     topologyKey: failure-domain.beta.kubernetes.io/zone
   managed:
     roles:
+    - name: authelia
+      ensure: present
+      login: true
+      passwordSecret:
+        name: authelia-db
     - name: lldap
       ensure: present
       login: true
