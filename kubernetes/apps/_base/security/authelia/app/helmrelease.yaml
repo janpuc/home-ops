@@ -57,7 +57,7 @@ spec:
         cookies:
           - subdomain: auth
             domain: ${domain}
-            default_redirection_url: home.${domain} # INFO: Homepage
+            default_redirection_url: ${domain} # INFO: Homepage
         redis:
           enabled: true
           enabledSecret: false
@@ -78,6 +78,11 @@ spec:
             disabled: false
             secret_name: authelia-db
             path: password
+      notifier:
+        disable_startup_check: true
+        filesystem:
+          enabled: false
+          filename: '/config/notification.txt'
     secret:
       additionalSecrets:
         authelia-lldap:
