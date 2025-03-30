@@ -55,9 +55,9 @@ spec:
         rules: []
       session:
         cookies:
-          - subdomain: auth
-            domain: ${domain}
-            default_redirection_url: ${domain} # INFO: Homepage
+          - domain: ${domain}
+            authelia_url: https://auth.${domain}
+            default_redirection_url: https://home.${domain} # INFO: Homepage
         redis:
           enabled: true
           enabledSecret: false
@@ -81,7 +81,7 @@ spec:
       notifier:
         disable_startup_check: true
         filesystem:
-          enabled: false
+          enabled: true
           filename: '/config/notification.txt'
     secret:
       additionalSecrets:
