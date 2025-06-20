@@ -41,6 +41,16 @@ module "oke" {
     "Allow TCP ingress to public load balancers for SSL traffic from anywhere" : {
       protocol = 6, port = 443, source = "0.0.0.0/0", source_type = "CIDR_BLOCK",
     },
+    # Satisfactory
+    "Allow TCP ingress to public load balancers for Satisfactory API from anywhere" : {
+      protocol = 6, port = 7777, source = "0.0.0.0/0", source_type = "CIDR_BLOCK",
+    },
+    "Allow UDP ingress to public load balancers for Satisfactory Game from anywhere" : {
+      protocol = 17, port = 7777, source = "0.0.0.0/0", source_type = "CIDR_BLOCK",
+    },
+    "Allow TCP ingress to public load balancers for Satisfactory Messaging from anywhere" : {
+      protocol = 6, port = 8888, source = "0.0.0.0/0", source_type = "CIDR_BLOCK",
+    },
   }
 
   # Bastion
