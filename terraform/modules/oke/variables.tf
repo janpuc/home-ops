@@ -11,7 +11,7 @@ variable "oke_cluster_name" {
 variable "oke_cluster_version" {
   description = "OKE Cluster Version"
   type        = string
-  default     = "v1.31.1"
+  default     = "v1.33.1"
 }
 
 variable "oke_node_pool_name" {

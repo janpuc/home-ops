@@ -41,7 +41,7 @@ module "oke" {
   compartment_id = local.oracle_compartment_id
 
   oke_cluster_name    = "aether"
-  oke_cluster_version = "v1.31.1"
+  oke_cluster_version = "v1.33.1"
 
   oke_node_pool_name = "aether-node-pool"
   oke_node_pool_size = 2
