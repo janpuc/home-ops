@@ -7,6 +7,9 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
+  dependsOn:
+    - name: istio-base
+      namespace: istio-system
   interval: 30m
   path: ./kubernetes/apps/_base/istio-system/istiod/app
   prune: true
