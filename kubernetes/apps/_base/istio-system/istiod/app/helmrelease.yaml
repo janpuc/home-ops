@@ -20,3 +20,34 @@ spec:
     remediation:
       strategy: rollback
       retries: 3
+  values:
+    global:
+      ambient: true
+      logging:
+        level: "default:info"
+      proxy:
+        autoInject: disabled
+    pilot:
+      appNamespaces: ["*"] 
+      env:
+        PILOT_ENABLE_AMBIENT: "true"
+        PILOT_ENABLE_WAYPOINT: "false"
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+    ztunnel:
+      enabled: true
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+        - operator: Exists
+    cni:
+      enabled: false
+    meshConfig:
+      enableAutoMtls: true
+      protocolDetectionTimeout: 100ms
