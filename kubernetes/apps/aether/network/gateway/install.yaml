@@ -8,6 +8,8 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
+    - name: gateway-crds
+      namespace: network
     - name: gateway-secrets
       namespace: network
     - name: common-secrets
