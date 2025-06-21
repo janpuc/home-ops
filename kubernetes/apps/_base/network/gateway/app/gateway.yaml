@@ -6,11 +6,7 @@ metadata:
     cert-manager.io/issuer: letsencryt
     external-dns-managed: "true"
 spec:
-  gatewayClassName: cilium
-  infrastructure:
-    annotations:
-      oci.oraclecloud.com/load-balancer-type: "nlb"
-      oci-network-load-balancer.oraclecloud.com/oci-network-security-groups: ${lb_nsg_id}
+  gatewayClassName: istio
   listeners:
     - name: http
       port: 80
