@@ -6,11 +6,11 @@ spec:
   interval: 30m
   chart:
     spec:
-      chart: base
+      chart: istiod
       version: 1.26.2
       sourceRef:
         kind: HelmRepository
-        name: istiod
+        name: istio
         namespace: flux-system
   install:
     remediation:
