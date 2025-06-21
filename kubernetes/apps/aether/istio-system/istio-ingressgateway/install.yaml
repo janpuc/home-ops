@@ -9,7 +9,7 @@ spec:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: istio-ingressgateway-secrets
-      namespace: network
+      namespace: istio-system
   interval: 30m
   path: ./kubernetes/apps/_base/istio-system/istio-ingressgateway/app
   prune: true
