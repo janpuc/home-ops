@@ -73,10 +73,6 @@ module "oke" {
       boot_volume_size = 100,
       os               = "Oracle Linux",
       os_version       = var.oke_node_linux_version,
-      
-      node_labels = {
-        "oci.oraclecloud.com/custom-k8s-networking" = "true"
-      }
     }
   }
 
