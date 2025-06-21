@@ -7,6 +7,17 @@ metadata:
     external-dns-managed: "true"
 spec:
   gatewayClassName: istio
+  infrastructure:
+    annotations:
+      oci.oraclecloud.com/load-balancer-type: "nlb"
+      oci-network-load-balancer.oraclecloud.com/oci-network-security-groups: "${lb_nsg_id}"
+      service.beta.kubernetes.io/oci-load-balancer-shape: "flexible"
+      service.beta.kubernetes.io/oci-load-balancer-shape-flex-min: "10"
+      service.beta.kubernetes.io/oci-load-balancer-shape-flex-max: "10"
+      networking.istio.io/pod-annotations: |
+        {
+          "proxy.istio.io/config": "proxyMetadata:\n  ISTIO_META_DEFAULT_CONFIG: |\n    concurrency: 2\n    protocolDetectionTimeout: 100ms"
+        }
   listeners:
     - name: http
       port: 80
@@ -33,3 +44,12 @@ spec:
       allowedRoutes:
         namespaces:
           from: All
+    - name: game-tcp-7777
+      port: 7777
+      protocol: TCP
+    - name: game-udp-7777
+      port: 7777
+      protocol: UDP
+    - name: game-tcp-8888
+      port: 8888
+      protocol: TCP
