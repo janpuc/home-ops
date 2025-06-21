@@ -41,7 +41,7 @@ spec:
       endpointURL: https://fsn1.your-objectstorage.com/
       # Note: serverName version needs to be inclemented
       # when recovering from an existing cnpg cluster
-      serverName: &currentCluster aetherdb-v3
+      serverName: &currentCluster aetherdb-v4
       s3Credentials:
         accessKeyId:
           name: s3-creds
@@ -54,7 +54,7 @@ spec:
   # cluster when recovering from an existing cnpg cluster
   bootstrap:
     recovery:
-      source: &previousCluster aetherdb-v2
+      source: &previousCluster aetherdb-v3
   # Note: externalClusters is needed when recovering from an existing cnpg cluster
   externalClusters:
     - name: *previousCluster
