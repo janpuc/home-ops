@@ -3,4 +3,4 @@ kind: Kustomization
 namespace: istio-system
 resources:
   - ./namespace.yaml
-  - ./base/install.yaml
+  - ./istio-base/install.yaml
