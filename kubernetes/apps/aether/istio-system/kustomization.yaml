@@ -4,5 +4,5 @@ namespace: istio-system
 resources:
   - ./namespace.yaml
   - ./istio-base/install.yaml
-  - ./istio-ingressgateway/install.yaml
+  # - ./istio-ingressgateway/install.yaml
   - ./istiod/install.yaml
