@@ -4,3 +4,4 @@ namespace: istio-system
 resources:
   - ./namespace.yaml
   - ./istio-base/install.yaml
+  - ./istiod/install.yaml
