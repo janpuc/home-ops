@@ -9,6 +9,7 @@ resources:
   - ./democratic-csi.yaml
   - ./external-dns.yaml
   - ./external-secrets.yaml
+  - ./istio.yaml
   - ./jellyfin.yaml
   - ./jetstack.yaml
   - ./onepassword-connect.yaml
