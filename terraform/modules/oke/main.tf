@@ -83,13 +83,4 @@ module "oke" {
   # Misc
   timezone      = "Europe/Warsaw"
   output_detail = true
-
-  # # Cilium
-  # cilium_install           = true
-  # cilium_reapply           = false
-  # cilium_namespace         = "kube-system"
-  # cilium_helm_version      = "1.17.1"
-  # cilium_helm_values       = {
-  #   kubeProxyReplacement = true
-  # }
 }

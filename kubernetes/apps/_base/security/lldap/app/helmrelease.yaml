@@ -100,22 +100,22 @@ spec:
             port: *port
           ldap:
             port: *ldapPort
-    route:
-      app:
-        annotations:
-          external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
-          external-dns-managed: "true"
-        parentRefs:
-          - name: main-gateway
-            namespace: network
-            sectionName: wildcard-domain-https
-        hostnames:
-          - "lldap.${domain}"
-        rules:
-          - matches:
-              - path:
-                  type: PathPrefix
-                  value: /
-            backendRefs:
-              - name: app
-                port: *port
+    # route:
+    #   app:
+    #     annotations:
+    #       external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+    #       external-dns-managed: "true"
+    #     parentRefs:
+    #       - name: main-gateway
+    #         namespace: network
+    #         sectionName: wildcard-domain-https
+    #     hostnames:
+    #       - "lldap.${domain}"
+    #     rules:
+    #       - matches:
+    #           - path:
+    #               type: PathPrefix
+    #               value: /
+    #         backendRefs:
+    #           - name: app
+    #             port: *port

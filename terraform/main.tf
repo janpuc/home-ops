@@ -21,14 +21,6 @@ locals {
   github_token          = try(local.fields_by_section["Github"]["token"].value, null)
   op_credentials        = try(local.fields_by_section["1Password"]["1password-credentials.json"].value, null)
   op_token              = try(local.fields_by_section["1Password"]["token"].value, null)
-
-  gateway_api_yamls = provider::kubernetes::manifest_decode_multi(data.http.gateway_api_crds.response_body)
-
-  processed_gateway_api_yamls = [
-    for manifest in local.gateway_api_yamls : {
-      for k, v in manifest : k => v if k != "status"
-    }
-  ]
 }
 
 module "oke" {
@@ -140,105 +132,6 @@ resource "kubernetes_secret" "op_token" {
   immutable = true
 
   depends_on = [kubernetes_namespace.external_secrets]
-}
-
-data "http" "gateway_api_crds" {
-  url = "https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.0/experimental-install.yaml"
-}
-
-resource "kubernetes_manifest" "install_gateway_api_crds" {
-  for_each = {
-    for manifest in local.processed_gateway_api_yamls :
-    "${manifest.kind}--${manifest.metadata.name}" => manifest
-  }
-  manifest = each.value
-
-  computed_fields = [
-    "metadata.labels",
-    "metadata.annotations",
-    "metadata.creationTimestamp"
-  ]
-}
-
-resource "helm_release" "cilium" {
-  name       = "cilium"
-  repository = "https://helm.cilium.io/"
-  chart      = "cilium"
-  version    = "1.17.1"
-  namespace  = "kube-system"
-
-  cleanup_on_fail   = false
-  force_update      = true
-  dependency_update = true
-  lint              = true
-  atomic            = false
-  timeout           = 800
-
-  values = [
-    yamlencode({
-      annotateK8sNode = true
-      cluster = {
-        id   = 1
-        name = "aether"
-      }
-      clustermesh = {
-        apiserver = {
-          kvstoremesh = {
-            enabled = false
-          }
-        }
-        useAPIServer = false
-      }
-      cni = {
-        exclusive = true
-        install   = true
-      }
-      gatewayAPI = {
-        enabled = true
-      }
-      hubble = {
-        metrics = {
-          dashboards = {
-            enabled = false
-          }
-        }
-        relay = {
-          enabled = true
-        }
-        ui = {
-          enabled = true
-        }
-      }
-      installNoConntrackIptablesRules = false
-      ipam = {
-        mode = "kubernetes"
-      }
-      k8s = {
-        requireIPv4PodCIDR = true
-      }
-      # k8sServiceHost = module.oke.endpoint
-      k8sServicePort = 6443
-      kubeProxyReplacement = true
-      operator = {
-        prometheus = {
-          enabled = false
-        }
-      }
-      pmtuDiscovery = {
-        enabled = true
-      }
-      rollOutCiliumPods = true
-      tunnelProtocol = "vxlan"
-    })
-  ]
-
-  # lifecycle {
-  #   ignore_changes = [metadata]
-  # }
-
-  depends_on = [
-    kubernetes_manifest.install_gateway_api_crds
-  ]
 }
 
 data "onepassword_vault" "kubernetes_vault" {
