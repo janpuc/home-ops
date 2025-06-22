@@ -3,4 +3,4 @@ kind: Kustomization
 namespace: games
 resources:
   - ./namespace.yaml
-  - ./satisfactory/install.yaml
+  # - ./satisfactory/install.yaml
