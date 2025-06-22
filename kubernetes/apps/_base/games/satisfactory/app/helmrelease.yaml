@@ -38,9 +38,10 @@ spec:
               ALWAYS_UPDATE_ON_START: true
               EXTRA_PARAMS: -log -unattended -ini:Engine:[HTTPServer.Listeners]:DefaultBindAddress=any
             probes:
-              liveness: &probes
-                enabled: true
-              readiness: *probes
+              liveness:
+                enabled: false
+              readiness:
+                enabled: false
               startup:
                 enabled: false
     service:
