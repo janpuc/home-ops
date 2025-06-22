@@ -81,4 +81,4 @@ spec:
         storageClass: local-hostpath
         size: 1Gi
         globalMounts:
-          - path: /config:/home/steam/.config/Epic
+          - path: /home/steam/.config/Epic
