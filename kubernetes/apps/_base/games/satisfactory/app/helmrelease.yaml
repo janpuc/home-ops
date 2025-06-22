@@ -26,15 +26,11 @@ spec:
         containers:
           app:
             image:
-              repository: ghcr.io/wolveix/satisfactory-server
-              tag: v1.9.9
+              repository: janpuc/satisfactory-arm64:0.0.1
+              tag: 0.0.1
             env:
-              DEBUG: false
-              MAXPLAYERS: 8
-              PGID: 1000
-              PUID: 1000
-              SKIPUPDATE: false
-              STEAMBETA: false
+              ALWAYS_UPDATE_ON_START: true
+              EXTRA_PARAMS: -log -unattended -ini:Engine:[HTTPServer.Listeners]:DefaultBindAddress=any
             probes:
               liveness: &probes
                 enabled: true
@@ -63,7 +59,7 @@ spec:
             sectionName: game-tcp-7777
         rules:
           - backendRefs:
-              - name: app
+              - name: satisfactory
                 port: *api
       game:
         kind: UDPRoute
@@ -73,7 +69,7 @@ spec:
             sectionName: game-udp-7777
         rules:
           - backendRefs:
-              - name: app
+              - name: satisfactory
                 port: *game
       messaging:
         kind: TCPRoute
@@ -83,10 +79,10 @@ spec:
             sectionName: game-tcp-8888
         rules:
           - backendRefs:
-              - name: app
+              - name: satisfactory
                 port: *messaging
     persistence:
-      config:
+      satisfactory:
         enabled: true
         type: persistentVolumeClaim
         accessMode: ReadWriteOnce
