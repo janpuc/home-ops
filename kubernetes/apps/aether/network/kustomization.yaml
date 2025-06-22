@@ -7,4 +7,4 @@ resources:
   - ./cloudflare-secrets/install.yaml
   - ./external-dns/install.yaml
   - ./gateway/install.yaml
-  - ./tailscale/install.yaml
+  # - ./tailscale/install.yaml
