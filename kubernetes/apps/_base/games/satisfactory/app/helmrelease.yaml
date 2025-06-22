@@ -58,17 +58,17 @@ spec:
           api:
             port: &api 7777
             targetPort: *api
-            nodePort: 37777
+            nodePort: 30007
             protocol: TCP
           game:
             port: &game 7777
             targetPort: *game
-            nodePort: 37777
+            nodePort: 30007
             protocol: UDP
           messaging:
             port: &messaging 8888
             targetPort: *messaging
-            nodePort: 38888
+            nodePort: 30008
             protocol: TCP
     persistence:
       satisfactory:
