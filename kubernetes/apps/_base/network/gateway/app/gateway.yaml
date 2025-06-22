@@ -14,14 +14,11 @@ spec:
       service.beta.kubernetes.io/oci-load-balancer-shape: "flexible"
       service.beta.kubernetes.io/oci-load-balancer-shape-flex-min: "10"
       service.beta.kubernetes.io/oci-load-balancer-shape-flex-max: "10"
-  options:
-    istio:
-      podAnnotations:
-        proxy.istio.io/config: |
-          proxyMetadata:
-            ISTIO_META_DEFAULT_CONFIG: |
-              concurrency: 2
-              protocolDetectionTimeout: 100ms
+      proxy.istio.io/config: |
+        proxyMetadata:
+          ISTIO_META_DEFAULT_CONFIG: |
+            concurrency: 2
+            protocolDetectionTimeout: 100ms
   listeners:
     - name: http
       port: 80
