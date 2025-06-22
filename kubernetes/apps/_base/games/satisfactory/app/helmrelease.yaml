@@ -57,12 +57,15 @@ spec:
         ports:
           api:
             port: &api 7777
+            targetPort: *api
             protocol: TCP
           game:
             port: &game 7777
+            targetPort: *game
             protocol: UDP
           messaging:
             port: &messaging 8888
+            targetPort: *messaging
             protocol: TCP
     persistence:
       satisfactory:
