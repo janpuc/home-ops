@@ -46,7 +46,14 @@ spec:
                 enabled: false
     service:
       app:
+        annotations:
+          oci.oraclecloud.com/load-balancer-type: "nlb"
+          oci-network-load-balancer.oraclecloud.com/oci-network-security-groups: "${lb_nsg_id}"
+          service.beta.kubernetes.io/oci-load-balancer-shape: "flexible"
+          service.beta.kubernetes.io/oci-load-balancer-shape-flex-min: "10"
+          service.beta.kubernetes.io/oci-load-balancer-shape-flex-max: "10"
         controller: satisfactory
+        type: LoadBalancer
         ports:
           api:
             port: &api 7777
@@ -57,37 +64,6 @@ spec:
           messaging:
             port: &messaging 8888
             protocol: TCP
-    route:
-      api:
-        kind: TCPRoute
-        parentRefs:
-          - name: main-gateway
-            namespace: network
-            sectionName: game-tcp-7777
-        rules:
-          - backendRefs:
-              - name: satisfactory
-                port: *api
-      game:
-        kind: UDPRoute
-        parentRefs:
-          - name: main-gateway
-            namespace: network
-            sectionName: game-udp-7777
-        rules:
-          - backendRefs:
-              - name: satisfactory
-                port: *game
-      messaging:
-        kind: TCPRoute
-        parentRefs:
-          - name: main-gateway
-            namespace: network
-            sectionName: game-tcp-8888
-        rules:
-          - backendRefs:
-              - name: satisfactory
-                port: *messaging
     persistence:
       satisfactory:
         enabled: true
