@@ -48,9 +48,18 @@ spec:
     - name: game-tcp-7777
       port: 7777
       protocol: TCP
+      allowedRoutes:
+        namespaces:
+          from: All
     - name: game-udp-7777
       port: 7777
       protocol: UDP
+      allowedRoutes:
+        namespaces:
+          from: All
     - name: game-tcp-8888
       port: 8888
       protocol: TCP
+      allowedRoutes:
+        namespaces:
+          from: All
