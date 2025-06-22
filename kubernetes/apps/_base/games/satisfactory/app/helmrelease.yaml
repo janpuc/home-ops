@@ -1,0 +1,94 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app satisfactory
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 4.1.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  values:
+    controllers:
+      satisfactory:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/wolveix/satisfactory-server
+              tag: v1.9.9
+            env:
+              DEBUG: false
+              MAXPLAYERS: 8
+              PGID: 1000
+              PUID: 1000
+              SKIPUPDATE: false
+              STEAMBETA: false
+            probes:
+              liveness: &probes
+                enabled: true
+              readiness: *probes
+              startup:
+                enabled: false
+    service:
+      app:
+        controller: satisfactory
+        ports:
+          api:
+            port: &api 7777
+            protocol: TCP
+          game:
+            port: &game 7777
+            protocol: UDP
+          messaging:
+            port: &messaging 8888
+            protocol: TCP
+    route:
+      api:
+        kind: TCPRoute
+        parentRefs:
+          - name: main-gateway
+            namespace: network
+            sectionName: game-tcp-7777
+        rules:
+          - backendRefs:
+              - name: app
+                port: *api
+      game:
+        kind: UDPRoute
+        parentRefs:
+          - name: main-gateway
+            namespace: network
+            sectionName: game-udp-7777
+        rules:
+          - backendRefs:
+              - name: app
+                port: *game
+      messaging:
+        kind: TCPRoute
+        parentRefs:
+          - name: main-gateway
+            namespace: network
+            sectionName: game-tcp-8888
+        rules:
+          - backendRefs:
+              - name: app
+                port: *messaging
+    persistence:
+      config:
+        enabled: true
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        storageClass: local-hostpath
+        size: 20Gi
