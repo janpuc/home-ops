@@ -48,12 +48,6 @@ module "oke" {
   vcn_cidr      = "10.0.0.0/16"
 }
 
-resource "local_file" "kubeconfig" {
-  content  = yamlencode(module.oke.kubeconfig)
-  filename = "${path.root}/../kubeconfig.yaml"
-  file_permission = "0600"
-}
-
 data "github_repository" "this" {
   name = var.github_repository
 }
@@ -74,7 +68,6 @@ resource "flux_bootstrap_git" "this" {
   depends_on = [
     github_repository_deploy_key.this,
     module.oke,
-    local_file.kubeconfig,
     kubernetes_namespace.external_secrets
   ]
 
@@ -95,8 +88,7 @@ resource "kubernetes_namespace" "external_secrets" {
   }
 
   depends_on = [
-    module.oke,
-    local_file.kubeconfig
+    module.oke
   ]
 }
 
@@ -156,4 +148,10 @@ resource "onepassword_item" "lb_nsg_id" {
   depends_on = [
     module.oke
   ]
+}
+
+resource "local_file" "kubeconfig" {
+  content  = yamlencode(module.oke.kubeconfig)
+  filename = "${path.root}/../kubeconfig.yaml"
+  file_permission = "0600"
 }

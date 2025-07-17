@@ -3,7 +3,7 @@ terraform {
     bucket   = "home-ops-state"
     region   = "eu-frankfurt-1"
     key      = "home-ops/terraform.tfstate"
-    profile  = "oci"
+    # profile  = "oci"
 
     skip_region_validation      = true
     skip_credentials_validation = true
