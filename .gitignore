@@ -34,6 +34,11 @@ terraform.rc
 
 # Ignore kubeconfig file
 kubeconfig.yaml
+kubeconfig
+
+# Ignore talosconfig file
+talosconfig.yaml
+talosconfig
 
 # VSCode
 .vscode
