@@ -77,32 +77,18 @@ module "kubernetes" {
   }
 
   node_groups = {
-    "worker" = {
-      count = 1
+    "gpu" = {
+      count      = 1
       base_vm_id = 1100
       cpu = {
-        cores = 6
+        cores = 10
+        numa  = true
       }
       memory = {
-        dedicated = 10240
+        dedicated = 14336
       }
       disk = {
-        size = 20
-      }
-    }
-    "gpu" = {
-      count       = 1
-      base_vm_id = 1200
-      cpu = {
-        cores        = 4
-        numa         = true
-        affinity     = "0-3,6-9"
-      }
-      memory = {
-        dedicated = 4096
-      }
-      disk = {
-        size = 20
+        size = 40
       }
       image = {
         extensions     = ["nonfree-kmod-nvidia-lts", "nvidia-container-toolkit-lts"]
@@ -112,7 +98,7 @@ module "kubernetes" {
         }
       }
       overrides = {
-        1201 = {
+        1101 = {
           hostpci = {
             id = "0000:01:00.0"
           }
