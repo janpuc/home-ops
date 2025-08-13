@@ -28,7 +28,7 @@ locals {
 }
 
 module "kubernetes" {
-  source = "github.com/janpuc/terraform-proxmox-talos?ref=v0.0.1-alpha.3&depth=1"
+  source = "github.com/janpuc/terraform-proxmox-talos?ref=v0.0.1-alpha.4&depth=1"
 
   proxmox = {
     node_name     = "proxmox"
@@ -39,6 +39,7 @@ module "kubernetes" {
   cluster = {
     name               = var.cluster_name
     talos_version      = "1.10.6"
+    talos_ccm_version  = "0.5.0"
     kubernetes_version = "1.33.3"
   }
 
@@ -89,7 +90,7 @@ module "kubernetes" {
         size = 20
       }
     }
-    "worker-gpu" = {
+    "gpu" = {
       count       = 1
       base_vm_id = 1200
       cpu = {
