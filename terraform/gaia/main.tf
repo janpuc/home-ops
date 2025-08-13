@@ -73,9 +73,6 @@ module "kubernetes" {
     disk = {
       size = 15
     }
-    image = {
-      file_id = "local:iso/talos-amd64-v1.10.6.iso"
-    }
   }
 
   node_groups = {
@@ -92,39 +89,36 @@ module "kubernetes" {
       disk = {
         size = 15
       }
+    }
+    "worker-gpu" = {
+      count       = 1
+      base_vm_id = 1300
+      cpu = {
+        cores        = 4
+        numa         = true
+        affinity     = "0-3,6-9"
+      }
+      memory = {
+        dedicated = 4096
+      }
+      disk = {
+        size = 15
+      }
       image = {
-        file_id = "local:iso/talos-amd64-v1.10.6.iso"
+        extensions     = ["nonfree-kmod-nvidia-lts", "nvidia-container-toolkit-lts"]
+        kernel_modules = ["nvidia", "nvidia_uvm", "nvidia_drm", "nvidia_modeset"]
+        sysctls = {
+          "net.core.bpf_jit_harden" = "1"
+        }
+      }
+      overrides = {
+        1301 = {
+          hostpci = {
+            id = "0000:01:00.0"
+          }
+        }
       }
     }
-    # "worker-gpu" = {
-    #   count       = 1
-    #   base_vm_id = 1300
-    #   cpu = {
-    #     cores        = 4
-    #     numa         = true
-    #     affinity     = "0-3,6-9"
-    #   }
-    #   memory = {
-    #     dedicated = 4096
-    #   }
-    #   disk = {
-    #     size = 15
-    #   }
-    #   image = {
-    #     extensions     = ["nonfree-kmod-nvidia-lts", "nvidia-container-toolkit-lts"]
-    #     kernel_modules = ["nvidia", "nvidia_uvm", "nvidia_drm", "nvidia_modeset"]
-    #     sysctls = {
-    #       "net.core.bpf_jit_harden" = "1"
-    #     }
-    #   }
-    #   overrides = {
-    #     1301 = {
-    #       hostpci = {
-    #         id = "0000:01:00.0"
-    #       }
-    #     }
-    #   }
-    # }
   }
 }
 
