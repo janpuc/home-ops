@@ -81,11 +81,11 @@ module "kubernetes" {
       count      = 1
       base_vm_id = 1100
       cpu = {
-        cores = 10
+        cores = 6
         numa  = true
       }
       memory = {
-        dedicated = 10240
+        dedicated = 8192
       }
       disk = {
         size = 40
