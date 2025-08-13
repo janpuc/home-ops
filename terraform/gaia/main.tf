@@ -85,7 +85,7 @@ module "kubernetes" {
         numa  = true
       }
       memory = {
-        dedicated = 12288
+        dedicated = 10240
       }
       disk = {
         size = 40
