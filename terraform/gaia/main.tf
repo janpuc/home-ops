@@ -34,9 +34,10 @@ locals {
 }
 
 module "kubernetes" {
-  source = "github.com/janpuc/terraform-proxmox-talos?ref=v0.0.1-alpha.8&depth=1"
+  source = "github.com/janpuc/terraform-proxmox-talos?ref=v0.0.1-alpha.9&depth=1"
 
   proxmox = {
+    cluster_name  = var.cluster_name
     node_name     = "proxmox"
     iso_datastore = "local"
     datastore     = "local-lvm"
@@ -214,7 +215,7 @@ resource "kubernetes_secret" "proxmox_csi" {
         insecure     = true
         token_id     = local.proxmox_csi_token_id
         token_secret = local.proxmox_csi_token_secret
-        region       = "gaia"
+        region       = var.cluster_name
       }]
     })
   }
