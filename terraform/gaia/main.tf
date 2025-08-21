@@ -28,7 +28,7 @@ locals {
 }
 
 module "kubernetes" {
-  source = "github.com/janpuc/terraform-proxmox-talos?ref=v0.0.1-alpha.7&depth=1"
+  source = "github.com/janpuc/terraform-proxmox-talos?ref=v0.0.1-alpha.8&depth=1"
 
   proxmox = {
     node_name     = "proxmox"
