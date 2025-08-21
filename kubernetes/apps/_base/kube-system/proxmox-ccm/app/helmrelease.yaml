@@ -21,7 +21,7 @@ spec:
       strategy: rollback
       retries: 3
   values:
-    existingConfigSecret: *app
+    existingConfigSecret: proxmox-ccm
     enabledControllers:
       - cloud-node-lifecycle
     affinity:
