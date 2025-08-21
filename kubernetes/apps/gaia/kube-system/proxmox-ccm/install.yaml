@@ -17,14 +17,3 @@ spec:
   targetNamespace: *namespace
   timeout: 5m
   wait: true
-  values:
-    existingConfigSecret: *app
-    enabledControllers:
-      - cloud-node-lifecycle
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-          - matchExpressions:
-            - key: node-role.kubernetes.io/control-plane
-              operator: Exists

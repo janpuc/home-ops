@@ -20,3 +20,14 @@ spec:
     remediation:
       strategy: rollback
       retries: 3
+  values:
+    existingConfigSecret: *app
+    enabledControllers:
+      - cloud-node-lifecycle
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: node-role.kubernetes.io/control-plane
+              operator: Exists
