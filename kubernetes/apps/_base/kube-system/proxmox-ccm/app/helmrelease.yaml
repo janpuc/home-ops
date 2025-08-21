@@ -23,6 +23,7 @@ spec:
   values:
     existingConfigSecret: proxmox-ccm
     enabledControllers:
+      - cloud-node
       - cloud-node-lifecycle
     affinity:
       nodeAffinity:
