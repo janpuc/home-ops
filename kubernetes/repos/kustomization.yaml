@@ -13,4 +13,5 @@ resources:
   - ./jellyfin.yaml
   - ./jetstack.yaml
   - ./onepassword-connect.yaml
+  - ./sergelogvinov.yaml
   - ./tailscale.yaml
