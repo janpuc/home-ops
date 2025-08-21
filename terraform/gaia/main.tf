@@ -73,7 +73,7 @@ module "kubernetes" {
       dedicated = 2048
     }
     disk = {
-      size = 20
+      size = 15
     }
   }
 
@@ -89,7 +89,7 @@ module "kubernetes" {
         dedicated = 8192
       }
       disk = {
-        size = 40
+        size = 15
       }
       image = {
         extensions     = ["nonfree-kmod-nvidia-lts", "nvidia-container-toolkit-lts"]
