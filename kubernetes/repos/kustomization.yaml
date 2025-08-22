@@ -12,6 +12,7 @@ resources:
   - ./istio.yaml
   - ./jellyfin.yaml
   - ./jetstack.yaml
+  - ./metrics-server.yaml
   - ./onepassword-connect.yaml
   - ./sergelogvinov.yaml
   - ./tailscale.yaml
