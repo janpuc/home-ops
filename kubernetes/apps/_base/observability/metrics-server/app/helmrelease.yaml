@@ -21,6 +21,8 @@ spec:
       strategy: rollback
       retries: 3
   values:
+    args:
+      - --kubelet-insecure-tls
     nodeSelector:
       node-role.kubernetes.io/control-plane: ""
     tolerations:
