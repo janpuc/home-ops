@@ -20,3 +20,9 @@ spec:
     remediation:
       strategy: rollback
       retries: 3
+  values:
+    nodeSelector:
+      node-role.kubernetes.io/control-plane: ""
+    tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        effect: NoSchedule
