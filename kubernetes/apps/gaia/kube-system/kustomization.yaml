@@ -4,3 +4,4 @@ namespace: kube-system
 resources:
   - ./namespace.yaml
   - ./proxmox-ccm/install.yaml
+  - ./proxmox-csi/install.yaml
