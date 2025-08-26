@@ -34,7 +34,7 @@ locals {
 }
 
 module "kubernetes" {
-  source = "github.com/janpuc/terraform-proxmox-talos?ref=v0.0.1-alpha.9&depth=1"
+  source = "github.com/janpuc/terraform-proxmox-talos?ref=v0.0.1&depth=1"
 
   proxmox = {
     cluster_name  = var.cluster_name
@@ -44,11 +44,13 @@ module "kubernetes" {
   }
 
   cluster = {
+    id                       = 1
     name                     = var.cluster_name
     talos_version            = "1.10.6"
     talos_ccm_version        = "0.5.0"
     kubernetes_version       = "1.33.3"
     gateway_api_crds_version = "1.5.0"
+    multi_cluster            = true
   }
 
   network = {
