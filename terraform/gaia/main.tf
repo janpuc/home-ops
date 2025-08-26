@@ -38,7 +38,7 @@ module "kubernetes" {
 
   proxmox = {
     cluster_name  = var.cluster_name
-    node_name     = "proxmox"
+    node_name     = "gaia"
     iso_datastore = "local"
     datastore     = "local-lvm"
   }
