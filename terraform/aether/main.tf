@@ -44,7 +44,7 @@ module "kubernetes" {
   }
 
   cluster = {
-    id                       = 1
+    id                       = 2
     name                     = var.cluster_name
     talos_version            = "1.10.6"
     talos_ccm_version        = "0.5.0"
