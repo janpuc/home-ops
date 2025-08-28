@@ -59,7 +59,7 @@ module "kubernetes" {
     multi_cluster_configuration = {
       mesh_api_lb = "10.69.11.11"
       clusters = {
-        gaia = ["10.69.21.11"]
+        aether = ["10.69.21.11"]
       }
     }
   }
