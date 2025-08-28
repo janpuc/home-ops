@@ -34,7 +34,7 @@ locals {
 }
 
 module "kubernetes" {
-  source = "github.com/janpuc/terraform-proxmox-talos?ref=v0.0.1&depth=1"
+  source = "github.com/janpuc/terraform-proxmox-talos?ref=v0.3.0&depth=1"
 
   proxmox = {
     cluster_name  = var.cluster_name
@@ -50,7 +50,6 @@ module "kubernetes" {
     talos_ccm_version        = "0.5.0"
     kubernetes_version       = "1.33.3"
     gateway_api_crds_version = "1.5.0"
-    multi_cluster            = true
   }
 
   network = {
@@ -74,12 +73,12 @@ module "kubernetes" {
     count      = 1
     base_vm_id = 1000
     cpu = {
-      cores = 2
+      cores = 4
       numa  = true
       type  = "host"
     }
     memory = {
-      dedicated = 2048
+      dedicated = 4096
     }
     disk = {
       size = 15
