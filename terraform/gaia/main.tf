@@ -31,6 +31,9 @@ locals {
 
   proxmox_csi_token_id     = try(local.fields_by_section["Proxmox"]["csi_token_id"].value, null)
   proxmox_csi_token_secret = try(local.fields_by_section["Proxmox"]["csi_token_secret"].value, null)
+
+  cilium_ca_crt = try(local.fields_by_section["Cilium"]["ca_crt"].value, null)
+  cilium_ca_key = try(local.fields_by_section["Cilium"]["ca_key"].value, null)
 }
 
 module "kubernetes" {
@@ -50,6 +53,15 @@ module "kubernetes" {
     talos_ccm_version        = "0.5.0"
     kubernetes_version       = "1.33.3"
     gateway_api_crds_version = "1.5.0"
+    cilium_ca_crt            = local.cilium_ca_crt
+    cilium_ca_key            = local.cilium_ca_key
+
+    multi_cluster_configuration = {
+      mesh_api_lb = "10.69.11.11"
+      clusters = {
+        gaia = ["10.69.21.11"]
+      }
+    }
   }
 
   network = {
@@ -82,32 +94,18 @@ module "kubernetes" {
   }
 
   node_groups = {
-    "gpu" = {
+    "worker" = {
       count      = 1
       base_vm_id = 1100
       cpu = {
-        cores = 6
+        cores = 2
         numa  = true
       }
       memory = {
-        dedicated = 8192
+        dedicated = 4096
       }
       disk = {
         size = 15
-      }
-      image = {
-        extensions     = ["nonfree-kmod-nvidia-lts", "nvidia-container-toolkit-lts"]
-        kernel_modules = ["nvidia", "nvidia_uvm", "nvidia_drm", "nvidia_modeset"]
-        sysctls = {
-          "net.core.bpf_jit_harden" = "1"
-        }
-      }
-      overrides = {
-        1101 = {
-          hostpci = {
-            id = "0000:01:00.0"
-          }
-        }
       }
     }
   }
