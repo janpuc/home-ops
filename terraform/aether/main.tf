@@ -31,10 +31,13 @@ locals {
 
   proxmox_csi_token_id     = try(local.fields_by_section["Proxmox"]["csi_token_id"].value, null)
   proxmox_csi_token_secret = try(local.fields_by_section["Proxmox"]["csi_token_secret"].value, null)
+
+  cilium_ca_crt = try(local.fields_by_section["Cilium"]["ca_crt"].value, null)
+  cilium_ca_key = try(local.fields_by_section["Cilium"]["ca_key"].value, null)
 }
 
 module "kubernetes" {
-  source = "github.com/janpuc/terraform-proxmox-talos?ref=v0.0.2-alpha.2&depth=1"
+  source = "github.com/janpuc/terraform-proxmox-talos?ref=v0.3.0&depth=1"
 
   proxmox = {
     cluster_name  = var.cluster_name
@@ -51,6 +54,15 @@ module "kubernetes" {
     kubernetes_version       = "1.33.3"
     gateway_api_crds_version = "1.5.0"
     multi_cluster            = true
+    cilium_ca_crt            = local.cilium_ca_crt
+    cilium_ca_key            = local.cilium_ca_key
+
+    multi_cluster_configuration = {
+      mesh_api_lb = "10.69.21.11"
+      clusters = {
+        gaia = ["10.69.11.11"]
+      }
+    }
   }
 
   network = {
