@@ -61,6 +61,8 @@ module "kubernetes" {
       pod     = "10.208.0.0/16"
       service = "10.209.0.0/16"
     }
+  
+    bridge = "vnet0"
   }
 
   control_plane = {
