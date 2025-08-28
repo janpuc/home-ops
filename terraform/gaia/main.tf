@@ -56,16 +56,10 @@ module "kubernetes" {
     gateway  = "10.69.11.1"
     kube_vip = "10.69.11.10"
 
-    vlan_id = 11
-
     subnets = {
       vm      = "10.69.11.0/24"
       pod     = "10.208.0.0/16"
       service = "10.209.0.0/16"
-    }
-    dns = {
-      servers = ["192.168.69.1", "1.1.1.1"]
-      domain  = "localdomain"
     }
   }
 
