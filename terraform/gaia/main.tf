@@ -37,7 +37,7 @@ locals {
 }
 
 module "kubernetes" {
-  source = "github.com/janpuc/terraform-proxmox-talos?ref=v0.3.0&depth=1"
+  source = "github.com/janpuc/terraform-proxmox-talos?ref=v0.4.0&depth=1"
 
   proxmox = {
     cluster_name  = var.cluster_name
@@ -98,11 +98,11 @@ module "kubernetes" {
       count      = 1
       base_vm_id = 1100
       cpu = {
-        cores = 2
+        cores = 4
         numa  = true
       }
       memory = {
-        dedicated = 4096
+        dedicated = 8192
       }
       disk = {
         size = 15
