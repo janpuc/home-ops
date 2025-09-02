@@ -37,7 +37,7 @@ locals {
 }
 
 module "kubernetes" {
-  source = "github.com/janpuc/terraform-proxmox-talos?ref=v0.4.0&depth=1"
+  source = "github.com/janpuc/terraform-proxmox-talos?ref=v0.5.0&depth=1"
 
   proxmox = {
     cluster_name  = var.cluster_name
@@ -59,7 +59,11 @@ module "kubernetes" {
     multi_cluster_configuration = {
       mesh_api_lb = "10.69.11.11"
       clusters = {
-        aether = ["10.69.21.11"]
+        aether = {
+          k8s_cidr    = "10.210.0.0/15"
+          gateway_ip  = "10.69.21.1"
+          mesh_api_lb = "10.69.21.11"
+        }
       }
     }
   }
@@ -72,6 +76,7 @@ module "kubernetes" {
       vm      = "10.69.11.0/24"
       pod     = "10.208.0.0/16"
       service = "10.209.0.0/16"
+      k8s     = "10.208.0.0/15"
     }
   
     bridge = "vnet0"
