@@ -37,7 +37,7 @@ locals {
 }
 
 module "kubernetes" {
-  source = "github.com/janpuc/terraform-proxmox-talos?ref=mcsapi&depth=1"
+  source = "github.com/janpuc/terraform-proxmox-talos?ref=v0.9.0&depth=1"
 
   proxmox = {
     cluster_name  = var.cluster_name
