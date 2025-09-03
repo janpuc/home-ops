@@ -37,7 +37,7 @@ locals {
 }
 
 module "kubernetes" {
-  source = "github.com/janpuc/terraform-proxmox-talos?ref=v0.6.0&depth=1"
+  source = "github.com/janpuc/terraform-proxmox-talos?ref=mcsapi&depth=1"
 
   proxmox = {
     cluster_name  = var.cluster_name
@@ -47,17 +47,19 @@ module "kubernetes" {
   }
 
   cluster = {
-    id                       = 1
-    name                     = var.cluster_name
-    talos_version            = "1.11.0"
-    talos_ccm_version        = "0.5.0"
-    kubernetes_version       = "1.34.0"
-    gateway_api_crds_version = "1.5.0"
-    cilium_ca_crt            = local.cilium_ca_crt
-    cilium_ca_key            = local.cilium_ca_key
+    id                               = 1
+    name                             = var.cluster_name
+    talos_version                    = "1.11.0"
+    talos_ccm_version                = "0.5.0"
+    kubernetes_version               = "1.34.0"
+    gateway_api_crds_version         = "1.3.0"
+    prometheus_operator_crds_version = "0.85.0"
+    cilium_ca_crt                    = local.cilium_ca_crt
+    cilium_ca_key                    = local.cilium_ca_key
 
     multi_cluster_configuration = {
-      mesh_api_lb = "10.69.11.11"
+      mesh_api_lb    = "10.69.11.11"
+      mcsapi_enabled = true
       clusters = {
         aether = {
           k8s_cidr    = "10.210.0.0/15"
@@ -78,7 +80,7 @@ module "kubernetes" {
       service = "10.209.0.0/16"
       k8s     = "10.208.0.0/15"
     }
-  
+
     bridge = "vnet0"
   }
 
