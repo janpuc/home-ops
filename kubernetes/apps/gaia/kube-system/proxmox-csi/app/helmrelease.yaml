@@ -1,0 +1,41 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: proxmox-csi
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: proxmox-csi-plugin
+      version: 0.3.13
+      sourceRef:
+        kind: HelmRepository
+        name: sergelogvinov
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  values:
+    existingConfigSecret: proxmox-csi
+    nodeSelector:
+      node-role.kubernetes.io/control-plane: ""
+    tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        effect: NoSchedule
+    storageClass:
+      - name: proxmox-ssd
+        storage: local-lvm
+        ssd: "true"
+        reclaimPolicy: Delete
+        fstype: ext4
+      - name: proxmox-hdd
+        storage: hdd-drive
+        reclaimPolicy: Delete
+        fstype: ext4
+        annotations:
+          storageclass.kubernetes.io/is-default-class: "true"

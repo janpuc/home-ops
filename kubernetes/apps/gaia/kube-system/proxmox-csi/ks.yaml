@@ -1,14 +1,14 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app podinfo
-  namespace: &namespace default
+  name: &app proxmox-csi
+  namespace: &namespace kube-system
 spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   interval: 30m
-  path: ./kubernetes/apps/_base/default/podinfo/app
+  path: ./kubernetes/apps/gaia/kube-system/proxmox-csi/app
   prune: true
   sourceRef:
     kind: GitRepository
@@ -16,8 +16,4 @@ spec:
     namespace: flux-system
   targetNamespace: *namespace
   timeout: 5m
-  wait: false
-  # postBuild:
-  #   substituteFrom:
-  #     - kind: Secret
-  #       name: common-data
+  wait: true

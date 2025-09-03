@@ -22,11 +22,6 @@ spec:
       retries: 3
   values:
     existingConfigSecret: proxmox-csi
-    # node:
-    #   nodeSelector:
-    #     node.cloudprovider.kubernetes.io/platform: proxmox
-    #   tolerations:
-    #     - operator: Exists
     nodeSelector:
       node-role.kubernetes.io/control-plane: ""
     tolerations:

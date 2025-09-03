@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: &app podinfo
+spec:
+  selector:
+    matchLabels:
+      app: *app
+  template:
+    metadata:
+      labels:
+        app: *app
+    spec:
+      containers:
+        - name: *app
+          image: ghcr.io/stefanprodan/podinfo:5.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 9898
+              protocol: TCP
+      #     volumeMounts:
+      #     - name: data
+      #       mountPath: /home/app/pvc
+      # volumes:
+      #   - name: data
+      #     persistentVolumeClaim:
+      #       claimName: podinfo-pvc

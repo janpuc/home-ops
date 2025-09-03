@@ -8,7 +8,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   interval: 30m
-  path: ./kubernetes/apps/_base/kube-system/proxmox-csi/app
+  path: ./kubernetes/apps/aether/kube-system/proxmox-csi/app
   prune: true
   sourceRef:
     kind: GitRepository
