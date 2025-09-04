@@ -28,3 +28,4 @@ spec:
       serviceType: ClusterIP
       credentialsName: op-credentials
       credentialsKey: 1password-credentials.json
+      version: 1.7.4 # Current `1.7.3` not available on `ghcr.io`.
