@@ -3,5 +3,4 @@ kind: Kustomization
 namespace: external-secrets
 resources:
   - ./namespace.yaml
-  - ./proxmox-ccm/ks.yaml
-  - ./proxmox-csi/ks.yaml
+  - ./onepassword/ks.yaml
