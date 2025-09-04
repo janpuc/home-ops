@@ -5,3 +5,4 @@ resources:
   - ./namespace.yaml
   - ./proxmox-ccm/ks.yaml
   - ./proxmox-csi/ks.yaml
+  - ./proxmox-svc/ks.yaml
