@@ -26,12 +26,6 @@ locals {
   proxmox_password = try(local.fields_by_section["Proxmox"]["password"].value, null)
   proxmox_endpoint = try(local.fields_by_section["Proxmox"]["endpoint"].value, null)
 
-  proxmox_ccm_token_id     = try(local.fields_by_section["Proxmox"]["ccm_token_id"].value, null)
-  proxmox_ccm_token_secret = try(local.fields_by_section["Proxmox"]["ccm_token_secret"].value, null)
-
-  proxmox_csi_token_id     = try(local.fields_by_section["Proxmox"]["csi_token_id"].value, null)
-  proxmox_csi_token_secret = try(local.fields_by_section["Proxmox"]["csi_token_secret"].value, null)
-
   cilium_ca_crt = try(local.fields_by_section["Cilium"]["ca_crt"].value, null)
   cilium_ca_key = try(local.fields_by_section["Cilium"]["ca_key"].value, null)
 }
@@ -179,50 +173,4 @@ resource "kubernetes_secret" "op_token" {
 
 data "onepassword_vault" "kubernetes_vault" {
   name = "Kubernetes"
-}
-
-resource "kubernetes_secret" "proxmox_ccm" {
-  metadata {
-    name      = "proxmox-ccm"
-    namespace = "kube-system"
-  }
-
-  data = {
-    "config.yaml" = yamlencode({
-      clusters = [{
-        url          = "${local.proxmox_endpoint}/api2/json"
-        insecure     = true
-        token_id     = local.proxmox_ccm_token_id
-        token_secret = local.proxmox_ccm_token_secret
-        region       = "gaia"
-      }]
-    })
-  }
-
-  type = "opaque"
-
-  depends_on = [module.kubernetes]
-}
-
-resource "kubernetes_secret" "proxmox_csi" {
-  metadata {
-    name      = "proxmox-csi"
-    namespace = "kube-system"
-  }
-
-  data = {
-    "config.yaml" = yamlencode({
-      clusters = [{
-        url          = "${local.proxmox_endpoint}/api2/json"
-        insecure     = true
-        token_id     = local.proxmox_csi_token_id
-        token_secret = local.proxmox_csi_token_secret
-        region       = var.cluster_name
-      }]
-    })
-  }
-
-  type = "opaque"
-
-  depends_on = [module.kubernetes]
 }
