@@ -1,12 +1,12 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: proxmox-ccm
+  name: &app proxmox-ccm
 spec:
   interval: 1h
   chartRef:
     kind: OCIRepository
-    name: proxmox-ccm
+    name: *app
   install:
     remediation:
       retries: -1
