@@ -28,9 +28,5 @@ spec:
         ssd: "true"
         reclaimPolicy: Delete
         fstype: ext4
-      - name: proxmox-hdd
-        storage: hdd-drive
-        reclaimPolicy: Delete
-        fstype: ext4
         annotations:
           storageclass.kubernetes.io/is-default-class: "true"

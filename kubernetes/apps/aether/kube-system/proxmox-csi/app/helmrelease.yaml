@@ -24,12 +24,8 @@ spec:
         effect: NoSchedule
     storageClass:
       - name: proxmox-ssd
-        storage: local-lvm
+        storage: local
         ssd: "true"
-        reclaimPolicy: Delete
-        fstype: ext4
-      - name: proxmox-hdd
-        storage: hdd-drive
         reclaimPolicy: Delete
         fstype: ext4
         annotations:
