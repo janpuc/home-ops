@@ -17,8 +17,14 @@ spec:
       retries: 3
   values:
     connect:
-      credentialsName: op-credentials
-      credentialsKey: 1password-credentials.json
-      
+      api:
+        imageRepository: ghcr.io/1password/connect-api
+        serviceMonitor:
+          enabled: true
+          interval: 1m
+      sync:
+        imageRepository: ghcr.io/1password/connect-sync
       applicationName: *app
       serviceType: ClusterIP
+      credentialsName: op-credentials
+      credentialsKey: 1password-credentials.json
