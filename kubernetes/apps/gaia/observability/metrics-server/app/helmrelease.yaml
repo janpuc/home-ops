@@ -18,6 +18,11 @@ spec:
   values:
     args:
       - --kubelet-insecure-tls
+      - --metric-resolution=10s
+    metrics:
+      enabled: true
+    serviceMonitor:
+      enabled: true
     nodeSelector:
       node-role.kubernetes.io/control-plane: ""
     tolerations:
