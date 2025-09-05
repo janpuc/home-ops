@@ -18,18 +18,13 @@ spec:
   values:
     args:
       - --kubelet-insecure-tls
-      - --metric-resolution=10s
-      - --kubelet-request-timeout=2s
+      - --metric-resolution=30s
+      - --kubelet-request-timeout=10s
     metrics:
       enabled: true
     serviceMonitor:
       enabled: true
-    nodeSelector:
-      node-role.kubernetes.io/control-plane: ""
-    tolerations:
-      - key: node-role.kubernetes.io/control-plane
-        effect: NoSchedule
     resources:
       requests:
-        cpu: 10m
-        memory: 32Mi
+        cpu: 100m
+        memory: 128Mi

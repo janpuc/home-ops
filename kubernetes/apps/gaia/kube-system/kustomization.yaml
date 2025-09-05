@@ -3,5 +3,6 @@ kind: Kustomization
 namespace: kube-system
 resources:
   - ./namespace.yaml
+  - ./metrics-server/ks.yaml
   - ./proxmox-ccm/ks.yaml
   - ./proxmox-csi/ks.yaml
