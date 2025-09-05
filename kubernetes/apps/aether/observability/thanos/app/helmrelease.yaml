@@ -1,0 +1,49 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app thanos
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  values:
+    existingObjstoreSecret: thanos-objstore
+    image:
+      registry: quay.io
+      repository: thanos/thanos
+      tag: v0.39.2
+    query:
+      enabled: true
+    receive:
+      enabled: true
+      persistence:
+        enabled: true
+        storageClass: proxmox-ssd
+        size: 20Gi
+    storegateway:
+      enabled: true
+      persistence:
+        enabled: true
+        storageClass: proxmox-ssd
+        size: 10Gi
+    compactor:
+      enabled: true
+      persistence:
+        enabled: true
+        storageClass: proxmox-ssd
+        size: 20G
+    queryFrontend:
+      enabled: false
+    ruler:
+      enabled: false
+    bucketweb:
+      enabled: false
