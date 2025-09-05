@@ -25,8 +25,8 @@ spec:
       enabled: true
     receive:
       enabled: true
-      networkPolicy:
-        enabled: false
+      # networkPolicy:
+      #   enabled: false
       resources:
         requests:
           cpu: 100m
@@ -48,7 +48,7 @@ spec:
         storageClass: proxmox-ssd
         size: 20G
     queryFrontend:
-      enabled: false
+      enabled: true
     ruler:
       enabled: false
     bucketweb:
