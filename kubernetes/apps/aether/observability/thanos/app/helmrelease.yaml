@@ -19,16 +19,15 @@ spec:
     existingObjstoreSecret: thanos-objstore
     query:
       enabled: true
+      dnsDiscovery:
+        enabled: false
+      extraFlags:
+        - --store=dnssrv+_grpc._tcp.kube-prometheus-stack-aeth-thanos-discovery.observability.svc.clusterset.local
+        - --store=dnssrv+_grpc._tcp.kube-prometheus-stack-gaia-thanos-discovery.observability.svc.clusterset.local
       networkPolicy:
         enabled: false
     receive:
-      enabled: true
-      networkPolicy:
-        enabled: false
-      resources:
-        requests:
-          cpu: 100m
-          memory: 256Mi
+      enabled: false
       persistence:
         enabled: true
         storageClass: proxmox-ssd
