@@ -17,10 +17,6 @@ spec:
       retries: 3
   values:
     existingObjstoreSecret: thanos-objstore
-    # image:
-    #   registry: quay.io
-    #   repository: thanos/thanos
-    #   tag: v0.39.2
     query:
       enabled: true
       networkPolicy:
