@@ -22,8 +22,8 @@ spec:
       dnsDiscovery:
         enabled: false
       extraFlags:
-        - --store=dnssrv+_grpc._tcp.kube-prometheus-stack-aeth-thanos-discovery.observability.svc.clusterset.local
-        - --store=dnssrv+_grpc._tcp.kube-prometheus-stack-gaia-thanos-discovery.observability.svc.clusterset.local
+        - --endpoint=dnssrv+_grpc._tcp.kube-prometheus-stack-aeth-thanos-discovery.observability.svc.clusterset.local
+        - --endpoint=dnssrv+_grpc._tcp.kube-prometheus-stack-gaia-thanos-discovery.observability.svc.clusterset.local
       networkPolicy:
         enabled: false
     receive:
