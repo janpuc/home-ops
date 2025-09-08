@@ -28,10 +28,6 @@ spec:
         enabled: false
     receive:
       enabled: false
-      persistence:
-        enabled: true
-        storageClass: proxmox-ssd
-        size: 20Gi
     storegateway:
       enabled: true
       networkPolicy:
