@@ -23,6 +23,8 @@ spec:
     #   tag: v0.39.2
     query:
       enabled: true
+      networkPolicy:
+        enabled: false
     receive:
       enabled: true
       networkPolicy:
@@ -37,18 +39,24 @@ spec:
         size: 20Gi
     storegateway:
       enabled: true
+      networkPolicy:
+        enabled: false
       persistence:
         enabled: true
         storageClass: proxmox-ssd
         size: 10Gi
     compactor:
       enabled: true
+      networkPolicy:
+        enabled: false
       persistence:
         enabled: true
         storageClass: proxmox-ssd
         size: 20G
     queryFrontend:
       enabled: true
+      networkPolicy:
+        enabled: false
     ruler:
       enabled: false
     bucketweb:
