@@ -78,7 +78,7 @@ spec:
               key: objstore.yml
               name: thanos-objstore
       thanosService:
-        create: true
+        enabled: true
         thanosServiceMonitor:
           enabled: true
     prometheus-node-exporter:
