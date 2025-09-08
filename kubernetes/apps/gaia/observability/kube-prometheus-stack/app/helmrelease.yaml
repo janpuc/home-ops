@@ -45,7 +45,6 @@ spec:
                 - __meta_kubernetes_pod_node_name
               targetLabel: kubernetes_node
     prometheus:
-      agentMode: true
       prometheusSpec:
         image:
           registry: docker.io
@@ -63,8 +62,6 @@ spec:
         ruleSelectorNilUsesHelmValues: false
         scrapeConfigSelectorNilUsesHelmValues: false
         serviceMonitorSelectorNilUsesHelmValues: false
-        remoteWrite:
-          - url: "http://thanos-receive.observability.svc.clusterset.local:19291/api/v1/receive"
         resources:
           requests:
             cpu: 100m
@@ -74,7 +71,16 @@ spec:
               storageClassName: proxmox-ssd
               resources:
                 requests:
-                  storage: 5Gi
+                  storage: 20Gi
+        thanos:
+          objectStoreConfig:
+            existingSecret:
+              key: objstore.yml
+              name: thanos-objstore
+      thanosService:
+        create: true
+        thanosServiceMonitor:
+          enabled: true
     prometheus-node-exporter:
       fullnameOverride: node-exporter
       prometheus:

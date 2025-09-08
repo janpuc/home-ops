@@ -1,22 +1,17 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app kube-prometheus-stack
+  name: &app thanos-objstore
   namespace: &namespace observability
 spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
-    - name: thanos-objstore
-      namespace: observability
-  healthChecks:
-    - apiVersion: helm.toolkit.fluxcd.io/v2
-      kind: HelmRelease
-      name: *app
-      namespace: *namespace
+    - name: onepassword-store
+      namespace: external-secrets
   interval: 1h
-  path: ./kubernetes/apps/gaia/observability/kube-prometheus-stack/app
+  path: ./kubernetes/apps/gaia/observability/thanos/objstore
   prune: true
   retryInterval: 2m
   sourceRef:
