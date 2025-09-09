@@ -38,3 +38,10 @@ spec:
             access: proxy
             url: http://thanos-query.observability.svc.cluster.local:9090
             isDefault: true
+    dashboards:
+      default:
+        kubernetes-api-server:
+          # renovate: depName="Kubernetes / System / API Server"
+          gnetId: 15761
+          revision: 19
+          datasource: Prometheus
