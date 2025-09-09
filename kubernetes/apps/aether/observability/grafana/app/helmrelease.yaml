@@ -28,3 +28,13 @@ spec:
         org_role: Admin # Enable default admin access until it will be exposed
       news:
         news_feed_enabled: false
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        datasources:
+          - name: Prometheus
+            type: prometheus
+            uid: prometheus
+            access: proxy
+            url: http://thanos-query.observability.svc.clusterset.local:9090
+            isDefault: true
