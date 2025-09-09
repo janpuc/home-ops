@@ -4,7 +4,7 @@ metadata:
   name: aetherdb
 spec:
   description: "AetherDB - Main DB for the Aether Cluster"
-  imageName: ghcr.io/cloudnative-pg/postgresql:17.6-minimal-trixie
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.6-standard-trixie
   instances: 3
   primaryUpdateStrategy: unsupervised
   # https://github.com/cloudnative-pg/cloudnative-pg/issues/5032#issuecomment-2491595856
