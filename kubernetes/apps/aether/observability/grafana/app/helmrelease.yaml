@@ -81,8 +81,19 @@ spec:
           revision: 7
           datasource: Prometheus
     sidecar:
-      enabled: true
+      image:
+        registry: ghcr.io
+        repository: home-operations/k8s-sidecar
+        tag: 1.30.10
       dashboards:
+        enabled: true
+        searchNamespace: ALL
         label: grafana_dashboard
-        labelValue: 1
-        searchNamespace: "ALL"
+        folderAnnotation: grafana_folder
+        provider:
+          disableDelete: true
+          foldersFromFilesStructure: true
+      datasources:
+        enabled: true
+        searchNamespace: ALL
+        labelValue: ""
