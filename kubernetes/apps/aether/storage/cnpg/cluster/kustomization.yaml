@@ -4,4 +4,4 @@ resources:
   - ./externalsecrets
   - ./cluster.yaml
   # - ./objectstore.yaml
-  # - ./scheduledbackup.yaml
+  - ./scheduledbackup.yaml

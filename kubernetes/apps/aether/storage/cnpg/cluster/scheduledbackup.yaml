@@ -8,6 +8,19 @@ spec:
   backupOwnerReference: self
   cluster:
     name: aetherdb
-  method: plugin
-  pluginConfiguration:
-    name: barman-cloud.cloudnative-pg.io
+
+## TODO: Switch to Barman Cloud plugin once the CRDs are in main CNPG Chart.
+##
+# apiVersion: postgresql.cnpg.io/v1
+# kind: ScheduledBackup
+# metadata:
+#   name: aetherdb
+# spec:
+#   schedule: "@daily"
+#   immediate: true
+#   backupOwnerReference: self
+#   cluster:
+#     name: aetherdb
+#   method: plugin
+#   pluginConfiguration:
+#     name: barman-cloud.cloudnative-pg.io

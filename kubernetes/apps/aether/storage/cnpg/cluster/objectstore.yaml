@@ -1,25 +1,27 @@
-apiVersion: barmancloud.cnpg.io/v1
-kind: ObjectStore
-metadata:
-  name: aetherdb
-spec:
-  configuration:
-    retentionPolicy: 30d
-    barmanObjectStore:
-      data:
-        compression: bzip2
-      wal:
-        compression: bzip2
-        maxParallel: 8
-      destinationPath: s3://cnpg-aether/aetherdb/
-      endpointURL: https://fsn1.your-objectstorage.com/
-      # Note: serverName version needs to be inclemented
-      # when recovering from an existing cnpg cluster
-      serverName: aetherdb-v1
-      s3Credentials:
-        accessKeyId:
-          name: s3-creds
-          key: access_key
-        secretAccessKey:
-          name: s3-creds
-          key: secret_key
+## TODO: Switch to Barman Cloud plugin once the CRDs are in main CNPG Chart.
+##
+# apiVersion: barmancloud.cnpg.io/v1
+# kind: ObjectStore
+# metadata:
+#   name: aetherdb
+# spec:
+#   configuration:
+#     retentionPolicy: 30d
+#     barmanObjectStore:
+#       data:
+#         compression: bzip2
+#       wal:
+#         compression: bzip2
+#         maxParallel: 8
+#       destinationPath: s3://cnpg-aether/aetherdb/
+#       endpointURL: https://fsn1.your-objectstorage.com/
+#       # Note: serverName version needs to be inclemented
+#       # when recovering from an existing cnpg cluster
+#       serverName: aetherdb-v1
+#       s3Credentials:
+#         accessKeyId:
+#           name: s3-creds
+#           key: access_key
+#         secretAccessKey:
+#           name: s3-creds
+#           key: secret_key
