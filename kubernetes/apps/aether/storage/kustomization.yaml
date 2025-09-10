@@ -4,3 +4,4 @@ namespace: storage
 resources:
   - ./namespace.yaml
   - ./cnpg/ks.yaml
+  - ./valkey/ks.yaml
