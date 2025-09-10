@@ -3,5 +3,5 @@ kind: Kustomization
 resources:
   - ./externalsecrets
   - ./cluster.yaml
-  - ./objectstore.yaml
-  - ./scheduledbackup.yaml
+  # - ./objectstore.yaml
+  # - ./scheduledbackup.yaml
