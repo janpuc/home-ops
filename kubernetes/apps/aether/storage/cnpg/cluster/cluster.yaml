@@ -4,7 +4,7 @@ metadata:
   name: aetherdb
 spec:
   description: "AetherDB - Main DB for the Aether Cluster"
-  imageName: ghcr.io/cloudnative-pg/postgresql:17.5-minimal-bookworm
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.6-minimal-trixie
   instances: 3
   primaryUpdateStrategy: unsupervised
   # https://github.com/cloudnative-pg/cloudnative-pg/issues/5032#issuecomment-2491595856
@@ -25,31 +25,11 @@ spec:
       login: true
       passwordSecret:
         name: lldap-db
-  env:
-    - name: AWS_REQUEST_CHECKSUM_CALCULATION
-      value: when_required
-    - name: AWS_RESPONSE_CHECKSUM_VALIDATION
-      value: when_required
-  backup:
-    retentionPolicy: 30d
-    barmanObjectStore: &barmanObjectStore
-      data:
-        compression: bzip2
-      wal:
-        compression: bzip2
-        maxParallel: 8
-      destinationPath: s3://cnpg-aether/aetherdb/
-      endpointURL: https://fsn1.your-objectstorage.com/
-      # Note: serverName version needs to be inclemented
-      # when recovering from an existing cnpg cluster
-      serverName: &currentCluster aetherdb-v1
-      s3Credentials:
-        accessKeyId:
-          name: s3-creds
-          key: access_key
-        secretAccessKey:
-          name: s3-creds
-          key: secret_key
+  plugins:
+  - name: barman-cloud.cloudnative-pg.io
+    isWALArchiver: true
+    parameters:
+      barmanObjectName: aetherdb
 
   # # Note: previousCluster needs to be set to the name of the previous
   # # cluster when recovering from an existing cnpg cluster
@@ -58,7 +38,9 @@ spec:
   #     source: &previousCluster aetherdb-v0
   # # Note: externalClusters is needed when recovering from an existing cnpg cluster
   # externalClusters:
-  #   - name: *previousCluster
-  #     barmanObjectStore:
-  #       <<: *barmanObjectStore
+  # - name: *previousCluster
+  #   plugin:
+  #     name: barman-cloud.cloudnative-pg.io
+  #     parameters:
+  #       barmanObjectName: aetherdb
   #       serverName: *previousCluster
