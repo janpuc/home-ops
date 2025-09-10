@@ -13,7 +13,7 @@ spec:
     - name: common-secrets
       namespace: external-secrets
     - name: lldap-db
-      namespace: storage
+      namespace: security
   healthChecks:
     - apiVersion: helm.toolkit.fluxcd.io/v2
       kind: HelmRelease
