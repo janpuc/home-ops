@@ -1,0 +1,88 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app authelia
+  namespace: &namespace security
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: common-secrets
+      namespace: external-secrets
+    - name: authelia-db
+      namespace: security
+    - name: authelia-secrets
+      namespace: security
+  healthChecks:
+    - apiVersion: helm.toolkit.fluxcd.io/v2
+      kind: HelmRelease
+      name: *app
+      namespace: *namespace
+  interval: 1h
+  path: ./kubernetes/apps/aether/security/authelia/app
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: *namespace
+  timeout: 5m
+  wait: false
+  postBuild:
+    substituteFrom:
+      - kind: Secret
+        name: common-data
+      - kind: Secret
+        name: authelia-db
+      - kind: Secret
+        name: authelia-lldap
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app authelia-db
+  namespace: &namespace storage # TODO: Replace after this is merged https://github.com/cloudnative-pg/cloudnative-pg/issues/6043
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: cnpg-cluster
+      namespace: storage
+  interval: 1h
+  path: ./kubernetes/apps/aether/security/authelia/db
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: *namespace
+  timeout: 5m
+  wait: false
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app authelia-secrets
+  namespace: &namespace security
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: onepassword-store
+      namespace: external-secrets
+  interval: 1h
+  path: ./kubernetes/apps/aether/security/authelia/secrets
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: *namespace
+  timeout: 5m
+  wait: false
