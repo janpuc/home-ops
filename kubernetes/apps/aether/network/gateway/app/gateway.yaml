@@ -3,7 +3,7 @@ kind: Gateway
 metadata:
   name: main-gateway
   annotations:
-    cert-manager.io/issuer: letsencryt
+    cert-manager.io/issuer: letsencrypt
     external-dns.alpha.kubernetes.io/target: ${public_ip}
     external-dns-managed: "true"
 spec:
