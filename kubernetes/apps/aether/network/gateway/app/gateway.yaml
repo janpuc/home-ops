@@ -1,0 +1,38 @@
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: Gateway
+metadata:
+  name: main-gateway
+  # annotations:
+  #   cert-manager.io/issuer: letsencryt
+  #   external-dns-managed: "true"
+spec:
+  gatewayClassName: cilium
+  infrastructure:
+    annotations:
+      lbipam.cilium.io/ips: "10.69.21.128"
+  listeners:
+    - name: http
+      port: 80
+      protocol: HTTP
+    # - name: domain-https
+    #   hostname: ${domain}
+    #   port: 443
+    #   protocol: HTTPS
+    #   tls:
+    #     mode: Terminate
+    #     certificateRefs:
+    #       - name: domain-tls
+    #   allowedRoutes:
+    #     namespaces:
+    #       from: All
+    # - name: wildcard-domain-https
+    #   hostname: "*.${domain}"
+    #   port: 443
+    #   protocol: HTTPS
+    #   tls:
+    #     mode: Terminate
+    #     certificateRefs:
+    #       - name: domain-tls
+    #   allowedRoutes:
+    #     namespaces:
+    #       from: All
