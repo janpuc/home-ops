@@ -19,5 +19,9 @@ spec:
             type: PathPrefix
             value: /
       backendRefs:
-        - name: podinfo
+        # - name: podinfo
+        #   port: 80
+        - group: multicluster.x-k8s.io
+          kind: ServiceImport
+          name: podinfo
           port: 80
