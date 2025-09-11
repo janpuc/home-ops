@@ -83,10 +83,6 @@ spec:
           items:
             - key: lldap_user_pass
               path: password
-        authelia-redis:
-          items:
-            - key: redis_pass
-              path: password
         authelia-db:
           items:
             - key: db_pass
