@@ -16,6 +16,9 @@ spec:
       strategy: rollback
       retries: 3
   values:
+    pod:
+      kind: Deployment
+      replicas: 1 # TODO: Bump up after debugging
     configMap:
       theme: auto
       default_2fa_method: totp
