@@ -3,5 +3,6 @@ kind: Kustomization
 namespace: network
 resources:
   - ./namespace.yaml
+  - ./cert-manager/ks.yaml
   - ./cloudflare-secrets/ks.yaml
   - ./gateway/ks.yaml
