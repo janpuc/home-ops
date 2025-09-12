@@ -23,6 +23,8 @@ spec:
         reporting_enabled: false
       server:
         root_url: https://grafana.${domain}
+      auth:
+        disable_login_form: true
       auth.generic_oauth:
         enabled: true
         name: Authelia

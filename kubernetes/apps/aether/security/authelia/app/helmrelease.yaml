@@ -92,7 +92,7 @@ spec:
             client_secret:
               path: '/secrets/authelia-oidc/grafana'
             public: false
-            authorization_policy: two_factor
+            authorization_policy: one_factor # TODO: Change after correct 2nd factor setup done
             require_pkce: true
             pkce_challenge_method: S256
             redirect_uris:
