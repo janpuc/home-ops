@@ -37,8 +37,8 @@ spec:
           - email
         empty_scopes: false
         auth_url: https://auth.${domain}/api/oidc/authorization
-        token_url: http://authelia.security.svc.cluster.local:9091/api/oidc/token
-        api_url: http://authelia.security.svc.cluster.local:9091/api/oidc/userinfo
+        token_url: http://authelia.security.svc.cluster.local/api/oidc/token
+        api_url: http://authelia.security.svc.cluster.local/api/oidc/userinfo
         login_attribute_path: preferred_username
         groups_attribute_pat: groups
         name_attribute_path: name
