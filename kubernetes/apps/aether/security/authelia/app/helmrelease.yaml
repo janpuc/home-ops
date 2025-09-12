@@ -96,7 +96,7 @@ spec:
             require_pkce: true
             pkce_challenge_method: S256
             redirect_uris:
-              - https://grafana.${domain}.com/login/generic_oauth
+              - https://grafana.${domain}/login/generic_oauth
             scopes:
               - openid
               - profile
