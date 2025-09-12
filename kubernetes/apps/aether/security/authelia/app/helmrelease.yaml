@@ -80,6 +80,9 @@ spec:
       identity_providers:
         oidc:
           enabled: true
+          jwks:
+            - key:
+                path: '/secrets/authelia-oidc/jwk.RS256.pem'
           claims_policies:
             grafana:
               id_token: ['email', 'name', 'groups', 'preferred_username']
@@ -118,5 +121,7 @@ spec:
               path: password
         authelia-oidc:
           items:
+            - key: oidc_jwk_key
+              path: jwk.RS256.pem
             - key: grafana_oidc_client_secret
               path: grafana
