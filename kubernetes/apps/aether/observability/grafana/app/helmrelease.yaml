@@ -28,8 +28,11 @@ spec:
         name: Authelia
         icon: signin
         client_id: grafana
-        client_secret: insecure_secret
-        scopes: openid profile email groups
+        scopes:
+          - openid
+          - profile
+          - groups
+          - email
         empty_scopes: false
         auth_url: https://auth.${domain}/api/oidc/authorization
         token_url: https://auth.${domain}/api/oidc/token
