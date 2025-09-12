@@ -21,13 +21,36 @@ spec:
         check_for_updates: false
         check_for_plugin_updates: false
         reporting_enabled: false
-      auth.anonymous:
+      server:
+        root_url: https://grafana.${domain}
+      auth.generic_oauth:
         enabled: true
-        org_id: 1
-        org_name: Main Org.
-        org_role: Admin # Enable default admin access until it will be exposed
+        name: Authelia
+        icon: signin
+        client_id: grafana
+        client_secret: insecure_secret
+        scopes: openid profile email groups
+        empty_scopes: false
+        auth_url: https://auth.${domain}/api/oidc/authorization
+        token_url: https://auth.${domain}/api/oidc/token
+        api_url: https://auth.${domain}/api/oidc/userinfo
+        login_attribute_path: preferred_username
+        groups_attribute_pat: groups
+        name_attribute_path: name
+        use_pkce: true
+        # role_attribute_path:
+      # auth.anonymous:
+      #   enabled: true
+      #   org_id: 1
+      #   org_name: Main Org.
+      #   org_role: Admin # Enable default admin access until it will be exposed
       news:
         news_feed_enabled: false
+    envValueFrom:
+      GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET:
+        secretKeyRef:
+          name: grafana-secrets
+          key: grafana_oidc_client_secret
     datasources:
       datasources.yaml:
         apiVersion: 1
@@ -97,3 +120,15 @@ spec:
         enabled: true
         searchNamespace: ALL
         labelValue: ""
+    route:
+      main:
+        enabled: true
+        annotations:
+          external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+          external-dns-managed: "true"
+        hostnames:
+          - grafana.${domain}
+        parentRefs:
+          - name: main-gateway
+            namespace: network
+            sectionName: wildcard-domain-https
