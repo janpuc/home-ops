@@ -43,6 +43,8 @@ spec:
         groups_attribute_pat: groups
         name_attribute_path: name
         use_pkce: true
+        role_attribute_path: "contains(roles[*], 'admin') && 'GrafanaAdmin' || contains(roles[*], 'editor') && 'Editor' || 'Viewer'"
+        allow_assign_grafana_admin: true
         # role_attribute_path:
       # auth.anonymous:
       #   enabled: true
