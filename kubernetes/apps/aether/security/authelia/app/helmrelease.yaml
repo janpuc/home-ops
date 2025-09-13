@@ -123,5 +123,5 @@ spec:
           items:
             - key: oidc_jwk_key
               path: jwk.RS256.pem
-            - key: grafana_oidc_client_secret
+            - key: grafana_oidc_client_secret_digest
               path: grafana
