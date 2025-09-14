@@ -3,4 +3,4 @@ kind: Kustomization
 namespace: media
 resources:
   - ./namespace.yaml
-  - ./media/ks.yaml
+  - ./vault/ks.yaml
