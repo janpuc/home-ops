@@ -5,4 +5,5 @@ resources:
   - ./namespace.yaml
   - ./nzbget/ks.yaml
   - ./qbittorrent/ks.yaml
+  - ./qui/ks.yaml
   - ./vault/ks.yaml
