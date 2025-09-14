@@ -10,6 +10,10 @@ spec:
   dependsOn:
     - name: vault
       namespace: media
+    - name: onepassword-store
+      namespace: external-secrets
+    - name: common-secrets
+      namespace: external-secrets
   interval: 1h
   path: ./kubernetes/apps/aether/media/autobrr/app
   prune: true
@@ -21,3 +25,7 @@ spec:
   targetNamespace: *namespace
   timeout: 5m
   wait: false
+  postBuild:
+    substituteFrom:
+      - kind: Secret
+        name: common-data
