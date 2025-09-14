@@ -95,5 +95,6 @@ spec:
           - readOnly: true
       tmp:
         type: persistentVolumeClaim
+        nameOverride: tmp
         accessMode: ReadWriteOnce
         size: 50Gi
