@@ -63,9 +63,7 @@ spec:
             port: *port
     persistence:
       config:
-        type: persistentVolumeClaim
-        accessMode: ReadWriteOnce
-        size: 1Gi
+        existingClaim: *app
       media:
         existingClaim: vault
         globalMounts:
