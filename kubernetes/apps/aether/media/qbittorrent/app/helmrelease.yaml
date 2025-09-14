@@ -95,3 +95,6 @@ spec:
           - readOnly: true
       tmp:
         type: emptyDir
+        globalMounts:
+          - path: /config/tmp
+            subPath: tmp
