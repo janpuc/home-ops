@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: media
 resources:
   - ./namespace.yaml
+  - ./autobrr/ks.yaml
   - ./nzbget/ks.yaml
   - ./qbittorrent/ks.yaml
   - ./qui/ks.yaml
