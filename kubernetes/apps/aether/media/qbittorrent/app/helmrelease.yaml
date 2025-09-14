@@ -97,4 +97,4 @@ spec:
         type: persistentVolumeClaim
         suffix: tmp
         accessMode: ReadWriteOnce
-        size: 50Gi
+        size: 100Gi
