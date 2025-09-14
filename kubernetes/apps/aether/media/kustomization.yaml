@@ -4,4 +4,5 @@ namespace: media
 resources:
   - ./namespace.yaml
   - ./nzbget/ks.yaml
+  - ./qbittorrent/ks.yaml
   - ./vault/ks.yaml
