@@ -82,10 +82,6 @@ spec:
         globalMounts:
           - path: /config/MediaCover
       media:
-        type: nfs
-        server: expanse.internal
-        path: /mnt/eros/Media
-        globalMounts:
-          - path: /media
+        existingClaim: vault
       tmp:
         type: emptyDir
