@@ -10,6 +10,8 @@ spec:
   dependsOn:
     - name: onepassword-store
       namespace: external-secrets
+    - name: common-secrets
+      namespace: external-secrets
   interval: 1h
   path: ./kubernetes/apps/aether/media/jellyseerr/app
   prune: true
@@ -21,3 +23,7 @@ spec:
   targetNamespace: *namespace
   timeout: 5m
   wait: false
+  postBuild:
+    substituteFrom:
+      - kind: Secret
+        name: common-data
