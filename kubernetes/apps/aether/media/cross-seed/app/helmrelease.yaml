@@ -73,5 +73,8 @@ spec:
           - path: /config/config.js
             subPath: config.js
             readOnly: true
-      tmp:
-        type: emptyDir
+      media:
+        existingClaim: vault
+        globalMounts:
+          - path: /vault/Downloads
+            subPath: Downloads
