@@ -7,5 +7,5 @@ resources:
   - ./nzbget/ks.yaml
   - ./qbittorrent/ks.yaml
   - ./qui/ks.yaml
-  - ./radarr/ks.yaml
+  # - ./radarr/ks.yaml
   - ./vault/ks.yaml
