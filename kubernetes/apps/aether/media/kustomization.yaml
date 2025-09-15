@@ -6,6 +6,7 @@ resources:
   - ./autobrr/ks.yaml
   - ./bazarr/ks.yaml
   - ./cross-seed/ks.yaml
+  - ./jellyseerr/ks.yaml
   - ./nzbget/ks.yaml
   - ./prowlarr/ks.yaml
   - ./qbittorrent/ks.yaml

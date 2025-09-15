@@ -1,0 +1,99 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app jellyseerr
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  values:
+    controllers:
+      jellyseerr:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/fallenbagel/jellyseerr
+              tag: 2.7.3
+            env:
+              TZ: Europe/Warsaw
+              LOG_LEVEL: "info"
+              PORT: &port 8080
+            envFrom:
+              - secretRef:
+                  name: *app
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/v1/status
+                    port: *port
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: 
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 2Gi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      app:
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        annotations:
+          external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+          external-dns-managed: "true"
+        hostnames:
+          - requests.${domain}
+        parentRefs:
+          - name: main-gateway
+            namespace: network
+            sectionName: wildcard-domain-https
+    persistence:
+      config:
+        existingClaim: *app
+        globalMounts:
+          - path: /app/config
+      config-cache:
+        type: persistentVolumeClaim
+        suffix: cache
+        accessMode: ReadWriteOnce
+        size: 15Gi
+        globalMounts:
+          - path: /app/config/cache
+      tmpfs:
+        type: emptyDir
+        advancedMounts:
+          jellyseerr:
+            app:
+              - path: /app/config/logs
+                subPath: logs
+              - path: /tmp
+                subPath: tmp
