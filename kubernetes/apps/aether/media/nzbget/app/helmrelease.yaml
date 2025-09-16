@@ -64,7 +64,7 @@ spec:
     persistence:
       config:
         existingClaim: *app
-      media:
+      vault:
         existingClaim: vault
         globalMounts:
           - path: /vault/Downloads/nzbget
