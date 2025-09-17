@@ -140,6 +140,28 @@ spec:
             access_token_signed_response_alg: none
             userinfo_signed_response_alg: none
             token_endpoint_auth_method: client_secret_post
+          - client_id: jellyseerr
+            client_name: Jellyseerr
+            client_secret:
+              path: '/secrets/authelia-oidc/jellyseerr'
+            public: false
+            authorization_policy: one_factor # TODO: Change after correct 2nd factor setup done
+            require_pkce: false
+            pkce_challenge_method: ''
+            redirect_uris:
+              - https://jellyseerr.${domain}/login?provider=authelia&callback=true
+            scopes:
+              - openid
+              - email
+              - profile
+              - groups
+            response_types:
+              - code
+            grant_types:
+              - authorization_code
+            access_token_signed_response_alg: none
+            userinfo_signed_response_alg: none
+            token_endpoint_auth_method: client_secret_post
     secret:
       additionalSecrets:
         authelia-lldap:
@@ -160,3 +182,5 @@ spec:
               path: grafana
             - key: jellyfin_oidc_client_secret_digest
               path: jellyfin
+            - key: jellyseerr_oidc_client_secret_digest
+              path: jellyseerr
