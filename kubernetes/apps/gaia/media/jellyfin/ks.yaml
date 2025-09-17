@@ -26,6 +26,8 @@ spec:
   postBuild:
     substituteFrom:
       - kind: Secret
+        name: common-data
+      - kind: Secret
         name: jellyfin
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
