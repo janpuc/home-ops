@@ -4,6 +4,7 @@ metadata:
   name: jellyfin
 spec:
   ports:
-  - protocol: TCP
-    port: 8096
-    targetPort: 8096
+    - name: http
+      protocol: TCP
+      port: 8096
+      targetPort: 8096
