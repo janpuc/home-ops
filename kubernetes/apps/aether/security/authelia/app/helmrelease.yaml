@@ -149,7 +149,7 @@ spec:
             require_pkce: false
             pkce_challenge_method: ''
             redirect_uris:
-              - https://jellyseerr.${domain}/login?provider=authelia&callback=true
+              - https://requests.${domain}/login?provider=authelia&callback=true
             scopes:
               - openid
               - email
