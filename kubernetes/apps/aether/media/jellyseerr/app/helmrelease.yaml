@@ -21,8 +21,10 @@ spec:
         containers:
           app:
             image:
+              # TODO: replace after `https://github.com/fallenbagel/jellyseerr/pull/1505` is merged
+              # repository: ghcr.io/fallenbagel/jellyseerr
               repository: ghcr.io/fallenbagel/jellyseerr
-              tag: 2.7.3
+              tag: preview-OIDC
             env:
               TZ: Europe/Warsaw
               LOG_LEVEL: "info"
