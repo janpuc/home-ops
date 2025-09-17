@@ -23,7 +23,7 @@ spec:
             image:
               # TODO: replace after `https://github.com/fallenbagel/jellyseerr/pull/1505` is merged
               # repository: ghcr.io/fallenbagel/jellyseerr
-              repository: ghcr.io/fallenbagel/jellyseerr
+              repository: fallenbagel/jellyseerr
               tag: preview-OIDC
             env:
               TZ: Europe/Warsaw
