@@ -3,3 +3,5 @@ kind: Kustomization
 namespace: security
 resources:
   - ./namespace.yaml
+  - ./authelia/ks.yaml
+  - ./lldap/ks.yaml
