@@ -1,0 +1,23 @@
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: HTTPRoute
+metadata:
+  name: autobrr-route
+  annotations:
+    external-dns-managed: "true"
+spec:
+  parentRefs:
+    - name: main-gateway
+      namespace: network
+      sectionName: wildcard-domain-https
+  hostnames:
+    - "autobrr.${domain}"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - group: multicluster.x-k8s.io
+          kind: ServiceImport
+          name: autobrr
+          port: 8080
