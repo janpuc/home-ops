@@ -3,5 +3,6 @@ kind: Kustomization
 namespace: external-secrets
 resources:
   - ./namespace.yaml
+  - ./common-secrets/ks.yaml
   - ./external-secrets/ks.yaml
   - ./onepassword/ks.yaml
