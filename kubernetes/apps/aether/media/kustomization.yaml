@@ -9,6 +9,7 @@ resources:
   - ./jellyseerr/ks.yaml
   - ./nzbget/ks.yaml
   - ./prowlarr/ks.yaml
+  - ./qbittools/ks.yaml
   - ./qbittorrent/ks.yaml
   - ./qui/ks.yaml
   - ./radarr/ks.yaml
