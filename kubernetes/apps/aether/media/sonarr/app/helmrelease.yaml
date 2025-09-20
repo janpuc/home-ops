@@ -116,11 +116,11 @@ spec:
           - path: /config/MediaCover
       import-script:
         type: configMap
+        defaultMode: 0777
         name: *app
         globalMounts:
           - path: /config/scripts/symlink_import.sh
             subPath: symlink_import.sh
-            readOnly: true
       vault:
         existingClaim: vault
       tmp:
