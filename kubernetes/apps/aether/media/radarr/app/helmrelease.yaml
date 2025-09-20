@@ -71,6 +71,38 @@ spec:
         ports:
           http:
             port: *port
+    configMaps:
+      import:
+        data:
+          symlink_import.sh: |-
+            #!/bin/sh
+            set -e
+            SOURCE_PATH="$1"
+            DESTINATION_PATH="$2"
+            echo "Source (from argument \$1): ${SOURCE_PATH}"
+            echo "Destination (from argument \$2): ${DESTINATION_PATH}"
+            if [ -z "${SOURCE_PATH}" -o -z "${DESTINATION_PATH}" ]; then
+              echo "[ERROR] Missing command-line arguments from Radarr. Aborting."
+              exit 1
+            fi
+            if [ ! -f "${SOURCE_PATH}" ]; then
+              echo "[ERROR] Source file does not exist: ${SOURCE_PATH}"
+              exit 1
+            fi
+            echo "[OK] Source file found."
+            DESTINATION_DIR=$(dirname "${DESTINATION_PATH}")
+            echo "Ensuring destination directory exists: ${DESTINATION_DIR}"
+            mkdir -p "${DESTINATION_DIR}"
+            echo "[OK] Destination directory checked/created."
+            echo "Moving file to media library..."
+            mv "${SOURCE_PATH}" "${DESTINATION_PATH}"
+            echo "[OK] File successfully moved."
+            echo "Creating symlink for seeding..."
+            ln -s "${DESTINATION_PATH}" "${SOURCE_PATH}"
+            echo "[OK] Symlink successfully created."
+            echo "[MoveStatus] MoveComplete"
+            echo "--- Radarr Custom Import Script Finished Successfully ---"
+            exit 0
     persistence:
       config:
         existingClaim: *app
@@ -81,6 +113,13 @@ spec:
         size: 10Gi
         globalMounts:
           - path: /config/MediaCover
+      import-script:
+        type: configMap
+        name: *app
+        globalMounts:
+          - path: /config/scripts/symlink_import.sh
+            subPath: symlink_import.sh
+            readOnly: true
       vault:
         existingClaim: vault
       tmp:
