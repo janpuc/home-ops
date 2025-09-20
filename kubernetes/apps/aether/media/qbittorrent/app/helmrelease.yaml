@@ -85,9 +85,6 @@ spec:
             readOnly: true
       vault:
         existingClaim: vault
-        globalMounts:
-          - path: /vault/Downloads/qbittorrent
-            subPath: Downloads/qbittorrent
       qbrr:
         type: image
         image: ghcr.io/buroa/qbrr:0.1.1
