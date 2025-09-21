@@ -75,6 +75,3 @@ spec:
             readOnly: true
       vault:
         existingClaim: vault
-        globalMounts:
-          - path: /vault/Downloads
-            subPath: Downloads
