@@ -17,8 +17,6 @@ spec:
           imagePullPolicy: IfNotPresent
           volumeMounts:
             - name: vault
-              mountPath: /vault/Downloads
-              subPath: Downloads
       volumes:
         - name: vault
           persistentVolumeClaim:
