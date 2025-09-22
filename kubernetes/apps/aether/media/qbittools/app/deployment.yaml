@@ -17,6 +17,8 @@ spec:
           imagePullPolicy: IfNotPresent
           volumeMounts:
             - name: vault
+              mountPath: /vault
+              subPath: vault
       volumes:
         - name: vault
           persistentVolumeClaim:
