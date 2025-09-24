@@ -1,3 +1,4 @@
+---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
@@ -73,4 +74,4 @@ spec:
   targetNamespace: *namespace
   timeout: 5m
   wait: true
-  
+

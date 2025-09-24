@@ -1,3 +1,4 @@
+---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -85,83 +86,87 @@ spec:
                 path: '/secrets/authelia-oidc/jwk.RS256.pem'
           claims_policies:
             grafana:
-              id_token: ['email', 'name', 'groups', 'preferred_username']
+              id_token:
+                - 'email'
+                - 'name'
+                - 'groups'
+                - 'preferred_username'
           clients:
-          - client_id: autobrr
-            client_name: Autobrr
-            client_secret:
-              path: '/secrets/authelia-oidc/autobrr'
-            public: false
-            authorization_policy: one_factor # TODO: Change after correct 2nd factor setup done
-            redirect_uris:
-              - https://autobrr.${domain}/api/auth/oidc/callback
-            scopes:
-              - openid
-              - profile
-              - groups
-              - email
-            token_endpoint_auth_method: client_secret_post
-          - client_id: grafana
-            client_name: Grafana
-            client_secret:
-              path: '/secrets/authelia-oidc/grafana'
-            public: false
-            authorization_policy: one_factor # TODO: Change after correct 2nd factor setup done
-            require_pkce: true
-            pkce_challenge_method: S256
-            redirect_uris:
-              - https://grafana.${domain}/login/generic_oauth
-            scopes:
-              - openid
-              - profile
-              - groups
-              - email
-            response_types:
-              - code
-            grant_types:
-              - authorization_code
-            access_token_signed_response_alg: none
-            userinfo_signed_response_alg: none
-            token_endpoint_auth_method: client_secret_basic
-          - client_id: jellyfin
-            client_name: Jellyfin
-            client_secret:
-              path: '/secrets/authelia-oidc/jellyfin'
-            public: false
-            authorization_policy: one_factor # TODO: Change after correct 2nd factor setup done
-            require_pkce: true
-            pkce_challenge_method: S256
-            redirect_uris:
-              - https://jellyfin.${domain}/sso/OID/redirect/authelia
-            scopes:
-              - openid
-              - profile
-              - groups
-            access_token_signed_response_alg: none
-            userinfo_signed_response_alg: none
-            token_endpoint_auth_method: client_secret_post
-          - client_id: jellyseerr
-            client_name: Jellyseerr
-            client_secret:
-              path: '/secrets/authelia-oidc/jellyseerr'
-            public: false
-            authorization_policy: one_factor # TODO: Change after correct 2nd factor setup done
-            require_pkce: false
-            pkce_challenge_method: ''
-            redirect_uris:
-              - https://requests.${domain}/login?provider=authelia&callback=true
-            scopes:
-              - openid
-              - email
-              - profile
-              - groups
-            response_types:
-              - code
-            grant_types:
-              - authorization_code
-            access_token_signed_response_alg: none
-            userinfo_signed_response_alg: none
-            token_endpoint_auth_method: client_secret_post
+            - client_id: autobrr
+              client_name: Autobrr
+              client_secret:
+                path: '/secrets/authelia-oidc/autobrr'
+              public: false
+              authorization_policy: one_factor # TODO: Change after correct 2nd factor setup done
+              redirect_uris:
+                - https://autobrr.${domain}/api/auth/oidc/callback
+              scopes:
+                - openid
+                - profile
+                - groups
+                - email
+              token_endpoint_auth_method: client_secret_post
+            - client_id: grafana
+              client_name: Grafana
+              client_secret:
+                path: '/secrets/authelia-oidc/grafana'
+              public: false
+              authorization_policy: one_factor # TODO: Change after correct 2nd factor setup done
+              require_pkce: true
+              pkce_challenge_method: S256
+              redirect_uris:
+                - https://grafana.${domain}/login/generic_oauth
+              scopes:
+                - openid
+                - profile
+                - groups
+                - email
+              response_types:
+                - code
+              grant_types:
+                - authorization_code
+              access_token_signed_response_alg: none
+              userinfo_signed_response_alg: none
+              token_endpoint_auth_method: client_secret_basic
+            - client_id: jellyfin
+              client_name: Jellyfin
+              client_secret:
+                path: '/secrets/authelia-oidc/jellyfin'
+              public: false
+              authorization_policy: one_factor # TODO: Change after correct 2nd factor setup done
+              require_pkce: true
+              pkce_challenge_method: S256
+              redirect_uris:
+                - https://jellyfin.${domain}/sso/OID/redirect/authelia
+              scopes:
+                - openid
+                - profile
+                - groups
+              access_token_signed_response_alg: none
+              userinfo_signed_response_alg: none
+              token_endpoint_auth_method: client_secret_post
+            - client_id: jellyseerr
+              client_name: Jellyseerr
+              client_secret:
+                path: '/secrets/authelia-oidc/jellyseerr'
+              public: false
+              authorization_policy: one_factor # TODO: Change after correct 2nd factor setup done
+              require_pkce: false
+              pkce_challenge_method: ''
+              redirect_uris:
+                - https://requests.${domain}/login?provider=authelia&callback=true
+              scopes:
+                - openid
+                - email
+                - profile
+                - groups
+              response_types:
+                - code
+              grant_types:
+                - authorization_code
+              access_token_signed_response_alg: none
+              userinfo_signed_response_alg: none
+              token_endpoint_auth_method: client_secret_post
     secret:
       additionalSecrets:
         authelia-lldap:

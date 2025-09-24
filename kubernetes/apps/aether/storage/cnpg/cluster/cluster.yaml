@@ -1,3 +1,4 @@
+---
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
@@ -18,16 +19,16 @@ spec:
     size: 10Gi
   managed:
     roles:
-    - name: authelia
-      ensure: present
-      login: true
-      passwordSecret:
-        name: authelia-db
-    - name: lldap
-      ensure: present
-      login: true
-      passwordSecret:
-        name: lldap-db
+      - name: authelia
+        ensure: present
+        login: true
+        passwordSecret:
+          name: authelia-db
+      - name: lldap
+        ensure: present
+        login: true
+        passwordSecret:
+          name: lldap-db
   backup:
     retentionPolicy: 30d
     barmanObjectStore: &barmanObjectStore
@@ -63,7 +64,6 @@ spec:
   #     barmanObjectStore:
   #       <<: *barmanObjectStore
   #       serverName: *previousCluster
-
 
   ## TODO: Switch to Barman Cloud plugin once the CRDs are in main CNPG Chart.
   ##
