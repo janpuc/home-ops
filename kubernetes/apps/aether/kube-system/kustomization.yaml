@@ -7,3 +7,4 @@ resources:
   - ./metrics-server/ks.yaml
   - ./proxmox-ccm/ks.yaml
   - ./proxmox-csi/ks.yaml
+  - ./snapshot-controller/ks.yaml
