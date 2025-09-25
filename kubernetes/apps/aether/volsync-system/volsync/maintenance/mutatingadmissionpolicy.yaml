@@ -38,7 +38,6 @@ spec:
       jsonPatch:
         expression: >-
           [
-
             JSONPatch{
               op: "add", path: "/spec/template/spec/containers/0/volumeMounts/-",
               value: Object.spec.template.spec.containers.volumeMounts{
@@ -53,7 +52,7 @@ spec:
                 csi: Object.spec.template.spec.volumes.csi{
                   driver: "smb.csi.k8s.io",
                   volumeAttributes: Object.spec.template.spec.volumes.csi.volumeAttributes{
-                    source: "//${vault_source}/Backup",
+                    source: "//${vault_source}/Backup/aether",
                     secretName: "vault-creds",
                     mountOptions: "dir_mode=0777,file_mode=0777,uid=1001,gid=1001,noperm,mfsymlinks,cache=strict,noserverino"
                   }
