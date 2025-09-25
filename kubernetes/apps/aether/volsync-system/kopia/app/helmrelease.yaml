@@ -80,7 +80,7 @@ spec:
                   "path": "/repository"
                 }
               },
-              "hostname": "volsync.volsync-system.svc.clusterset.local",
+              "hostname": "volsync.volsync-system.svc.cluster.local",
               "username": "volsync",
               "description": "volsync",
               "enableActions": false
