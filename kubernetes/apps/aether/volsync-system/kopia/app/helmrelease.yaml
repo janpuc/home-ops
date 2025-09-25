@@ -98,7 +98,7 @@ spec:
           csi:
             driver: smb.csi.k8s.io
             volumeAttributes:
-              source: /${vault_source}/Backup/aether
+              source: //${vault_source}/Backup/aether
               secretName: vault-creds
               mountOptions: dir_mode=0777,file_mode=0777,uid=1001,gid=1001,noperm,mfsymlinks,cache=strict,noserverino
         globalMounts:
