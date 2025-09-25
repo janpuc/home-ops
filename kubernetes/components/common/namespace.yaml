@@ -4,6 +4,7 @@ kind: Namespace
 metadata:
   name: not-used
   annotations:
-    common-data: "true"
     kustomize.toolkit.fluxcd.io/prune: disabled
     volsync.backube/privileged-movers: "true"
+  labels:
+    common-data: "true"
