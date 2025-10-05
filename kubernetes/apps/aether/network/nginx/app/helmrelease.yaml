@@ -42,3 +42,4 @@ spec:
                   - kind: UDPRoute
                 namespaces:
                   from: All
+          externalTrafficPolicy: Cluster
