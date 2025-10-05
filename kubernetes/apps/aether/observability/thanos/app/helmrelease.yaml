@@ -17,6 +17,13 @@ spec:
       strategy: rollback
       retries: 3
   values:
+    global:
+      security:
+        allowInsecureImages: true
+    image:
+      registry: quay.io
+      repository: thanos/thanos
+      tag: v0.37.2
     existingObjstoreSecret: thanos-objstore
     query:
       enabled: true
