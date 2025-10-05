@@ -61,7 +61,7 @@ spec:
         ports:
           factorio:
             port: *port
-            nodePort: *port
+            nodePort: 30001
             protocol: UDP
     persistence:
       factorio:
