@@ -27,8 +27,6 @@ spec:
             env:
               PORT: &port 34197
               BIND: 0.0.0.0
-              PUID: 1000
-              PGID: 1000
               GENERATE_NEW_SAVE: true
               PRESET: rail-world
               DLC_SPACE_AGE: false
@@ -50,9 +48,9 @@ spec:
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+        runAsUser: 845
+        runAsGroup: 845
+        fsGroup: 845
         fsGroupChangePolicy: OnRootMismatch
     service:
       app:
