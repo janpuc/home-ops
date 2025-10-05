@@ -4,6 +4,7 @@ kind: Namespace
 metadata:
   name: not-used
   annotations:
+    lbipam.cilium.io/sharing-cross-namespace: "*"
     kustomize.toolkit.fluxcd.io/prune: disabled
     volsync.backube/privileged-movers: "true"
   labels:
