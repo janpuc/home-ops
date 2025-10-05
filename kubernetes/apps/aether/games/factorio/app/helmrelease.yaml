@@ -29,6 +29,7 @@ spec:
               BIND: 0.0.0.0
               GENERATE_NEW_SAVE: true
               PRESET: rail-world
+              DLC_SPACE_AGE: false
             probes:
               liveness: &probes
                 enabled: false
