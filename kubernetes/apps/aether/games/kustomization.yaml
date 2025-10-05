@@ -6,4 +6,4 @@ namespace: factorio
 components:
   - ../../../components/common
 resources:
-  - ./autobrr/ks.yaml
+  - ./factorio/ks.yaml
