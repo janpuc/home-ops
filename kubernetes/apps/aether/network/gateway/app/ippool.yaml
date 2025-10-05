@@ -5,4 +5,4 @@ metadata:
   name: main-pool
 spec:
   blocks:
-    - cidr: "10.69.21.128/25"
+    - cidr: "10.69.21.128/32"
