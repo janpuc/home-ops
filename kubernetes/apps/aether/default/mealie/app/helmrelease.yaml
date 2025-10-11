@@ -1,0 +1,96 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app mealie
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  values:
+    controllers:
+      autobrr:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/mealie-recipes/mealie
+              tag: v3.3.2
+            env:
+              ALLOW_SIGNUP: "false"
+              ALLOW_PASSWORD_LOGIN: "false"
+              PUID: 1000
+              PGID: 1000
+              TZ: Europe/Warsaw
+              API_PORT: &port 8080
+              BASE_URL: https://recipes.${domain}
+              OIDC_AUTH_ENABLED: 'true'
+              OIDC_SIGNUP_ENABLED: 'true'
+              OIDC_CONFIGURATION_URL: 'https://auth.${domain}/.well-known/openid-configuration'
+              OIDC_CLIENT_ID: 'mealie'
+              OIDC_AUTO_REDIRECT: 'false'
+              OIDC_ADMIN_GROUP: 'admins'
+              OIDC_USER_GROUP: 'users'
+            envFrom:
+              - secretRef:
+                  name: mealie
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/app/about
+                    port: *port
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - "ALL"
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 1Gi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      app:
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        annotations:
+          external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+          external-dns-managed: "true"
+        hostnames:
+          - recipes.${domain}
+        parentRefs:
+          - name: main-gateway
+            namespace: network
+            sectionName: wildcard-domain-https
+    persistence:
+      config:
+        existingClaim: *app
+        globalMounts:
+          - path: /app/data
