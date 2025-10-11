@@ -39,6 +39,20 @@ spec:
               OIDC_AUTO_REDIRECT: 'false'
               OIDC_ADMIN_GROUP: 'admin'
               OIDC_USER_GROUP: 'users'
+              THEME_LIGHT_PRIMARY: '#8839ef'
+              THEME_LIGHT_ACCENT: '#dc8a78'
+              THEME_LIGHT_SECONDARY: '#179299'
+              THEME_LIGHT_SUCCESS: '#40a02b'
+              THEME_LIGHT_INFO: '#1e66f5'
+              THEME_LIGHT_WARNING: '#df8e1d'
+              THEME_LIGHT_ERROR: '#d20f39'
+              THEME_DARK_PRIMARY: '#cba6f7'
+              THEME_DARK_ACCENT: '#f5e0dc'
+              THEME_DARK_SECONDARY: '#94e2d5'
+              THEME_DARK_SUCCESS: '#a6e3a1'
+              THEME_DARK_INFO: '#89b4fa'
+              THEME_DARK_WARNING: '#f9e2af'
+              THEME_DARK_ERROR: '#f38ba8'
             envFrom:
               - secretRef:
                   name: mealie
