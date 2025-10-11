@@ -108,3 +108,10 @@ spec:
         existingClaim: *app
         globalMounts:
           - path: /app/data
+      tmpfs:
+        type: emptyDir
+        advancedMounts:
+          mealie:
+            app:
+              - path: /tmp
+                subPath: tmp
