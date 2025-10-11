@@ -28,7 +28,7 @@ spec:
               PORT: &port 34197
               BIND: 0.0.0.0
               GENERATE_NEW_SAVE: true
-              SAVE_NAME: "BiangBiangWorld"
+              SAVE_NAME: "BiangBiangWorld2"
               PRESET: rail-world
               DLC_SPACE_AGE: false
             probes:
