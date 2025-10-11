@@ -176,7 +176,7 @@ spec:
               require_pkce: true
               pkce_challenge_method: 'S256'
               redirect_uris:
-                - https://mealie.${domain}/login
+                - https://recipes.${domain}/login
               scopes:
                 - openid
                 - profile
