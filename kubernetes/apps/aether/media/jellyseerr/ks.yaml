@@ -8,6 +8,8 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
+  components:
+    - ../../../../../components/volsync
   dependsOn:
     - name: onepassword-store
       namespace: external-secrets
@@ -25,6 +27,9 @@ spec:
   timeout: 5m
   wait: false
   postBuild:
+    substitute:
+      APP: *app
+      VOLSYNC_CAPACITY: 5Gi
     substituteFrom:
       - kind: Secret
         name: common-data
