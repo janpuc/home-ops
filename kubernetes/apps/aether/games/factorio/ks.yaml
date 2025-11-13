@@ -5,11 +5,14 @@ metadata:
   name: &app factorio
   namespace: &namespace games
 spec:
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
+  components:
+    - ../../../../components/volsync
   interval: 1h
   path: ./kubernetes/apps/aether/games/factorio/app
+  postBuild:
+    substitute:
+      APP: *app
+      VOLSYNC_CAPACITY: 20Gi
   prune: true
   retryInterval: 2m
   sourceRef:
