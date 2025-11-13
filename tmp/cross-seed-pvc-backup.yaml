@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    pv.kubernetes.io/bind-completed: "yes"
+    pv.kubernetes.io/bound-by-controller: "yes"
+    volume.beta.kubernetes.io/storage-provisioner: csi.proxmox.sinextra.dev
+    volume.kubernetes.io/selected-node: aether-worker-03
+    volume.kubernetes.io/storage-provisioner: csi.proxmox.sinextra.dev
+  creationTimestamp: "2025-09-15T11:46:34Z"
+  finalizers:
+  - kubernetes.io/pvc-protection
+  labels:
+    app.kubernetes.io/name: cross-seed
+    kustomize.toolkit.fluxcd.io/name: cross-seed
+    kustomize.toolkit.fluxcd.io/namespace: media
+  name: cross-seed
+  namespace: media
+  resourceVersion: "6980507"
+  uid: 730d0f46-23ec-4ad6-b4d2-ed751a95b479
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: proxmox-ssd
+  volumeMode: Filesystem
+  volumeName: pvc-730d0f46-23ec-4ad6-b4d2-ed751a95b479
+status:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 5Gi
+  phase: Bound
