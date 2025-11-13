@@ -19,7 +19,7 @@ spec:
   path: ./kubernetes/apps/aether/media/cross-seed/app
   postBuild:
     substitute:
-      APP: *app
+      APP: cross-seed
       VOLSYNC_CAPACITY: 5Gi
   prune: true
   retryInterval: 2m
