@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    pv.kubernetes.io/bind-completed: "yes"
+    pv.kubernetes.io/bound-by-controller: "yes"
+    volume.beta.kubernetes.io/storage-provisioner: csi.proxmox.sinextra.dev
+    volume.kubernetes.io/selected-node: aether-worker-02
+    volume.kubernetes.io/storage-provisioner: csi.proxmox.sinextra.dev
+  creationTimestamp: "2025-09-15T10:54:36Z"
+  finalizers:
+  - kubernetes.io/pvc-protection
+  labels:
+    app.kubernetes.io/name: radarr
+    kustomize.toolkit.fluxcd.io/name: radarr
+    kustomize.toolkit.fluxcd.io/namespace: media
+  name: radarr
+  namespace: media
+  resourceVersion: "6953179"
+  uid: 6b1911a8-6c60-4a31-87b0-d0869717e278
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: proxmox-ssd
+  volumeMode: Filesystem
+  volumeName: pvc-6b1911a8-6c60-4a31-87b0-d0869717e278
+status:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 5Gi
+  phase: Bound
