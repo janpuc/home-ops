@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    pv.kubernetes.io/bind-completed: "yes"
+    pv.kubernetes.io/bound-by-controller: "yes"
+    volume.beta.kubernetes.io/storage-provisioner: csi.proxmox.sinextra.dev
+    volume.kubernetes.io/selected-node: aether-worker-04
+    volume.kubernetes.io/storage-provisioner: csi.proxmox.sinextra.dev
+  creationTimestamp: "2025-09-14T12:24:15Z"
+  finalizers:
+  - kubernetes.io/pvc-protection
+  labels:
+    app.kubernetes.io/name: qbittorrent
+    kustomize.toolkit.fluxcd.io/name: qbittorrent
+    kustomize.toolkit.fluxcd.io/namespace: media
+  name: qbittorrent
+  namespace: media
+  resourceVersion: "6314869"
+  uid: efff9534-0d18-485c-862e-19d018e47c8c
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: proxmox-ssd
+  volumeMode: Filesystem
+  volumeName: pvc-efff9534-0d18-485c-862e-19d018e47c8c
+status:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 1Gi
+  phase: Bound
