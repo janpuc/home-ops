@@ -31,3 +31,15 @@ spec:
         fstype: ext4
         annotations:
           storageclass.kubernetes.io/is-default-class: "true"
+    controller:
+      plugin:
+        image:
+          pullPolicy: Always
+          tag: edge
+      snapshotter:
+        enabled: true
+    node:
+      plugin:
+        image:
+          pullPolicy: Always
+          tag: edge
