@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    pv.kubernetes.io/bind-completed: "yes"
+    pv.kubernetes.io/bound-by-controller: "yes"
+    volume.beta.kubernetes.io/storage-provisioner: csi.proxmox.sinextra.dev
+    volume.kubernetes.io/selected-node: aether-worker-03
+    volume.kubernetes.io/storage-provisioner: csi.proxmox.sinextra.dev
+  creationTimestamp: "2025-10-11T13:14:48Z"
+  finalizers:
+  - kubernetes.io/pvc-protection
+  labels:
+    app.kubernetes.io/name: mealie
+    kustomize.toolkit.fluxcd.io/name: mealie
+    kustomize.toolkit.fluxcd.io/namespace: default
+  name: mealie
+  namespace: default
+  resourceVersion: "25465287"
+  uid: fce0f610-cb9b-457c-b217-9de6cbe02d35
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: proxmox-ssd
+  volumeMode: Filesystem
+  volumeName: pvc-fce0f610-cb9b-457c-b217-9de6cbe02d35
+status:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 10Gi
+  phase: Bound
