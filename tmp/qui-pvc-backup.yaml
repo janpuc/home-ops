@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    pv.kubernetes.io/bind-completed: "yes"
+    pv.kubernetes.io/bound-by-controller: "yes"
+    volume.beta.kubernetes.io/storage-provisioner: csi.proxmox.sinextra.dev
+    volume.kubernetes.io/selected-node: aether-worker-02
+    volume.kubernetes.io/storage-provisioner: csi.proxmox.sinextra.dev
+  creationTimestamp: "2025-09-14T10:33:04Z"
+  finalizers:
+  - kubernetes.io/pvc-protection
+  labels:
+    app.kubernetes.io/name: qui
+    kustomize.toolkit.fluxcd.io/name: qui
+    kustomize.toolkit.fluxcd.io/namespace: media
+  name: qui
+  namespace: media
+  resourceVersion: "6254581"
+  uid: 42f80a15-31d6-4293-8bd4-68c426cd80e2
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: proxmox-ssd
+  volumeMode: Filesystem
+  volumeName: pvc-42f80a15-31d6-4293-8bd4-68c426cd80e2
+status:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 1Gi
+  phase: Bound
