@@ -6,6 +6,6 @@ namespace: default
 components:
   - ../../../components/common
 resources:
-  # - ./atuin/ks.yaml
+  - ./atuin/ks.yaml
   - ./mealie/ks.yaml
   - ./podinfo/ks.yaml
