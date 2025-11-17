@@ -89,7 +89,7 @@ spec:
         existingClaim: vault
       qbrr:
         type: image
-        image: ghcr.io/buroa/qbrr:0.1.1
+        image: ghcr.io/buroa/qbrr:0.1.2
         globalMounts:
           - readOnly: true
       tmp:
