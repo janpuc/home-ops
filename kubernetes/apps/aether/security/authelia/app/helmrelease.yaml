@@ -13,6 +13,7 @@ spec:
       retries: -1
   upgrade:
     cleanupOnFail: true
+    disableSchemaValidation: true # NOTE: Needed to ignore schema errors from domain substitution
     remediation:
       strategy: rollback
       retries: 3
