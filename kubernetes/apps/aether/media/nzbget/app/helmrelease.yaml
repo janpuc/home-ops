@@ -23,7 +23,7 @@ spec:
           app:
             image:
               repository: ghcr.io/home-operations/nzbget
-              tag: 25.3.0
+              tag: 25.4.0
             env:
               NZBGET__PORT: &port 8080
               TZ: Europe/Warsaw
