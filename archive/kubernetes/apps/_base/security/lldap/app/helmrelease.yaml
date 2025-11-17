@@ -28,7 +28,7 @@ spec:
           app:
             image:
               repository: ghcr.io/lldap/lldap
-              tag: v0.6.1
+              tag: v0.6.2
             env:
               UID: 1001
               GID: 1001
