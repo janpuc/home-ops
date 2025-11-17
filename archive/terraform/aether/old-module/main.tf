@@ -25,7 +25,7 @@ locals {
 
 module "kubernetes" {
   source = "hcloud-k8s/kubernetes/hcloud"
-  version = "~>2.1"
+  version = "~> 3.0"
 
   cluster_name = "aether"
   hcloud_token = local.hetzner_token
