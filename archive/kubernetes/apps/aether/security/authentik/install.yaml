@@ -9,7 +9,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   interval: 30m
-  path: ./kubernetes/apps/_base/security/authentik/app
+  path: ./kubernetes-legacy/apps/_base/security/authentik/app
   prune: true
   sourceRef:
     kind: GitRepository

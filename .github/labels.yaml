@@ -4,6 +4,8 @@
   color: "0e8a16"
 - name: area/kubernetes
   color: "0e8a16"
+- name: area/kubernetes-legacy
+  color: "0e8a16"
 - name: area/renovate
   color: "0e8a16"
 - name: area/terraform

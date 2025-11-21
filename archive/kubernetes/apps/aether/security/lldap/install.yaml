@@ -16,7 +16,7 @@ spec:
     - name: common-secrets
       namespace: external-secrets
   interval: 30m
-  path: ./kubernetes/apps/_base/security/lldap/app
+  path: ./kubernetes-legacy/apps/_base/security/lldap/app
   prune: true
   sourceRef:
     kind: GitRepository
@@ -43,7 +43,7 @@ spec:
     - name: cnpg-cluster
       namespace: storage
   interval: 30m
-  path: ./kubernetes/apps/_base/security/lldap/db
+  path: ./kubernetes-legacy/apps/_base/security/lldap/db
   prune: true
   sourceRef:
     kind: GitRepository

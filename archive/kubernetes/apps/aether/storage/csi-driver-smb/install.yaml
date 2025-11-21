@@ -9,7 +9,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   interval: 30m
-  path: ./kubernetes/apps/_base/storage/csi-driver-smb/app
+  path: ./kubernetes-legacy/apps/_base/storage/csi-driver-smb/app
   prune: true
   sourceRef:
     kind: GitRepository
@@ -32,7 +32,7 @@ spec:
     - name: onepassword-store
       namespace: external-secrets
   interval: 30m
-  path: ./kubernetes/apps/_base/storage/csi-driver-smb/secrets
+  path: ./kubernetes-legacy/apps/_base/storage/csi-driver-smb/secrets
   prune: true
   sourceRef:
     kind: GitRepository
@@ -57,7 +57,7 @@ spec:
     - name: csi-driver-smb-secrets
       namespace: storage
   interval: 30m
-  path: ./kubernetes/apps/_base/storage/csi-driver-smb/addons
+  path: ./kubernetes-legacy/apps/_base/storage/csi-driver-smb/addons
   prune: true
   sourceRef:
     kind: GitRepository

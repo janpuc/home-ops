@@ -1,0 +1,28 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app cross-seed-route
+  namespace: &namespace media
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: common-secrets
+      namespace: external-secrets
+  interval: 1h
+  path: ./kubernetes-legacy/apps/gaia/media/cross-seed/route
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: *namespace
+  timeout: 5m
+  wait: false
+  postBuild:
+    substituteFrom:
+      - kind: Secret
+        name: common-data

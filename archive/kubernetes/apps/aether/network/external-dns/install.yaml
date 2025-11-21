@@ -12,7 +12,7 @@ spec:
     - name: cloudflare-secrets
       namespace: network
   interval: 30m
-  path: ./kubernetes/apps/_base/network/external-dns/app
+  path: ./kubernetes-legacy/apps/_base/network/external-dns/app
   prune: true
   sourceRef:
     kind: GitRepository

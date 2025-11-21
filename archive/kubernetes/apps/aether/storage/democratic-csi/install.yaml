@@ -9,7 +9,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   interval: 30m
-  path: ./kubernetes/apps/_base/storage/democratic-csi/app
+  path: ./kubernetes-legacy/apps/_base/storage/democratic-csi/app
   prune: true
   sourceRef:
     kind: GitRepository

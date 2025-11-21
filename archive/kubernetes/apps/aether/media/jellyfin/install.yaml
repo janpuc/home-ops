@@ -12,7 +12,7 @@ spec:
     - name: vault
       namespace: media
   interval: 30m
-  path: ./kubernetes/apps/_base/media/jellyfin/app
+  path: ./kubernetes-legacy/apps/_base/media/jellyfin/app
   prune: true
   sourceRef:
     kind: GitRepository

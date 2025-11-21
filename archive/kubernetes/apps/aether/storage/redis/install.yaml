@@ -12,7 +12,7 @@ spec:
     - name: democratic-csi
       namespace: storage
   interval: 30m
-  path: ./kubernetes/apps/_base/storage/redis/app
+  path: ./kubernetes-legacy/apps/_base/storage/redis/app
   prune: true
   sourceRef:
     kind: GitRepository

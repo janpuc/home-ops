@@ -12,7 +12,7 @@ spec:
     - name: onepassword-store
       namespace: external-secrets
   interval: 30m
-  path: ./kubernetes/apps/_base/network/tailscale/app
+  path: ./kubernetes-legacy/apps/_base/network/tailscale/app
   prune: true
   sourceRef:
     kind: GitRepository
@@ -35,7 +35,7 @@ spec:
     - name: tailscale
       namespace: network
   interval: 30m
-  path: ./kubernetes/apps/_base/network/tailscale/router
+  path: ./kubernetes-legacy/apps/_base/network/tailscale/router
   prune: true
   sourceRef:
     kind: GitRepository

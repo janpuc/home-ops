@@ -12,7 +12,7 @@ spec:
     - name: onepassword-store
       namespace: external-secrets
   interval: 30m
-  path: ./kubernetes/apps/_base/network/cloudflare-secrets/app
+  path: ./kubernetes-legacy/apps/_base/network/cloudflare-secrets/app
   prune: true
   sourceRef:
     kind: GitRepository
