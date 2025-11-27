@@ -36,5 +36,5 @@ releases:
 
   - name: kube-prometheus-stack
     namespace: observability
-    chart: oci://ghcr.io/prometheus-community/kube-prometheus-stack
+    chart: oci://ghcr.io/prometheus-community/charts/kube-prometheus-stack
     version: 79.8.2
