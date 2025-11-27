@@ -47,3 +47,10 @@ talosconfig
 # Misc
 *.tmp
 *.tmp/*
+
+*.crt
+*.env
+*.iso
+*.key
+.DS_Store
+Thumbs.db

@@ -1,9 +1,19 @@
-export AWS_ENDPOINT_URL_S3 := "op://Kubernetes/terraform/s3_endpoint"
-export AWS_ACCESS_KEY_ID := "op://Kubernetes/terraform/s3_access_key"
-export AWS_SECRET_ACCESS_KEY := "op://Kubernetes/terraform/s3_secret_key"
+#!/usr/bin/env -S just --justfile
 
-gaia *CMD:
-    op run -- tofu -chdir=terraform/gaia {{ CMD }}
+set quiet := true
+set shell := ['bash', '-euo', 'pipefail', '-c']
 
-aether *CMD:
-    op run -- tofu -chdir=terraform/aether {{ CMD }}
+mod bootstrap "bootstrap"
+mod talos "talos"
+
+[private]
+default:
+    just -l
+
+[private]
+log lvl msg *args:
+    gum log -t rfc3339 -s -l "{{ lvl }}" "{{ msg }}" {{ args }}
+
+[private]
+template file *args:
+    minijinja-cli "{{ file }}" {{ args }} | op inject
