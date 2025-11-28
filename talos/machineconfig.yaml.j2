@@ -184,14 +184,6 @@ cluster:
   {% endif %}
 ---
 apiVersion: v1alpha1
-kind: UserVolumeConfig
-name: local-hostpath
-provisioning:
-  diskSelector:
-    match: disk.model == "SSDPR-CX400-256-" && !system_disk
-  minSize: 200GB
----
-apiVersion: v1alpha1
 kind: WatchdogTimerConfig
 device: /dev/watchdog0
 timeout: 5m
