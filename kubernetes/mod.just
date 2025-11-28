@@ -8,15 +8,15 @@ default:
     just -l kube
 
 [doc('Apply local Flux Kustomization')]
-apply-ks ns ks
-    just k8s render-local-ks "{{ ns }}" "{{ ks }}" | kubectl apply --server-side --field-manager bootstrap -f /dev/stdin
+apply-ks ns ks:
+    just k8s render-local-ks "{{ ns }}" "{{ ks }}" | kubectl apply --server-side --field-manager=kustomize-controller -f /dev/stdin
 
 [doc('Browse a PVC')]
 browse-pvc namespace claim:
     kubectl browse-pvc -n {{ namespace }} -i mirror.gcr.io/alpine:latest {{ claim }}
 
 [doc('Delete local Flux Kustomizaton')]
-delete-ks ns ks
+delete-ks ns ks:
     just k8s render-local-ks "{{ ns }}" "{{ ks }}" | kubectl delete -f /dev/stdin
 
 [doc('Open a shell on a node')]
