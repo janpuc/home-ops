@@ -11,7 +11,7 @@ spec:
   interval: 1h
   values:
     kind: Deployment
-    deschedulerPolicyAPIVersion: descheduler/v1alpha1
+    deschedulerPolicyAPIVersion: descheduler/v1alpha2
     deschedulerPolicy:
       metricsProviders:
         - source: KubernetesMetrics
