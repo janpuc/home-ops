@@ -62,10 +62,6 @@ spec:
             - 192.168.69.0/24
         connections:
           requireMsgr2: true
-      resources:
-        osd:
-          limits:
-            memory: 8Gi
       storage:
         useAllNodes: true
         useAllDevices: false
@@ -156,9 +152,7 @@ spec:
             resources:
               requests:
                 cpu: 100m
-                memory: 1Gi
-              limits:
-                memory: 4Gi
+                memory: 512Mi
         storageClass:
           enabled: true
           isDefault: false
