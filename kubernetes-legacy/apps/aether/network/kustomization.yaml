@@ -8,6 +8,6 @@ components:
 resources:
   - ./cert-manager/ks.yaml
   - ./cloudflare-secrets/ks.yaml
-  - ./external-dns/ks.yaml
+  # - ./external-dns/ks.yaml
   - ./gateway/ks.yaml
   # - ./nginx/ks.yaml
