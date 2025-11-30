@@ -70,6 +70,11 @@ machine:
           driver: r8169
         dhcp: true
         mtu: 1500
+        vlans:
+          - # VPN
+            vlanId: 90
+            dhcp: false
+            mtu: 1500
   nodeLabels:
     node.kubernetes.io/gpu: "true"
     topology.kubernetes.io/region: main
