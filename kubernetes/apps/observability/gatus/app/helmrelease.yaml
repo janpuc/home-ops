@@ -134,7 +134,5 @@ spec:
         type: configMap
         name: "{{ .Release.Name }}-configmap"
         globalMounts:
-          - path: /config/buddy.yaml
-            subPath: buddy.yaml
           - path: /config/config.yaml
             subPath: config.yaml
