@@ -1,4 +1,9 @@
 ---
+area/bootstrap:
+  - changed-files:
+      - any-glob-to-any-file:
+          - bootstrap/**/*
+
 area/github:
   - changed-files:
       - any-glob-to-any-file:
@@ -15,7 +20,7 @@ area/renovate:
           - .renovate/**/*
           - .renovaterc.json5
 
-area/terraform:
+area/talos:
   - changed-files:
       - any-glob-to-any-file:
-          - terraform/**/*
+          - talos/**/*
