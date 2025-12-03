@@ -115,7 +115,7 @@ cluster:
     {% endif %}
   clusterName: main
   controlPlane:
-    endpoint: https://k8s.internal:6443
+    endpoint: https://k8s.janpuc.com:6443
   discovery:
     enabled: true
     registries:
@@ -146,7 +146,6 @@ cluster:
       rules:
         - level: Metadata
     certSANs:
-      - k8s.internal
       - k8s.janpuc.com
     disablePodSecurityPolicy: true
     extraArgs:
