@@ -27,8 +27,7 @@ spec:
             resources:
               requests:
                 cpu: 10m
-              limits:
-                memory: 64Mi
+              limits: {}
             restartPolicy: Always
         containers:
           app:
@@ -62,9 +61,8 @@ spec:
               capabilities: {drop: ["ALL"]}
             resources:
               requests:
-                cpu: 100m
-              limits:
-                memory: 256Mi
+                cpu: 10m
+              limits: {}
         statefulset:
           volumeClaimTemplates:
             - name: config
