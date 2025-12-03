@@ -14,7 +14,7 @@ spec:
         {
           "type": "macvlan",
           "master": "enp2s0f0.90",
-          "mode": "l2",
+          "mode": "bridge",
           "ipam": {
             "type": "host-local",
             "subnet": "192.168.90.0/24",
