@@ -4,6 +4,7 @@ apiVersion: k8s.cni.cncf.io/v1
 kind: NetworkAttachmentDefinition
 metadata:
   name: vpn
+  namespace: kube-system
 spec:
   config: |-
     {
@@ -15,7 +16,11 @@ spec:
           "master": "enp2s0f0.90",
           "mode": "bridge",
           "ipam": {
-            "type": "static",
+            "type": "host-local",
+            "subnet": "192.168.90.0/24",
+            "rangeStart": "192.168.90.100",
+            "rangeEnd": "192.168.90.150",
+            "gateway": "192.168.90.1",
             "routes": [
               {"dst": "0.0.0.0/5", "gw": "192.168.90.1"},
               {"dst": "8.0.0.0/7", "gw": "192.168.90.1"},
