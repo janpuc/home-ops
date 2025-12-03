@@ -15,6 +15,11 @@ spec:
       createPrometheusRules: true
     toolbox:
       enabled: true
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits: {}
     route:
       dashboard:
         host:
@@ -68,6 +73,52 @@ spec:
         devicePathFilter: /dev/disk/by-id/ata-SSDPR-CX400-256-G2_.*
         config:
           osdsPerDevice: "1"
+      resources:
+        mgr:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits: {}
+        mon:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits: {}
+        osd:
+          requests:
+            cpu: 100m
+            memory: 1Gi
+          limits: {}
+        prepareosd:
+          requests:
+            cpu: 500m
+            memory: 50Mi
+          limits: {}
+        mgr-sidecar:
+          requests:
+            cpu: 100m
+            memory: 40Mi
+          limits: {}
+        crashcollector:
+          requests:
+            cpu: 100m
+            memory: 60Mi
+          limits: {}
+        logcollector:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits: {}
+        cleanup:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits: {}
+        exporter:
+          requests:
+            cpu: 50m
+            memory: 50Mi
+          limits: {}
     cephBlockPools:
       - name: ceph-blockpool
         spec:
