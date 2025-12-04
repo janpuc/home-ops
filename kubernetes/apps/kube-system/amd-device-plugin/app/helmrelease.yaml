@@ -10,6 +10,13 @@ spec:
     name: amd-device-plugin
   interval: 1h
   values:
+    nfd:
+      enabled: false
+    labeller:
+      enabled: true
     dp:
+      image:
+        repository: docker.io/rocm/k8s-device-plugin
+    lbl:
       image:
         repository: docker.io/rocm/k8s-device-plugin
