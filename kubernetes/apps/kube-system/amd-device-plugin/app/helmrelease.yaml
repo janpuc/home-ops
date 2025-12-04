@@ -1,0 +1,15 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: amd-device-plugin
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: amd-device-plugin
+  interval: 1h
+  values:
+    dp:
+      image:
+        repository: docker.io/rocm/k8s-device-plugin
