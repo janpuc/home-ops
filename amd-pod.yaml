@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: amd-gpu-test
+spec:
+  containers:
+    - name: gpu-test-container
+      image: rocm/rocm-terminal
+      command: ["/bin/sh", "-c", "sleep infinity"]
+      resources:
+        requests:
+          amd.com/gpu: 1
+        limits:
+          amd.com/gpu: 1
