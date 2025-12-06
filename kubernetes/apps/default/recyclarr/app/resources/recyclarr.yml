@@ -7,12 +7,18 @@ sonarr:
     delete_old_custom_formats: true
     replace_existing_custom_formats: true
     include:
+      # WEB-1080p
       - template: sonarr-quality-definition-series
       - template: sonarr-v4-quality-profile-web-1080p
       - template: sonarr-v4-custom-formats-web-1080p
+      # Remux-1080p - Anime
+      - template: sonarr-quality-definition-anime
+      - template: sonarr-v4-quality-profile-anime
+      - template: sonarr-v4-custom-formats-anime
     quality_profiles:
       - name: WEB-1080p
     custom_formats:
+      # WEB-1080p
       - trash_ids:
           - 32b367365729d530ca1c124a0b180c64 # Bad Dual Groups
           - 82d40da2bc6923f41e14394075dd4b03 # No-RlsGroup
@@ -21,7 +27,22 @@ sonarr:
           - 1b3994c551cbb92a2c781af061f4ab44 # Scene
         assign_scores_to:
           - name: WEB-1080p
-
+      # Remux-1080p - Anime
+      - trash_ids:
+          - 026d5aadd1a6b4e550b134cb6c72b3ca # Uncensored
+        assign_scores_to:
+          - name: Remux-1080p - Anime
+            score: 0
+      - trash_ids:
+          - b2550eb333d27b75833e25b8c2557b38 # 10bit
+        assign_scores_to:
+          - name: Remux-1080p - Anime
+            score: 0
+      - trash_ids:
+          - 418f50b10f1907201b6cfdf881f467b7 # Anime Dual Audio
+        assign_scores_to:
+          - name: Remux-1080p - Anime
+            score: 0
 radarr:
   radarr:
     base_url: http://radarr.default.svc.cluster.local
@@ -31,10 +52,16 @@ radarr:
     quality_profiles:
       - name: SQP-1 (2160p)
     include:
+      # SQP-1 (2160p)
       - template: radarr-quality-definition-sqp-streaming
       - template: radarr-quality-profile-sqp-1-2160p-default
       - template: radarr-custom-formats-sqp-1-2160p
+      # Remux-1080p - Anime
+      - template: radarr-quality-definition-anime
+      - template: radarr-quality-profile-anime
+      - template: radarr-custom-formats-anime
     custom_formats:
+      # SQP-1 (2160p)
       - trash_ids:
           - 839bea857ed2c0a8e084f3cbdbd65ecb # x265 (no HDR/DV)
         assign_scores_to:
@@ -48,4 +75,19 @@ radarr:
           - 5c44f52a8714fdd79bb4d98e2673be1f # Retags
           - f537cf427b64c38c8e36298f657e4828 # Scene
         assign_scores_to:
-          - name: SQP-1 (2160p)
+      # Remux-1080p - Anime
+      - trash_ids:
+          - 064af5f084a0a24458cc8ecd3220f93f # Uncensored
+        assign_scores_to:
+          - name: Remux-1080p - Anime
+            score: 0
+      - trash_ids:
+          - a5d148168c4506b55cf53984107c396e # 10bit
+        assign_scores_to:
+          - name: Remux-1080p - Anime
+            score: 0
+      - trash_ids:
+          - 4a3b087eea2ce012fcc1ce319259a3be
+        assign_scores_to:
+          - name: Remux-1080p - Anime
+            score: 0
