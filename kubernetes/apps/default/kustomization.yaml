@@ -13,6 +13,7 @@ resources:
   - ./cross-seed/ks.yaml
   - ./bazarr/ks.yaml
   - ./jellyfin/ks.yaml
+  - ./netronome/ks.yaml
   - ./notifier/ks.yaml
   - ./nzbget/ks.yaml
   - ./prowlarr/ks.yaml
