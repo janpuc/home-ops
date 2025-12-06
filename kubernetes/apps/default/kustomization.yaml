@@ -11,5 +11,6 @@ resources:
   - ./namespace.yaml
   - ./autobrr/ks.yaml
   - ./jellyfin/ks.yaml
+  - ./nzbget/ks.yaml
   - ./qbittorrent/ks.yaml
   - ./qui/ks.yaml
