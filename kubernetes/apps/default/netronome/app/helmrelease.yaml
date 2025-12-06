@@ -20,8 +20,8 @@ spec:
               repository: ghcr.io/autobrr/netronome
               tag: v0.8.0@sha256:b4a93c644dc70f9f824e90fb3acccdfb91413ae792f3a68c3453469c1fb3ede9
             env:
-              NETRONOME_HOST: 0.0.0.0
-              NETRONOME_PORT: &port 80
+              NETRONOME__HOST: 0.0.0.0
+              NETRONOME__PORT: &port 80
             envFrom:
               - secretRef:
                   name: "{{ .Release.Name }}-secret"
