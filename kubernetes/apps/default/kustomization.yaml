@@ -17,4 +17,5 @@ resources:
   - ./qbittorrent/ks.yaml
   - ./qui/ks.yaml
   - ./radarr/ks.yaml
+  - ./recyclarr/ks.yaml
   - ./sonarr/ks.yaml
