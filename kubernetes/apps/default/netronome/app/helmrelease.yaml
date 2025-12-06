@@ -31,7 +31,7 @@ spec:
                 custom: true
                 spec:
                   httpGet:
-                    path: /api/healthz/liveness
+                    path: /health
                     port: *port
                   initialDelaySeconds: 0
                   periodSeconds: 10
@@ -42,7 +42,7 @@ spec:
                 custom: true
                 spec:
                   httpGet:
-                    path: /api/healthz/readiness
+                    path: /health
                     port: *port
                   initialDelaySeconds: 0
                   periodSeconds: 10
