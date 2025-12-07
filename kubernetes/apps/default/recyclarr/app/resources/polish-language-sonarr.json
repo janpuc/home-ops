@@ -1,14 +1,19 @@
 {
   "trash_id": "polish-language-sonarr",
-  "name": "Polish Language",
+  "trash_scores": {
+    "default": -10000
+  },
+  "trash_description": "Language: Polish Only: Because it uses reverse scoring, and if you use the default scores, it will assign all releases without the English audio a score of -10000.",
+  "name": "Language: Not Polish",
+  "includeCustomFormatWhenRenaming": false,
   "specifications": [
     {
-      "name": "Polish",
+      "name": "Not Polish Language",
       "implementation": "LanguageSpecification",
-      "negate": false,
-      "required": true,
+      "negate": true,
+      "required": false,
       "fields": {
-        "value": 4
+        "value": 12
       }
     }
   ]

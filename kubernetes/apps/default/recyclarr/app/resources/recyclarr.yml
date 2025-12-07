@@ -52,6 +52,8 @@ sonarr:
           - name: WEB-1080p [Polish]
       - trash_ids:
           - polish-language-sonarr           # Polish
+        assign_scores_to:
+          - name: WEB-1080p [Polish]
       - trash_ids:
           # Unwanted
           - 85c61753df5da1fb2aab6f2a47426b09 # BR-DISK
