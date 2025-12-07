@@ -67,13 +67,13 @@ spec:
         type: configMap
         name: polish-language-radarr-configmap
         globalMounts:
-          - path: /config/custom-formats/radarr/polish-language-radarr.json
+          - path: /home/app/custom-formats/radarr/polish-language-radarr.json
             subPath: polish-language-radarr.json
       polish-language-sonarr-file:
         type: configMap
         name: polish-language-sonarr-configmap
         globalMounts:
-          - path: /config/custom-formats/sonarr/polish-language-sonarr.json
+          - path: /home/app/custom-formats/sonarr/polish-language-sonarr.json
             subPath: polish-language-sonarr.json
       tmp:
         type: emptyDir
