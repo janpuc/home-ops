@@ -7,8 +7,14 @@ resources:
   - ./helmrelease.yaml
   - ./ocirepository.yaml
 configMapGenerator:
+  - name: polish-language-radarr-configmap
+    files:
+      - polish-language-radarr.json=./resources/polish-language-radarr.json
   - name: recyclarr-configmap
     files:
       - recyclarr.yml=./resources/recyclarr.yml
+  - name: settings-configmap
+    files:
+      - settings.yml=./resources/settings.yml
 generatorOptions:
   disableNameSuffixHash: true

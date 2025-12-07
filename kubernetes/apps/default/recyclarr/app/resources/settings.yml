@@ -1,0 +1,5 @@
+resource_providers:
+  - name: polish-language-radarr
+    type: custom-formats
+    path: /config/custom-formats/radarr/polish-language-radarr.json
+    service: radarr

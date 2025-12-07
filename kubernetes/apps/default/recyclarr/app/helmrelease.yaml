@@ -55,5 +55,17 @@ spec:
         globalMounts:
           - path: /config/recyclarr.yml
             subPath: recyclarr.yml
+      settings-file:
+        type: configMap
+        name: settings-configmap
+        globalMounts:
+          - path: /config/settings.yml
+            subPath: settings.yml
+      polish-language-radarr-file:
+        type: configMap
+        name: polish-language-radarr-configmap
+        globalMounts:
+          - path: /config/custom-formats/radarr/polish-language-radarr.json
+            subPath: polish-language-radarr.json
       tmp:
         type: emptyDir
