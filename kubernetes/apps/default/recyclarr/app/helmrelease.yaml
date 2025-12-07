@@ -28,9 +28,10 @@ spec:
             envFrom:
               - secretRef:
                   name: "{{ .Release.Name }}-secret"
-            args:
-              - sync
-              - --debug && sleep 10000
+            # args:
+            #   - sync
+            #   - --debug
+            command: ["sleep", "10000"]
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
