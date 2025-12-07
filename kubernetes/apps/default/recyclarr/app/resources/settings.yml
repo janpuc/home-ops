@@ -3,9 +3,9 @@
 resource_providers:
   - name: polish-language-radarr
     type: custom-formats
-    path: /config/polish-language-radarr.json
+    path: /config/custom-formats/radarr
     service: radarr
   - name: polish-language-sonarr
     type: custom-formats
-    path: /config/polish-language-sonarr.json
+    path: /config/custom-formats/sonarr
     service: sonarr
