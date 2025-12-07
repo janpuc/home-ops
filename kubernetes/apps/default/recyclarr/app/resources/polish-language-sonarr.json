@@ -1,0 +1,15 @@
+{
+  "trash_id": "polish-language-radarr",
+  "name": "Polish Language",
+  "specifications": [
+    {
+      "name": "Polish",
+      "implementation": "LanguageSpecification",
+      "negate": false,
+      "required": true,
+      "fields": {
+        "value": 4
+      }
+    }
+  ]
+}

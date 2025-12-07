@@ -1,5 +1,11 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/recyclarr/recyclarr/master/schemas/settings-schema.json
 resource_providers:
   - name: polish-language-radarr
     type: custom-formats
     path: /config/custom-formats/radarr/polish-language-radarr.json
     service: radarr
+  - name: polish-language-sonarr
+    type: custom-formats
+    path: /config/custom-formats/sonarr/polish-language-sonarr.json
+    service: sonarr
