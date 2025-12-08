@@ -46,12 +46,6 @@ spec:
               requests:
                 cpu: 20m
     defaultPodOptions:
-      annotations:
-        k8s.v1.cni.cncf.io/networks: |-
-          [{
-            "name": "vpn",
-            "namespace": "kube-system"
-          }]
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000

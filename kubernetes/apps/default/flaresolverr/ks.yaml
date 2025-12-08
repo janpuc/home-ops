@@ -5,9 +5,6 @@ kind: Kustomization
 metadata:
   name: flaresolverr
 spec:
-  dependsOn:
-    - name: multus-networks
-      namespace: kube-system
   interval: 1h
   path: ./kubernetes/apps/default/flaresolverr/app
   prune: true
