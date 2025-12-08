@@ -73,3 +73,6 @@ spec:
           - backendRefs:
               - identifier: app
                 port: *port
+    persistence:
+      tmp:
+        type: emptyDir
