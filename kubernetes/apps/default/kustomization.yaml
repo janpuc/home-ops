@@ -10,8 +10,9 @@ components:
 resources:
   - ./namespace.yaml
   - ./autobrr/ks.yaml
-  - ./cross-seed/ks.yaml
   - ./bazarr/ks.yaml
+  - ./cross-seed/ks.yaml
+  - ./flaresolverr/ks.yaml
   - ./jellyfin/ks.yaml
   - ./netronome/ks.yaml
   - ./notifier/ks.yaml
