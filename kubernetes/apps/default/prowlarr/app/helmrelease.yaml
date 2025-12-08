@@ -78,7 +78,7 @@ spec:
         type: configMap
         name: torrentleech-pl-configmap
         globalMounts:
-          - path: /config/Definitions/torrentleech-pl.yml
+          - path: /config/Definitions/Custom/torrentleech-pl.yml
             subPath: torrentleech-pl.yml
       tmp:
         type: emptyDir
