@@ -74,11 +74,11 @@ spec:
     persistence:
       config:
         existingClaim: "{{ .Release.Name }}"
-      torrentleech-pl-custom-file:
+      torrentleech-pl-file:
         type: configMap
-        name: torrentleech-pl-custom-configmap
+        name: torrentleech-pl-configmap
         globalMounts:
-          - path: /config/Definitions/Custom/torrentleech-pl-custom.yml
-            subPath: torrentleech-pl-custom.yml
+          - path: /config/Definitions/torrentleech-pl.yml
+            subPath: torrentleech-pl.yml
       tmp:
         type: emptyDir

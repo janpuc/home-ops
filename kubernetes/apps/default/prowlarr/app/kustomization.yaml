@@ -7,8 +7,8 @@ resources:
   - ./helmrelease.yaml
   - ./ocirepository.yaml
 configMapGenerator:
-  - name: torrentleech-pl-custom-configmap
+  - name: torrentleech-pl-configmap
     files:
-      - torrentleech-pl-custom.yml=./resources/torrentleech-pl-custom.yml
+      - torrentleech-pl.yml=./resources/torrentleech-pl.yml
 generatorOptions:
   disableNameSuffixHash: true
