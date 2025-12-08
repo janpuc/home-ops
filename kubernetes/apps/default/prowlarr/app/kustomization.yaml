@@ -6,9 +6,3 @@ resources:
   - ./externalsecret.yaml
   - ./helmrelease.yaml
   - ./ocirepository.yaml
-configMapGenerator:
-  - name: torrentleech-pl-custom-configmap
-    files:
-      - torrentleech-pl-custom.yml=./resources/torrentleech-pl-custom.yml
-generatorOptions:
-  disableNameSuffixHash: true
