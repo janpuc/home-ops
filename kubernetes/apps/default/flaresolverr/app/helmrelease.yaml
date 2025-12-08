@@ -39,7 +39,6 @@ spec:
                   periodSeconds: 10
             securityContext:
               allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
               capabilities: {drop: ["ALL"]}
             resources:
               requests:
@@ -74,7 +73,5 @@ spec:
               - identifier: app
                 port: *port
     persistence:
-      app:
-        existingClaim: "{{ .Release.Name }}"
       tmp:
         type: emptyDir
