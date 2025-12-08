@@ -74,5 +74,7 @@ spec:
               - identifier: app
                 port: *port
     persistence:
+      app:
+        existingClaim: "{{ .Release.Name }}"
       tmp:
         type: emptyDir
