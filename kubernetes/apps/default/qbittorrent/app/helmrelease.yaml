@@ -92,6 +92,18 @@ spec:
         globalMounts:
           - path: /config/.qbt.toml
             subPath: .qbt.toml
+      incomplete:
+        type: custom
+        volumeSpec:
+          ephemeral:
+            volumeClaimTemplate:
+              spec:
+                accessModes: ["ReadWriteOnce"]
+                resources:
+                  requests:
+                    storage: 1Mi # Ignored
+                storageClassName: openebs-hostpath
+                volumeMode: Filesystem
       media:
         type: nfs
         server: bigmouth.internal
@@ -99,5 +111,12 @@ spec:
         globalMounts:
           - path: /media/Downloads/qbittorrent
             subPath: Downloads/qbittorrent
-      tmp:
+      tmpfs:
         type: emptyDir
+        advancedMounts:
+          qbittorrent:
+            app:
+              - path: /config/qBittorrent/logs
+                subPath: logs
+              - path: /tmp
+                subPath: tmp
