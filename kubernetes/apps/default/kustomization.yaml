@@ -16,7 +16,6 @@ resources:
   - ./jellyfin/ks.yaml
   - ./netronome/ks.yaml
   - ./notifier/ks.yaml
-  - ./nzbget/ks.yaml
   - ./prowlarr/ks.yaml
   - ./qbittorrent/ks.yaml
   - ./qui/ks.yaml
