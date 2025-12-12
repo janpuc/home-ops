@@ -75,11 +75,8 @@ spec:
                   failureThreshold: 30
                   periodSeconds: 10
             securityContext:
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
               capabilities:
                 add: ["NET_ADMIN"]
-                drop: ["ALL"]
             resources:
               requests:
                 cpu: 100m
