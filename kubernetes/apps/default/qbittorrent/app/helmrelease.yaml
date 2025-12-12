@@ -21,10 +21,6 @@ spec:
             env:
               TZ: Europe/Warsaw
               QBT_WEBUI_PORT: &port 80
-              QBT_CURRENT_NETWORK_INTERFACE: "tun0"
-              QBT_RANDOM_PORT: "false"
-              QBT_UPNP: "false"
-              QBT_NATPMP: "false"
             probes:
               liveness:
                 enabled: false
@@ -66,6 +62,7 @@ spec:
               PORT_FORWARD_ONLY: "on"
               VPN_PORT_FORWARDING: "on"
               VPN_TYPE: wireguard
+              VPN_INTERFACE: wg0
             envFrom:
               - secretRef:
                   name: "{{ .Release.Name }}-secret"
