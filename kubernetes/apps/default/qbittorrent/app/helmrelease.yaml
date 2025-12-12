@@ -76,7 +76,7 @@ spec:
                   periodSeconds: 10
             securityContext:
               allowPrivilegeEscalation: true
-              readOnlyRootFilesystem: false
+              readOnlyRootFilesystem: true
               capabilities:
                 add: ["NET_ADMIN"]
             resources:
