@@ -89,7 +89,6 @@ spec:
               requests:
                 cpu: 100m
           port-forward:
-            args: ["sleep", "infinity"]
             dependsOn:
               - gluetun
             image:
@@ -107,8 +106,11 @@ spec:
               startup:
                 enabled: false
             securityContext:
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
+              allowPrivilegeEscalation: true
+              readOnlyRootFilesystem: false
+              runAsUser: 0
+              runAsGroup: 0
+              runAsNonRoot: false
               capabilities: {drop: ["ALL"]}
             resources:
               requests:
