@@ -53,8 +53,9 @@ spec:
               repository: ghcr.io/qdm12/gluetun
               tag: v3.40.3@sha256:ef4a44819a60469682c7b5e69183e6401171891feaa60186652d292c59e41b30
             env:
+              FIREWALL_INPUT_PORTS: "80,9999"
               FIREWALL_OUTBOUND_SUBNETS: "10.42.0.0/16,10.43.0.0/16,192.168.69.0/24"
-              HEALTH_SERVER_ADDRESS: "0.0.0.0:9999"
+              HEALTH_SERVER_ADDRESS: ":9999"
               PORT_FORWARD_ONLY: "on"
               VPN_PORT_FORWARDING: "on"
               VPN_TYPE: wireguard
