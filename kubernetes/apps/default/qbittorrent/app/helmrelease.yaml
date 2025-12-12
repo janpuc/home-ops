@@ -89,6 +89,7 @@ spec:
               requests:
                 cpu: 100m
           port-forward:
+            args: ["sleep", "infinity"]
             dependsOn:
               - gluetun
             image:
