@@ -21,19 +21,19 @@ spec:
             env:
               TZ: Europe/Warsaw
               QBT_WEBUI_PORT: &port 80
-            probes:
-              liveness: &probes
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /api/v2/app/version
-                    port: *port
-                  initialDelaySeconds: 30
-                  periodSeconds: 10
-                  timeoutSeconds: 1
-                  failureThreshold: 3
-              readiness: *probes
+            # probes:
+            #   liveness: &probes
+            #     enabled: true
+            #     custom: true
+            #     spec:
+            #       httpGet:
+            #         path: /api/v2/app/version
+            #         port: *port
+            #       initialDelaySeconds: 30
+            #       periodSeconds: 10
+            #       timeoutSeconds: 1
+            #       failureThreshold: 3
+            #   readiness: *probes
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
@@ -55,19 +55,19 @@ spec:
             envFrom:
               - secretRef:
                   name: "{{ .Release.Name }}-secret"
-            probes:
-              liveness: &gluetunProbes
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /
-                    port: 9999
-                  initialDelaySeconds: 30
-                  periodSeconds: 10
-                  timeoutSeconds: 1
-                  failureThreshold: 3
-              readiness: *gluetunProbes
+            # probes:
+            #   liveness: &gluetunProbes
+            #     enabled: true
+            #     custom: true
+            #     spec:
+            #       httpGet:
+            #         path: /
+            #         port: 9999
+            #       initialDelaySeconds: 30
+            #       periodSeconds: 10
+            #       timeoutSeconds: 1
+            #       failureThreshold: 3
+            #   readiness: *gluetunProbes
             securityContext:
               allowPrivilegeEscalation: true
               readOnlyRootFilesystem: false
@@ -89,13 +89,6 @@ spec:
               QBITTORRENT_SERVER: localhost
               QBITTORRENT_PORT: *port
               PORT_FORWARDED: /tmp/gluetun/forwarded_port
-            probes:
-              liveness:
-                enabled: false
-              readiness:
-                enabled: false
-              startup:
-                enabled: false
             securityContext:
               allowPrivilegeEscalation: true
               readOnlyRootFilesystem: false
