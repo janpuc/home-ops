@@ -98,6 +98,13 @@ spec:
               QBITTORRENT_SERVER: localhost
               QBITTORRENT_PORT: *port
               PORT_FORWARDED: /tmp/gluetun/forwarded_port
+            probes:
+              liveness:
+                enabled: false
+              readiness:
+                enabled: false
+              startup:
+                enabled: false
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
