@@ -26,23 +26,29 @@ spec:
               QBT_UPNP: "false"
               QBT_NATPMP: "false"
             probes:
-              liveness: &probes
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /api/v2/app/version
-                    port: *port
-                  initialDelaySeconds: 0
-                  periodSeconds: 10
-                  timeoutSeconds: 1
-                  failureThreshold: 3
-              readiness: *probes
+              liveness:
+                enabled: false
+              readiness:
+                enabled: false
               startup:
-                enabled: true
-                spec:
-                  failureThreshold: 30
-                  periodSeconds: 10
+                enabled: false
+              # liveness: &probes
+              #   enabled: true
+              #   custom: true
+              #   spec:
+              #     httpGet:
+              #       path: /api/v2/app/version
+              #       port: *port
+              #     initialDelaySeconds: 0
+              #     periodSeconds: 10
+              #     timeoutSeconds: 1
+              #     failureThreshold: 3
+              # readiness: *probes
+              # startup:
+              #   enabled: true
+              #   spec:
+              #     failureThreshold: 30
+              #     periodSeconds: 10
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
@@ -64,23 +70,29 @@ spec:
               - secretRef:
                   name: "{{ .Release.Name }}-secret"
             probes:
-              liveness: &gluetunProbes
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /
-                    port: 9999
-                  initialDelaySeconds: 0
-                  periodSeconds: 10
-                  timeoutSeconds: 1
-                  failureThreshold: 3
-              readiness: *gluetunProbes
+              liveness:
+                enabled: false
+              readiness:
+                enabled: false
               startup:
-                enabled: true
-                spec:
-                  failureThreshold: 30
-                  periodSeconds: 10
+                enabled: false
+              # liveness: &gluetunProbes
+              #   enabled: true
+              #   custom: true
+              #   spec:
+              #     httpGet:
+              #       path: /
+              #       port: 9999
+              #     initialDelaySeconds: 0
+              #     periodSeconds: 10
+              #     timeoutSeconds: 1
+              #     failureThreshold: 3
+              # readiness: *gluetunProbes
+              # startup:
+              #   enabled: true
+              #   spec:
+              #     failureThreshold: 30
+              #     periodSeconds: 10
             securityContext:
               allowPrivilegeEscalation: true
               readOnlyRootFilesystem: false
