@@ -56,6 +56,9 @@ spec:
               PORT_FORWARD_ONLY: "on"
               VPN_PORT_FORWARDING: "on"
               VPN_TYPE: wireguard
+            envFrom:
+              - secretRef:
+                  name: "{{ .Release.Name }}-secret"
             probes:
               liveness: &gluetunProbes
                 enabled: true
