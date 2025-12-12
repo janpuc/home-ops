@@ -22,29 +22,23 @@ spec:
               TZ: Europe/Warsaw
               QBT_WEBUI_PORT: &port 80
             probes:
-              liveness:
-                enabled: false
-              readiness:
-                enabled: false
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/v2/app/version
+                    port: *port
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
               startup:
-                enabled: false
-              # liveness: &probes
-              #   enabled: true
-              #   custom: true
-              #   spec:
-              #     httpGet:
-              #       path: /api/v2/app/version
-              #       port: *port
-              #     initialDelaySeconds: 0
-              #     periodSeconds: 10
-              #     timeoutSeconds: 1
-              #     failureThreshold: 3
-              # readiness: *probes
-              # startup:
-              #   enabled: true
-              #   spec:
-              #     failureThreshold: 30
-              #     periodSeconds: 10
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
