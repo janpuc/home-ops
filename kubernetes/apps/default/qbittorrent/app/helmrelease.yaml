@@ -21,6 +21,10 @@ spec:
             env:
               TZ: Europe/Warsaw
               QBT_WEBUI_PORT: &port 80
+              QBT_CURRENT_NETWORK_INTERFACE: ""
+              QBT_RANDOM_PORT: "false"
+              QBT_UPNP: "false"
+              QBT_NATPMP: "false"
             probes:
               liveness: &probes
                 enabled: true
