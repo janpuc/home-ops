@@ -20,6 +20,7 @@ filters:
 
     remove:
       - IsUnregistered()
+      - HasAnyTag("public") && Ratio > 2.0
       - (
           HasAnyTag(
             "site:ANT", "site:AR", "site:FL", "site:FNP", "site:IPT",
@@ -50,6 +51,7 @@ filters:
       - { name: added:30d,     update: ['AddedDays >= 30 && AddedDays < 180'] }
       - { name: added:180d,    update: ['AddedDays >= 180'] }
       - { name: not-linked,    update: ['HardlinkedOutsideClient == false && Label in ["sonarr", "radarr"]'] }
+      - { name: public,        update: ['IsPrivate() == false'] }
       - { name: site:ANT,      update: ['TrackerName == "anthelion.me"'] }
       - { name: site:AR,       update: ['TrackerName == "alpharatio.cc"'] }
       - { name: site:ATH,      update: ['TrackerName == "aither.cc"'] }
