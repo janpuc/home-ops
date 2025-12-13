@@ -28,7 +28,6 @@ filters:
           ) &&
           Ratio > 3.0
         )
-        )
       - HasAnyTag("not-linked") && SeedingDays > 24
 
     tag:
