@@ -64,6 +64,6 @@ spec:
       media:
         type: nfs
         server: bigmouth.internal
-        path: /mnt/Vault/Media/Manga
+        path: /mnt/Vault/Media/Comics
         globalMounts:
-          - path: /home/suwayomi/.local/share/Tachidesk/downloads
+          - path: /home/suwayomi/.local/share/Tachidesk/downloads/mangas
