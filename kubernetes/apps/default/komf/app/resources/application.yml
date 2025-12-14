@@ -26,7 +26,6 @@ kavita:
         orderBooks: true # will order books using parsed volume or chapter number
         languageValue: # set default language for series. Must use BCP 47 format e.g. "en"
 
-
 database:
   file: ./database.sqlite # database file location.
 
