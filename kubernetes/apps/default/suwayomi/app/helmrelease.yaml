@@ -1,0 +1,71 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: suwayomi
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: suwayomi
+  interval: 1h
+  values:
+    controllers:
+      suwayomi:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/suwayomi/tachidesk
+              tag: v2.1.2031@sha256:2dc83ef73645bc31f2513e83576b4103d0895acb35c2457ca225d9c6f673ec6c
+            env:
+              AUTO_DOWNLOAD_EXCLUDE_UNREAD: false
+              AUTO_DOWNLOAD_CHAPTERS: true
+              BIND_PORT: &port 80
+              DOWNLOAD_AS_CBZ: true
+              EXTENSION_REPOS: '["https://raw.githubusercontent.com/keiyoushi/extensions/repo/index.min.json"]'
+              FLARESOLVERR_ENABLED: true
+              FLARESOLVERR_URL: flaresolverr.default.svc.cluster.local:8191
+              TZ: Europe/Warsaw
+              UPDATE_EXCLUDE_UNREAD: false
+              UPDATE_EXCLUDE_STARTED: false
+              UPDATE_EXCLUDE_COMPLETED: false
+              WEB_UI_CHANNEL: preview
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: {drop: ["ALL"]}
+            resources:
+              requests:
+                cpu: 10m
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      app:
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        hostnames:
+          - "{{ .Release.Name }}.janpuc.com"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+    persistence:
+      config:
+        existingClaim: "{{ .Release.Name }}"
+        globalMounts:
+          - path: /home/suwayomi/.local/share/Tachidesk
+      media:
+        type: nfs
+        server: bigmouth.internal
+        path: /mnt/Vault/Media/Manga
+        globalMounts:
+          - path: /home/suwayomi/.local/share/Tachidesk/downloads/manga
+
+
