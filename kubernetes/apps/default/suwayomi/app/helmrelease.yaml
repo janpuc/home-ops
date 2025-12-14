@@ -66,6 +66,6 @@ spec:
         server: bigmouth.internal
         path: /mnt/Vault/Media/Manga
         globalMounts:
-          - path: /home/suwayomi/.local/share/Tachidesk/downloads/manga
+          - path: /home/suwayomi/.local/share/Tachidesk/downloads
 
 
