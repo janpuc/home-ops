@@ -56,4 +56,5 @@ spec:
         server: bigmouth.internal
         path: /mnt/Vault/Media/Comics
         globalMounts:
-          - path: /media
+          - path: /media/Manga
+            subPath: Manga
