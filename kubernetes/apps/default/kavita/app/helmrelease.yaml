@@ -54,7 +54,7 @@ spec:
       media:
         type: nfs
         server: bigmouth.internal
-        path: /mnt/Vault/Media/Comics
+        path: /mnt/Vault/Media
         globalMounts:
           - path: /media/Comics
             subPath: Comics
