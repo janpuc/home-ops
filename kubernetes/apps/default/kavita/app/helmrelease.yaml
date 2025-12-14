@@ -44,7 +44,7 @@ spec:
           - "{{ .Release.Name }}.janpuc.com"
           - comics.janpuc.com
         parentRefs:
-          - name: envoy-internal
+          - name: envoy-external
             namespace: network
     persistence:
       config:
