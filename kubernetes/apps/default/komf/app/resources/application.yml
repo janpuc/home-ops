@@ -13,6 +13,8 @@ kavita:
       mergeGenres: true # if true and aggregate is enabled will merge genres from all providers
       bookCovers: true # update book thumbnails
       seriesCovers: true # update series thumbnails
+      overrideExistingCovers: true # if false will upload but not select new cover if another cover already exists
+      lockCovers: true # lock cover images so that kavita does not change them
       postProcessing:
         seriesTitle: true # update series title
         seriesTitleLanguage: "en" # series title update language
@@ -22,6 +24,8 @@ kavita:
           - "ja"
           - "ja-ro"
         orderBooks: true # will order books using parsed volume or chapter number
+        languageValue: # set default language for series. Must use BCP 47 format e.g. "en"
+
 
 database:
   file: ./database.sqlite # database file location.
