@@ -1,5 +1,4 @@
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -22,7 +21,6 @@ spec:
             env:
               TZ: Europe/Warsaw
               QBT_WEBUI_PORT: &port 80
-              QBT_TORRENTING_PORT: 50469
             probes:
               liveness: &probes
                 enabled: true
@@ -31,7 +29,7 @@ spec:
                   httpGet:
                     path: /api/v2/app/version
                     port: *port
-                  initialDelaySeconds: 0
+                  initialDelaySeconds: 30
                   periodSeconds: 10
                   timeoutSeconds: 1
                   failureThreshold: 3
@@ -48,13 +46,70 @@ spec:
             resources:
               requests:
                 cpu: 100m
+          gluetun:
+            dependsOn:
+              - app
+            image:
+              repository: ghcr.io/qdm12/gluetun
+              tag: v3.40.3@sha256:ef4a44819a60469682c7b5e69183e6401171891feaa60186652d292c59e41b30
+            env:
+              DOT: "off"
+              FIREWALL_INPUT_PORTS: "80,9999"
+              FIREWALL_OUTBOUND_SUBNETS: "10.42.0.0/16,10.43.0.0/16,192.168.69.0/24"
+              HEALTH_SERVER_ADDRESS: ":9999"
+              PORT_FORWARD_ONLY: "on"
+              VPN_PORT_FORWARDING: "on"
+              VPN_TYPE: wireguard
+              VPN_INTERFACE: wg0
+            envFrom:
+              - secretRef:
+                  name: "{{ .Release.Name }}-secret"
+            probes:
+              liveness: &gluetunProbes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: 9999
+                  initialDelaySeconds: 30
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *gluetunProbes
+              startup: *gluetunProbes
+            securityContext:
+              allowPrivilegeEscalation: true
+              readOnlyRootFilesystem: false
+              runAsUser: 0
+              runAsGroup: 0
+              runAsNonRoot: false
+              capabilities:
+                add: ["NET_ADMIN"]
+            resources:
+              requests:
+                cpu: 100m
+          port-forward:
+            dependsOn:
+              - gluetun
+            image:
+              repository: docker.io/snoringdragon/gluetun-qbittorrent-port-manager
+              tag: 1.3@sha256:679b7a92c494f93b78ad37ef24f3a261e73d0a1a52505ad4f1e39580eedfa14f
+            env:
+              QBITTORRENT_SERVER: localhost
+              QBITTORRENT_PORT: *port
+              PORT_FORWARDED: /tmp/gluetun/forwarded_port
+            securityContext:
+              allowPrivilegeEscalation: true
+              readOnlyRootFilesystem: false
+              runAsUser: 0
+              runAsGroup: 0
+              runAsNonRoot: false
+              capabilities: {drop: ["ALL"]}
+            resources:
+              requests:
+                cpu: 10m
     defaultPodOptions:
-      annotations:
-        k8s.v1.cni.cncf.io/networks: |-
-          [{
-            "name": "vpn",
-            "namespace": "kube-system"
-          }]
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
@@ -80,7 +135,7 @@ spec:
     configMaps:
       config:
         data:
-          .qbt.toml: |-
+          .qbt.toml: |
             [qbittorrent]
             addr = "http://localhost:80"
     persistence:
@@ -101,7 +156,7 @@ spec:
                 accessModes: ["ReadWriteOnce"]
                 resources:
                   requests:
-                    storage: 1Mi # Ignored
+                    storage: 1Mi
                 storageClassName: openebs-hostpath
                 volumeMode: Filesystem
       media:
@@ -120,3 +175,10 @@ spec:
                 subPath: logs
               - path: /tmp
                 subPath: tmp
+            gluetun:
+              - path: /tmp/gluetun
+                subPath: gluetun
+            port-forward:
+              - path: /tmp/gluetun
+                subPath: gluetun
+                readOnly: true
