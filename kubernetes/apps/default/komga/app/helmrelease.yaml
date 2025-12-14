@@ -53,8 +53,8 @@ spec:
         defaultMode: 0400
         globalMounts:
           - readOnly: true
-            subPath: application.yaml
-            path: /config/application.yaml
+            subPath: application.yml
+            path: /config/application.yml
       media:
         type: nfs
         server: bigmouth.internal

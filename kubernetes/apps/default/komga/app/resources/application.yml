@@ -1,7 +1,5 @@
 komga:
   ## Comment if you don't want automatic account creation.
-  oauth2-account-creation: true
-  oidc-email-verification: false
   database:
     # sets the retry timeout when SQLITE_BUSY error happens
     busy-timeout: 60s
@@ -31,20 +29,3 @@ komga:
     cache_size: -2000 # Increase cache size to improve query speed (in pages)
     temp_store: MEMORY # Store temporary tables in memory to improve access speed
     trusted_schema: false # Disable trusted mode to improve performance
-spring:
-  security:
-      oauth2:
-          client:
-              registration:
-                  authentik:
-                      provider: authentik
-                      client-id: "{{ .CLIENT_ID }}"
-                      client-secret: "{{ .CLIENT_SECRET }}"
-                      client-name: authentik
-                      scope: openid,email,profile
-                      authorization-grant-type: authorization_code
-                      redirect-uri: "{baseUrl}/{action}/oauth2/code/{registrationId}"
-              provider:
-                  authentik:
-                      user-name-attribute: preferred_username
-                      issuer-uri: https://sso.solonsstuff.com/application/o/komga/
