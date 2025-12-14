@@ -59,3 +59,5 @@ spec:
             readOnly: true
       config:
         existingClaim: "{{ .Release.Name }}"
+      tmp:
+        type: emptyDir
