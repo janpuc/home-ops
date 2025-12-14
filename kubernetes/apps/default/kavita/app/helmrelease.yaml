@@ -3,28 +3,22 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: komga
+  name: kavita
 spec:
   chartRef:
     kind: OCIRepository
-    name: komga
+    name: kavita
   interval: 1h
   values:
     controllers:
-      komga:
-        annotations:
-          reloader.stakater.com/auto: "true"
+      kavita:
         containers:
           app:
             image:
-              repository: ghcr.io/gotson/komga
-              tag: 1.23.6@sha256:09129eae6eff50337f039bd6e99d995126cb03226950c80e9864cbc05f10a661
+              repository: ghcr.io/kareadita/kavita
+              tag: 0.8.8@sha256:22c42f3cc83fb98b98a6d6336200b615faf2cfd2db22dab363136744efda1bb0
             env:
               TZ: Europe/Warsaw
-              UID: 1000
-              GID: 1000
-              KOMGA_CONFIGDIR: /config
-              SERVER_PORT: &port 80
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
@@ -43,25 +37,20 @@ spec:
       app:
         ports:
           http:
-            port: *port
+            port: 5000
     route:
       app:
         hostnames:
           - "{{ .Release.Name }}.janpuc.com"
+          - comics.janpuc.com
         parentRefs:
           - name: envoy-internal
             namespace: network
     persistence:
       config:
         existingClaim: "{{ .Release.Name }}"
-      application:
-        type: configMap
-        name: komga-configmap
-        defaultMode: 0400
         globalMounts:
-          - readOnly: true
-            subPath: application.yml
-            path: /config/application.yml
+          - path: /kavita/config
       media:
         type: nfs
         server: bigmouth.internal
