@@ -1,0 +1,61 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: komf
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: komf
+  interval: 1h
+  values:
+    controllers:
+      komf:
+        containers:
+          app:
+            image:
+              repository: sndxr/komf
+              tag: 1.7.1@sha256:4a6971a76abc30869f6d0555a7328ff8cd879f3016a7378395df331c1245cbb2
+            env:
+              KOMF_KAVITA_BASE_URI: http://kavita.default.svc.cluster.local:5000
+              KOMF_LOG_LEVEL: INFO
+            envFrom:
+              - secretRef:
+                  name: "{{ .Release.Name }}-secret"
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: {drop: ["ALL"]}
+            resources:
+              requests:
+                cpu: 10m
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      app:
+        ports:
+          http:
+            port: 8085
+    route:
+      app:
+        hostnames:
+          - "{{ .Release.Name }}.janpuc.com"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+    persistence:
+      application:
+        type: configMap
+        name: komf-configmap
+        globalMounts:
+          - path: /config/application.yml
+            subPath: application.yml
+            readOnly: true
+      config:
+        existingClaim: "{{ .Release.Name }}"
