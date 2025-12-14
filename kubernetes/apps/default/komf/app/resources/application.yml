@@ -30,7 +30,6 @@ database:
   file: ./database.sqlite # database file location.
 
 metadataProviders:
-  #malClientId: "${SECRET_KOMF_MAL_CLIENT_ID}" # required for mal provider. See https://myanimelist.net/forum/?topicid=1973077
   defaultProviders:
     mangaUpdates:
       priority: 10
@@ -38,33 +37,36 @@ metadataProviders:
       mediaType: "MANGA" # filter used in matching. Can be NOVEL or MANGA. MANGA type includes everything except novels
       authorRoles: [ "WRITER" ] # roles that will be mapped to author role
       artistRoles: [ "PENCILLER","INKER","COLORIST","LETTERER","COVER" ] # roles that will be mapped to artist role
-    # mal:
-      # priority: 20
-      # enabled: true
-      # mediaType: "MANGA" # filter used in matching. Can be NOVEL or MANGA. MANGA type includes everything except novels
+    mal:
+      priority: 20
+      enabled: true
+      mediaType: "MANGA" # filter used in matching. Can be NOVEL or MANGA. MANGA type includes everything except novels
     nautiljon:
       priority: 30
-      enabled: false
+      enabled: true
     aniList:
       priority: 40
-      enabled: false
+      enabled: true
       mediaType: "MANGA" # filter used in matching. Can be NOVEL or MANGA. MANGA type includes everything except novels
       tagsScoreThreshold: 60 # tags with this score or higher will be included
       tagsSizeLimit: 15 # amount of tags that will be included
     yenPress:
       priority: 50
-      enabled: false
+      enabled: true
       mediaType: "MANGA" # filter used in matching. Can be NOVEL or MANGA.
     kodansha:
       priority: 60
-      enabled: false
+      enabled: true
     viz:
       priority: 70
-      enabled: false
+      enabled: true
     bookWalker:
       priority: 80
-      enabled: false
+      enabled: true
       mediaType: "MANGA" # filter used in matching. Can be NOVEL or MANGA.
     mangaDex:
       priority: 90
-      enabled: false
+      enabled: true
+      coverLanguages:
+        - "en"
+        - "ja"
