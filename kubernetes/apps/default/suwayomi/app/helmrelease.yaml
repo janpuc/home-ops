@@ -67,5 +67,3 @@ spec:
         path: /mnt/Vault/Media/Manga
         globalMounts:
           - path: /home/suwayomi/.local/share/Tachidesk/downloads
-
-
