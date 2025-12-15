@@ -146,7 +146,16 @@ cluster:
     extraArgs:
       enable-aggregator-routing: "true"
       feature-gates: ImageVolume=true,MutatingAdmissionPolicy=true
+      max-requests-inflight: "400"
+      max-mutating-requests-inflight: "200"
       runtime-config: admissionregistration.k8s.io/v1beta1=true
+      watch-cache-sizes: |
+        nodes#100
+        pods#500
+        services#100
+        endpoints#200
+        configmaps#200
+        secrets#200
     image: registry.k8s.io/kube-apiserver:v1.34.3
   controllerManager:
     extraArgs:
