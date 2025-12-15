@@ -25,8 +25,8 @@ spec:
                 evictSystemCriticalPods: false
                 priorityThreshold:
                   name: system-cluster-critical
-                maxPodsToEvictPerNode: 2
-                maxPodsToEvictPerNamespace: 3
+                maxNoOfPodsToEvictPerNode: 2
+                maxNoOfPodsToEvictPerNamespace: 3
                 podProtections:
                   defaultDisabled:
                     - FailedBarePods
