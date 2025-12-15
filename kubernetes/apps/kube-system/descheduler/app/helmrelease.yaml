@@ -20,13 +20,6 @@ spec:
           pluginConfig:
             - name: DefaultEvictor
               args:
-                nodeFit: true
-                evictLocalStoragePods: false
-                evictSystemCriticalPods: false
-                priorityThreshold:
-                  name: system-cluster-critical
-                maxNoOfPodsToEvictPerNode: 2
-                maxNoOfPodsToEvictPerNamespace: 3
                 podProtections:
                   defaultDisabled:
                     - FailedBarePods
@@ -63,20 +56,17 @@ spec:
                   - requiredDuringSchedulingIgnoredDuringExecution
             - name: RemovePodsViolatingNodeTaints
             - name: RemovePodsViolatingTopologySpreadConstraint
-              args:
-                constraints:
-                  - DoNotSchedule
           plugins:
             balance:
               enabled:
                 - LowNodeUtilization
+                - RemovePodsViolatingTopologySpreadConstraint
             deschedule:
               enabled:
                 - RemoveFailedPods
                 - RemovePodsViolatingInterPodAntiAffinity
                 - RemovePodsViolatingNodeAffinity
                 - RemovePodsViolatingNodeTaints
-                - RemovePodsViolatingTopologySpreadConstraint
     resources:
       requests:
         cpu: 100m
