@@ -90,6 +90,8 @@ spec:
           - name: envoy-external
             namespace: network
     persistence:
+      config:
+        existingClaim: "{{ .Release.Name }}"
       config-map:
         type: configMap
         name: authelia-configmap
@@ -97,5 +99,3 @@ spec:
           - path: /config/configuration.yaml
             subPath: configuration.yaml
             readOnly: true
-      config:
-        existingClaim: "{{ .Release.Name }}"
