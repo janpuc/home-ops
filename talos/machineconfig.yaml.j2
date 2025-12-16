@@ -144,6 +144,7 @@ cluster:
       - k8s.janpuc.com
     disablePodSecurityPolicy: true
     extraArgs:
+      default-watch-cache-size: "100"
       enable-aggregator-routing: "true"
       feature-gates: ImageVolume=true,MutatingAdmissionPolicy=true
       max-requests-inflight: "400"
@@ -170,6 +171,8 @@ cluster:
       crt: op://Kubernetes/talos/CLUSTER_ETCD_CA_CRT
       key: op://Kubernetes/talos/CLUSTER_ETCD_CA_KEY
     extraArgs:
+      election-timeout: "3000"
+      heartbeat-interval: "250"
       listen-metrics-urls: http://0.0.0.0:2381
   proxy:
     disabled: true
