@@ -20,8 +20,6 @@ spec:
               repository: ghcr.io/lldap/lldap
               tag: 2025-12-12-alpine@sha256:72f526a8df92e8457d44d9a625cfbe43273285776c979e7144a31b26ebe65d1a
             env:
-              UID: 1000
-              GID: 1000
               TZ: Europe/Warsaw
               LLDAP_HTTP_PORT: &port 80
               LLDAP_HTTP_URL: "https://lldap.janpuc.com"
@@ -45,7 +43,7 @@ spec:
               startup:
                 enabled: false
             securityContext:
-              allowPrivilegeEscalation: false
+              allowPrivilegeEscalation: true
               readOnlyRootFilesystem: false
               capabilities: {drop: ["ALL"]}
             resources:
