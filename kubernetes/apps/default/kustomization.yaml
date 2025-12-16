@@ -17,6 +17,7 @@ resources:
   - ./jellyfin/ks.yaml
   - ./kavita/ks.yaml
   - ./komf/ks.yaml
+  - ./lldap/ks.yaml
   - ./notifier/ks.yaml
   - ./prowlarr/ks.yaml
   - ./qbittorrent/ks.yaml
