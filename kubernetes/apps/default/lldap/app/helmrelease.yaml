@@ -18,10 +18,10 @@ spec:
           app:
             image:
               repository: ghcr.io/lldap/lldap
-              tag: 2025-12-12-alpine@sha256:72f526a8df92e8457d44d9a625cfbe43273285776c979e7144a31b26ebe65d1a
+              tag: 2025-12-12-alpine-rootless@sha256:6ca0e292556af7722676b1ddad86d79e6c40421286f667011587624e01a2226d
             env:
-              UID: 10001
-              GID: 10001
+              UID: 1000
+              GID: 1000
               TZ: Europe/Warsaw
               LLDAP_HTTP_PORT: &port 80
               LLDAP_HTTP_URL: "https://lldap.janpuc.com"
@@ -56,9 +56,9 @@ spec:
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
-        runAsUser: 10001
-        runAsGroup: 10001
-        fsGroup: 10001
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
     service:
       app:
