@@ -20,8 +20,8 @@ spec:
               repository: ghcr.io/lldap/lldap
               tag: 2025-12-12-alpine@sha256:72f526a8df92e8457d44d9a625cfbe43273285776c979e7144a31b26ebe65d1a
             env:
-              UID: 1001
-              GID: 1001
+              UID: 1000
+              GID: 1000
               TZ: Europe/Warsaw
               LLDAP_HTTP_PORT: &port 80
               LLDAP_HTTP_URL: "https://lldap.janpuc.com"
@@ -46,7 +46,7 @@ spec:
                 enabled: false
             securityContext:
               allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
+              readOnlyRootFilesystem: false
               capabilities: {drop: ["ALL"]}
             resources:
               requests:
@@ -55,10 +55,10 @@ spec:
                 memory: 64Mi
     defaultPodOptions:
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 1001
-        runAsGroup: 1001
-        fsGroup: 1001
+        runAsNonRoot: false
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
     service:
       app:
