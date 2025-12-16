@@ -71,6 +71,12 @@ identity_providers:
     cors:
       endpoints: [authorization, token, revocation, introspection]
       allowed_origins_from_client_redirect_uris: true
+    claims_policies:
+      kavita:
+        id_token:
+          - "email"
+          - "email_verified"
+          - "groups"
     clients:
     # Genereate client_secret
     # https://www.authelia.com/integration/openid-connect/frequently-asked-questions/#how-do-i-generate-a-client-identifier-or-client-secret
@@ -91,10 +97,8 @@ identity_providers:
         client_secret: '{{ env "KAVITA_OAUTH_DIGEST" }}'
         public: false
         authorization_policy: two_factor
-        require_pkce: true
-        pkce_challenge_method: S256
-        pre_configured_consent_duration: 1y
-        scopes: [openid, profile, groups]
-        redirect_uris: [ "https://comics.janpuc.com/signin-oidc"]
-        userinfo_signed_response_alg: none
+        response_types: [code]
+        scopes: [openid, email, profile, groups, roles, offline_access]
+        redirect_uris: [ "https://comics.janpuc.com/signin-oidc", "https://comics.janpuc.com/signout-callback-oidc" ]
         token_endpoint_auth_method: client_secret_post
+        grant_types: [authorization_code, refresh_token]
