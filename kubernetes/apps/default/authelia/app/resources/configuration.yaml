@@ -1,16 +1,16 @@
 ---
 authentication_backend:
   ldap:
-    address: ldap://lldap.default.svc.cluster.local:5389
+    address: ldap://lldap.default.svc.cluster.local:3890
     implementation: custom
     timeout: 5s
     start_tls: false
-    base_dn: '{{ env LLDAP_LDAP_BASE_DN }}'
+    base_dn: '{{ env "LLDAP_LDAP_BASE_DN" }}'
     additional_users_dn: ou=people
     users_filter: (&(|({username_attribute}={input})({mail_attribute}={input}))(objectClass=person))
     additional_groups_dn: ou=groups
     groups_filter: (member={dn})
-    user: 'uid={{ env LLDAP_LDAP_USER_DN }},ou=people,{{ env LLDAP_LDAP_BASE_DN }}'
+    user: 'uid={{ env "LLDAP_LDAP_USER_DN" }},ou=people,{{ env "LLDAP_LDAP_BASE_DN" }}'
     attributes:
       username: uid
       display_name: displayName
@@ -66,7 +66,7 @@ identity_providers:
   oidc:
     jwks:
       - key: |
-          {{ env OIDC_JWKS_KEY | mindent 10 "|" | msquote }}
+          {{ env "OIDC_JWKS_KEY" | mindent 10 "|" | msquote }}
     cors:
       endpoints: [authorization, token, revocation, introspection]
       allowed_origins_from_client_redirect_uris: true
