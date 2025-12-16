@@ -21,7 +21,7 @@ spec:
               tag: 4.39.15@sha256:d23ee3c721d465b4749cc58541cda4aebe5aa6f19d7b5ce0afebb44ebee69591
             env:
               AUTHELIA_LOG_LEVEL: info
-              AUTHELIA_NOTIFIER_SMTP_SENDER: "Authelia <authelia@janpuc.com>"
+              # AUTHELIA_NOTIFIER_SMTP_SENDER: "Authelia <authelia@janpuc.com>"
               AUTHELIA_SERVER_DISABLE_HEALTHCHECK: "true"
               AUTHELIA_SERVER_ADDRESS: tcp://0.0.0.0:80
               AUTHELIA_TELEMETRY_METRICS_ADDRESS: tcp://0.0.0.0:8080
@@ -90,10 +90,12 @@ spec:
           - name: envoy-external
             namespace: network
     persistence:
-      config:
+      config-map:
         type: configMap
         name: authelia-configmap
         globalMounts:
           - path: /config/configuration.yaml
             subPath: configuration.yaml
             readOnly: true
+      config:
+        existingClaim: "{{ .Release.Name }}"

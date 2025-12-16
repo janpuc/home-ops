@@ -33,10 +33,13 @@ session:
       authelia_url: https://auth.janpuc.com
       default_redirection_url: https://home.janpuc.com
 
+storage:
+  local:
+    path: '/config/db.sqlite3'
+
 notifier:
   disable_startup_check: true
   filesystem:
-    enabled: true
     filename: '/config/notification.txt'
 
 duo_api:
@@ -62,11 +65,11 @@ access_control:
       networks:
         - private
 
-identity_providers:
-  oidc:
-    jwks:
-      - key: |
-          {{ env "OIDC_JWKS_KEY" | mindent 10 "|" | msquote }}
-    cors:
-      endpoints: [authorization, token, revocation, introspection]
-      allowed_origins_from_client_redirect_uris: true
+# identity_providers:
+#   oidc:
+#     jwks:
+#       - key: |
+#           {{ env "OIDC_JWKS_KEY" | mindent 10 "|" | msquote }}
+#     cors:
+#       endpoints: [authorization, token, revocation, introspection]
+#       allowed_origins_from_client_redirect_uris: true
