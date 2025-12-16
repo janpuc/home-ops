@@ -96,7 +96,7 @@ identity_providers:
         client_id: kavita
         client_secret: '{{ env "KAVITA_OAUTH_DIGEST" }}'
         public: false
-        authorization_policy: two_factor
+        authorization_policy: one_factor
         response_types: [code]
         pre_configured_consent_duration: 1y
         scopes: [openid, email, profile, groups, roles, offline_access]
