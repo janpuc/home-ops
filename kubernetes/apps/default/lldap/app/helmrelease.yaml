@@ -77,5 +77,3 @@ spec:
     persistence:
       data:
         existingClaim: "{{ .Release.Name }}"
-      app:
-        type: emptyDir
