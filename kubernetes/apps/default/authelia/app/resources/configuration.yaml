@@ -39,8 +39,6 @@ storage:
 
 notifier:
   disable_startup_check: true
-  filesystem:
-    filename: '/config/notification.txt'
 
 duo_api:
   disable: true
