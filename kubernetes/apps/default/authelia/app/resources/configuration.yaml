@@ -17,6 +17,7 @@ authentication_backend:
       mail: mail
       member_of: memberOf
       group_name: cn
+      picture: jpegPhoto
   password_reset:
     disable: true
   refresh_interval: 1m
