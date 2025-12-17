@@ -89,6 +89,15 @@ spec:
       app:
         annotations:
           gatus.home-operations.com/enabled: "false"
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/description: Uptime monitoring dashboard
+          gethomepage.dev/group: Observability
+          gethomepage.dev/icon: gatus.svg
+          gethomepage.dev/name: Gatus
+          gethomepage.dev/widget.type: gatus
+          gethomepage.dev/widget.url: "http://gatus.default.svc.cluster.local"
+          gethomepage.dev/pod-selector: app.kubernetes.io/name=gatus
+          gethomepage.dev/weight: "10"
         hostnames:
           - "{{ .Release.Name }}.janpuc.com"
           - status.janpuc.com
