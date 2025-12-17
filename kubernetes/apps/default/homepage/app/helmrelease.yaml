@@ -23,6 +23,7 @@ spec:
               HOMEPAGE_ALLOWED_HOSTS: home.janpuc.com
               PORT: &port 80
               LOG_TARGETS: stdout
+              LOG_LEVEL: debug
             envFrom:
               - secretRef:
                   name: "{{ .Release.Name }}-secret"
@@ -34,8 +35,8 @@ spec:
               requests:
                 cpu: 10m
                 memory: 32Mi
-              limits:
-                memory: 128Mi
+              # limits:
+              #   memory: 128Mi
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: false
