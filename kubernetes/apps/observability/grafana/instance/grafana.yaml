@@ -67,7 +67,7 @@ spec:
         gethomepage.dev/icon: grafana.svg
         gethomepage.dev/name: Grafana
         gethomepage.dev/widget.type: grafana
-        gethomepage.dev/widget.version: "2"
+        gethomepage.dev/widget.version: "1"
         gethomepage.dev/widget.alerts: alertmanager
         gethomepage.dev/widget.url: "http://grafana-service.observability.svc.cluster.local:3000"
         gethomepage.dev/widget.username: "{{`{{HOMEPAGE_VAR_GRAFANA_USERNAME}}`}}"
