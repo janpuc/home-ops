@@ -71,12 +71,6 @@ identity_providers:
     cors:
       endpoints: [authorization, token, revocation, introspection]
       allowed_origins_from_client_redirect_uris: true
-    # claims_policies:
-    #   kavita:
-    #     id_token:
-    #       - "email"
-    #       - "email_verified"
-    #       - "groups"
     clients:
     # Genereate client_secret
     # https://www.authelia.com/integration/openid-connect/frequently-asked-questions/#how-do-i-generate-a-client-identifier-or-client-secret
@@ -113,4 +107,4 @@ identity_providers:
         scopes: [openid, email, profile, groups]
         redirect_uris: [ "https://qui.janpuc.com/api/auth/oidc/callback"]
         token_endpoint_auth_method: client_secret_post
-        grant_types: [authorization_code, refresh_token]
+        grant_types: [refresh_token]
