@@ -73,7 +73,6 @@ spec:
           gethomepage.dev/widget.url: "http://kopia.volsync-system.svc.cluster.local"
           gethomepage.dev/widget.username: "{{`{{HOMEPAGE_VAR_KOPIA_USERNAME}}`}}"
           gethomepage.dev/widget.password: "{{`{{HOMEPAGE_VAR_KOPIA_PASSWORD}}`}}"
-          gethomepage.dev/widget.snapshotPath: /repository
           gethomepage.dev/pod-selector: app.kubernetes.io/name=kopia
           gethomepage.dev/weight: "10"
         hostnames:
