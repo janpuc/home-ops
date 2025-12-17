@@ -71,12 +71,12 @@ identity_providers:
     cors:
       endpoints: [authorization, token, revocation, introspection]
       allowed_origins_from_client_redirect_uris: true
-    claims_policies:
-      kavita:
-        id_token:
-          - "email"
-          - "email_verified"
-          - "groups"
+    # claims_policies:
+    #   kavita:
+    #     id_token:
+    #       - "email"
+    #       - "email_verified"
+    #       - "groups"
     clients:
     # Genereate client_secret
     # https://www.authelia.com/integration/openid-connect/frequently-asked-questions/#how-do-i-generate-a-client-identifier-or-client-secret
