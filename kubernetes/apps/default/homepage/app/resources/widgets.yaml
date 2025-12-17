@@ -26,7 +26,3 @@
       show: true
       cpu: true
       memory: true
-    nodes:
-      show: true
-      cpu: true
-      memory: true
