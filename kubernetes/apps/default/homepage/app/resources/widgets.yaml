@@ -6,7 +6,7 @@
     showSearchSuggestions: true
     target: _blank
 - datetime:
-    locale: en-GB
+    locale: pl
     format:
       dateStyle: short
       timeStyle: short
