@@ -83,9 +83,17 @@ spec:
             scrapeTimeout: 10s
     route:
       app:
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/description: Authentication provider
+          gethomepage.dev/group: Security
+          gethomepage.dev/icon: authelia.svg
+          gethomepage.dev/name: Authelia
+          gethomepage.dev/pod-selector: ""
+          gethomepage.dev/weight: "10" # optional
         hostnames:
-          - "{{ .Release.Name }}.janpuc.com"
           - auth.janpuc.com
+          - "{{ .Release.Name }}.janpuc.com"
         parentRefs:
           - name: envoy-external
             namespace: network
