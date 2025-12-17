@@ -56,6 +56,17 @@ spec:
             port: *port
     route:
       app:
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/description: Subtitle downloader
+          gethomepage.dev/group: Downloads
+          gethomepage.dev/icon: bazarr.svg
+          gethomepage.dev/name: Bazarr
+          gethomepage.dev/widget.type: bazarr
+          gethomepage.dev/widget.url: "http://bazarr.default.svc.cluster.local"
+          gethomepage.dev/widget.key: "{{`{{HOMEPAGE_VAR_BAZARR_API_KEY}}`}}"
+          gethomepage.dev/pod-selector: app.kubernetes.io/name=bazarr
+          gethomepage.dev/weight: "10"
         hostnames:
           - "{{ .Release.Name }}.janpuc.com"
         parentRefs:
