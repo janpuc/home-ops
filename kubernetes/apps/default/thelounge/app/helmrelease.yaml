@@ -45,6 +45,14 @@ spec:
             port: 9000
     route:
       app:
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/description: Web IRC client
+          gethomepage.dev/group: Misc
+          gethomepage.dev/icon: thelounge.svg
+          gethomepage.dev/name: The Lounge
+          gethomepage.dev/pod-selector: app.kubernetes.io/name=thelounge
+          gethomepage.dev/weight: "10"
         hostnames:
           - "{{ .Release.Name }}.janpuc.com"
         parentRefs:
