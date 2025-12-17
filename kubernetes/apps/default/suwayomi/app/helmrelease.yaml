@@ -59,8 +59,8 @@ spec:
           gethomepage.dev/name: Suwayomi
           gethomepage.dev/widget.type: suwayomi
           gethomepage.dev/widget.url: "https://{{ .Release.Name }}.janpuc.com"
-          gethomepage.dev/pod-selector: ""
-          gethomepage.dev/weight: "10" # optional
+          gethomepage.dev/pod-selector: app.kubernetes.io/name=suwayomi
+          gethomepage.dev/weight: "10"
         hostnames:
           - "{{ .Release.Name }}.janpuc.com"
         parentRefs:
