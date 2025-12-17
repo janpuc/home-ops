@@ -62,6 +62,13 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
     service:
       app:
+        ports:
+          http:
+            port: *port
+          ldap:
+            port: *ldapPort
+    route:
+      app:
         annotations:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/description: Lightweight LDAP server
@@ -70,13 +77,6 @@ spec:
           gethomepage.dev/name: LLDAP
           gethomepage.dev/pod-selector: app.kubernetes.io/name=lldap
           gethomepage.dev/weight: "10"
-        ports:
-          http:
-            port: *port
-          ldap:
-            port: *ldapPort
-    route:
-      app:
         hostnames:
           - "{{ .Release.Name }}.janpuc.com"
         parentRefs:
