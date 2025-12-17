@@ -48,7 +48,7 @@ spec:
           gethomepage.dev/name: Kavita
           gethomepage.dev/widget.type: kavita
           gethomepage.dev/widget.url: "https://comics.janpuc.com"
-          gethomepage.dev/widget.key: "{{`{{HOMEPAGE_KAVITA_API_KEY}}`}}"
+          gethomepage.dev/widget.key: "{{`{{HOMEPAGE_VAR_KAVITA_API_KEY}}`}}"
           gethomepage.dev/pod-selector: ""
           gethomepage.dev/weight: "10" # optional
         hostnames:
