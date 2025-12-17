@@ -18,6 +18,14 @@ spec:
         size: 20Gi
       retentionPeriod: 14d
       route:
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/description: Log aggregation and search tool
+          gethomepage.dev/group: Observability
+          gethomepage.dev/icon: victorialogs.svg
+          gethomepage.dev/name: Victoria Logs
+          gethomepage.dev/pod-selector: app.kubernetes.io/name=victoria-logs-single
+          gethomepage.dev/weight: "10"
         enabled: true
         hostnames:
           - victoria-logs.janpuc.com
