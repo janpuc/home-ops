@@ -21,3 +21,12 @@
     cache: 5
     format:
       maximumFractionDigits: 0
+- kubernetes:
+    cluster:
+      show: true
+      cpu: true
+      memory: true
+    nodes:
+      show: true
+      cpu: true
+      memory: true
