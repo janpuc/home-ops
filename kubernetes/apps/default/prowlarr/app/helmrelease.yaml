@@ -66,6 +66,17 @@ spec:
             port: *port
     route:
       app:
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/description: Prowlarr Indexer Manager
+          gethomepage.dev/group: Downloads
+          gethomepage.dev/icon: prowlarr.svg
+          gethomepage.dev/name: Prowlarr
+          gethomepage.dev/widget.type: prowlarr
+          gethomepage.dev/widget.url: "http://prowlarr.default.svc.cluster.local"
+          gethomepage.dev/widget.key: "{{`{{HOMEPAGE_VAR_PROWLARR_API_KEY}}`}}"
+          gethomepage.dev/pod-selector: ""
+          gethomepage.dev/weight: "10"
         hostnames:
           - "{{ .Release.Name }}.janpuc.com"
         parentRefs:

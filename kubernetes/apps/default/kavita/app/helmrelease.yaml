@@ -50,7 +50,7 @@ spec:
           gethomepage.dev/widget.url: "http://kavita.default.svc.cluster.local:5000"
           gethomepage.dev/widget.key: "{{`{{HOMEPAGE_VAR_KAVITA_API_KEY}}`}}"
           gethomepage.dev/pod-selector: ""
-          gethomepage.dev/weight: "10" # optional
+          gethomepage.dev/weight: "10"
         hostnames:
           - comics.janpuc.com
           - "{{ .Release.Name }}.janpuc.com"
