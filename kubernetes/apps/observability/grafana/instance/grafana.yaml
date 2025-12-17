@@ -59,6 +59,19 @@ spec:
               persistentVolumeClaim:
                 claimName: grafana-pvc
   httpRoute:
+    metadata:
+      annotations:
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/description: Observability dashboard
+        gethomepage.dev/group: Observability
+        gethomepage.dev/icon: grafana.svg
+        gethomepage.dev/name: Grafana
+        gethomepage.dev/widget.type: grafana
+        gethomepage.dev/widget.version: "2"
+        gethomepage.dev/widget.alerts: alertmanager
+        gethomepage.dev/widget.url: "http://grafana-service.observability.svc.cluster.local:3000"
+        gethomepage.dev/pod-selector: app=grafana
+        gethomepage.dev/weight: "10"
     spec:
       hostnames:
         - grafana.janpuc.com
