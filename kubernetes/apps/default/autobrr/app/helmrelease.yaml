@@ -95,7 +95,7 @@ spec:
           gethomepage.dev/widget.url: "http://autobrr.default.svc.cluster.local"
           gethomepage.dev/widget.key: "{{`{{HOMEPAGE_VAR_AUTOBRR_API_KEY}}`}}"
           gethomepage.dev/pod-selector: app.kubernetes.io/name=autobrr
-          gethomepage.dev/weight: "10"
+          gethomepage.dev/weight: "90"
         hostnames:
           - "{{ .Release.Name }}.janpuc.com"
         parentRefs:

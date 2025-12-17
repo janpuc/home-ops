@@ -43,14 +43,14 @@ spec:
         annotations:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/description: Manga reader
-          gethomepage.dev/group: Media
+          gethomepage.dev/group: Selfhosted
           gethomepage.dev/icon: kavita.svg
           gethomepage.dev/name: Kavita
           gethomepage.dev/widget.type: kavita
           gethomepage.dev/widget.url: "http://kavita.default.svc.cluster.local:5000"
           gethomepage.dev/widget.key: "{{`{{HOMEPAGE_VAR_KAVITA_API_KEY}}`}}"
           gethomepage.dev/pod-selector: app.kubernetes.io/name=kavita
-          gethomepage.dev/weight: "10"
+          gethomepage.dev/weight: "20"
         hostnames:
           - comics.janpuc.com
           - "{{ .Release.Name }}.janpuc.com"

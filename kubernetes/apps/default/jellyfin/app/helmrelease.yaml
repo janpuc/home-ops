@@ -68,7 +68,7 @@ spec:
         annotations:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/description: Media server
-          gethomepage.dev/group: Media
+          gethomepage.dev/group: Selfhosted
           gethomepage.dev/icon: jellyfin.svg
           gethomepage.dev/name: Jellyfin
           gethomepage.dev/widget.type: jellyfin

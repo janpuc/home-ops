@@ -76,7 +76,7 @@ spec:
           gethomepage.dev/icon: lldap.svg
           gethomepage.dev/name: LLDAP
           gethomepage.dev/pod-selector: app.kubernetes.io/name=lldap
-          gethomepage.dev/weight: "10"
+          gethomepage.dev/weight: "20"
         hostnames:
           - "{{ .Release.Name }}.janpuc.com"
         parentRefs:

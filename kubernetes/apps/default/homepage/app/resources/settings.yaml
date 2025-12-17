@@ -1,4 +1,28 @@
 ---
-title: "Home"
+title: Home
 theme: dark
-statusStyle: "dot"
+statusStyle: dot
+layout:
+  Calendar:
+    style: columns
+  Selfhosted:
+    style: row
+    columns: 2
+  Downloads:
+    style: row
+    columns: 3
+  Infrastructure:
+    style: row
+    columns: 2
+  Security:
+    style: row
+    columns: 2
+  Storage:
+    style: row
+    columns: 2
+  Observability:
+    style: row
+    columns: 3
+  Misc:
+    style: row
+    columns: 3

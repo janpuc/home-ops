@@ -73,7 +73,7 @@ spec:
           gethomepage.dev/icon: qui.svg
           gethomepage.dev/name: Qui
           gethomepage.dev/pod-selector: app.kubernetes.io/name=qui
-          gethomepage.dev/weight: "10"
+          gethomepage.dev/weight: "30"
         hostnames:
           - "{{ .Release.Name }}.janpuc.com"
         parentRefs:

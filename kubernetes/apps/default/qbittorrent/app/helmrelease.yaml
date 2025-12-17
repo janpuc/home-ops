@@ -134,7 +134,7 @@ spec:
           gethomepage.dev/widget.enableLeechProgress: "true"
           gethomepage.dev/widget.enableLeechSize: "true"
           gethomepage.dev/pod-selector: app.kubernetes.io/name=qbittorrent
-          gethomepage.dev/weight: "10"
+          gethomepage.dev/weight: "40"
         hostnames:
           - "{{ .Release.Name }}.janpuc.com"
         parentRefs:

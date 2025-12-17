@@ -54,13 +54,13 @@ spec:
         annotations:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/description: Manga downloader
-          gethomepage.dev/group: Media
+          gethomepage.dev/group: Downloads
           gethomepage.dev/icon: suwayomi.svg
           gethomepage.dev/name: Suwayomi
           gethomepage.dev/widget.type: suwayomi
           gethomepage.dev/widget.url: "https://{{ .Release.Name }}.janpuc.com"
           gethomepage.dev/pod-selector: app.kubernetes.io/name=suwayomi
-          gethomepage.dev/weight: "10"
+          gethomepage.dev/weight: "20"
         hostnames:
           - "{{ .Release.Name }}.janpuc.com"
         parentRefs:
