@@ -26,3 +26,5 @@
       show: true
       cpu: true
       memory: true
+    nodes:
+      show: false
