@@ -52,8 +52,8 @@ spec:
           gethomepage.dev/pod-selector: ""
           gethomepage.dev/weight: "10" # optional
         hostnames:
-          - "{{ .Release.Name }}.janpuc.com"
           - comics.janpuc.com
+          - "{{ .Release.Name }}.janpuc.com"
         parentRefs:
           - name: envoy-external
             namespace: network
