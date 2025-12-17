@@ -1,0 +1,23 @@
+---
+- search:
+    provider: custom
+    url: https://kagi.com/search?q=
+    suggestionUrl: https://kagi.com/api/autosuggest?q=
+    showSearchSuggestions: true
+    target: _blank
+- datetime:
+    locale: en-US
+    format:
+      dateStyle: short
+      timeStyle: short
+      hourCycle: h23
+      timeZone: Europe/Warsaw
+- openmeteo:
+    label: Kraków
+    latitude: 50.0484
+    longitude: 19.9661
+    timeZone: Europe/Warsaw
+    units: metric
+    cache: 5
+    format:
+      maximumFractionDigits: 0
