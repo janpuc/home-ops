@@ -59,7 +59,7 @@ spec:
           gethomepage.dev/icon: home-assistant.svg
           gethomepage.dev/name: Home Assistant
           gethomepage.dev/widget.type: homeassistant
-          gethomepage.dev/widget.url: "http://hass.default.svc.cluster.local:8123"
+          gethomepage.dev/widget.url: "http://home-assistant.default.svc.cluster.local:8123"
           gethomepage.dev/widget.key: "{{`{{HOMEPAGE_VAR_HASS_API_KEY}}`}}"
           gethomepage.dev/pod-selector: app.kubernetes.io/name=home-assistant
           gethomepage.dev/weight: "10"
