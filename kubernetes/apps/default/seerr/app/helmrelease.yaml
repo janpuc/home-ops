@@ -66,9 +66,9 @@ spec:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/description: TV series and movie management
           gethomepage.dev/group: Downloads
-          gethomepage.dev/icon: jellyseer.svg
+          gethomepage.dev/icon: jellyseerr.svg
           gethomepage.dev/name: Seerr
-          gethomepage.dev/widget.type: jellyseer
+          gethomepage.dev/widget.type: jellyseerr
           gethomepage.dev/widget.url: "http://seerr.default.svc.cluster.local"
           gethomepage.dev/widget.key: "{{`{{HOMEPAGE_VAR_SEERR_API_KEY}}`}}"
           gethomepage.dev/widget.enableQueue: "true"
