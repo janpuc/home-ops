@@ -22,6 +22,14 @@ spec:
         limits: {}
     route:
       dashboard:
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/description: Ceph storage dashboard
+          gethomepage.dev/group: Storage
+          gethomepage.dev/icon: ceph.svg
+          gethomepage.dev/name: Rook Ceph
+          gethomepage.dev/pod-selector: app.kubernetes.io/name=ceph-mgr
+          gethomepage.dev/weight: "10"
         host:
           name: rook.janpuc.com
           path: /
