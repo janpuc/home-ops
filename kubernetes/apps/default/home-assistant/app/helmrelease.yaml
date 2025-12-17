@@ -53,9 +53,19 @@ spec:
         annotations:
           gatus.home-operations.com/endpoint: |-
             conditions: ["[STATUS] == 200"]
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/description: Home automation platform
+          gethomepage.dev/group: Home
+          gethomepage.dev/icon: home-assistant.svg
+          gethomepage.dev/name: Home Assistant
+          gethomepage.dev/widget.type: home-assistant
+          gethomepage.dev/widget.url: "http://hass.default.svc.cluster.local"
+          gethomepage.dev/widget.key: "{{`{{HOMEPAGE_VAR_HOME_ASSISTANT_API_KEY}}`}}"
+          gethomepage.dev/pod-selector: app.kubernetes.io/name=home-assistant
+          gethomepage.dev/weight: "10"
         hostnames:
-          - "{{ .Release.Name }}.janpuc.com"
           - hass.janpuc.com
+          - "{{ .Release.Name }}.janpuc.com"
         parentRefs:
           - name: envoy-external
             namespace: network
