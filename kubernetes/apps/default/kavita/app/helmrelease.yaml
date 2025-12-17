@@ -40,6 +40,17 @@ spec:
             port: 5000
     route:
       app:
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/description: Manga reader
+          gethomepage.dev/group: Kavita
+          gethomepage.dev/icon: kavita.svg
+          gethomepage.dev/name: Kavita
+          gethomepage.dev/widget.type: kavita
+          gethomepage.dev/widget.url: "https://comics.janpuc.com"
+          gethomepage.dev/widget.key: "${HOMEPAGE_KAVITA_API_KEY}"
+          gethomepage.dev/pod-selector: ""
+          gethomepage.dev/weight: "10" # optional
         hostnames:
           - "{{ .Release.Name }}.janpuc.com"
           - comics.janpuc.com
