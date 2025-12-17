@@ -66,6 +66,18 @@ spec:
             port: *port
     route:
       app:
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/description: Movie manager
+          gethomepage.dev/group: Downloads
+          gethomepage.dev/icon: radarr.svg
+          gethomepage.dev/name: Radarr
+          gethomepage.dev/widget.type: radarr
+          gethomepage.dev/widget.url: "http://radarr.default.svc.cluster.local"
+          gethomepage.dev/widget.key: "{{`{{HOMEPAGE_VAR_RADARR_API_KEY}}`}}"
+          gethomepage.dev/widget.enableQueue: "true"
+          gethomepage.dev/pod-selector: app.kubernetes.io/name=radarr
+          gethomepage.dev/weight: "10"
         hostnames:
           - "{{ .Release.Name }}.janpuc.com"
         parentRefs:
