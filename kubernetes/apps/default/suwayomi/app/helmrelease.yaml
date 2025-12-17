@@ -51,6 +51,17 @@ spec:
             port: *port
     route:
       app:
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/description: Manga downloader
+          gethomepage.dev/group: Media
+          gethomepage.dev/icon: suwayomi.png
+          gethomepage.dev/name: Suwayomi
+          gethomepage.dev/widget.type: suwayomi
+          gethomepage.dev/widget.url: "https://{{ .Release.Name }}.janpuc.com"
+          gethomepage.dev/pod-selector: ""
+          gethomepage.dev/weight: "10" # optional
+          gethomepage.dev/instance: "public" # optional
         hostnames:
           - "{{ .Release.Name }}.janpuc.com"
         parentRefs:
