@@ -90,7 +90,7 @@ spec:
           gethomepage.dev/icon: authelia.svg
           gethomepage.dev/name: Authelia
           gethomepage.dev/pod-selector: app.kubernetes.io/name=authelia
-          gethomepage.dev/weight: "10" # optional
+          gethomepage.dev/weight: "10"
         hostnames:
           - auth.janpuc.com
           - "{{ .Release.Name }}.janpuc.com"
