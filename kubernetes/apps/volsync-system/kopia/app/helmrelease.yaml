@@ -62,6 +62,19 @@ spec:
             port: *port
     route:
       app:
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/description: Kopia backup tool web UI
+          gethomepage.dev/group: Storage
+          gethomepage.dev/icon: kopia.svg
+          gethomepage.dev/name: Kopia
+          gethomepage.dev/widget.type: kopia
+          gethomepage.dev/widget.url: "http://kopia.volsync-system.svc.cluster.local"
+          gethomepage.dev/widget.username: "{{`{{HOMEPAGE_VAR_KOPIA_USERNAME}}`}}"
+          gethomepage.dev/widget.password: "{{`{{HOMEPAGE_VAR_KOPIA_PASSWORD}}`}}"
+          gethomepage.dev/widget.snapshotPath: /repository
+          gethomepage.dev/pod-selector: app.kubernetes.io/name=kopia
+          gethomepage.dev/weight: "10"
         hostnames:
           - "{{ .Release.Name }}.janpuc.com"
         parentRefs:
