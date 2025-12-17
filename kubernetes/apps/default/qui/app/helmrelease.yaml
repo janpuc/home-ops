@@ -66,6 +66,14 @@ spec:
             port: *port
     route:
       app:
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/description: qBittorrent UI
+          gethomepage.dev/group: Downloads
+          gethomepage.dev/icon: qui.svg
+          gethomepage.dev/name: Qui
+          gethomepage.dev/pod-selector: app.kubernetes.io/name=qui
+          gethomepage.dev/weight: "10"
         hostnames:
           - "{{ .Release.Name }}.janpuc.com"
         parentRefs:
