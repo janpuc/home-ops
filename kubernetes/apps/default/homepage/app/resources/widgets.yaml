@@ -4,7 +4,7 @@
     url: https://kagi.com/search?q=
     suggestionUrl: https://kagi.com/api/autosuggest?q=
     showSearchSuggestions: true
-    target: _blank
+    target: _self
 - datetime:
     locale: pl
     format:
