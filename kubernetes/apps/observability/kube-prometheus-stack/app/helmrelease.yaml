@@ -18,7 +18,7 @@ spec:
             gethomepage.dev/enabled: "true"
             gethomepage.dev/description: Alertmanager for Prometheus alerts
             gethomepage.dev/group: Observability
-            gethomepage.dev/icon: mdi-alert-octogram
+            gethomepage.dev/icon: mdi-alert-octagram
             gethomepage.dev/name: Alertmanager
             gethomepage.dev/pod-selector: app.kubernetes.io/name=alertmanager
             gethomepage.dev/weight: "10"
