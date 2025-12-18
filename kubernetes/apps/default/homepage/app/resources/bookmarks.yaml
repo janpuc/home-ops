@@ -3,3 +3,12 @@
     - YouTube:
         - icon: si-youtube
           href: https://youtube.com/
+    - GitHub:
+        - icon: si-github
+          href: https://github.com/
+    - HomeOps:
+        - icon: md-home-edit-outline
+          href: https://github.com/janpuc/home-ops
+    - Nix:
+        - icon: si-nixos
+          href: https://github.com/janpuc/nix-config

@@ -7,7 +7,7 @@ layout:
   Bookmarks:
     style: row
     columns: 5
-    iconsOnly: false
+    iconsOnly: true
   Calendar:
     style: columns
   Selfhosted:
