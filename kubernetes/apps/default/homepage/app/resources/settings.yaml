@@ -2,6 +2,7 @@
 title: Home
 theme: dark
 statusStyle: dot
+useEqualHeights: true
 layout:
   Bookmarks:
     style: row
