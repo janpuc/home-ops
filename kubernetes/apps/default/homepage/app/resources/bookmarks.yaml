@@ -21,3 +21,7 @@
     - Deepseek:
         - icon: mdi-chat-processing-outline
           href: https://chat.deepseek.com/
+- Random:
+    - OpenSignups:
+        - icon: mdi-pirate
+          href: https://www.reddit.com/r/OpenSignups/

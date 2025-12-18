@@ -31,3 +31,7 @@ layout:
   Misc:
     style: row
     columns: 3
+  Random:
+    style: row
+    columns: 5
+    iconsOnly: true
