@@ -60,7 +60,7 @@ spec:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/description: Subtitle downloader
           gethomepage.dev/group: Downloads
-          gethomepage.dev/icon: bazarr.svg
+          gethomepage.dev/icon: mdi-subtitles
           gethomepage.dev/name: Bazarr
           gethomepage.dev/widget.type: bazarr
           gethomepage.dev/widget.url: "http://bazarr.default.svc.cluster.local"

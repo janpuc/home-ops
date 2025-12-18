@@ -70,7 +70,7 @@ spec:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/description: Movie manager
           gethomepage.dev/group: Downloads
-          gethomepage.dev/icon: radarr.svg
+          gethomepage.dev/icon: si-radarr
           gethomepage.dev/name: Radarr
           gethomepage.dev/widget.type: radarr
           gethomepage.dev/widget.url: "http://radarr.default.svc.cluster.local"

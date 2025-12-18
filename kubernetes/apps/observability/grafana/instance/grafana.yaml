@@ -64,7 +64,7 @@ spec:
         gethomepage.dev/enabled: "true"
         gethomepage.dev/description: Observability dashboard
         gethomepage.dev/group: Observability
-        gethomepage.dev/icon: grafana.svg
+        gethomepage.dev/icon: si-grafana
         gethomepage.dev/name: Grafana
         gethomepage.dev/widget.type: grafana
         gethomepage.dev/widget.version: "2"

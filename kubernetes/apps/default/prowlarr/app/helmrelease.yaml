@@ -70,7 +70,7 @@ spec:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/description: Prowlarr Indexer Manager
           gethomepage.dev/group: Downloads
-          gethomepage.dev/icon: prowlarr.svg
+          gethomepage.dev/icon: mdi-owl
           gethomepage.dev/name: Prowlarr
           gethomepage.dev/widget.type: prowlarr
           gethomepage.dev/widget.url: "http://prowlarr.default.svc.cluster.local"

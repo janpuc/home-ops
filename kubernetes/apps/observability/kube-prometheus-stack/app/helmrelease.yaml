@@ -18,7 +18,7 @@ spec:
             gethomepage.dev/enabled: "true"
             gethomepage.dev/description: Alertmanager for Prometheus alerts
             gethomepage.dev/group: Observability
-            gethomepage.dev/icon: alertmanager.svg
+            gethomepage.dev/icon: mdi-alert-octogram
             gethomepage.dev/name: Alertmanager
             gethomepage.dev/pod-selector: app.kubernetes.io/name=alertmanager
             gethomepage.dev/weight: "10"
@@ -52,7 +52,7 @@ spec:
             gethomepage.dev/enabled: "true"
             gethomepage.dev/description: Prometheus monitoring system
             gethomepage.dev/group: Observability
-            gethomepage.dev/icon: prometheus.svg
+            gethomepage.dev/icon: si-prometheus
             gethomepage.dev/name: Prometheus
             gethomepage.dev/widget.type: prometheus
             gethomepage.dev/widget.url: "http://prometheus-operated.observability.svc.cluster.local:9090"

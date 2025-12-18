@@ -67,7 +67,7 @@ spec:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/description: Kopia backup tool web UI
           gethomepage.dev/group: Storage
-          gethomepage.dev/icon: kopia.svg
+          gethomepage.dev/icon: mdi-cloud-arrow-up
           gethomepage.dev/name: Kopia
           gethomepage.dev/widget.type: kopia
           gethomepage.dev/widget.url: "http://kopia.volsync-system.svc.cluster.local"

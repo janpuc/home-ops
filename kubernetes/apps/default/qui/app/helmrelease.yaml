@@ -70,7 +70,7 @@ spec:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/description: qBittorrent UI
           gethomepage.dev/group: Downloads
-          gethomepage.dev/icon: qui.svg
+          gethomepage.dev/icon: mdi-rabbit
           gethomepage.dev/name: Qui
           gethomepage.dev/pod-selector: app.kubernetes.io/name=qui
           gethomepage.dev/weight: "30"

@@ -49,7 +49,7 @@ spec:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/description: Web IRC client
           gethomepage.dev/group: Misc
-          gethomepage.dev/icon: thelounge.svg
+          gethomepage.dev/icon: mdi-forum
           gethomepage.dev/name: The Lounge
           gethomepage.dev/pod-selector: app.kubernetes.io/name=thelounge
           gethomepage.dev/weight: "10"

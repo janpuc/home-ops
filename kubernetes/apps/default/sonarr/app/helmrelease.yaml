@@ -70,7 +70,7 @@ spec:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/description: TV Series manager
           gethomepage.dev/group: Downloads
-          gethomepage.dev/icon: sonarr.svg
+          gethomepage.dev/icon: si-sonarr
           gethomepage.dev/name: Sonarr
           gethomepage.dev/widget.type: sonarr
           gethomepage.dev/widget.url: "http://sonarr.default.svc.cluster.local"

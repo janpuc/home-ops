@@ -92,7 +92,7 @@ spec:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/description: Uptime monitoring dashboard
           gethomepage.dev/group: Observability
-          gethomepage.dev/icon: gatus.svg
+          gethomepage.dev/icon: si-statuspage
           gethomepage.dev/name: Gatus
           gethomepage.dev/widget.type: gatus
           gethomepage.dev/widget.url: "http://gatus.observability.svc.cluster.local"

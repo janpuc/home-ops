@@ -89,7 +89,7 @@ spec:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/description: Automated torrent downloader
           gethomepage.dev/group: Downloads
-          gethomepage.dev/icon: autobrr.svg
+          gethomepage.dev/icon: mdi-rabbit
           gethomepage.dev/name: Autobrr
           gethomepage.dev/widget.type: autobrr
           gethomepage.dev/widget.url: "http://autobrr.default.svc.cluster.local"

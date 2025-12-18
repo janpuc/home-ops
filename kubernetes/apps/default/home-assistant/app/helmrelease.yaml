@@ -56,7 +56,7 @@ spec:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/description: Home automation platform
           gethomepage.dev/group: Selfhosted
-          gethomepage.dev/icon: home-assistant.svg
+          gethomepage.dev/icon: si-homeassistant
           gethomepage.dev/name: Home Assistant
           gethomepage.dev/widget.type: homeassistant
           gethomepage.dev/widget.url: "http://home-assistant.default.svc.cluster.local:8123"

@@ -55,7 +55,7 @@ spec:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/description: Manga downloader
           gethomepage.dev/group: Downloads
-          gethomepage.dev/icon: suwayomi.svg
+          gethomepage.dev/icon: mdi-book-open-page-variant
           gethomepage.dev/name: Suwayomi
           gethomepage.dev/widget.type: suwayomi
           gethomepage.dev/widget.url: "https://{{ .Release.Name }}.janpuc.com"

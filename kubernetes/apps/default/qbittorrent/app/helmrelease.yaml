@@ -127,7 +127,7 @@ spec:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/description: qBittorrent Download Client
           gethomepage.dev/group: Downloads
-          gethomepage.dev/icon: qbittorrent.svg
+          gethomepage.dev/icon: si-qbittorrent
           gethomepage.dev/name: qBittorrent
           gethomepage.dev/widget.type: qbittorrent
           gethomepage.dev/widget.url: "http://qbittorrent.default.svc.cluster.local"
