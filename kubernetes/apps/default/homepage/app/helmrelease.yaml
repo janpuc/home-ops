@@ -88,7 +88,7 @@ spec:
                   value: /sw.js
             backendRefs:
               - name: homepage
-                port: http
+                port: *port
     persistence:
       config:
         type: configMap
