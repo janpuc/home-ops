@@ -3,12 +3,12 @@
     - Mail:
         - icon: si-protonmail
           href: https://mail.proton.me/
-    - Calendar:
-        - icon: si-googlecalendar
-          href: https://calendar.google.com/
     - YouTube:
         - icon: si-youtube
           href: https://youtube.com/
+    - Calendar:
+        - icon: si-googlecalendar
+          href: https://calendar.google.com/
     - GitHub:
         - icon: si-github
           href: https://github.com/
