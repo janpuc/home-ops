@@ -3,8 +3,7 @@
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: EnvoyPatchPolicy
 metadata:
-  name: homepage-sw-direct-response
-  namespace: network
+  name: homepage-sw-static-response
 spec:
   targetRef:
     group: gateway.networking.k8s.io
@@ -12,66 +11,56 @@ spec:
     name: envoy-internal
   type: JSONPatch
   jsonPatches:
-    - name: network/envoy-internal/https
-      type: type.googleapis.com/envoy.config.route.v3.RouteConfiguration
+    - type: type.googleapis.com/envoy.config.listener.v3.Listener
+      name: network/envoy-internal/https
       operation:
-        op: replace
+        op: add
         jsonPath: >
-          $.virtual_hosts[*].routes[
-            ?(@.route)
-          ].route
+          $.filter_chains[0].filters[?(@.name=="envoy.filters.network.http_connection_manager")]
+          .typed_config.http_filters[-1]
         value:
-          direct_response:
-            status: 200
-            body:
-              inline_string: |
-                const CACHE_NAME = 'homepage-shell-v1';
+          name: envoy.filters.http.lua
+          typed_config:
+            "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
+            inline_code: |
+              function envoy_on_request(handle)
+                if handle:headers():get(":path") == "/sw.js" then
+                  handle:respond(
+                    {
+                      [":status"] = "200",
+                      ["content-type"] = "application/javascript",
+                      ["cache-control"] = "public, max-age=31536000, immutable"
+                    },
+                    [[
+                      const CACHE_NAME = 'homepage-shell-v2';
 
-                self.addEventListener('install', event => {
-                  self.skipWaiting();
-                });
+                      self.addEventListener('install', e => self.skipWaiting());
 
-                self.addEventListener('activate', event => {
-                  event.waitUntil((async () => {
-                    if (self.registration.navigationPreload) {
-                      await self.registration.navigationPreload.enable();
-                    }
-                    await self.clients.claim();
-                  })());
-                });
+                      self.addEventListener('activate', e => {
+                        e.waitUntil(self.clients.claim());
+                      });
 
-                self.addEventListener('fetch', event => {
-                  const url = new URL(event.request.url);
+                      self.addEventListener('fetch', event => {
+                        const url = new URL(event.request.url);
+                        if (event.request.method !== 'GET' ||
+                            url.origin !== self.location.origin ||
+                            url.pathname.startsWith('/api/')) {
+                          return;
+                        }
 
-                  if (
-                    event.request.method !== 'GET' ||
-                    url.origin !== self.location.origin ||
-                    url.pathname.startsWith('/api/')
-                  ) {
-                    return;
-                  }
+                        event.respondWith((async () => {
+                          const cache = await caches.open(CACHE_NAME);
+                          const cached = await cache.match(event.request);
+                          if (cached) return cached;
 
-                  event.respondWith((async () => {
-                    const cache = await caches.open(CACHE_NAME);
-                    const cached = await cache.match(event.request);
-
-                    const preload = event.preloadResponse;
-
-                    const fetchAndCache = async () => {
-                      const response = await (preload || fetch(event.request));
-                      if (response && response.status === 200) {
-                        cache.put(event.request, response.clone());
-                      }
-                      return response;
-                    };
-
-                    return cached || fetchAndCache();
-                  })());
-                });
-          response_headers_to_add:
-            - header:
-                key: Content-Type
-                value: application/javascript
-            - header:
-                key: Cache-Control
-                value: public, max-age=31536000, immutable
+                          const response = await fetch(event.request);
+                          if (response.status === 200) {
+                            cache.put(event.request, response.clone());
+                          }
+                          return response;
+                        })());
+                      });
+                    ]]
+                  )
+                end
+              end
