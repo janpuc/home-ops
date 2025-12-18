@@ -1,4 +1,5 @@
 ---
+- Bookmarks: {}
 - Calendar:
     - Agenda:
         widget:
@@ -12,7 +13,13 @@
             - type: radarr # active widget type that is currently enabled on homepage - possible values: radarr, sonarr>
               service_group: Downloads # group name where widget exists
               service_name: Radarr # service name for that widget
-    - Infrastructure:
-        - Unifi:
-            href: https://unifi.internal
-            icon: unifi.svg
+- Selfhosted: {}
+- Downloads: {}
+- Infrastructure:
+    - Unifi:
+        href: https://unifi.internal
+        icon: unifi.svg
+- Security: {}
+- Storage: {}
+- Observability: {}
+- Misc: {}

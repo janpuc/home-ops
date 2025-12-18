@@ -3,6 +3,9 @@ title: Home
 theme: dark
 statusStyle: dot
 layout:
+  Bookmarks:
+    style: row
+    columns: 3
   Calendar:
     style: columns
   Selfhosted:
