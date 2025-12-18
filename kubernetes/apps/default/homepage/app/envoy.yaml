@@ -18,7 +18,7 @@ spec:
         op: replace
         jsonPath: >
           $.virtual_hosts[*].routes[
-            ?(@.match.path == "/sw.js")
+            ?(@.route)
           ].route
         value:
           direct_response:
