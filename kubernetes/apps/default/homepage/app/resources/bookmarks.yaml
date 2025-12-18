@@ -7,7 +7,7 @@
         - icon: si-github
           href: https://github.com/
     - HomeOps:
-        - icon: md-home-edit-outline
+        - icon: mdi-home-edit-outline
           href: https://github.com/janpuc/home-ops
     - Nix:
         - icon: si-nixos
