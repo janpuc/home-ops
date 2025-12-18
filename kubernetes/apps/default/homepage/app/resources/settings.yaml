@@ -5,27 +5,34 @@ statusStyle: dot
 layout:
   Bookmarks:
     style: row
-    columns: 3
+    columns: 5
+    iconsOnly: true
   Calendar:
     style: columns
   Selfhosted:
     style: row
-    columns: 2
+    columns: 3
   Downloads:
     style: row
     columns: 3
+    initiallyCollapsed: true
   Infrastructure:
     style: row
     columns: 2
+    initiallyCollapsed: true
   Security:
     style: row
     columns: 2
+    initiallyCollapsed: true
   Storage:
     style: row
     columns: 2
+    initiallyCollapsed: true
   Observability:
     style: row
     columns: 3
+    initiallyCollapsed: true
   Misc:
     style: row
     columns: 3
+    initiallyCollapsed: true
