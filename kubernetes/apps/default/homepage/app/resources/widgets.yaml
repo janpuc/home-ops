@@ -5,14 +5,6 @@
     suggestionUrl: https://kagi.com/api/autosuggest?q=
     showSearchSuggestions: true
     target: _self
-# - datetime:
-#     locale: pl
-#     text_size: 1
-#     format:
-#       dateStyle: short
-#       timeStyle: short
-#       hourCycle: h23
-#       timeZone: Europe/Warsaw
 - openmeteo:
     label: Kraków
     latitude: 50.0484
