@@ -9,10 +9,13 @@
     - Calendar:
         - icon: si-googlecalendar
           href: https://calendar.google.com/
+    - Maps:
+        - icon: si-googlemaps
+          href: https://maps.google.com/
     - GitHub:
         - icon: si-github
           href: https://github.com/
-    - HomeOps:
+    - Home Ops:
         - icon: mdi-home-edit-outline
           href: https://github.com/janpuc/home-ops
     - Nix:
@@ -22,12 +25,12 @@
         - icon: mdi-chat-processing-outline
           href: https://chat.deepseek.com/
 - Random:
-    - SimpleIcons:
+    - Simple Icons:
         - icon: si-simpleicons
           href: https://simpleicons.org/
-    - MaterialDesignIcons:
+    - Material Design Icons:
         - icon: si-materialdesignicons
           href: https://pictogrammers.com/library/mdi/
-    - OpenSignups:
+    - Open Signups:
         - icon: mdi-pirate
           href: https://www.reddit.com/r/OpenSignups/
