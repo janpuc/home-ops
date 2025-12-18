@@ -8,14 +8,14 @@ layout:
     style: row
     columns: 5
     iconsOnly: true
-  Calendar:
-    style: columns
   Selfhosted:
     style: row
     columns: 3
   Downloads:
     style: row
     columns: 3
+  Calendar:
+    style: columns
   Infrastructure:
     style: row
     columns: 2
