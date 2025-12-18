@@ -1,0 +1,77 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/gateway.envoyproxy.io/envoypatchpolicy_v1alpha1.json
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyPatchPolicy
+metadata:
+  name: homepage-sw-direct-response
+  namespace: network
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: Gateway
+    name: envoy-internal
+  type: JSONPatch
+  jsonPatches:
+    - name: network/envoy-internal/https
+      type: type.googleapis.com/envoy.config.route.v3.RouteConfiguration
+      operation:
+        op: replace
+        jsonPath: >
+          $.virtual_hosts[*].routes[
+            ?(@.match.path == "/sw.js")
+          ].route
+        value:
+          direct_response:
+            status: 200
+            body:
+              inline_string: |
+                const CACHE_NAME = 'homepage-shell-v1';
+
+                self.addEventListener('install', event => {
+                  self.skipWaiting();
+                });
+
+                self.addEventListener('activate', event => {
+                  event.waitUntil((async () => {
+                    if (self.registration.navigationPreload) {
+                      await self.registration.navigationPreload.enable();
+                    }
+                    await self.clients.claim();
+                  })());
+                });
+
+                self.addEventListener('fetch', event => {
+                  const url = new URL(event.request.url);
+
+                  if (
+                    event.request.method !== 'GET' ||
+                    url.origin !== self.location.origin ||
+                    url.pathname.startsWith('/api/')
+                  ) {
+                    return;
+                  }
+
+                  event.respondWith((async () => {
+                    const cache = await caches.open(CACHE_NAME);
+                    const cached = await cache.match(event.request);
+
+                    const preload = event.preloadResponse;
+
+                    const fetchAndCache = async () => {
+                      const response = await (preload || fetch(event.request));
+                      if (response && response.status === 200) {
+                        cache.put(event.request, response.clone());
+                      }
+                      return response;
+                    };
+
+                    return cached || fetchAndCache();
+                  })());
+                });
+          response_headers_to_add:
+            - header:
+                key: Content-Type
+                value: application/javascript
+            - header:
+                key: Cache-Control
+                value: public, max-age=31536000, immutable

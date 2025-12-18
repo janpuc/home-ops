@@ -69,11 +69,26 @@ spec:
     route:
       app:
         hostnames:
-          - "{{ .Release.Name }}.janpuc.com"
           - home.janpuc.com
+          - "{{ .Release.Name }}.janpuc.com"
         parentRefs:
           - name: envoy-internal
             namespace: network
+      sw:
+        hostnames:
+          - home.janpuc.com
+          - "{{ .Release.Name }}.janpuc.com"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - matches:
+              - path:
+                  type: Exact
+                  value: /sw.js
+            backendRefs:
+              - name: homepage
+                port: http
     persistence:
       config:
         type: configMap
