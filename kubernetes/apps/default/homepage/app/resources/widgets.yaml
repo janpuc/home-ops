@@ -22,11 +22,6 @@
     cache: 5
     format:
       maximumFractionDigits: 0
-- resources:
-    backend: kubernetes
-    cpu: true
-    expanded: true
-    memory: true
 - kubernetes:
     cluster:
       show: true
