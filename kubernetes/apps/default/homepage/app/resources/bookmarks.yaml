@@ -1,4 +1,5 @@
 ---
 - Bookmarks:
     - YouTube:
-        - href: https://youtube.com/
+        - icon: si-youtube
+          href: https://youtube.com/

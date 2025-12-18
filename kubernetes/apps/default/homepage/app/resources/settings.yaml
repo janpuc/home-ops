@@ -6,7 +6,7 @@ layout:
   Bookmarks:
     style: row
     columns: 5
-    iconsOnly: true
+    iconsOnly: false
   Calendar:
     style: columns
   Selfhosted:
@@ -15,24 +15,18 @@ layout:
   Downloads:
     style: row
     columns: 3
-    initiallyCollapsed: true
   Infrastructure:
     style: row
     columns: 2
-    initiallyCollapsed: true
   Security:
     style: row
     columns: 2
-    initiallyCollapsed: true
   Storage:
     style: row
     columns: 2
-    initiallyCollapsed: true
   Observability:
     style: row
     columns: 3
-    initiallyCollapsed: true
   Misc:
     style: row
     columns: 3
-    initiallyCollapsed: true
