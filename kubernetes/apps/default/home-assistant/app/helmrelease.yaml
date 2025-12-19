@@ -36,6 +36,13 @@ spec:
               limits:
                 memory: 2Gi
     defaultPodOptions:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: |-
+          [{
+            "name": "lan",
+            "namespace": "kube-system",
+            "mac": "c6:07:27:af:fb:53"
+          }]
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
