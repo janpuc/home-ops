@@ -34,3 +34,6 @@
     - Open Signups:
         - icon: mdi-pirate
           href: https://www.reddit.com/r/OpenSignups/
+    - Onedr0p:
+        - icon: si-kubernetes
+          href: https://github.com/onedr0p/home-ops
