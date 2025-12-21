@@ -21,6 +21,9 @@
     - Nix:
         - icon: si-nixos
           href: https://github.com/janpuc/nix-config
+    - Big Mouth:
+        - icon: si-truenas
+          href: https://bigmouth.internal/
     - Deepseek:
         - icon: mdi-chat-processing-outline
           href: https://chat.deepseek.com/
