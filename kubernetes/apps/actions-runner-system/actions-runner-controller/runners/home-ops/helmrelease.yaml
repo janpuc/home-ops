@@ -22,14 +22,20 @@ spec:
         storageClassName: openebs-hostpath
         resources:
           requests:
-            cpu: 10n
-            memory: 128Mi
             storage: 25Gi
-          limits:
-            memory: 512Mi
     controllerServiceAccount:
       name: actions-runner-controller
       namespace: actions-runner-system
+    listenerTemplate:
+      spec:
+        containers:
+          - name: listener
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 64Mi
     template:
       spec:
         containers:
@@ -44,6 +50,12 @@ spec:
                 valueFrom:
                   fieldRef:
                     fieldPath: status.hostIP
+            resources:
+              requests:
+                cpu: 10n
+                memory: 128Mi
+              limits:
+                memory: 512Mi
             volumeMounts:
               - mountPath: /var/run/secrets/talos.dev
                 name: talos
