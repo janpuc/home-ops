@@ -55,7 +55,8 @@
   "window.zoomLevel": 0,
   "yaml.schemaStore.enable": true,
   "yaml.schemas": {
-    "kubernetes": "./kubernetes/**/*.yaml"
+    "kubernetes": "./kubernetes/**/*.yaml",
+    "https://kubernetes-schemas.pages.dev/external-secrets.io/externalsecret_v1.json": "file:///Users/jan.pucilowski/Development/home-ops/kubernetes/apps/default/home-assistant/app/externalsecret.yaml"
   },
   "[yaml]": {
     "editor.defaultFormatter": "bluebrown.yamlfmt"
