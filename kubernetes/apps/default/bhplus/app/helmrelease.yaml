@@ -18,7 +18,7 @@ spec:
               repository: janpuc/bhplus
               tag: 1.1.0@sha256:4bd7be56b918640469b1dcfc08106c3f91b7ef46ab46caae0a67f998ef1dc034
             securityContext:
-              allowPrivilegeEscalation: false
+              allowPrivilegeEscalation: true
               readOnlyRootFilesystem: false
               capabilities: {drop: ["ALL"]}
             resources:
