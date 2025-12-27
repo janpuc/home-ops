@@ -1,0 +1,52 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: bhplus
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: bhplus
+  interval: 1h
+  values:
+    controllers:
+      bhplus:
+        containers:
+          app:
+            image:
+              repository: janpuc/bhplus:1.1.0
+              tag: 1.1.0@sha256:4bd7be56b918640469b1dcfc08106c3f91b7ef46ab46caae0a67f998ef1dc034
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: {drop: ["ALL"]}
+            resources:
+              requests:
+                cpu: 10m
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      app:
+        ports:
+          http:
+            port: &port 8000
+    route:
+      app:
+        hostnames:
+          - "{{ .Release.Name }}.janpuc.com"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+    persistence:
+      media:
+        type: nfs
+        server: bigmouth.internal
+        path: /mnt/Vault/Media/Data/BH/thumbnails
+        globalMounts:
+          - path: /usr/share/nginx/html/thumbnails
