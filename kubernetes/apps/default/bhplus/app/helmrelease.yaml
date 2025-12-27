@@ -50,3 +50,7 @@ spec:
         path: /mnt/Vault/Media/Data/BH/thumbnails
         globalMounts:
           - path: /usr/share/nginx/html/thumbnails
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /var/cache/nginx
