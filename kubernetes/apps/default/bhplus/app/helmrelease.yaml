@@ -16,10 +16,10 @@ spec:
           app:
             image:
               repository: janpuc/bhplus
-              tag: 1.1.0@sha256:4bd7be56b918640469b1dcfc08106c3f91b7ef46ab46caae0a67f998ef1dc034
+              tag: 1.2.0@sha256:b0ca3446735248608a44cf9200c38c522365c562e7970fb73238902eb1010abd
             securityContext:
-              allowPrivilegeEscalation: true
-              readOnlyRootFilesystem: false
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
               capabilities: {drop: ["ALL"]}
             resources:
               requests:
@@ -52,5 +52,3 @@ spec:
           - path: /usr/share/nginx/html/thumbnails
       tmp:
         type: emptyDir
-        globalMounts:
-          - path: /var/cache/nginx
