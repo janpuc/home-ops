@@ -56,8 +56,6 @@ machine:
     defaultRuntimeSeccompProfileEnabled: true
     disableManifestsDirectory: true
     extraConfig:
-      featureGates:
-        ImageVolume: true
       serializeImagePulls: false
     extraMounts:
       - destination: /var/openebs/local-hostpath
@@ -143,19 +141,9 @@ cluster:
       - k8s.janpuc.com
     disablePodSecurityPolicy: true
     extraArgs:
-      default-watch-cache-size: "100"
       enable-aggregator-routing: "true"
-      feature-gates: ImageVolume=true,MutatingAdmissionPolicy=true
-      max-requests-inflight: "400"
-      max-mutating-requests-inflight: "200"
+      feature-gates: MutatingAdmissionPolicy=true
       runtime-config: admissionregistration.k8s.io/v1beta1=true
-      watch-cache-sizes: |
-        nodes#100
-        pods#500
-        services#100
-        endpoints#200
-        configmaps#200
-        secrets#200
     image: registry.k8s.io/kube-apiserver:v1.35.0
   controllerManager:
     extraArgs:
