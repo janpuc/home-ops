@@ -18,7 +18,6 @@ spec:
         type: cronjob
         cronjob: &cronJobSpec
           schedule: 0 * * * *
-          suspend: true
           backoffLimit: 0
           concurrencyPolicy: Forbid
           successfulJobsHistory: 1
