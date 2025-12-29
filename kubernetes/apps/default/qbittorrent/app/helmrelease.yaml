@@ -15,6 +15,8 @@ spec:
           reloader.stakater.com/auto: "true"
         containers:
           app:
+            dependsOn:
+              - gluetun
             image:
               repository: ghcr.io/home-operations/qbittorrent
               tag: 5.1.4@sha256:25fc7caf22101f85276ede9b1f76a46b7a93971bb6b70b6c58d14d6ab7f51415
@@ -47,8 +49,6 @@ spec:
               requests:
                 cpu: 100m
           gluetun:
-            dependsOn:
-              - app
             image:
               repository: ghcr.io/qdm12/gluetun
               tag: v3.41.0@sha256:6b54856716d0de56e5bb00a77029b0adea57284cf5a466f23aad5979257d3045
