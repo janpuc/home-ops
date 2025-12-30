@@ -60,7 +60,6 @@ spec:
               PORT_FORWARD_ONLY: "on"
               VPN_PORT_FORWARDING: "on"
               VPN_TYPE: wireguard
-              VPN_INTERFACE: wg0
             envFrom:
               - secretRef:
                   name: "{{ .Release.Name }}-secret"
