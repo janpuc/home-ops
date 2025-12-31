@@ -73,7 +73,7 @@ spec:
                     port: 9999
                   initialDelaySeconds: 30
                   periodSeconds: 10
-                  timeoutSeconds: 1
+                  timeoutSeconds: 30
                   failureThreshold: 3
               readiness: *gluetunProbes
               startup: *gluetunProbes
