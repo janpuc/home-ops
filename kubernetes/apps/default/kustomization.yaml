@@ -13,7 +13,7 @@ resources:
   - ./authelia/ks.yaml
   - ./autobrr/ks.yaml
   - ./bazarr/ks.yaml
-  - ./cross-seed/ks.yaml
+  # - ./cross-seed/ks.yaml
   - ./flaresolverr/ks.yaml
   - ./home-assistant/ks.yaml
   - ./homepage/ks.yaml
@@ -31,5 +31,5 @@ resources:
   - ./sonarr/ks.yaml
   - ./suwayomi/ks.yaml
   - ./thelounge/ks.yaml
-  - ./tqm/ks.yaml
+  # - ./tqm/ks.yaml
   - ./watchstate/ks.yaml
