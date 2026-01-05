@@ -184,8 +184,8 @@ spec:
             app:
               - path: /config/qBittorrent/logs
                 subPath: logs
-              - path: /tmp
-                subPath: tmp
+              - path: /incomplete
+                subPath: incomplete
             gluetun:
               - path: /tmp/gluetun
                 subPath: gluetun
