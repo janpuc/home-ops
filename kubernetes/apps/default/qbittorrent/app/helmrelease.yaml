@@ -177,11 +177,6 @@ spec:
         globalMounts:
           - path: /media/Downloads/qbittorrent
             subPath: Downloads/qbittorrent
-        mountOptions:
-          - nfsvers=4.2
-          - nconnect=16
-          - hard
-          - noatime
       tmpfs:
         type: emptyDir
         advancedMounts:
