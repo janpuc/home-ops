@@ -23,7 +23,6 @@ spec:
               TZ: Europe/Warsaw
               ALLOW_SIGNUP: "false"
               ALLOW_PASSWORD_LOGIN: "false"
-              APP_PORT: &port 80
               BASE_URL: https://recipes.janpuc.com
               DB_ENGINE: sqlite
               OIDC_AUTH_ENABLED: "true"
@@ -55,7 +54,7 @@ spec:
       app:
         ports:
           http:
-            port: *port
+            port: 9000
     route:
       app:
         hostnames:
