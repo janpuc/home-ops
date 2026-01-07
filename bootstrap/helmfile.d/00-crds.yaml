@@ -27,7 +27,7 @@ releases:
   - name: grafana-opereator
     namespace: network
     chart: oci://ghcr.io/grafana/helm-charts/grafana-operator
-    version: 5.21.3
+    version: 5.21.4
 
   - name: keda
     namespace: observability
