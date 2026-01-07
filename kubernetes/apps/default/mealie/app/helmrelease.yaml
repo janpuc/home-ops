@@ -1,0 +1,71 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: mealie
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: mealie
+  interval: 1h
+  values:
+    controllers:
+      mealie:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/mealie-recipes/mealie
+              tag: v3.9.2@sha256:57713693dceca9a124f00f165eaf8f5c41de757e7f63f8a7b80625488605dc61
+            env:
+              PUID: 1000
+              PGID: 1000
+              TZ: Europe/Warsaw
+              ALLOW_SIGNUP: "false"
+              ALLOW_PASSWORD_LOGIN: "false"
+              APP_PORT: &port 80
+              BASE_URL: https://recipes.janpuc.com
+              DB_ENGINE: sqlite
+              OIDC_AUTH_ENABLED: "true"
+              OIDC_CONFIGURATION_URL: https://auth.janpuc.com/.well-known/openid-configuration
+              OIDC_CLIENT_ID: mealie
+              OIDC_USER_GROUP: users
+              OIDC_ADMIN_GROUP: admins
+              OIDC_AUTO_REDIRECT: "true"
+              OIDC_PROVIDER_NAME: Authelia
+              OIDC_REMEMBER_ME: "true"
+            envFrom:
+              - secretRef:
+                  name: "{{ .Release.Name }}-secret"
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: {drop: ["ALL"]}
+            resources:
+              requests:
+                cpu: 10m
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      app:
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        hostnames:
+          - "recipes.janpuc.com"
+          - "{{ .Release.Name }}.janpuc.com"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+    persistence:
+      config:
+        type: emptyDir
+        globalMounts:
+          - path: /app/data
