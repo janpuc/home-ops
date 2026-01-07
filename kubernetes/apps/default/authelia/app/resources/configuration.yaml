@@ -138,8 +138,8 @@ identity_providers:
         pre_configured_consent_duration: 1y
         scopes: [openid, email, profile, groups]
         redirect_uris:
-          - "https://recipes.example.com/login"
-          - "https://mealie.example.com/login"
+          - "https://recipes.janpuc.com/login"
+          - "https://mealie.janpuc.com/login"
         grant_types: [authorization_code]
         access_token_signed_response_alg: none
         userinfo_signed_response_alg: none
