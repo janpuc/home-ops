@@ -33,4 +33,4 @@ resources:
   - ./suwayomi/ks.yaml
   - ./thelounge/ks.yaml
   # - ./tqm/ks.yaml
-  - ./watchstate/ks.yaml
+  # - ./watchstate/ks.yaml
