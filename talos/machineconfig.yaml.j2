@@ -47,11 +47,12 @@ machine:
   install:
     diskSelector:
       type: nvme
-    image: factory.talos.dev/metal-installer/23ffc88b9092c757198529cd565608b5f2997a23303ee1419c9f67bf2432b054:v1.12.1
+    image: factory.talos.dev/metal-installer/84c4db9667c83da498587e1b574573323af505b6c609fadaec7cfc4933c7f2f4:v1.12.1
     wipe: false
   kernel:
     modules:
       - name: nbd
+      - name: uinput
   kubelet:
     defaultRuntimeSeccompProfileEnabled: true
     disableManifestsDirectory: true

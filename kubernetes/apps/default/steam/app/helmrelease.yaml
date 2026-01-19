@@ -27,10 +27,9 @@ spec:
               MODE: "primary"
               ENABLE_SUNSHINE: "true"
               ENABLE_EVDEV_INPUTS: "true"
+              ENABLE_AMD_VULKAN: "true"
               SUNSHINE_USER: "admin"
               SUNSHINE_PASS: "changeme"
-              LIBVA_DRIVER_NAME: "radeonsi"
-              VDPAU_DRIVER: "radeonsi"
               SUNSHINE_ARGS: "--force-encoder=vaapi"
               SUNSHINE_VIDEO_BITRATE: "20000"
             securityContext:
@@ -43,6 +42,7 @@ spec:
               limits:
                 amd.com/gpu: 1
     defaultPodOptions:
+      hostIPC: true
       securityContext:
         runAsNonRoot: false
         runAsUser: 0
@@ -92,6 +92,7 @@ spec:
       uinput:
         type: hostPath
         hostPath: /dev/uinput
+        hostPathType: File
         globalMounts:
           - path: /dev/uinput
       dri:
