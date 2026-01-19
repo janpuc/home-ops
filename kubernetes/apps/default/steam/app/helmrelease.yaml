@@ -94,6 +94,12 @@ spec:
         path: /mnt/Vault/Media/Games
         globalMounts:
           - path: /mnt/nfs-games
+      udev:
+        type: hostPath
+        hostPath: /run/udev
+        globalMounts:
+          - path: /run/udev
+            readOnly: true
       input:
         type: hostPath
         hostPath: /dev/input
