@@ -102,7 +102,7 @@ spec:
       uinput:
         type: hostPath
         hostPath: /dev/uinput
-        hostPathType: File
+        hostPathType: CharDevice
         globalMounts:
           - path: /dev/uinput
       dri:
