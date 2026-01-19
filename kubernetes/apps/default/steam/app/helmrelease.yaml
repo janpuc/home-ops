@@ -31,6 +31,7 @@ spec:
               LIBVA_DRIVER_NAME: "radeonsi"
               VDPAU_DRIVER: "radeonsi"
               SUNSHINE_ARGS: "--force-encoder=vaapi"
+              SUNSHINE_VIDEO_BITRATE: "20000"
             securityContext:
               privileged: true
               allowPrivilegeEscalation: true
@@ -91,16 +92,6 @@ spec:
         globalMounts:
           - path: /run/udev
             readOnly: true
-      uinput:
-        type: hostPath
-        hostPath: /dev/uinput
-        globalMounts:
-          - path: /dev/uinput
-      input:
-        type: hostPath
-        hostPath: /dev/input
-        globalMounts:
-          - path: /dev/input
       shm:
         type: emptyDir
         medium: Memory
