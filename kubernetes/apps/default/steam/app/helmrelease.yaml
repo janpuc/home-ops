@@ -44,11 +44,10 @@ spec:
                     - /bin/bash
                     - -c
                     - |
-                      until [ -c /dev/uinput ]; do sleep 1; done
                       chmod 666 /dev/uinput
                       chmod 666 /dev/dri/*
                       chmod -R 666 /dev/input
-                      [ -d /run/udev ] && udevadm trigger || echo "udev not found"
+                      supervisorctl restart sunshine
             resources:
               requests:
                 cpu: 1
@@ -97,12 +96,6 @@ spec:
         path: /mnt/Vault/Media/Games
         globalMounts:
           - path: /mnt/nfs-games
-      udev:
-        type: hostPath
-        hostPath: /run/udev
-        globalMounts:
-          - path: /run/udev
-            readOnly: true
       input:
         type: hostPath
         hostPath: /dev/input
