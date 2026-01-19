@@ -36,9 +36,19 @@ spec:
               privileged: true
               allowPrivilegeEscalation: true
               readOnlyRootFilesystem: false
+            lifecycle:
+              postStart:
+                exec:
+                  command:
+                    - /bin/bash
+                    - -c
+                    - |
+                      until [ -e /dev/uinput ]; do sleep 1; done
+                      chmod 666 /dev/uinput
+                      chmod 666 /dev/dri/renderD128
             resources:
               requests:
-                cpu: 2
+                cpu: 1
               limits:
                 amd.com/gpu: 1
     defaultPodOptions:
@@ -86,7 +96,21 @@ spec:
         path: /mnt/Vault/Media/Games
         globalMounts:
           - path: /mnt/nfs-games
+      uinput:
+        enabled: true
+        type: hostPath
+        hostPath: /dev/uinput
+        hostPathType: File
+        globalMounts:
+          - path: /dev/uinput
+      dri:
+        enabled: true
+        type: hostPath
+        hostPath: /dev/dri
+        globalMounts:
+          - path: /dev/dri
       udev:
+        enabled: true
         type: hostPath
         hostPath: /run/udev
         globalMounts:
