@@ -22,13 +22,17 @@ spec:
               TZ: Europe/Warsaw
               PUID: 1000
               PGID: 1000
+              UMASK: 000
               DISPLAY: ":55"
               MODE: "primary"
+              STEAM_ARGS: "-silent"
               ENABLE_SUNSHINE: "true"
               SUNSHINE_USER: "admin"
               SUNSHINE_PASS: "changeme"
               ENABLE_EVDEV_INPUTS: "true"
-              ENABLE_AMD_VULKAN: "true"
+              ENABLE_VNC_AUDIO: "true"
+              WEB_UI_MODE: "vnc"
+              PORT_NOVNC_WEB: "8083"
             securityContext:
               privileged: true
               allowPrivilegeEscalation: true
@@ -55,38 +59,16 @@ spec:
           # Web UI for setup
           http:
             port: 8083
-          # Sunshine Ports (Moonlight)
-          sunshine-tcp-1:
-            port: 47984
-            protocol: TCP
-          sunshine-tcp-2:
-            port: 47989
-            protocol: TCP
-          sunshine-tcp-3:
-            port: 48010
-            protocol: TCP
-          sunshine-udp-1:
-            port: 47998
-            protocol: UDP
-          sunshine-udp-2:
-            port: 47999
-            protocol: UDP
-          sunshine-udp-3:
-            port: 48000
-            protocol: UDP
-          sunshine-udp-4:
-            port: 48002
-            protocol: UDP
-          sunshine-udp-5:
-            port: 48010
-            protocol: UDP
-          # Steam Remote Play Ports
-          steam-discovery:
-            port: 27036
-            protocol: UDP
-          steam-streaming:
-            port: 27031
-            protocol: UDP
+          steam-su: { port: 27031, protocol: UDP }
+          steam-disc: { port: 27036, protocol: UDP }
+          sun-t1: { port: 47984, protocol: TCP }
+          sun-t2: { port: 47989, protocol: TCP }
+          sun-t3: { port: 48010, protocol: TCP }
+          sun-u1: { port: 47998, protocol: UDP }
+          sun-u2: { port: 47999, protocol: UDP }
+          sun-u3: { port: 48000, protocol: UDP }
+          sun-u4: { port: 48002, protocol: UDP }
+          sun-u5: { port: 48010, protocol: UDP }
     route:
       app:
         hostnames:
