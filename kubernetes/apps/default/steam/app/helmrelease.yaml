@@ -69,14 +69,14 @@ spec:
           sun-u3: { port: 48000, protocol: UDP }
           sun-u4: { port: 48002, protocol: UDP }
           sun-u5: { port: 48010, protocol: UDP }
-    route:
-      app:
-        hostnames:
-          - "{{ .Release.Name }}.janpuc.com"
-        parentRefs:
-          - name: envoy-internal
-            namespace: network
-            sectionName: https
+    # route:
+    #   app:
+    #     hostnames:
+    #       - "{{ .Release.Name }}.janpuc.com"
+    #     parentRefs:
+    #       - name: envoy-internal
+    #         namespace: network
+    #         sectionName: https
     persistence:
       config:
         existingClaim: "{{ .Release.Name }}"
