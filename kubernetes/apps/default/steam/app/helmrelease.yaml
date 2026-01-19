@@ -1,0 +1,89 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: steam
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: steam
+  interval: 1h
+  values:
+    controllers:
+      steam:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/steam-headless/steam-headless
+              tag: debian@sha256:59b509525951fc941979094493af63c1c8a73b23c069b30038108a833800d83b
+            env:
+              TZ: Europe/Warsaw
+              USER_LOCALES: "en_US.UTF-8 UTF-8"
+              DISPLAY: ":1"
+              MODE: "steam"
+              PULSE_SERVER: unix:/tmp/pulseaudio.socket
+              ENABLE_AMD_VULKAN: "true"
+              RADV_PERFTEST: "aco"
+            securityContext:
+              privileged: true
+              allowPrivilegeEscalation: true
+              readOnlyRootFilesystem: false
+            resources:
+              requests:
+                cpu: 2
+              limits:
+                amd.com/gpu: 1
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: false
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      app:
+        type: LoadBalancer
+        annotations:
+          lbipam.cilium.io/ips: 192.168.69.61
+        ports:
+          http:
+            port: 8080
+          steam-discovery:
+            enabled: true
+            port: 27036
+            protocol: UDP
+          steam-streaming-udp:
+            enabled: true
+            port: 27031
+            protocol: UDP
+    route:
+      app:
+        hostnames:
+          - "{{ .Release.Name }}.janpuc.com"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+    persistence:
+      config:
+        existingClaim: "{{ .Release.Name }}"
+        globalMounts:
+          - path: /home/default
+      shm:
+        type: emptyDir
+        medium: Memory
+        sizeLimit: 2Gi
+        globalMounts:
+          - path: /dev/shm
+      udev:
+        type: hostPath
+        hostPath: /run/udev
+        globalMounts:
+          - path: /run/udev
+            readOnly: true
+      uinput:
+        type: hostPath
+        hostPath: /dev/uinput
+        globalMounts:
+          - path: /dev/uinput

@@ -29,5 +29,6 @@ resources:
   - ./recyclarr/ks.yaml
   - ./seerr/ks.yaml
   - ./sonarr/ks.yaml
+  - ./steam/ks.yaml
   - ./suwayomi/ks.yaml
   - ./thelounge/ks.yaml
