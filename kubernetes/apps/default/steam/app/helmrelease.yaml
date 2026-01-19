@@ -28,6 +28,7 @@ spec:
               ENABLE_SUNSHINE: "true"
               ENABLE_EVDEV_INPUTS: "true"
               ENABLE_AMD_VULKAN: "true"
+              LIBVA_DRIVER_NAME: "radeonsi"
               SUNSHINE_USER: "admin"
               SUNSHINE_PASS: "changeme"
               SUNSHINE_ARGS: "--force-encoder=vaapi"
@@ -44,7 +45,7 @@ spec:
                     - -c
                     - |
                       chmod 666 /dev/uinput
-                      chmod 666 /dev/dri/renderD128
+                      chmod 666 /dev/dri/*
                       chmod -R 666 /dev/input
             resources:
               requests:
@@ -94,12 +95,6 @@ spec:
         path: /mnt/Vault/Media/Games
         globalMounts:
           - path: /mnt/nfs-games
-      udev:
-        type: hostPath
-        hostPath: /run/udev
-        globalMounts:
-          - path: /run/udev
-            readOnly: true
       input:
         type: hostPath
         hostPath: /dev/input
