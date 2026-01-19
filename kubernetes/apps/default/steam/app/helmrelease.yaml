@@ -100,7 +100,6 @@ spec:
         enabled: true
         type: hostPath
         hostPath: /dev/uinput
-        hostPathType: File
         globalMounts:
           - path: /dev/uinput
       dri:
