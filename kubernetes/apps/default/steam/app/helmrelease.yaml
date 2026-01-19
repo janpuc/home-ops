@@ -56,7 +56,6 @@ spec:
         type: LoadBalancer
         annotations:
           lbipam.cilium.io/ips: 192.168.69.61
-        externalTrafficPolicy: Local
         ports:
           # Web UI for setup
           http:
