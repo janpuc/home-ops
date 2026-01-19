@@ -85,7 +85,7 @@ spec:
       library-nfs:
         type: nfs
         server: bigmouth.internal
-        path: /mnt/Vault/Games
+        path: /mnt/Vault/Media/Games
         globalMounts:
           - path: /mnt/nfs-games
       input:
