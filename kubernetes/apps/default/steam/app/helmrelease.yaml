@@ -26,6 +26,7 @@ spec:
               DISPLAY: ":55"
               MODE: "primary"
               ENABLE_SUNSHINE: "true"
+              ENABLE_EVDEV_INPUTS: "true"
               SUNSHINE_USER: "admin"
               SUNSHINE_PASS: "changeme"
               LIBVA_DRIVER_NAME: "radeonsi"
@@ -36,16 +37,6 @@ spec:
               privileged: true
               allowPrivilegeEscalation: true
               readOnlyRootFilesystem: false
-            lifecycle:
-              postStart:
-                exec:
-                  command:
-                    - /bin/bash
-                    - -c
-                    - |
-                      until [ -e /dev/uinput ]; do sleep 1; done
-                      chmod 666 /dev/uinput
-                      chmod 666 /dev/dri/renderD128
             resources:
               requests:
                 cpu: 1
@@ -64,11 +55,8 @@ spec:
         annotations:
           lbipam.cilium.io/ips: 192.168.69.61
         ports:
-          # Web UI for setup
-          http:
-            port: 8083
-          steam-su: { port: 27031, protocol: UDP }
-          steam-disc: { port: 27036, protocol: UDP }
+          http: { port: 8083 }
+          sunshine-ui: { port: 47990, protocol: TCP }
           sun-t1: { port: 47984, protocol: TCP }
           sun-t2: { port: 47989, protocol: TCP }
           sun-t3: { port: 48010, protocol: TCP }
@@ -96,25 +84,21 @@ spec:
         path: /mnt/Vault/Media/Games
         globalMounts:
           - path: /mnt/nfs-games
+      input:
+        type: hostPath
+        hostPath: /dev/input
+        globalMounts:
+          - path: /dev/input
       uinput:
-        enabled: true
         type: hostPath
         hostPath: /dev/uinput
         globalMounts:
           - path: /dev/uinput
       dri:
-        enabled: true
         type: hostPath
         hostPath: /dev/dri
         globalMounts:
           - path: /dev/dri
-      udev:
-        enabled: true
-        type: hostPath
-        hostPath: /run/udev
-        globalMounts:
-          - path: /run/udev
-            readOnly: true
       shm:
         type: emptyDir
         medium: Memory
