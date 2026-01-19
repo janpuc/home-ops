@@ -37,16 +37,16 @@ spec:
               privileged: true
               allowPrivilegeEscalation: true
               readOnlyRootFilesystem: false
-            lifecycle:
-              postStart:
-                exec:
-                  command:
-                    - /bin/bash
-                    - -c
-                    - |
-                      chmod 666 /dev/uinput
-                      chmod 666 /dev/dri/*
-                      chmod -R 666 /dev/input
+            # lifecycle:
+            #   postStart:
+            #     exec:
+            #       command:
+            #         - /bin/bash
+            #         - -c
+            #         - |
+            #           chmod 666 /dev/uinput
+            #           chmod 666 /dev/dri/*
+            #           chmod -R 666 /dev/input
             resources:
               requests:
                 cpu: 1
@@ -95,11 +95,6 @@ spec:
         path: /mnt/Vault/Media/Games
         globalMounts:
           - path: /mnt/nfs-games
-      input:
-        type: hostPath
-        hostPath: /dev/input
-        globalMounts:
-          - path: /dev/input
       uinput:
         type: hostPath
         hostPath: /dev/uinput
