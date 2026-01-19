@@ -29,6 +29,8 @@ spec:
               ENABLE_SUNSHINE: "true"
               SUNSHINE_USER: "admin"
               SUNSHINE_PASS: "changeme"
+              SUNSHINE_ARGS: "--force-encoder=vaapi"
+              LIBVA_DRIVER_NAME: "radeonsi"
               ENABLE_EVDEV_INPUTS: "true"
               ENABLE_VNC_AUDIO: "true"
               WEB_UI_MODE: "vnc"
@@ -88,9 +90,22 @@ spec:
         path: /mnt/Vault/Media/Games
         globalMounts:
           - path: /mnt/nfs-games
+      udev:
+        type: hostPath
+        hostPath: /run/udev
+        globalMounts:
+          - path: /run/udev
+            readOnly: true
+      uinput:
+        type: hostPath
+        hostPath: /dev/uinput
+        globalMounts:
+          - path: /dev/uinput
       input:
         type: hostPath
         hostPath: /dev/input
+        globalMounts:
+          - path: /dev/input
       shm:
         type: emptyDir
         medium: Memory
