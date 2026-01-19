@@ -12,6 +12,7 @@ spec:
   values:
     controllers:
       steam:
+        type: statefulset
         containers:
           app:
             image:
@@ -19,12 +20,15 @@ spec:
               tag: debian@sha256:59b509525951fc941979094493af63c1c8a73b23c069b30038108a833800d83b
             env:
               TZ: Europe/Warsaw
-              USER_LOCALES: "en_US.UTF-8 UTF-8"
-              DISPLAY: ":1"
-              MODE: "steam"
-              PULSE_SERVER: unix:/tmp/pulseaudio.socket
+              PUID: 1000
+              PGID: 1000
+              DISPLAY: ":55"
+              MODE: "primary"
+              ENABLE_SUNSHINE: "true"
+              SUNSHINE_USER: "admin"
+              SUNSHINE_PASS: "changeme"
+              ENABLE_EVDEV_INPUTS: "true"
               ENABLE_AMD_VULKAN: "true"
-              RADV_PERFTEST: "aco"
             securityContext:
               privileged: true
               allowPrivilegeEscalation: true
@@ -46,15 +50,41 @@ spec:
         type: LoadBalancer
         annotations:
           lbipam.cilium.io/ips: 192.168.69.61
+        externalTrafficPolicy: Local
         ports:
+          # Web UI for setup
           http:
-            port: 8080
+            port: 8083
+          # Sunshine Ports (Moonlight)
+          sunshine-tcp-1:
+            port: 47984
+            protocol: TCP
+          sunshine-tcp-2:
+            port: 47989
+            protocol: TCP
+          sunshine-tcp-3:
+            port: 48010
+            protocol: TCP
+          sunshine-udp-1:
+            port: 47998
+            protocol: UDP
+          sunshine-udp-2:
+            port: 47999
+            protocol: UDP
+          sunshine-udp-3:
+            port: 48000
+            protocol: UDP
+          sunshine-udp-4:
+            port: 48002
+            protocol: UDP
+          sunshine-udp-5:
+            port: 48010
+            protocol: UDP
+          # Steam Remote Play Ports
           steam-discovery:
-            enabled: true
             port: 27036
             protocol: UDP
-          steam-streaming-udp:
-            enabled: true
+          steam-streaming:
             port: 27031
             protocol: UDP
     route:
@@ -70,20 +100,18 @@ spec:
         existingClaim: "{{ .Release.Name }}"
         globalMounts:
           - path: /home/default
+      library-nfs:
+        type: nfs
+        server: bigmouth.internal
+        path: /mnt/Vault/Games
+        globalMounts:
+          - path: /mnt/nfs-games
+      input:
+        type: hostPath
+        hostPath: /dev/input
       shm:
         type: emptyDir
         medium: Memory
-        sizeLimit: 2Gi
+        sizeLimit: 4Gi
         globalMounts:
           - path: /dev/shm
-      udev:
-        type: hostPath
-        hostPath: /run/udev
-        globalMounts:
-          - path: /run/udev
-            readOnly: true
-      uinput:
-        type: hostPath
-        hostPath: /dev/uinput
-        globalMounts:
-          - path: /dev/uinput
