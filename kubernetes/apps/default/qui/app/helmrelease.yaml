@@ -87,5 +87,4 @@ spec:
         server: bigmouth.internal
         path: /mnt/Vault/Media
         globalMounts:
-          - path: /media/Downloads
-            subPath: Downloads
+          - path: /media

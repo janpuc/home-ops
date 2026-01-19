@@ -175,8 +175,7 @@ spec:
         server: bigmouth.internal
         path: /mnt/Vault/Media
         globalMounts:
-          - path: /media/Downloads/qbittorrent
-            subPath: Downloads/qbittorrent
+          - path: /media
       tmpfs:
         type: emptyDir
         advancedMounts:
@@ -184,8 +183,6 @@ spec:
             app:
               - path: /config/qBittorrent/logs
                 subPath: logs
-              - path: /incomplete
-                subPath: incomplete
             gluetun:
               - path: /tmp/gluetun
                 subPath: gluetun
