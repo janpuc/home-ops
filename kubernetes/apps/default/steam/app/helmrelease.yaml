@@ -25,16 +25,9 @@ spec:
               UMASK: 000
               DISPLAY: ":55"
               MODE: "primary"
-              STEAM_ARGS: "-silent"
               ENABLE_SUNSHINE: "true"
               SUNSHINE_USER: "admin"
               SUNSHINE_PASS: "changeme"
-              SUNSHINE_ARGS: "--force-encoder=vaapi"
-              LIBVA_DRIVER_NAME: "radeonsi"
-              ENABLE_EVDEV_INPUTS: "true"
-              ENABLE_VNC_AUDIO: "true"
-              WEB_UI_MODE: "vnc"
-              PORT_NOVNC_WEB: "8083"
             securityContext:
               privileged: true
               allowPrivilegeEscalation: true
