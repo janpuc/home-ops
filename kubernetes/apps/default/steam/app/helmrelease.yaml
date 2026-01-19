@@ -47,7 +47,6 @@ spec:
                       chmod 666 /dev/uinput
                       chmod 666 /dev/dri/*
                       chmod -R 666 /dev/input
-                      supervisorctl restart sunshine
             resources:
               requests:
                 cpu: 1
