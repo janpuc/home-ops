@@ -123,18 +123,12 @@ spec:
       config:
         existingClaim: "{{ .Release.Name }}"
         advancedMounts:
-          home-assistant:
-            app:
-              - path: /config
-            code-server:
-              - path: /config
+        globalMounts:
+          - path: /config
       hass-cache:
         existingClaim: "{{ .Release.Name }}-cache"
-        advancedMounts:
-          home-assistant:
-            app:
-              - path: /venv
-                subPath: hass-venv
+        globalMounts:
+          - path: /config/.venv
       tmpfs:
         type: emptyDir
         advancedMounts:
