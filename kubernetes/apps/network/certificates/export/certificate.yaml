@@ -12,6 +12,10 @@ spec:
   issuerRef:
     name: letsencrypt-production
     kind: ClusterIssuer
+  privateKey:
+    algorithm: ECDSA
+    size: 384
+    rotationPolicy: Always
   secretName: janpuc-com-tls
   usages:
     - digital signature
