@@ -27,11 +27,12 @@ spec:
               - --storage-path=/data
               - --primary-interface=net1
               - --log-level=debug
-              - --log-level-sdk=info
+              - --log-level-sdk=debug
             securityContext:
-              allowPrivilegeEscalation: false
+              allowPrivilegeEscalation: true
               readOnlyRootFilesystem: false
-              capabilities: {drop: ["ALL"]}
+              capabilities:
+                add: ["NET_ADMIN", "NET_RAW"]
             resources:
               requests:
                 cpu: 15m
