@@ -44,10 +44,10 @@ spec:
             "namespace": "kube-system",
             "mac": "c6:07:27:af:fb:54"
           }]
-      securityContext:
-        sysctls:
-          - name: net.ipv6.conf.eth0.disable_ipv6
-            value: "1"
+      # securityContext:
+      #   sysctls:
+      #     - name: net.ipv6.conf.eth0.disable_ipv6
+      #       value: "1"
         runAsNonRoot: false
         runAsUser: 0
         runAsGroup: 0
