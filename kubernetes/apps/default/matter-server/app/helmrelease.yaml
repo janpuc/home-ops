@@ -36,6 +36,13 @@ spec:
               requests:
                 cpu: 15m
     defaultPodOptions:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: |-
+          [{
+            "name": "lan",
+            "namespace": "kube-system",
+            "mac": "c6:07:27:af:fb:54"
+          }]
       securityContext:
         runAsNonRoot: false
         runAsUser: 0
