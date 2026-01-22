@@ -28,6 +28,16 @@ spec:
               - --primary-interface=net1
               - --log-level=debug
               - --log-level-sdk=debug
+            lifecycle:
+              postStart:
+                exec:
+                  command:
+                    - /bin/sh
+                    - -c
+                    - |
+                      sleep 5;
+                      ip -6 route add fe80::/10 dev net1 metric 10;
+                      ip -6 route add fd00:1::/64 dev net1 metric 10;
             securityContext:
               allowPrivilegeEscalation: true
               readOnlyRootFilesystem: false
