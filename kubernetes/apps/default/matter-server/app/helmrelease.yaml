@@ -26,7 +26,6 @@ spec:
             args:
               - --storage-path=/data
               - --primary-interface=net1
-              - --interface=net1
               - --log-level=debug
               - --log-level-sdk=debug
             securityContext:
