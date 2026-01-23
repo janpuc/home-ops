@@ -1,8 +1,8 @@
 ---
 - search:
     provider: custom
-    url: https://kagi.com/search?q=
-    suggestionUrl: https://kagi.com/api/autosuggest?q=
+    url: https://startpage.com/search?query=
+    suggestionUrl: https://startpage.com/osuggestions?q=
     showSearchSuggestions: true
     target: _self
 - openmeteo:
