@@ -23,6 +23,7 @@ resources:
   - ./lldap/ks.yaml
   - ./matter-server/ks.yaml
   - ./mealie/ks.yaml
+  - ./music-assistant/ks.yaml
   - ./notifier/ks.yaml
   - ./prowlarr/ks.yaml
   - ./qbittorrent/ks.yaml

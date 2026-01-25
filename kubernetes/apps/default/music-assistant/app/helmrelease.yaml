@@ -1,0 +1,70 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: music-assistant
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: music-assistant
+  interval: 1h
+  values:
+    controllers:
+      music-assistant:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/music-assistant/server
+              tag: nightly@sha256:6fb822b8caae5a08f10b8d06a45f30c37fcbf2cc6c5ac9e4ebfd73d3f5413ba9
+            env:
+              TZ: Europe/Warsaw
+              LOG_LEVEL: info
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: {drop: ["ALL"], add: ["SYS_ADMIN", "DAC_READ_SEARCH"]}
+            resources:
+              requests:
+                cpu: 10m
+    defaultPodOptions:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: |-
+          [{
+            "name": "lan",
+            "namespace": "kube-system",
+            "mac": "c6:07:27:af:fb:43"
+          }]
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      app:
+        ports:
+          http:
+            port: &port 8095
+          stream:
+            port: 8097
+    route:
+      app:
+        hostnames:
+          - mass.janpuc.com
+          - "{{ .Release.Name }}.janpuc.com"
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+    persistence:
+      data:
+        existingClaim: "{{ .Release.Name }}"
+        advancedMounts:
+        globalMounts:
+          - path: /data
+      cache:
+        existingClaim: "{{ .Release.Name }}-cache"
+        globalMounts:
+          - path: /cache
+      tmp:
+        type: emptyDir
