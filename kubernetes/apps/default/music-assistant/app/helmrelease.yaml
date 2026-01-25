@@ -23,7 +23,7 @@ spec:
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
-              capabilities: {drop: ["ALL"], add: ["SYS_ADMIN", "DAC_READ_SEARCH"]}
+              capabilities: {drop: ["ALL"], add: ["SYS_ADMIN", "DAC_READ_SEARCH", "NET_RAW", "NET_ADMIN"]}
             resources:
               requests:
                 cpu: 10m
