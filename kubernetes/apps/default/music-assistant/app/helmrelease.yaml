@@ -66,5 +66,12 @@ spec:
         existingClaim: "{{ .Release.Name }}-cache"
         globalMounts:
           - path: /cache
+      media:
+        type: nfs
+        server: bigmouth.internal
+        path: /mnt/Vault/Media
+        globalMounts:
+          - path: /media
+            readOnly: true
       tmp:
         type: emptyDir
