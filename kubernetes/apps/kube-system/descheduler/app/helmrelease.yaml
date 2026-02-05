@@ -31,11 +31,11 @@ spec:
                   source: KubernetesMetrics
                 thresholds:
                   cpu: 15
-                  memory: 70
+                  memory: 75
                   pods: 30
                 targetThresholds:
                   cpu: 60
-                  memory: 80
+                  memory: 85
                   pods: 45
             - name: RemoveFailedPods
               args:
