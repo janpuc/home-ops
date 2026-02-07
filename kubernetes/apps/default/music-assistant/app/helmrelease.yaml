@@ -20,13 +20,16 @@ spec:
             env:
               TZ: Europe/Warsaw
               LOG_LEVEL: info
+            resources:
+              requests:
+                cpu: 10m
+                memory: 256Mi
+              limits:
+                memory: 512Mi
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
               capabilities: {drop: ["ALL"], add: ["SYS_ADMIN", "DAC_READ_SEARCH", "NET_RAW", "NET_ADMIN"]}
-            resources:
-              requests:
-                cpu: 10m
     defaultPodOptions:
       annotations:
         k8s.v1.cni.cncf.io/networks: |-
