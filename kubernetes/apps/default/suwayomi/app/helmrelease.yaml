@@ -30,13 +30,16 @@ spec:
               UPDATE_EXCLUDE_STARTED: false
               UPDATE_EXCLUDE_COMPLETED: false
               WEB_UI_CHANNEL: preview
+            resources:
+              requests:
+                cpu: 10m
+                memory: 1Gi
+              limits:
+                memory: 2Gi
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: false
               capabilities: {drop: ["ALL"]}
-            resources:
-              requests:
-                cpu: 10m
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
