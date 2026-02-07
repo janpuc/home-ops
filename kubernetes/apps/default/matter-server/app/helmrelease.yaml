@@ -28,17 +28,17 @@ spec:
               - --primary-interface=net1
               - --log-level=debug
               - --log-level-sdk=debug
-            securityContext:
-              allowPrivilegeEscalation: true
-              readOnlyRootFilesystem: false
-              capabilities:
-                add: ["NET_ADMIN", "NET_RAW"]
             resources:
               requests:
                 cpu: 10m
                 memory: 128Mi
               limits:
                 memory: 256Mi
+            securityContext:
+              allowPrivilegeEscalation: true
+              readOnlyRootFilesystem: false
+              capabilities:
+                add: ["NET_ADMIN", "NET_RAW"]
     defaultPodOptions:
       annotations:
         k8s.v1.cni.cncf.io/networks: |-
