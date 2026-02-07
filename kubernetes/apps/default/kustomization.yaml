@@ -12,7 +12,7 @@ resources:
   - ./authelia/ks.yaml
   - ./autobrr/ks.yaml
   # - ./bazarr/ks.yaml
-  - ./bhplus/ks.yaml
+  # - ./bhplus/ks.yaml
   - ./flaresolverr/ks.yaml
   - ./home-assistant/ks.yaml
   - ./homepage/ks.yaml
