@@ -41,13 +41,16 @@ spec:
                 spec:
                   failureThreshold: 30
                   periodSeconds: 10
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 2Gi
             securityContext:
               allowPrivilegeEscalation: true
               readOnlyRootFilesystem: false
               capabilities: {drop: ["ALL"]}
-            resources:
-              requests:
-                cpu: 100m
           gluetun:
             image:
               repository: ghcr.io/qdm12/gluetun
@@ -77,6 +80,12 @@ spec:
                   failureThreshold: 3
               readiness: *gluetunProbes
               startup: *gluetunProbes
+            resources:
+              requests:
+                cpu: 10m
+                memory: 8Mi
+              limits:
+                memory: 16Mi
             securityContext:
               allowPrivilegeEscalation: true
               readOnlyRootFilesystem: false
@@ -85,9 +94,6 @@ spec:
               runAsNonRoot: false
               capabilities:
                 add: ["NET_ADMIN"]
-            resources:
-              requests:
-                cpu: 100m
           port-forward:
             dependsOn:
               - gluetun
@@ -98,6 +104,12 @@ spec:
               QBITTORRENT_SERVER: localhost
               QBITTORRENT_PORT: *port
               PORT_FORWARDED: /tmp/gluetun/forwarded_port
+            resources:
+              requests:
+                cpu: 10m
+                memory: 256Mi
+              limits:
+                memory: 2Gi
             securityContext:
               allowPrivilegeEscalation: true
               readOnlyRootFilesystem: false
@@ -105,9 +117,6 @@ spec:
               runAsGroup: 0
               runAsNonRoot: false
               capabilities: {drop: ["ALL"]}
-            resources:
-              requests:
-                cpu: 10m
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
