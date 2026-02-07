@@ -10,6 +10,14 @@ spec:
     name: cert-manager
   interval: 1h
   values:
+    cainjector:
+      resources:
+        requests:
+          cpu: 20m
+          memory: 32Mi
+        limits:
+          cpu: 20m
+          memory: 48Mi
     crds:
       enabled: true
     dns01RecursiveNameservers: https://1.1.1.1:443/dns-query,https://1.0.0.1:443/dns-query
@@ -18,7 +26,18 @@ spec:
       enabled: true
       servicemonitor:
         enabled: true
+    resources:
+      requests:
+        cpu: 20m
+        memory: 128Mi
+      limits:
+        cpu: 20m
+        memory: 128Mi
     webhook:
-      replicaCount: 2
-      podDisruptionBudget:
-        enabled: true
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+        limits:
+          cpu: 10m
+          memory: 64Mi
