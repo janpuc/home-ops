@@ -15,8 +15,8 @@ resources:
   # - ./bhplus/ks.yaml
   - ./flaresolverr/ks.yaml
   - ./home-assistant/ks.yaml
-  - ./homepage/ks.yaml
-  - ./it-tools/ks.yaml
+  # - ./homepage/ks.yaml
+  # - ./it-tools/ks.yaml
   - ./jellyfin/ks.yaml
   - ./kavita/ks.yaml
   - ./komf/ks.yaml
