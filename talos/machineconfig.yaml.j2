@@ -52,7 +52,6 @@ machine:
   kernel:
     modules:
       - name: nbd
-      - name: uinput
   kubelet:
     defaultRuntimeSeccompProfileEnabled: true
     disableManifestsDirectory: true
@@ -201,22 +200,16 @@ apiVersion: v1alpha1
 kind: WatchdogTimerConfig
 device: /dev/watchdog0
 timeout: 5m
----
-apiVersion: v1alpha1
-kind: OOMConfig
-triggerExpression: "false"
-cgroupRankingExpression: "0.0"
-sampleInterval: "5s"
----
-apiVersion: v1alpha1
-kind: SwapVolumeConfig
-name: swap
-provisioning:
-    diskSelector:
-        match: 'disk.transport == "nvme"'
-    minSize: 4GiB
-    maxSize: 4GiB
----
-apiVersion: v1alpha1
-kind: ZswapConfig
-maxPoolPercent: 20
+# ---
+# apiVersion: v1alpha1
+# kind: SwapVolumeConfig
+# name: swap
+# provisioning:
+#   diskSelector:
+#       match: 'disk.transport == "nvme"'
+#   minSize: 4GiB
+#   maxSize: 4GiB
+# ---
+# apiVersion: v1alpha1
+# kind: ZswapConfig
+# maxPoolPercent: 20
