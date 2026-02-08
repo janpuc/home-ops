@@ -59,6 +59,8 @@ machine:
     extraArgs:
       allowed-unsafe-sysctls: "net.ipv6.conf.*"
     extraConfig:
+      memorySwap:
+        swapBehavior: LimitedSwap
       serializeImagePulls: false
     extraMounts:
       - destination: /var/openebs/local-hostpath
@@ -101,6 +103,8 @@ machine:
     sunrpc.tcp_slot_table_entries: "128"
     user.max_user_namespaces: "11255"
     vm.nr_hugepages: "1024"
+    vm.swappiness: "130"
+    vm.page-cluster: "0"
   token: op://Kubernetes/talos/MACHINE_TOKEN
 cluster:
   ca:
@@ -203,3 +207,16 @@ kind: OOMConfig
 triggerExpression: "false"
 cgroupRankingExpression: "0.0"
 sampleInterval: "5s"
+---
+apiVersion: v1alpha1
+kind: SwapVolumeConfig
+name: swap
+provisioning:
+    diskSelector:
+        match: 'disk.transport == "nvme"'
+    minSize: 4GiB
+    maxSize: 4GiB
+---
+apiVersion: v1alpha1
+kind: ZswapConfig
+maxPoolPercent: 20
