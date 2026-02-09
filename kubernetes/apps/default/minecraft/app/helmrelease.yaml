@@ -47,7 +47,7 @@ spec:
       type: FABRIC
       difficulty: normal
       pvp: false
-      motd: Hello
+      motd: "Socialist Utopia"
       worldSaveName: "Socialist Utopia"
       viewDistance: 12
       forceReDownload: true
@@ -76,7 +76,7 @@ spec:
             port: 25585
       modrinth:
         projects:
-          # - appleskin:3.0.6+mc1.21
+          - appleskin:3.0.6+mc1.21
           - architectury-api:13.0.8+fabric
           - athena-ctm:4.0.2
           - chunk-loaders:1.2.9-fabric-mc1.21.1
