@@ -78,11 +78,11 @@ spec:
       modrinth:
         projects:
           - distanthorizons:2.4.5-b-1.21.1
-          - essential-commands
-          - fabricexporter
-          - ferrite-core
-          - lithium
-          - oritech
+          - essential-commands:0.35.2-mc1.21
+          - fabricexporter:1.0.11
+          - ferrite-core:7.0.3-fabric
+          - lithium:mc1.21.1-0.15.2-fabric
+          - oritech:1.0.1
         downloadDependencies: required
   valuesFrom:
     - kind: Secret
