@@ -91,6 +91,7 @@ spec:
           - modernfix:5.25.1+mc1.21.1
           - oritech:1.0.1
           - owo-lib:0.12.15.4+1.21
+          - sort-it-out:1.2.1+1.21.1
           - spark:1.10.109-fabric
           - storagedrawers:1.21.1-13.11.4
         downloadDependencies: required
