@@ -43,7 +43,6 @@ spec:
       lbipam.cilium.io/ips: "192.168.69.61"
     minecraftServer:
       eula: true
-      # renovate: datasource=custom.minecraft-release
       version: 1.21.1
       type: FABRIC
       difficulty: normal
@@ -87,6 +86,7 @@ spec:
           - lithium:mc1.21.1-0.15.2-fabric
           - oritech:1.0.1
           - owo-lib:0.12.15.4+1.21
+          - spark:1.10.109-fabric
         downloadDependencies: required
   valuesFrom:
     - kind: Secret
