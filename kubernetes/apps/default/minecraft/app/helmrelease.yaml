@@ -79,7 +79,7 @@ spec:
           # - appleskin:3.0.6+mc1.21
           - architectury-api:13.0.8+fabric
           - athena-ctm:4.0.2
-          # - chunk-loaders:1.2.9-fabric-mc1.21.1
+          - chunk-loaders:1.2.9-fabric-mc1.21.1
           - distanthorizons:2.4.5-b-1.21.1
           - essential-commands:0.35.2-mc1.21
           - fabricexporter:1.0.11
