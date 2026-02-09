@@ -91,7 +91,7 @@ spec:
           - modernfix:5.25.1+mc1.21.1
           - oritech:1.0.1
           - owo-lib:0.12.15.4+1.21
-          # - spark:1.10.109-fabric
+          - spark:1.10.109-fabric
         downloadDependencies: required
   valuesFrom:
     - kind: Secret
