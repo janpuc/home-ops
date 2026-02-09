@@ -85,7 +85,7 @@ spec:
           - fabricexporter:1.0.11
           - ferrite-core:7.0.3-fabric
           - geckolib:4.8.3
-          # - jade:15.10.5+fabric
+          - jade:15.10.5+fabric
           # - journeymap:1.21.1-6.0.0-beta.54+fabric
           - lithium:mc1.21.1-0.15.2-fabric
           - modernfix:5.25.1+mc1.21.1
