@@ -49,7 +49,7 @@ spec:
       pvp: false
       motd: Hello
       worldSaveName: "Socialist Utopia"
-      viewDistance: 26
+      viewDistance: 12
       forceReDownload: true
       memory: ""
       jvmXXOpts: "-XX:MaxRAMPercentage=70"
