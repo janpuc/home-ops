@@ -76,15 +76,20 @@ spec:
             port: 25585
       modrinth:
         projects:
+          - appleskin:3.0.6+mc1.21
           - architectury-api:13.0.8+fabric
           - athena-ctm:4.0.2
+          - chunk-loaders:1.2.9-fabric-mc1.21.1
           - distanthorizons:2.4.5-b-1.21.1
           - essential-commands:0.35.2-mc1.21
           - fabricexporter:1.0.11
           - ferrite-core:7.0.3-fabric
+          - fld:0.1.0
           - geckolib:4.8.3
+          - jade:15.10.5+fabric
           - journeymap:1.21.1-6.0.0-beta.54+fabric
           - lithium:mc1.21.1-0.15.2-fabric
+          - modernfix:5.25.1+mc1.21.1
           - oritech:1.0.1
           - owo-lib:0.12.15.4+1.21
           - spark:1.10.109-fabric
