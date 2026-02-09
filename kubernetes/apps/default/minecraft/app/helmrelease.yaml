@@ -83,6 +83,7 @@ spec:
           - fabricexporter:1.0.11
           - ferrite-core:7.0.3-fabric
           - geckolib:4.8.3
+          - journeymap:1.21.1-6.0.0-beta.54+fabric
           - lithium:mc1.21.1-0.15.2-fabric
           - oritech:1.0.1
           - owo-lib:0.12.15.4+1.21
