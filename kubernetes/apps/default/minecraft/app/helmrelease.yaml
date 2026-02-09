@@ -77,12 +77,16 @@ spec:
             port: 25585
       modrinth:
         projects:
+          - architectury-api:13.0.8+fabric
+          - athena-ctm:4.0.2
           - distanthorizons:2.4.5-b-1.21.1
           - essential-commands:0.35.2-mc1.21
           - fabricexporter:1.0.11
           - ferrite-core:7.0.3-fabric
+          - geckolib:4.8.3
           - lithium:mc1.21.1-0.15.2-fabric
           - oritech:1.0.1
+          - owo-lib:0.12.15.4+1.21
         downloadDependencies: required
   valuesFrom:
     - kind: Secret
