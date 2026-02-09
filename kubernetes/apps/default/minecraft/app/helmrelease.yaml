@@ -92,6 +92,7 @@ spec:
           - oritech:1.0.1
           - owo-lib:0.12.15.4+1.21
           - spark:1.10.109-fabric
+          - storagedrawers:1.21.1-13.11.4
         downloadDependencies: required
   valuesFrom:
     - kind: Secret
