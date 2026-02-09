@@ -77,7 +77,7 @@ spec:
             port: 25585
       modrinth:
         projects:
-          - distanthorizons
+          - distanthorizons:beta
           - essential-commands
           - fabricexporter
           - ferrite-core
