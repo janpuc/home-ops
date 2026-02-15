@@ -8,7 +8,7 @@ spec:
   dnsNames:
     - janpuc.com
     - "*.janpuc.com"
-  # duration: 160h
+  duration: 160h
   issuerRef:
     name: letsencrypt-production
     kind: ClusterIssuer
