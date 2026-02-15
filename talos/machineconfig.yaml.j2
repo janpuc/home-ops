@@ -200,16 +200,26 @@ apiVersion: v1alpha1
 kind: WatchdogTimerConfig
 device: /dev/watchdog0
 timeout: 5m
-# ---
-# apiVersion: v1alpha1
-# kind: SwapVolumeConfig
-# name: swap
-# provisioning:
-#   diskSelector:
-#       match: 'disk.transport == "nvme"'
-#   minSize: 4GiB
-#   maxSize: 4GiB
-# ---
-# apiVersion: v1alpha1
-# kind: ZswapConfig
-# maxPoolPercent: 20
+---
+apiVersion: v1alpha1
+kind: VolumeConfig
+name: EPHEMERAL
+provisioning:
+  diskSelector:
+    match: disk.transport == 'nvme'
+  minSize: 2GB
+  maxSize: 248GB
+  grow: false
+---
+apiVersion: v1alpha1
+kind: SwapVolumeConfig
+name: swap
+provisioning:
+  diskSelector:
+    match: disk.transport == 'nvme'
+  minSize: 4GiB
+  maxSize: 4GiB
+---
+apiVersion: v1alpha1
+kind: ZswapConfig
+maxPoolPercent: 20
