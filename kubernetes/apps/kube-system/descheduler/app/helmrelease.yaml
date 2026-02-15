@@ -32,7 +32,7 @@ spec:
                 thresholds:
                   cpu: 20
                   memory: 65
-                  pods: 20
+                  pods: 45
                 targetThresholds:
                   cpu: 50
                   memory: 80
