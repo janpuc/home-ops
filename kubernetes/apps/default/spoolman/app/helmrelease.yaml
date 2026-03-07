@@ -24,7 +24,7 @@ spec:
               - 0.0.0.0
             env:
               TZ: Europe/Warsaw
-              SPOOLMAN_PORT: &port 80
+              SPOOLMAN_PORT: &port 8000
             probes:
               liveness:
                 enabled: true
