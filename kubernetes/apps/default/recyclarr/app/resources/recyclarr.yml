@@ -1,11 +1,20 @@
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/recyclarr/recyclarr/master/schemas/config-schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/recyclarr/recyclarr/refs/tags/v8.0.0/schemas/config-schema.json
 sonarr:
-  sonarr:
+  series:
     base_url: http://sonarr.default.svc.cluster.local
     api_key: !env_var SONARR_API_KEY
     delete_old_custom_formats: true
-    replace_existing_custom_formats: true
+    media_management:
+      propers_and_repacks: do_not_prefer
+    media_naming:
+      episodes:
+        anime: default
+        daily: default
+        rename: true
+        standard: default
+      season: default
+      series: plex-imdb
     include:
       # WEB-1080p
       - template: sonarr-quality-definition-series
@@ -15,6 +24,8 @@ sonarr:
       - template: sonarr-quality-definition-anime
       - template: sonarr-v4-quality-profile-anime
       - template: sonarr-v4-custom-formats-anime
+    quality_definition:
+      type: series
     quality_profiles:
       - name: WEB-1080p
       - name: WEB-1080p [Polish]
@@ -116,7 +127,24 @@ radarr:
     base_url: http://radarr.default.svc.cluster.local
     api_key: !env_var RADARR_API_KEY
     delete_old_custom_formats: true
-    replace_existing_custom_formats: true
+    include:
+      # SQP-1 (2160p)
+      - template: radarr-quality-definition-sqp-streaming
+      - template: radarr-quality-profile-sqp-1-2160p-default
+      - template: radarr-custom-formats-sqp-1-2160p
+      # Remux-1080p - Anime
+      - template: radarr-quality-definition-anime
+      - template: radarr-quality-profile-anime
+      - template: radarr-custom-formats-anime
+    media_management:
+      propers_and_repacks: do_not_prefer
+    media_naming:
+      folder: plex-imdb
+      movie:
+        rename: true
+        standard: plex-imdb
+    quality_definition:
+      type: sqp-uhd
     quality_profiles:
       - name: SQP-1 (2160p)
       - name: SQP-1 (2160p) [Polish]
@@ -143,15 +171,6 @@ radarr:
               - WEBDL-720p
               - WEBRip-720p
           - name: Bluray-720p
-    include:
-      # SQP-1 (2160p)
-      - template: radarr-quality-definition-sqp-streaming
-      - template: radarr-quality-profile-sqp-1-2160p-default
-      - template: radarr-custom-formats-sqp-1-2160p
-      # Remux-1080p - Anime
-      - template: radarr-quality-definition-anime
-      - template: radarr-quality-profile-anime
-      - template: radarr-custom-formats-anime
     custom_formats:
       # SQP-1 (2160p)
       - trash_ids:
