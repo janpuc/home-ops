@@ -6,7 +6,8 @@ metadata:
   name: envoy-gateway
 spec:
   dependsOn:
-    - name: certificates-import
+    # - name: certificates-import
+    - name: certificates-export
   interval: 1h
   path: ./kubernetes/apps/network/envoy-gateway/app
   prune: true
