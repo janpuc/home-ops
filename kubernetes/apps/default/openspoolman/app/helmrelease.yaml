@@ -59,7 +59,7 @@ spec:
       tmpfs:
         type: emptyDir
         advancedMounts:
-          jellyfin:
+          openspoolman:
             app:
               - path: /home/app/logs
                 subPath: logs
