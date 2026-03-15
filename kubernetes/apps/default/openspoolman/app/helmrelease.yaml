@@ -56,5 +56,12 @@ spec:
         existingClaim: "{{ .Release.Name }}"
         globalMounts:
           - path: /home/app/data
-      tmp:
+      tmpfs:
         type: emptyDir
+        advancedMounts:
+          jellyfin:
+            app:
+              - path: /home/app/logs
+                subPath: logs
+              - path: /tmp
+                subPath: tmp
