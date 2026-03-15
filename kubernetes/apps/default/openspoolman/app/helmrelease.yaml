@@ -55,4 +55,4 @@ spec:
       config:
         existingClaim: "{{ .Release.Name }}"
         globalMounts:
-          - path: /home/app
+          - path: /home/app/data
