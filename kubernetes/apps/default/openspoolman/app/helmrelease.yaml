@@ -52,7 +52,9 @@ spec:
           - name: envoy-internal
             namespace: network
     persistence:
-      config:
+      app:
         existingClaim: "{{ .Release.Name }}"
         globalMounts:
-          - path: /home/app/data
+          - path: /home/app
+      tmp:
+        type: emptyDir
