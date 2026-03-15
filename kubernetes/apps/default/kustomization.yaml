@@ -28,6 +28,7 @@ resources:
   - ./music-assistant/ks.yaml
   - ./notifier/ks.yaml
   - ./octoeverywhere/ks.yaml
+  - ./openspoolman/ks.yaml
   - ./prowlarr/ks.yaml
   - ./qbittorrent/ks.yaml
   - ./qui/ks.yaml

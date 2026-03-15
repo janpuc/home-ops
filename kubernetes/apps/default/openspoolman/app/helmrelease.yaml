@@ -1,0 +1,58 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: openspoolman
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: openspoolman
+  interval: 1h
+  values:
+    controllers:
+      openspoolman:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/drndos/openspoolman
+              tag: 0.3.0@sha256:12972ee9741bce9ddcb05aab23623a340ea492837754dc06cf34073c6f49349d
+            env:
+              AUTO_SPEND: true
+              TRACK_LAYER_USAGE: true
+              OPENSPOOLMAN_BASE_URL: https://openspoolman.janpuc.com
+              SPOOLMAN_BASE_URL: https://spoolman.janpuc.com
+              TZ: Europe/Warsaw
+            envFrom:
+              - secretRef:
+                  name: "{{ .Release.Name }}-secret"
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: {drop: ["ALL"]}
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      app:
+        ports:
+          http:
+            port: 8000
+    route:
+      app:
+        hostnames:
+          - "{{ .Release.Name }}.janpuc.com"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+    persistence:
+      config:
+        existingClaim: "{{ .Release.Name }}"
+        globalMounts:
+          - path: /home/app
