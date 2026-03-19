@@ -12,12 +12,11 @@ spec:
       "name": "lan",
       "plugins": [
         {
-          "type": "bridge",
-          "bridge": "br0",
-          "isGateway": false,
+          "type": "macvlan",
+          "master": "enp2s0f0",
+          "mode": "bridge",
           "capabilities": {
-            "ips": true,
-            "mac": true
+            "ips": true
           },
           "ipam": {
             "type": "static",

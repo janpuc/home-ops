@@ -75,13 +75,8 @@ machine:
         - 192.168.69.0/24
   network:
     interfaces:
-      - interface: br0
-        bridge:
-          interfaces:
-            - enp2s0f0
-        dhcp: true
       - interface: enp2s0f0
-        dhcp: false
+        dhcp: true
   nodeLabels:
     node.kubernetes.io/gpu: "true"
     topology.kubernetes.io/region: main
@@ -226,3 +221,9 @@ provisioning:
 apiVersion: v1alpha1
 kind: ZswapConfig
 maxPoolPercent: 20
+---
+apiVersion: v1alpha1
+kind: EthernetConfig
+name: enp2s0f0
+features:
+  tx-checksum-ipv6: false
