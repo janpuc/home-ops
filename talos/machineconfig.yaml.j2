@@ -75,10 +75,13 @@ machine:
         - 192.168.69.0/24
   network:
     interfaces:
-      - deviceSelector:
-          driver: r8169
+      - interface: br0
+        bridge:
+          interfaces:
+            - enp2s0f0
         dhcp: true
-        mtu: 1500
+      - interface: enp2s0f0
+        dhcp: false
   nodeLabels:
     node.kubernetes.io/gpu: "true"
     topology.kubernetes.io/region: main
