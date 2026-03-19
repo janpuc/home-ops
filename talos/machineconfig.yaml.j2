@@ -223,3 +223,16 @@ provisioning:
 apiVersion: v1alpha1
 kind: ZswapConfig
 maxPoolPercent: 20
+---
+apiVersion: v1alpha1
+kind: EthernetConfig
+name: enp2s0f0
+features:
+  tx-checksum-ip-generic: false
+  tx-checksum-ipv4: false
+  tx-checksum-ipv6: false
+  tx-tcp-segmentation: false
+  tx-tcp6-segmentation: false
+  tx-generic-segmentation: false
+  rx-checksum: false
+  rx-gro: false

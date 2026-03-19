@@ -24,6 +24,22 @@ spec:
               { "dst": "192.168.69.0/24", "gw": "192.168.69.1" }
             ]
           }
+        },
+        {
+          "type": "tuning",
+          "sysctl": {
+            "net.ipv6.conf.IFNAME.accept_ra": "2",
+            "net.ipv6.conf.IFNAME.accept_ra_rt_info_max_plen": "64",
+            "net.ipv6.conf.IFNAME.forwarding": "0"
+          },
+          "ethtool": {
+            "tx-checksum-ip-generic": "off",
+            "tx-checksum-ipv6": "off",
+            "rx-checksumming": "off"
+          }
+        },
+        {
+            "type": "sbr"
         }
       ]
     }
