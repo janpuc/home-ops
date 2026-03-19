@@ -18,7 +18,9 @@ spec:
               repository: nicolaka/netshoot
               tag: latest
             command:
-              - ethtool && ethtool -K net1 tx-checksum-ip-generic off"
+            - sh
+            - -c
+            - ethtool -K net1 tx-checksum-ip-generic off
         containers:
           app:
             image:
