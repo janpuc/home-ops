@@ -66,8 +66,6 @@ spec:
         trustCRDsExist: true
     rollOutCiliumPods: true
     routingMode: native
-    devices: "br0"
-    directRoutingDevice: "br0"
     securityContext:
       capabilities:
         ciliumAgent:
