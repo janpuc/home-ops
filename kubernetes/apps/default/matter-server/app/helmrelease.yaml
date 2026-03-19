@@ -13,8 +13,10 @@ spec:
     controllers:
       matter-server:
         initContainers:
-          - name: disable-checksum-offload
-            image: busybox
+          checksum-offload:
+            image:
+              repository: busybox
+              tag: latest
             command:
               - sh
               - -c
