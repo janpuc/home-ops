@@ -12,18 +12,6 @@ spec:
   values:
     controllers:
       matter-server:
-        initContainers:
-          checksum-offload:
-            image:
-              repository: nicolaka/netshoot
-              tag: latest
-            command:
-            - sh
-            - -c
-            - ethtool -K net1 tx-checksum-ip-generic off
-            securityContext:
-              capabilities:
-                add: ["NET_ADMIN"]
         containers:
           app:
             image:
