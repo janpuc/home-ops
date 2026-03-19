@@ -24,13 +24,6 @@ spec:
               { "dst": "192.168.69.0/24", "gw": "192.168.69.1" }
             ]
           }
-        },
-        {
-          "type": "tuning",
-          "ethtool": {
-            "tx-checksum-ip-generic": "off",
-            "rx-checksumming": "off"
-          }
         }
       ]
     }
