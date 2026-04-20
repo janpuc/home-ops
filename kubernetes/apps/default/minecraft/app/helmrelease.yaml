@@ -44,11 +44,11 @@ spec:
     minecraftServer:
       eula: true
       version: 1.21.1
-      type: FABRIC
+      type: AUTO_CURSEFORGE
       difficulty: normal
-      pvp: false
+      pvp: true
       motd: "Socialist Utopia"
-      worldSaveName: "Socialist Utopia"
+      worldSaveName: "Socialist Utopia 2"
       viewDistance: 12
       forceReDownload: true
       memory: ""
@@ -74,29 +74,14 @@ spec:
             embedded: false
             type: ClusterIP
             port: 25585
-      modrinth:
-        projects:
-          - appleskin:3.0.6+mc1.21
-          - architectury-api:13.0.8+fabric
-          - athena-ctm:4.0.2
-          - chunk-loaders:1.2.9-fabric-mc1.21.1
-          - distanthorizons:2.4.5-b-1.21.1
-          - essential-commands:0.35.2-mc1.21
-          - fabricexporter:1.0.11
-          - ferrite-core:7.0.3-fabric
-          - geckolib:4.8.3
-          - jade:15.10.5+fabric
-          - journeymap:1.21.1-6.0.0-beta.54+fabric
-          - lithium:mc1.21.1-0.15.2-fabric
-          - modernfix:5.25.1+mc1.21.1
-          - oritech:1.0.1
-          - owo-lib:0.12.15.4+1.21
-          - sort-it-out:1.2.1+1.21.1
-          - spark:1.10.109-fabric
-          - storagedrawers:1.21.1-13.11.4
-        downloadDependencies: required
+      autoCurseForge:
+        pageUrl: "https://www.curseforge.com/minecraft/modpacks/create-ultimate-selection-2"
   valuesFrom:
     - kind: Secret
       name: *secret
       valuesKey: RCON_PASSWORD
       targetPath: minecraftServer.rcon.password
+    - kind: Secret
+      name: *secret
+      valuesKey: CF_API_KEY
+      targetPath: minecraftServer.autoCurseForge.apiKey.key
