@@ -9,6 +9,10 @@ spec:
     kind: OCIRepository
     name: minecraft
   interval: 1h
+  install:
+    disableSchemaValidation: true
+  upgrade:
+    disableSchemaValidation: true
   values:
     deploymentAnnotations:
       secret.reloader.stakater.com/reload: &secret minecraft
