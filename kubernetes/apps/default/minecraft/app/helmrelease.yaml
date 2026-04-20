@@ -9,12 +9,6 @@ spec:
     kind: OCIRepository
     name: minecraft
   interval: 1h
-  install:
-    disableOpenAPIValidation: true
-    disableSchemaValidation: true
-  upgrade:
-    disableOpenAPIValidation: true
-    disableSchemaValidation: true
   values:
     deploymentAnnotations:
       secret.reloader.stakater.com/reload: &secret minecraft
@@ -27,7 +21,7 @@ spec:
         memory: 512Mi
       limits:
         memory: 4Gi
-    securityContext:
+    podSecurityContext:
       runAsUser: 1000
       fsGroup: 1000
     livenessProbe:
