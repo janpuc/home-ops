@@ -23,7 +23,7 @@ resources:
   - ./komf/ks.yaml
   - ./lldap/ks.yaml
   - ./mealie/ks.yaml
-  - ./minecraft/ks.yaml
+  # - ./minecraft/ks.yaml
   - ./notifier/ks.yaml
   # - ./octoeverywhere/ks.yaml
   - ./openspoolman/ks.yaml
