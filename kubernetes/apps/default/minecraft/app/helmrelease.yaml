@@ -35,6 +35,7 @@ spec:
       UID: 1000
       GID: 1000
       MEMORY: ""
+      LOG_LEVEL: debug
     persistence:
       dataDir:
         enabled: true
