@@ -35,7 +35,7 @@ spec:
       UID: 1000
       GID: 1000
       MEMORY: ""
-      LOG_LEVEL: debug
+      MODRINTH_MODPACK: "https://modrinth.com/modpack/create-ultimate-selection-2"
     persistence:
       dataDir:
         enabled: true
@@ -45,7 +45,7 @@ spec:
     minecraftServer:
       eula: true
       version: 1.21.1
-      type: AUTO_CURSEFORGE
+      type: MODRINTH
       difficulty: normal
       pvp: true
       motd: "Socialist Utopia"
@@ -75,14 +75,8 @@ spec:
             embedded: false
             type: ClusterIP
             port: 25585
-      autoCurseForge:
-        pageUrl: "https://www.curseforge.com/minecraft/modpacks/create-ultimate-selection-2"
   valuesFrom:
     - kind: Secret
       name: *secret
       valuesKey: RCON_PASSWORD
       targetPath: minecraftServer.rcon.password
-    - kind: Secret
-      name: *secret
-      valuesKey: CF_API_KEY
-      targetPath: minecraftServer.autoCurseForge.apiKey.key
