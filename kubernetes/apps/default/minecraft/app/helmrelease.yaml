@@ -10,8 +10,10 @@ spec:
     name: minecraft
   interval: 1h
   install:
+    disableOpenAPIValidation: true
     disableSchemaValidation: true
   upgrade:
+    disableOpenAPIValidation: true
     disableSchemaValidation: true
   values:
     deploymentAnnotations:
