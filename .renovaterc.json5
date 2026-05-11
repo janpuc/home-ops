@@ -25,6 +25,7 @@
   ],
   ignorePaths: [
     "**/resources/**",
+    "**/archive/**",
   ],
   flux: {
     managerFilePatterns: ["/\\.yaml(?:\\.j2)?$/"],
