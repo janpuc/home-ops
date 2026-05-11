@@ -7,7 +7,7 @@ spec:
     name: mealie
   minReplicaCount: 0
   maxReplicaCount: 1
-  cooldownPeriod: 60
+  cooldownPeriod: 300
   triggers:
     - type: external-push
       metadata:
