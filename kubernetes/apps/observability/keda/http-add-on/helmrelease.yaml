@@ -16,3 +16,6 @@ spec:
         max: 2
     operator:
       watchNamespace: default
+    logging:
+      interceptor:
+        level: debug
