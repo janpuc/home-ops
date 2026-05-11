@@ -4,7 +4,7 @@ metadata:
   name: mealie
 spec:
   target:
-    service: meaile
+    service: mealie
     port: 9000
   rules:
     - hosts:
