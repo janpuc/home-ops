@@ -16,4 +16,4 @@ spec:
   timeouts:
     request: 60s
     responseHeader: 30s
-    readiness: 10s
+    readiness: 15s
