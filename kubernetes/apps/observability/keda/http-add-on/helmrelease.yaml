@@ -12,7 +12,7 @@ spec:
   values:
     interceptor:
       replicas:
-        min: 0
-        max: 3
+        min: 1
+        max: 2
     operator:
       watchNamespace: default
