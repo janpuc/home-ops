@@ -13,4 +13,7 @@ spec:
   scalingMetric:
     concurrency:
       targetValue: 100
-
+  timeouts:
+    request: 60s
+    responseHeader: 30s
+    readiness: 10s
