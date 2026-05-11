@@ -1,0 +1,15 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: mealie
+spec:
+  scaleTargetRef:
+    name: mealie
+  minReplicaCount: 0
+  maxReplicaCount: 1
+  cooldownPeriod: 60
+  triggers:
+    - type: external-push
+      metadata:
+        scalerAddress: keda-add-ons-http-external-scaler.observability:9090
+        interceptorRoute: mealie

@@ -58,14 +58,14 @@ spec:
         ports:
           http:
             port: 9000
-    route:
-      app:
-        hostnames:
-          - "recipes.janpuc.com"
-          - "{{ .Release.Name }}.janpuc.com"
-        parentRefs:
-          - name: envoy-internal
-            namespace: network
+    # route:
+    #   app:
+    #     hostnames:
+    #       - "recipes.janpuc.com"
+    #       - "{{ .Release.Name }}.janpuc.com"
+    #     parentRefs:
+    #       - name: envoy-internal
+    #         namespace: network
     persistence:
       config:
         type: emptyDir
