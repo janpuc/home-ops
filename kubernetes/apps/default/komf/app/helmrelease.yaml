@@ -20,7 +20,7 @@ spec:
             env:
               KOMF_KAVITA_BASE_URI: http://kavita.default.svc.cluster.local:5000
               KOMF_LOG_LEVEL: INFO
-              KOMF_SERVER_PORT: &port 80
+              KOMF_SERVER_PORT: &port 8085
             envFrom:
               - secretRef:
                   name: "{{ .Release.Name }}-secret"
