@@ -17,8 +17,9 @@ resources:
   - ./home-assistant/ks.yaml
   - ./jellyfin/ks.yaml
   - ./kavita/ks.yaml
-  - ./komf/ks.yaml
+  # - ./komf/ks.yaml
   - ./lldap/ks.yaml
+  - ./manga-maid/ks.yaml
   - ./mealie/ks.yaml
   - ./notifier/ks.yaml
   - ./openspoolman/ks.yaml
