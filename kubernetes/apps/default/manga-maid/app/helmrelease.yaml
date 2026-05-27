@@ -15,7 +15,7 @@ spec:
         containers:
           app:
             image:
-              repository: ghcr.io/pullaf/manga-maid
+              repository: ghcr.io/pullaf/manga-maid:2.1.5
               tag: sha256:a8ea5d604177b5922b40e2dfdfb46ce53bc34baf3c52c99557e9808f2106f08a
             env:
               TZ: Europe/Warsaw
