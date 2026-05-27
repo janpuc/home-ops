@@ -63,5 +63,11 @@ spec:
             readOnly: true
       config:
         existingClaim: "{{ .Release.Name }}"
+      media:
+        type: nfs
+        server: bigmouth.internal
+        path: /mnt/Vault/Media
+        globalMounts:
+          - path: /media
       tmp:
         type: emptyDir
