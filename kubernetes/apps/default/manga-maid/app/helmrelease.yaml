@@ -23,9 +23,6 @@ spec:
               DEFAULT_LANGUAGE: en
               SUWAYOMI_URL: http://suwayomi.default.svc.cluster.local
               KAVITA_URL: http://kavita.default.svc.cluster.local:5000
-            envFrom:
-              - secretRef:
-                  name: "{{ .Release.Name }}-secret"
             resources:
               requests:
                 cpu: 10m
