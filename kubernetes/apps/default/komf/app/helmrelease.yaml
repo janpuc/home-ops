@@ -15,8 +15,8 @@ spec:
         containers:
           app:
             image:
-              repository: ghcr.io/baxtrax/komf # Use until https://github.com/Snd-R/komf/pull/306 is merged
-              tag: 1.7.1-patched@sha256:eda751c1a7f58e40f5e38a4e8721968c8779d3a2d81addb6b8b270ee34f163d2
+              repository: loloky/komf # Use until https://github.com/Snd-R/komf/pull/309 is merged
+              tag: latest@sha256:f288130ce95063efd921dd6d86b3253821206f40c87c46ed20d791f1511dbfbd
             env:
               KOMF_KAVITA_BASE_URI: http://kavita.default.svc.cluster.local:5000
               KOMF_LOG_LEVEL: INFO
