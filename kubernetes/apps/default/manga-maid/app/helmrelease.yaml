@@ -16,7 +16,7 @@ spec:
           app:
             image:
               repository: ghcr.io/pullaf/manga-maid
-              tag: 2.1.5@sha256:a8ea5d604177b5922b40e2dfdfb46ce53bc34baf3c52c99557e9808f2106f08a
+              tag: 2.1.6@sha256:2c693ff270dc90887dae686bbbd9a51f333efda5c5e32801673c8e541616acd0
             env:
               TZ: Europe/Warsaw
               SYNC_CRON: "0 */6 * * *"
