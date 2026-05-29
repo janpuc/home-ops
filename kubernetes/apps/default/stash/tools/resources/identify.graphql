@@ -1,6 +1,6 @@
 mutation {
   metadataIdentify(input: {
-    sources: [{source: {stash_box_endpoint: "https://stashdb.org/graphql"}}],
+    sources: [],
     options: {
       fieldOptions: [
         { field: "name", strategy: MERGE, createMissing: true },
