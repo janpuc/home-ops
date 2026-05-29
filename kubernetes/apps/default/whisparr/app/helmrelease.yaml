@@ -30,7 +30,7 @@ spec:
               TZ: Europe/Warsaw
             envFrom:
               - secretRef:
-                  name: "{{ .Release.Name }}-secret"
+                  name: "{{ .Release.Name }}"
             probes:
               liveness:
                 enabled: true
