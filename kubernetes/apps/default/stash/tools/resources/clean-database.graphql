@@ -1,6 +1,6 @@
 mutation {
   metadataClean(input: {
-    paths: ["/media"],
+    paths: ["/media/Stash"],
     dryRun: false
   })
 }
