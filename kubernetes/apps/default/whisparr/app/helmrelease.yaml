@@ -27,8 +27,8 @@ spec:
         containers:
           app:
             image:
-              repository: ghcr.io/hotio/whisparr
-              tag: v3-v3.3.3@sha256:34653e1cf10b99532b56f8afecbca449d32bf460b2b03990b7ecff898e789c13
+              repository: ghcr.io/linuxserver-labs/prarr
+              tag: whisparr-eros-3.1.0.2116@sha256:fc09513b2c18ef77f2dca40051deaadf8eaf7a7abfc6d8bd6e292cea5a82ad5e
             env:
               WHISPARR__APP__INSTANCENAME: Whisparr
               WHISPARR__APP__THEME: dark
