@@ -1,0 +1,99 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: stash
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: stash
+  interval: 1h
+  values:
+    controllers:
+      stash:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/home-operations/stash
+              tag: 0.31.1@sha256:12c4ee1424a211888f4e4253ef70b95a639b3d5475ea3d85e88989754569537d
+            env:
+              TZ: Europe/Warsaw
+              USER: 1000
+              STASH_CONFIG_FILE: /config/config.yml
+              STASH_STASH: /media
+              STASH_GENERATED: /generated
+              STASH_METADATA: /metadata
+              STASH_CACHE: /cache
+            probes:
+              liveness: &probes
+                enabled: true
+              readiness: *probes
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            resources:
+              requests:
+                cpu: 10m
+                memory: 128Mi
+              limits:
+                memory: 2Gi
+                amd.com/gpu: 1
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: {drop: ["ALL"]}
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      app:
+        ports:
+          http:
+            port: &port 9999
+    route:
+      app:
+        hostnames:
+          - "{{ .Release.Name }}.janpuc.com"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+    persistence:
+      config:
+        existingClaim: "{{ .Release.Name }}"
+        globalMounts:
+          - path: /config
+            subPath: config
+          - path: /blobs
+            subPath: blobs
+          - path: /generated
+            subPath: generated
+      cache:
+        existingClaim: "{{ .Release.Name }}-cache"
+        globalMounts:
+          - path: /cache
+            subPath: cache
+      media:
+        type: nfs
+        server: bigmouth.internal
+        path: /mnt/Vault/Media
+        globalMounts:
+          - path: /media
+            readOnly: true
+      tmpfs:
+        type: emptyDir
+        advancedMounts:
+          stash:
+            app:
+              - path: /tmp
+                subPath: tmp
+              - path: /.cache
+                subPath: cache

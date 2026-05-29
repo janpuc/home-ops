@@ -30,5 +30,7 @@ resources:
   - ./seerr/ks.yaml
   - ./sonarr/ks.yaml
   - ./spoolman/ks.yaml
+  - ./stash/ks.yaml
   - ./suwayomi/ks.yaml
   - ./thelounge/ks.yaml
+  - ./whisparr/ks.yaml
