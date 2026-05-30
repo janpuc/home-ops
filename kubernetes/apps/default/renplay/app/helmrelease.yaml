@@ -1,0 +1,61 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: renplay
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: renplay
+  interval: 1h
+  values:
+    controllers:
+      komf:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/janpuc/renplay
+              tag: edge@sha256:2c5ecfd9ed55c31a7e3c8c462d31f524f8e50017b1b61ed00365e65c072df46c
+            env:
+              TZ: Europe/Warsaw
+            resources:
+              requests:
+                cpu: 10m
+                memory: 256Mi
+              limits:
+                memory: 512Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: {drop: ["ALL"]}
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      app:
+        ports:
+          http:
+            port: &port 8080
+    route:
+      app:
+        hostnames:
+          - "{{ .Release.Name }}.janpuc.com"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+    persistence:
+      data:
+        existingClaim: "{{ .Release.Name }}"
+      media:
+        type: nfs
+        server: bigmouth.internal
+        path: /mnt/Vault/Media/Games
+        globalMounts:
+          - path: /games
+      tmp:
+        type: emptyDir
