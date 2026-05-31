@@ -16,7 +16,7 @@ spec:
           app:
             image:
               repository: ghcr.io/janpuc/renplay
-              tag: edge@sha256:31138c2c59bb686ba351c99bec1559ef23a2560963ba8d4ab85f5f7247f86ceb
+              tag: edge@sha256:0026a30b2894a090abc13ce0a876ad1cc9c36df5098ddeccad66b7f9a1521498
             env:
               TZ: Europe/Warsaw
             resources:
