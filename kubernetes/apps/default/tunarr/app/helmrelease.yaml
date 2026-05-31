@@ -60,8 +60,6 @@ spec:
               allowPrivilegeEscalation: false
               capabilities: { drop: ["ALL"] }
             resources:
-              claims:
-                - name: gpu
               requests:
                 cpu: 10m
               limits:
