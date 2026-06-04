@@ -16,7 +16,7 @@ spec:
   postBuild:
     substitute:
       APP: renplay
-      VOLSYNC_CAPACITY: 1Gi
+      VOLSYNC_CAPACITY: 10Gi
   prune: true
   sourceRef:
     kind: GitRepository
