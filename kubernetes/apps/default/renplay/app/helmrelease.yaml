@@ -16,7 +16,7 @@ spec:
           app:
             image:
               repository: ghcr.io/renplay-web/renplay
-              tag: edge@sha256:5081d9ed5efefa56f6781a409888d6ab66fcaa769d209a07bd487f20cb92cbb9
+              tag: edge@sha256:4cc27e7cd3f24491023b8b31a44ecac17fd0ac5706e56166ed6d470b98a560ce
             env:
               TZ: Europe/Warsaw
             resources:
