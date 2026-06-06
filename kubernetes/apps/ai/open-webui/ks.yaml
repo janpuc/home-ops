@@ -13,7 +13,7 @@ spec:
     - ../../../../components/volsync
   dependsOn:
     - name: volsync
-      namespace: system
+      namespace: volsync-system
     - name: dragonfly-operator
       namespace: database
   healthCheckExprs:
