@@ -1,0 +1,62 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: open-webui
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: open-webui
+  interval: 30m
+  values:
+    controllers:
+      open-webui:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/open-webui/open-webui
+              tag: v0.9.6@sha256:90eae5b419e40b4c3dd684582b2c83440b36f9ae2f6532c09639b2ba4ee65158
+            env:
+              # Features
+              ENABLE_LOGIN_FORM: true
+              ENABLE_OLLAMA_API: false
+              ENABLE_OPENAI_API: false
+              ENABLE_RAG_WEB_SEARCH: true
+              ENABLE_SEARCH_QUERY: true
+              ENABLE_SIGNUP: true
+              # Search
+              RAG_WEB_SEARCH_ENGINE: kagi
+              # Websockets
+              ENABLE_WEBSOCKET_SUPPORT: true
+              WEBSOCKET_MANAGER: redis
+              WEBSOCKET_REDIS_URL: redis://open-webui-dragonfly:6379
+            envFrom:
+              - secretRef:
+                  name: open-webui-secret
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 2Gi
+    persistence:
+      config:
+        enabled: true
+        existingClaim: open-webui
+        globalMounts:
+          - path: /app/backend/data
+    route:
+      app:
+        hostnames:
+          - chat.janpuc.com
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+    service:
+      app:
+        ports:
+          http:
+            port: 8080
