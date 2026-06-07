@@ -9,7 +9,6 @@ components:
 
 resources:
   - ./namespace.yaml
-  # - ./amd-device-plugin/ks.yaml
   - ./cilium/ks.yaml
   - ./coredns/ks.yaml
   - ./descheduler/ks.yaml
