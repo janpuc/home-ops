@@ -24,7 +24,7 @@ spec:
           main:
             image:
               repository: ghcr.io/searxng/searxng
-              tag: 2025.11.18-576c8ca99@sha256:91da34403fc1d2c7ac23d1459af87870d87810b7d50b0c6a4585ab78846cb534
+              tag: 2026.6.7-86903a2c6@sha256:e4fade70be2f6a985178de7158c96fdb98d897500c548b3afc6e2033cf1c11e3
             env:
               TZ: Europe/Warsaw
               SEARXNG_BASE_URL: https://search.janpuc.com
