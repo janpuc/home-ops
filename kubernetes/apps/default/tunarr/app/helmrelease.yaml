@@ -12,8 +12,10 @@ spec:
   values:
     controllers:
       tunarr:
-        annotations:
-          reloader.stakater.com/auto: "true"
+        pod:
+          resourceClaims:
+            - name: gpu
+              resourceClaimTemplateName: tunarr-gpu
         initContainers:
           init-chown:
             image:
@@ -60,12 +62,13 @@ spec:
               allowPrivilegeEscalation: false
               capabilities: { drop: ["ALL"] }
             resources:
+              claims:
+                - name: gpu
               requests:
                 cpu: 10m
                 memory: 128Mi
               limits:
                 memory: 4Gi
-                amd.com/gpu: 1
     defaultPodOptions:
       automountServiceAccountToken: false
       securityContext:
