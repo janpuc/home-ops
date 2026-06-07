@@ -1,7 +1,7 @@
 ---
 authentication_backend:
   ldap:
-    address: ldap://lldap.default.svc.cluster.local:3890
+    address: ldap://lldap.security.svc.cluster.local:3890
     implementation: custom
     timeout: 5s
     start_tls: false
