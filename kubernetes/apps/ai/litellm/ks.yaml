@@ -20,6 +20,9 @@ spec:
       current: status.phase == 'ready'
   interval: 1h
   path: ./kubernetes/apps/ai/litellm/app
+  postBuild:
+    substitute:
+      APP: litellm
   prune: true
   sourceRef:
     kind: GitRepository
