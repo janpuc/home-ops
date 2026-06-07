@@ -33,5 +33,5 @@ resources:
   - ./stash/ks.yaml
   - ./suwayomi/ks.yaml
   - ./thelounge/ks.yaml
-  - ./tunarr/ks.yaml
+  # - ./tunarr/ks.yaml
   - ./whisparr/ks.yaml
