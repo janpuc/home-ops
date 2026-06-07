@@ -6,8 +6,10 @@ metadata:
 spec:
   name: Kavita
   callbackUrls:
+    - "https://comics.janpuc.com/signin-oidc"
     - "https://kavita.janpuc.com/signin-oidc"
   logoutCallbackUrls:
+    - "https://comics.janpuc.com/signout-callback-oidc"
     - "https://kavita.janpuc.com/signout-callback-oidc"
   allowedUserGroups:
     - name: id-admin
