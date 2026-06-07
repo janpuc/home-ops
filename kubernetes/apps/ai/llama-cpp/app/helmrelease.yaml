@@ -148,7 +148,7 @@ spec:
         existingClaim: "{{ .Release.Name }}"
         advancedMounts:
           llama-cpp:
-            qwen:
+            app:
               - path: /models
                 readOnly: true
             download-qwen:
