@@ -49,6 +49,17 @@ spec:
       userProfilePicture: "jpegPhoto"
       groupMember: "member"
       groupName: "cn"
+  smtp:
+    host: "smtp.protonmail.ch"
+    port: 587
+    from: "noreply@janpuc.com"
+    user: "noreply@janpuc.com"
+    password:
+      valueFrom:
+        secretKeyRef:
+          name: *secret
+          key: SMTP_PASSWORD
+    tls: "starttls"
   geoip:
     dbPath: "/app/data/GeoLite2-City.mmdb"
     maxmindLicenseKey:
