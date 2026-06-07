@@ -47,9 +47,9 @@ spec:
             args:
               - --metrics
               - --model
-              - /models/models--unsloth--Qwen3.5-4B-GGUF/Qwen3.5-4B-UD-Q6_K_XL.gguf
+              - /models/models--unsloth--Qwen3.5-4B-GGUF/model.gguf
               - --mmproj
-              - /models/models--unsloth--Qwen3.5-4B-GGUF/mmproj-BF16.gguf
+              - /models/models--unsloth--Qwen3.5-4B-GGUF/mmproj.gguf
               - --ctx-size
               - "32768"
               - --cache-type-k
