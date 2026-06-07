@@ -29,7 +29,7 @@ spec:
           name: *secret
           key: LDAP_GROUPS_SEARCH_FILTER
   ldap:
-    url: "ldap://lldap.security.svc.cluster.local"
+    url: "ldap://lldap.security.svc.cluster.local:3890"
     base: dc=janpuc,dc=com
     bindDN: admin
     bindPassword:
