@@ -1,0 +1,16 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: open-webui
+spec:
+  name: Open-WebUI
+  callbackUrls:
+    - "https://chat.janpuc.com/oauth/oidc/callback"
+  allowedUserGroups:
+    - name: iadmin
+      namespace: security
+  secret:
+    keys:
+      clientID: OAUTH_CLIENT_ID
+      clientSecret: OAUTH_CLIENT_SECRET
