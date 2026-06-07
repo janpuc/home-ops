@@ -30,8 +30,8 @@ spec:
           key: LDAP_GROUPS_SEARCH_FILTER
   ldap:
     url: "ldap://lldap.security.svc.cluster.local"
-    base: "${SECRET_LDAP_BASE}"
-    bindDN: "${SECRET_LDAP_BIND_DN}"
+    base: dc=janpuc,dc=com
+    bindDN: admin
     bindPassword:
       valueFrom:
         secretKeyRef:
