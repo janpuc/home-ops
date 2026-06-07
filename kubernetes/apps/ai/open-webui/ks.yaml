@@ -16,6 +16,8 @@ spec:
       namespace: volsync-system
     - name: dragonfly-operator
       namespace: database
+    - name: pocket-id-instance
+      namespace: security
   healthCheckExprs:
     - apiVersion: dragonflydb.io/v1alpha1
       kind: Dragonfly
