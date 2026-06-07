@@ -11,6 +11,8 @@ model_list:
       api_base: http://llama-cpp.ai.svc.cluster.local:8080/v1
       api_key: os.environ/LLAMA_API_KEY
       drop_params: true
+      web_search_options:
+        search_context_size: "low"
 
   - model_name: kimi-k2.6
     model_info:
