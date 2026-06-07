@@ -26,9 +26,12 @@ spec:
               repository: ghcr.io/searxng/searxng
               tag: 2026.6.7-51b6fd4f2@sha256:c016c15cbc60bed4644bdb405dbcc7fa12f2e53acb30c35d1d2183136d823d1a
             env:
+              TZ: Europe/Warsaw
               SEARXNG_BASE_URL: https://search.janpuc.com
               SEARXNG_PORT: &httpPort 8080
               SEARXNG_VALKEY_URL: "redis://searxng-dragonfly.selfhosted.svc.cluster.local:6379"
+              UWSGI_WORKERS: 1
+              UWSGI_THREADS: 4
             envFrom:
               - secretRef:
                   name: searxng-secret

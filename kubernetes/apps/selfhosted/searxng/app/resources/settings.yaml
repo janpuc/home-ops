@@ -8,8 +8,10 @@ server:
   public_instance: false
 
 search:
+  safe_search: 0
   autocomplete: duckduckgo
   favicon_resolver: duckduckgo
+  autocomplete_min: 2
   languages:
     - all
     - en
@@ -20,6 +22,10 @@ search:
 
 general:
   instance_name: Janpuc Search
+  privacypolicy_url: false
+  donation_url: false
+  contact_url: false
+  enable_metrics: false
 
 ui:
   default_theme: simple
