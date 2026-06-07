@@ -31,7 +31,7 @@ spec:
   ldap:
     url: "ldap://lldap.security.svc.cluster.local:3890"
     base: dc=janpuc,dc=com
-    bindDN: "cn=admin,dc=janpuc,dc=com"
+    bindDN: uid=admin,ou=people,dc=janpuc,dc=com
     bindPassword:
       valueFrom:
         secretKeyRef:
