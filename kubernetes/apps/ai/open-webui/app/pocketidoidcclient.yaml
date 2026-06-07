@@ -8,7 +8,7 @@ spec:
   callbackUrls:
     - "https://chat.janpuc.com/oauth/oidc/callback"
   allowedUserGroups:
-    - name: iadmin
+    - name: admin
       namespace: security
   secret:
     keys:
