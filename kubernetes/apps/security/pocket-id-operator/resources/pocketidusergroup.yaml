@@ -2,13 +2,13 @@
 apiVersion: pocketid.internal/v1alpha1
 kind: PocketIDUserGroup
 metadata:
-  name: admin
+  name: id-admin
 spec:
-  name: "Admin"
+  name: "ID-Admin"
 ---
 apiVersion: pocketid.internal/v1alpha1
 kind: PocketIDUserGroup
 metadata:
-  name: users
+  name: id-users
 spec:
-  name: "Users"
+  name: "ID-Users"
