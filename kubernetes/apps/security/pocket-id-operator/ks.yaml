@@ -24,7 +24,7 @@ spec:
     - ../../../../components/nfs-scaler
     - ../../../../components/volsync
   dependsOn:
-    - name: onepassword-connect
+    - name: onepassword
       namespace: external-secrets
     - name: pocket-id-operator
     - name: rook-ceph-cluster
