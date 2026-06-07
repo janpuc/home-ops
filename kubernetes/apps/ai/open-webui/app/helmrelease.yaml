@@ -22,8 +22,8 @@ spec:
             env:
               TZ: Europe/Warsaw
               # App
-              WEBUI_URL: https://chat.${SECRET_DOMAIN}
-              CORS_ALLOW_ORIGIN: https://chat.${SECRET_DOMAIN}
+              WEBUI_URL: https://chat.janpuc.com
+              CORS_ALLOW_ORIGIN: https://chat.janpuc.com
               DEFAULT_LOCALE: en
               ENABLE_OPENAI_API: true
               OPENAI_API_BASE_URL: http://litellm.ai.svc.cluster.local:4000/v1
