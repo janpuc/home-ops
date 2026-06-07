@@ -59,8 +59,8 @@ spec:
               - --no-mmap
               - --flash-attn
               - on
-              - --sleep-idle-seconds
-              - "60"
+              # - --sleep-idle-seconds
+              # - "60"
               - --temp
               - "0.7"
               - --top-k
