@@ -16,6 +16,7 @@ search:
     - all
     - en
     - en-US
+    - pl
   formats:
     - html
     - json
