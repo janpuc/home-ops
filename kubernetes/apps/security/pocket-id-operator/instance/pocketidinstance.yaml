@@ -38,7 +38,7 @@ spec:
           name: *secret
           key: LDAP_BIND_PASSWORD
     skipCertVerify: true
-    adminGroupName: "admin"
+    adminGroupName: "ID-Admin"
     attributeMapping:
       userUniqueIdentifier: "uuid"
       groupUniqueIdentifier: "uuid"
