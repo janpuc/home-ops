@@ -1,0 +1,16 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: kavita
+spec:
+  name: Kavita
+  callbackUrls:
+    - "https://kavita.janpuc.com/signin-oidc"
+  logoutCallbackUrls:
+    - "https://kavita.janpuc.com/signout-callback-oidc"
+  allowedUserGroups:
+    - name: id-admin
+      namespace: security
+    - name: id-users
+      namespace: security
