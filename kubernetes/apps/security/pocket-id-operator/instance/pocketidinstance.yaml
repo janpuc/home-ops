@@ -70,7 +70,7 @@ spec:
     enabled: true
     parentRefs:
       - name: envoy-external
-        namespace: networkk
+        namespace: network
     hostnames:
       - id.janpuc.com
   persistence:
