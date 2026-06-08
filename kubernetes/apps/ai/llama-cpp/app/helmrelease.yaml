@@ -141,7 +141,7 @@ spec:
             app:
               - path: /models
                 readOnly: true
-            download-qwen:
+            download-gemma:
               - path: /models
                 readOnly: false
       tmpfs:
