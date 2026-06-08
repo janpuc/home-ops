@@ -17,8 +17,6 @@ spec:
             image:
               repository: ghcr.io/renplay-web/renplay
               tag: edge@sha256:2279d9d29a706384c16a1287a87300067ae55e8947a2a27088fe5cace01490e9
-            env:
-              TZ: Europe/Warsaw
             resources:
               requests:
                 cpu: 10m

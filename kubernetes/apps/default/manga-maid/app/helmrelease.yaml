@@ -18,7 +18,6 @@ spec:
               repository: ghcr.io/pullaf/manga-maid
               tag: 2.1.6@sha256:2c693ff270dc90887dae686bbbd9a51f333efda5c5e32801673c8e541616acd0
             env:
-              TZ: Europe/Warsaw
               SYNC_CRON: "0 */6 * * *"
               DEFAULT_LANGUAGE: en
               SUWAYOMI_URL: http://suwayomi.default.svc.cluster.local

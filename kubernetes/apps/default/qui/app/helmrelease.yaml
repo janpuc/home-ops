@@ -27,7 +27,6 @@ spec:
               QUI__OIDC_CLIENT_ID: qui
               QUI__OIDC_REDIRECT_URL: https://qui.janpuc.com/api/auth/oidc/callback
               QUI__OIDC_DISABLE_BUILT_IN_LOGIN: "true"
-              TZ: Europe/Warsaw
             envFrom:
               - secretRef:
                   name: "{{ .Release.Name }}-secret"

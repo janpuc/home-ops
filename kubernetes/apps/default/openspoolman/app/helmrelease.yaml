@@ -24,7 +24,6 @@ spec:
               TRACK_LAYER_USAGE: true
               OPENSPOOLMAN_BASE_URL: https://openspoolman.janpuc.com
               SPOOLMAN_BASE_URL: https://spoolman.janpuc.com
-              TZ: Europe/Warsaw
             envFrom:
               - secretRef:
                   name: "{{ .Release.Name }}-secret"

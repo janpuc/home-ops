@@ -21,7 +21,6 @@ spec:
               repository: ghcr.io/home-operations/qbittorrent-libtorrentv1
               tag: 5.2.1@sha256:844555b6c1ed43afcb0001100973676fc6d825d5142c65f612a25fd9eba0bb0a
             env:
-              TZ: Europe/Warsaw
               QBT_WEBUI_PORT: &port 80
             probes:
               liveness:

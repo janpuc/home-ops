@@ -23,7 +23,6 @@ spec:
               tag: 2.8.3@sha256:b5a6defe3462a7bba13342bb878b20504f3699644a442039dad21285edca0082
             env:
               WEBHOOK__PORT: &port 80
-              TZ: Europe/Warsaw
             envFrom:
               - secretRef:
                   name: "{{ .Release.Name }}-secret"

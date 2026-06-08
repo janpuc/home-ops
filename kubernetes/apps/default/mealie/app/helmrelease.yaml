@@ -20,7 +20,6 @@ spec:
             env:
               PUID: 1000
               PGID: 1000
-              TZ: Europe/Warsaw
               # ALLOW_SIGNUP: "false"
               # ALLOW_PASSWORD_LOGIN: "false"
               BASE_URL: https://recipes.janpuc.com
