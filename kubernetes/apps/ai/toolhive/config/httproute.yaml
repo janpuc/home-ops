@@ -12,5 +12,5 @@ spec:
       namespace: network
   rules:
     - backendRefs:
-        - name: vmcp-mcp-gateway-internal
+        - name: vmcp-mcp-gateway
           port: 4483
