@@ -9,7 +9,8 @@ spec:
     labels:
       app.kubernetes.io/name: memory-mcp
   components:
-    - ../../../../../components/volsync
+    - ../../../../components/nfs-scaler
+    - ../../../../components/volsync
   dependsOn:
     - name: toolhive-operator-crds
       namespace: ai
