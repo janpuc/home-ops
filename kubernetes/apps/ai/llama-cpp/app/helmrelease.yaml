@@ -22,7 +22,7 @@ spec:
         strategy: Recreate
         type: deployment
         initContainers:
-          download-qwen:
+          download-gemma:
             image:
               repository: ghcr.io/astral-sh/uv
               tag: python3.14-alpine
@@ -31,7 +31,7 @@ spec:
               - -ec
               - |
                 uv pip install --system --no-cache huggingface_hub
-                download-model unsloth/Qwen3.5-4B-GGUF:UD-Q6_K_XL
+                download-model unsloth/gemma-4-E2B-it-GGUF:UD-Q3_K_XL
             env:
               HUGGINGFACE_HUB_CACHE: /models
               HF_TOKEN:
@@ -47,38 +47,26 @@ spec:
             args:
               - --metrics
               - --model
-              - /models/models--unsloth--Qwen3.5-4B-GGUF/model.gguf
+              - /models/models--unsloth--gemma-4-E2B-it-GGUF/model.gguf
               - --mmproj
-              - /models/models--unsloth--Qwen3.5-4B-GGUF/mmproj.gguf
+              - /models/models--unsloth--gemma-4-E2B-it-GGUF/mmproj.gguf
               - --ctx-size
               - "16384"
               - --cache-ram
               - "512"
-              - --cache-type-k
-              - q8_0
-              - --cache-type-v
-              - q8_0
               - --no-mmap
               - --flash-attn
               - on
               - --sleep-idle-seconds
               - "60"
               - --temp
-              - "0.7"
-              - --top-k
-              - "20"
-              - --top-p
-              - "0.8"
-              - --min-p
-              - "0.0"
-              - --presence-penalty
-              - "1.5"
-              - --repeat-penalty
               - "1.0"
-              - --chat-template-kwargs
-              - '{"enable_thinking":false}'
+              - --top-k
+              - "64"
+              - --top-p
+              - "0.95"
               - --alias
-              - qwen
+              - gemma
             env:
               LLAMA_API_KEY:
                 valueFrom:
@@ -124,9 +112,9 @@ spec:
                 - name: gpu
               requests:
                 cpu: 100m
-                memory: 1Gi
-              limits:
                 memory: 2Gi
+              limits:
+                memory: 4Gi
     service:
       app:
         controller: llama-cpp
@@ -142,7 +130,7 @@ spec:
         defaultMode: 0o755
         advancedMounts:
           llama-cpp:
-            download-qwen:
+            download-gemma:
               - path: /usr/bin/download-model
                 subPath: download-model.sh
                 readOnly: true

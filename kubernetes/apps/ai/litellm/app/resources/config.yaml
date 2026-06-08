@@ -1,5 +1,5 @@
 model_list:
-  - model_name: qwen-local
+  - model_name: gemma-local
     model_info:
       max_tokens: 16384
       max_input_tokens: 12288
@@ -7,7 +7,7 @@ model_list:
       supports_function_calling: true
       supports_vision: true
     litellm_params:
-      model: openai/qwen
+      model: openai/gemma
       api_base: http://llama-cpp.ai.svc.cluster.local:8080/v1
       api_key: os.environ/LLAMA_API_KEY
       drop_params: true
