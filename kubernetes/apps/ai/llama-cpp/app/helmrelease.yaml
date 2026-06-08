@@ -31,7 +31,7 @@ spec:
               - -ec
               - |
                 uv pip install --system --no-cache huggingface_hub
-                download-model unsloth/Qwen3.5-4B-GGUF:UD-Q6_K_XL
+                download-model unsloth/Qwen3.5-9B-GGUF:UD-Q4_K_XL
             env:
               HUGGINGFACE_HUB_CACHE: /models
               HF_TOKEN:
@@ -47,11 +47,11 @@ spec:
             args:
               - --metrics
               - --model
-              - /models/models--unsloth--Qwen3.5-4B-GGUF/model.gguf
+              - /models/models--unsloth--Qwen3.5-9B-GGUF/model.gguf
               - --mmproj
-              - /models/models--unsloth--Qwen3.5-4B-GGUF/mmproj.gguf
+              - /models/models--unsloth--Qwen3.5-9B-GGUF/mmproj.gguf
               - --ctx-size
-              - "32768"
+              - "16384"
               - --cache-type-k
               - q8_0
               - --cache-type-v
@@ -59,8 +59,8 @@ spec:
               - --no-mmap
               - --flash-attn
               - on
-              # - --sleep-idle-seconds
-              # - "60"
+              - --sleep-idle-seconds
+              - "60"
               - --temp
               - "0.7"
               - --top-k
@@ -74,7 +74,7 @@ spec:
               - --repeat-penalty
               - "1.0"
               - --chat-template-kwargs
-              - '{"enable_thinking":false}'
+              - '{"enable_thinking":true}'
               - --alias
               - qwen
             env:
@@ -145,7 +145,10 @@ spec:
                 subPath: download-model.sh
                 readOnly: true
       models:
-        existingClaim: "{{ .Release.Name }}"
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        size: 10Gi
+        storageClass: openebs-hostpath
         advancedMounts:
           llama-cpp:
             app:

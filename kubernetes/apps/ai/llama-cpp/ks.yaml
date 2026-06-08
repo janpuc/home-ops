@@ -10,10 +10,9 @@ spec:
       app.kubernetes.io/name: llama-cpp
   components:
     - ../../../../components/gpu
-    - ../../../../components/volsync
   dependsOn:
-    - name: volsync
-      namespace: volsync-system
+    - name: openebs
+      namespace: openebs-system
   interval: 1h
   path: ./kubernetes/apps/ai/llama-cpp/app
   postBuild:
