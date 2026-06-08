@@ -9,6 +9,7 @@ components:
 
 resources:
   - ./namespace.yaml
+  - ./context7-mcp/ks.yaml
   - ./llama-cpp/ks.yaml
   - ./litellm/ks.yaml
   - ./open-webui/ks.yaml
