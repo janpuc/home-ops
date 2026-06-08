@@ -31,7 +31,7 @@ spec:
               - -ec
               - |
                 uv pip install --system --no-cache huggingface_hub
-                download-model unsloth/Qwen3.5-9B-GGUF:UD-Q4_K_XL
+                download-model unsloth/Qwen3.5-4B-GGUF:UD-Q6_K_XL
             env:
               HUGGINGFACE_HUB_CACHE: /models
               HF_TOKEN:
@@ -47,9 +47,9 @@ spec:
             args:
               - --metrics
               - --model
-              - /models/models--unsloth--Qwen3.5-9B-GGUF/model.gguf
+              - /models/models--unsloth--Qwen3.5-4B-GGUF/model.gguf
               - --mmproj
-              - /models/models--unsloth--Qwen3.5-9B-GGUF/mmproj.gguf
+              - /models/models--unsloth--Qwen3.5-4B-GGUF/mmproj.gguf
               - --ctx-size
               - "16384"
               - --cache-ram
