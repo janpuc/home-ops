@@ -14,5 +14,7 @@ resources:
   - ./llama-cpp/ks.yaml
   - ./litellm/ks.yaml
   - ./open-webui/ks.yaml
+  - ./prometheus-mcp/ks.yaml
   - ./sidero-mcp/ks.yaml
   - ./toolhive/ks.yaml
+  - ./victoria-logs-mcp/ks.yaml
