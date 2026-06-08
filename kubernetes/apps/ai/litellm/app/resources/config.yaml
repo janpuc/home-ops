@@ -5,7 +5,6 @@ model_list:
       max_input_tokens: 12288
       max_output_tokens: 4096
       supports_function_calling: true
-      supports_reasoning: true
       supports_vision: true
     litellm_params:
       model: openai/qwen
