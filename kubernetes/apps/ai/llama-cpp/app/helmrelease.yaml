@@ -52,6 +52,8 @@ spec:
               - /models/models--unsloth--Qwen3.5-9B-GGUF/mmproj.gguf
               - --ctx-size
               - "16384"
+              - --cache-ram
+              - "512"
               - --cache-type-k
               - q8_0
               - --cache-type-v
