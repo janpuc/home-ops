@@ -10,14 +10,17 @@ spec:
       app.kubernetes.io/name: llama-cpp
   components:
     - ../../../../components/gpu
+    - ../../../../components/nfs-scaler
+    - ../../../../components/volsync
   dependsOn:
-    - name: openebs
-      namespace: openebs-system
+    - name: volsync
+      namespace: volsync-system
   interval: 1h
   path: ./kubernetes/apps/ai/llama-cpp/app
   postBuild:
     substitute:
       APP: llama-cpp
+      VOLSYNC_CAPACITY: 10Gi
   prune: true
   sourceRef:
     kind: GitRepository

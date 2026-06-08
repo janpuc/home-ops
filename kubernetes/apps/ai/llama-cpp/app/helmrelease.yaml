@@ -145,10 +145,7 @@ spec:
                 subPath: download-model.sh
                 readOnly: true
       models:
-        type: persistentVolumeClaim
-        accessMode: ReadWriteOnce
-        size: 10Gi
-        storageClass: openebs-hostpath
+        existingClaim: "{{ .Release.Name }}"
         advancedMounts:
           llama-cpp:
             app:
