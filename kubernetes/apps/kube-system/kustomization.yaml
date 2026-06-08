@@ -13,6 +13,7 @@ resources:
   - ./coredns/ks.yaml
   - ./descheduler/ks.yaml
   - ./k8s-gpu-dra-driver/ks.yaml
+  - ./k8tz/ks.yaml
   - ./metrics-server/ks.yaml
   - ./reloader/ks.yaml
   - ./snapshot-controller/ks.yaml
