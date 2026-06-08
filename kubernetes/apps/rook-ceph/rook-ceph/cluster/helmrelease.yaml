@@ -54,7 +54,7 @@ spec:
         disable: false
       csi:
         readAffinity:
-          enabled: true
+          enabled: false # https://github.com/rook/rook/issues/16839
           crushLocationLabels:
             - kubernetes.io/hostname
       dashboard:
