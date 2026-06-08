@@ -10,6 +10,7 @@ components:
 resources:
   - ./namespace.yaml
   - ./context7-mcp/ks.yaml
+  - ./github-mcp/ks.yaml
   - ./kubectl-mcp/ks.yaml
   - ./llama-cpp/ks.yaml
   - ./litellm/ks.yaml
