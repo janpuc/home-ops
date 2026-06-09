@@ -10,51 +10,26 @@ spec:
     name: victoria-logs
   interval: 1h
   values:
-    fullnameOverride: victoria-logs
+    global:
+      image:
+        registry: quay.io
+    dashboards:
+      enabled: true
+      grafanaOperator:
+        enabled: true
     server:
+      fullnameOverride: victoria-logs
       persistentVolume:
         enabled: true
         storageClassName: ceph-block
-        size: 20Gi
-      retentionPeriod: 14d
+        size: 50Gi
+      retentionPeriod: 90d
       route:
-        # annotations:
-        #   gethomepage.dev/enabled: "true"
-        #   gethomepage.dev/description: Log aggregation and search tool
-        #   gethomepage.dev/group: Observability
-        #   gethomepage.dev/icon: si-victoriametrics
-        #   gethomepage.dev/name: Victoria Logs
-        #   gethomepage.dev/pod-selector: app.kubernetes.io/name=victoria-logs-single
-        #   gethomepage.dev/weight: "10"
         enabled: true
         hostnames:
-          - victoria-logs.janpuc.com
+          - vlogs.janpuc.com
         parentRefs:
           - name: envoy-internal
             namespace: network
-        extraRules:
-          - filters:
-              - type: RequestRedirect
-                requestRedirect:
-                  path:
-                    type: ReplaceFullPath
-                    replaceFullPath: /select/vmui/
-                  statusCode: 302
-            matches:
-              - path:
-                  type: Exact
-                  value: /
       serviceMonitor:
         enabled: true
-    # dashboards:
-    #   enabled: true
-    #   grafanaOperator:
-    #     enabled: true
-    #     spec:
-    #       allowCrossNamespaceImport: true
-    #       instanceSelector:
-    #         matchLabels:
-    #           dashboards: grafana
-    #       datasources:
-    #         - datasourceName: prometheus
-    #           inputName: DS_PROMETHEUS
