@@ -26,8 +26,8 @@ spec:
               - secretRef:
                   name: kopia-secret
             args:
+              - --refresh-interval=5m
               - --without-password
-              - --disable-csrf-token-checks
             probes:
               liveness: &probes
                 enabled: true
