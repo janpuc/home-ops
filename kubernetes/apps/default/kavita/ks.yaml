@@ -6,7 +6,7 @@ metadata:
   name: kavita
 spec:
   components:
-    - ../../../../components/nfs-scaler
+    - ../../../../components/zeroscaler
     - ../../../../components/volsync
   dependsOn:
     - name: authelia # Kavita OIDC depends on Authelia being alive

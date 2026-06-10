@@ -21,7 +21,7 @@ metadata:
   name: pocket-id-instance
 spec:
   components:
-    - ../../../../components/nfs-scaler
+    - ../../../../components/zeroscaler
     - ../../../../components/volsync
   dependsOn:
     - name: onepassword

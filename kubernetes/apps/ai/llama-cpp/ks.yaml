@@ -10,7 +10,7 @@ spec:
       app.kubernetes.io/name: llama-cpp
   components:
     - ../../../../components/gpu
-    - ../../../../components/nfs-scaler
+    - ../../../../components/zeroscaler
     - ../../../../components/volsync
   dependsOn:
     - name: volsync

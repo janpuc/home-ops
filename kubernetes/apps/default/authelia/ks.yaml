@@ -6,7 +6,7 @@ metadata:
   name: authelia
 spec:
   components:
-    - ../../../../components/nfs-scaler
+    - ../../../../components/zeroscaler
     - ../../../../components/volsync
   dependsOn:
     - name: lldap
