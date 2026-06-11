@@ -9,4 +9,4 @@ components:
 
 resources:
   - ./namespace.yaml
-  # - ./renplay/ks.yaml
+  - ./renplay/ks.yaml
