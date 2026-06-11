@@ -28,7 +28,7 @@ spec:
           app:
             image:
               repository: ghcr.io/chrisbenincasa/tunarr
-              tag: 1.3.5@sha256:4140d527930dac31c13c12eca69a69a570c86300492e336e2ca0d899254cf1c6
+              tag: 1.3.6@sha256:be4d46fb124459c5ff4e7e139b6d60d374b71e99398e08c6e7938b80dce6b6fa
             env:
               LOG_LEVEL: INFO
               HOME: /config
