@@ -38,14 +38,7 @@ spec:
       app:
         ports:
           http:
-            port: &port 8080
-    route:
-      app:
-        hostnames:
-          - "{{ .Release.Name }}.janpuc.com"
-        parentRefs:
-          - name: envoy-internal
-            namespace: network
+            port: ${HTTP_PORT}
     persistence:
       data:
         existingClaim: "{{ .Release.Name }}"
