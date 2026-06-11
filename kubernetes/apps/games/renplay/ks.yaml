@@ -12,7 +12,7 @@ spec:
     - name: rook-ceph-cluster
       namespace: rook-ceph
   interval: 1h
-  path: ./kubernetes/apps/default/renplay/app
+  path: ./kubernetes/apps/games/renplay/app
   postBuild:
     substitute:
       APP: renplay
