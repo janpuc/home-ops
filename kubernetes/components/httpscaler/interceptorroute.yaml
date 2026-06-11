@@ -1,0 +1,18 @@
+apiVersion: http.keda.sh/v1beta1
+kind: InterceptorRoute
+metadata:
+  name: ${APP}
+spec:
+  target:
+    service: ${HTTP_SVC}
+    port: ${HTTP_PORT}
+  rules:
+    - hosts:
+        - ${HTTP_HOST}
+  scalingMetric:
+    concurrency:
+      targetValue: ${HTTP_CONCURRENCY:=100}
+  timeouts:
+    request: ${HTTP_TIMEOUT_REQUEST:=180s}
+    responseHeader: ${HTTP_TIMEOUT_HEADER:=30s}
+    readiness: ${HTTP_TIMEOUT_READINESS:=120s}

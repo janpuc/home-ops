@@ -48,7 +48,7 @@ spec:
                 spec:
                   httpGet:
                     path: /api/app/about
-                    port: &port 9000
+                    port: ${HTTP_PORT}
                   periodSeconds: 10
                   timeoutSeconds: 5
                   failureThreshold: 5
@@ -78,15 +78,7 @@ spec:
       app:
         ports:
           http:
-            port: *port
-    # route:
-    #   app:
-    #     hostnames:
-    #       - "recipes.janpuc.com"
-    #       - "{{ .Release.Name }}.janpuc.com"
-    #     parentRefs:
-    #       - name: envoy-internal
-    #         namespace: network
+            port: ${HTTP_PORT}
     persistence:
       config:
         type: emptyDir
