@@ -24,7 +24,7 @@ spec:
           main:
             image:
               repository: ghcr.io/searxng/searxng
-              tag: 2026.6.11-4dd0bf486@sha256:2008614c3dfba2baf7971503a8680a9799c59b144a3d9675b5f985d68917472b
+              tag: 2026.6.15-cf1410af8@sha256:37a8cc7769c4721b8f252ba935de8f01b7918e58d26b1be18dc87b5330fda65b
             env:
               SEARXNG_BASE_URL: https://search.janpuc.com
               SEARXNG_PORT: &httpPort 8080
