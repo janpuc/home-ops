@@ -62,13 +62,6 @@ spec:
         ports:
           http:
             port: *port
-    route:
-      app:
-        hostnames:
-          - "{{ .Release.Name }}.janpuc.com"
-        parentRefs:
-          - name: envoy-internal
-            namespace: networking
     persistence:
       config:
         type: configMap
