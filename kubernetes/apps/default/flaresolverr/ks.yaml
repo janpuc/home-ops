@@ -5,6 +5,8 @@ kind: Kustomization
 metadata:
   name: flaresolverr
 spec:
+  # components:
+    # - ../../../../components/zeroscaler-internal # TODO
   interval: 1h
   path: ./kubernetes/apps/default/flaresolverr/app
   prune: true

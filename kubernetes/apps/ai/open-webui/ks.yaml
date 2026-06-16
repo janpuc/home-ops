@@ -11,6 +11,7 @@ spec:
   components:
     - ../../../../components/dragonfly
     - ../../../../components/volsync
+    # - ../../../../components/zeroscaler-http # TODO
   dependsOn:
     - name: volsync
       namespace: volsync-system
