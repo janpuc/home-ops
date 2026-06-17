@@ -6,6 +6,22 @@ metadata:
   name: kubectl-mcp
 spec:
   image: ghcr.io/rohitg00/kubectl-mcp-server:1.24.0
-  transport: stdio
   groupRef:
     name: mcp-tools
+  podTemplateSpec:
+    spec:
+      containers:
+        - name: mcp
+          resources:
+            limits:
+              memory: 384Mi
+            requests:
+              cpu: 10m
+              memory: 256Mi
+  resources:
+    limits:
+      memory: 160Mi
+    requests:
+      cpu: 10m
+      memory: 96Mi
+  transport: stdio

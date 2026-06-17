@@ -9,6 +9,22 @@ spec:
   transport: stdio
   groupRef:
     name: mcp-tools
+  podTemplateSpec:
+    spec:
+      containers:
+        - name: mcp
+          resources:
+            limits:
+              memory: 48Mi
+            requests:
+              cpu: 10m
+              memory: 32Mi
+  resources:
+    limits:
+      memory: 96Mi
+    requests:
+      cpu: 10m
+      memory: 48Mi
   secrets:
     - name: github-mcp-secret
       key: GITHUB_PERSONAL_ACCESS_TOKEN
