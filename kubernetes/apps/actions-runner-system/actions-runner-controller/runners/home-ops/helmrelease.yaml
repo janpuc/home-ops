@@ -12,8 +12,8 @@ spec:
   values:
     githubConfigUrl: https://github.com/janpuc/home-ops
     githubConfigSecret: home-ops-runner-secret
-    minRunners: 1
-    maxRunners: 3
+    minRunners: 0
+    maxRunners: 2
     containerMode:
       type: kubernetes
       kubernetesModeWorkVolumeClaim:
@@ -33,9 +33,9 @@ spec:
             resources:
               requests:
                 cpu: 10m
-                memory: 16Mi
+                memory: 20Mi
               limits:
-                memory: 32Mi
+                memory: 30Mi
     template:
       spec:
         containers:
@@ -53,7 +53,7 @@ spec:
             resources:
               requests:
                 cpu: 10m
-                memory: 64Mi
+                memory: 60Mi
               limits:
                 memory: 1Gi
             volumeMounts:
