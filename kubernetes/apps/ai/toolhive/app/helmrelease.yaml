@@ -12,3 +12,9 @@ spec:
   values:
     operator:
       replicaCount: 1
+      resources:
+        limits:
+          memory: 224Mi
+        requests:
+          cpu: 15m
+          memory: 160Mi
