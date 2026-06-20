@@ -6,7 +6,6 @@ metadata:
   name: prometheus-mcp
 spec:
   image: ghcr.io/pab1it0/prometheus-mcp-server:1.6.1
-  transport: stdio
   groupRef:
     name: mcp-tools
   env:
@@ -14,3 +13,20 @@ spec:
       value: http://prometheus-operated.observability.svc.cluster.local:9090
     - name: PROMETHEUS_DISABLE_LINKS
       value: "true"
+  podTemplateSpec:
+    spec:
+      containers:
+        - name: mcp
+          resources:
+            limits:
+              memory: 224Mi
+            requests:
+              cpu: 10m
+              memory: 160Mi
+  resources:
+    limits:
+      memory: 96Mi
+    requests:
+      cpu: 10m
+      memory: 48Mi
+  transport: stdio
