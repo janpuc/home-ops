@@ -9,3 +9,9 @@ spec:
   transport: streamable-http
   groupRef:
     name: mcp-tools
+  resources:
+    limits:
+      memory: 48Mi
+    requests:
+      cpu: 10m
+      memory: 24Mi
