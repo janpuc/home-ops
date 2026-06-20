@@ -58,7 +58,7 @@ spec:
       tmpfs:
         type: emptyDir
         advancedMounts:
-          open-webui:
+          open-webui-tmp:
             app:
               - path: /tmp
                 subPath: tmp
