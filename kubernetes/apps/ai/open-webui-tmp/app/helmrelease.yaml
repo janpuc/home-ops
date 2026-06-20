@@ -41,8 +41,6 @@ spec:
             envFrom:
               - secretRef:
                   name: open-webui-tmp-secret
-              - secretRef:
-                  name: open-webui-tmp-oidc-credentials
             resources:
               requests:
                 cpu: 1500m
