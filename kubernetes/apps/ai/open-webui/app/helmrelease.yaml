@@ -56,10 +56,10 @@ spec:
                   name: open-webui-oidc-credentials
             resources:
               requests:
-                cpu: 100m
-                memory: 256Mi
+                cpu: 1500m
+                memory: 1024Mi
               limits:
-                memory: 2Gi
+                memory: 1536Mi
     persistence:
       config:
         enabled: true
