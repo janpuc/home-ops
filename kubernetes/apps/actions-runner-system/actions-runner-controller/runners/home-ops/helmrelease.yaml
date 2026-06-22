@@ -33,9 +33,9 @@ spec:
             resources:
               requests:
                 cpu: 10m
-                memory: 20Mi
+                memory: 24Mi
               limits:
-                memory: 30Mi
+                memory: 48Mi
     template:
       spec:
         containers:
@@ -53,7 +53,7 @@ spec:
             resources:
               requests:
                 cpu: 10m
-                memory: 60Mi
+                memory: 64Mi
               limits:
                 memory: 1Gi
             volumeMounts:
