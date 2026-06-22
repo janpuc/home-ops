@@ -27,6 +27,12 @@ spec:
             envFrom:
               - secretRef:
                   name: "{{ .Release.Name }}-secret"
+            resources:
+              requests:
+                cpu: 10m
+                memory: 96Mi
+              limits:
+                memory: 160Mi
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
