@@ -52,7 +52,7 @@ spec:
           id: cluster_memory_usage
           query: round(sum(node_memory_MemTotal_bytes{pod!=""} - node_memory_MemAvailable_bytes{pod!=""}) / sum(node_memory_MemTotal_bytes{pod!=""}) * 100, 0.1)
           valueExpr: string(result) + "%"
-          colorExpr: 'colorScale(result, 70.0, 80.0], ["green", "orange", "red"])'
+          colorExpr: 'colorScale(result, [70.0, 80.0], ["green", "orange", "red"])'
 
         - title: Power
           id: cluster_power_usage
