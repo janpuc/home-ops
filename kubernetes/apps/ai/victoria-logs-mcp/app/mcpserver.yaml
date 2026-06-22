@@ -5,14 +5,6 @@ kind: MCPServer
 metadata:
   name: victoria-logs-mcp
 spec:
-  image: ghcr.io/victoriametrics/mcp-victorialogs:latest
-  transport: streamable-http
-  mcpPort: 8081
-  groupRef:
-    name: mcp-tools
-  permissionProfile:
-    type: builtin
-    name: network
   env:
     - name: MCP_SERVER_MODE
       value: http
@@ -24,3 +16,27 @@ spec:
       value: info
     - name: VL_INSTANCE_ENTRYPOINT
       value: http://victoria-logs-server.observability.svc.cluster.local:9428
+  groupRef:
+    name: mcp-tools
+  image: ghcr.io/victoriametrics/mcp-victorialogs:latest
+  mcpPort: 8081
+  podTemplateSpec:
+    spec:
+      containers:
+        - name: mcp
+          resources:
+            limits:
+              memory: 224Mi
+            requests:
+              cpu: 10m
+              memory: 160Mi
+  permissionProfile:
+    type: builtin
+    name: network
+  transport: streamable-http
+  resources:
+    limits:
+      memory: 48Mi
+    requests:
+      cpu: 10m
+      memory: 24Mi
