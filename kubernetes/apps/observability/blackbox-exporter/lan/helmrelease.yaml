@@ -32,6 +32,12 @@ spec:
           timeout: 5s
           tcp:
             preferred_ip_protocol: ip4
+    resources:
+      requests:
+        cpu: 10m
+        memory: 32Mi
+      limits:
+        memory: 48Mi
     serviceMonitor:
       enabled: true
       selfMonitor:
