@@ -56,6 +56,12 @@ spec:
         serviceMonitor:
           enabled: true
       replicas: 2
+      resources:
+        limits:
+          memory: 224Mi
+        requests:
+          cpu: 10m
+          memory: 160Mi
       rollOutPods: true
     pmtuDiscovery:
       enabled: true
@@ -64,6 +70,12 @@ spec:
       serviceMonitor:
         enabled: true
         trustCRDsExist: true
+    resources:
+      limits:
+        memory: 448Mi
+      requests:
+        cpu: 150m
+        memory: 320Mi
     rollOutCiliumPods: true
     routingMode: native
     securityContext:
