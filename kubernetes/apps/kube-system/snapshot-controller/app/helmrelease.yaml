@@ -11,6 +11,12 @@ spec:
   interval: 1h
   values:
     controller:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 48Mi
+        limits:
+          memory: 96Mi
       serviceMonitor:
         enabled: true
     webhook:
