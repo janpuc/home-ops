@@ -21,3 +21,11 @@ spec:
           kubernetes:
             deploy:
               type: GatewayNamespace
+    deployment:
+      envoyGateway:
+        resources:
+          limits:
+            memory: 320Mi
+          requests:
+            cpu: 10m
+            memory: 192Mi

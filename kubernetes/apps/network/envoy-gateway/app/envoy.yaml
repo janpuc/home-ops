@@ -17,7 +17,23 @@ spec:
           image: mirror.gcr.io/envoyproxy/envoy:v1.38.2
           resources:
             requests:
-              cpu: 100m
+              cpu: 10m
+              memory: 96Mi
+            limits:
+              memory: 160Mi
+        patch:
+          type: StrategicMerge
+          value:
+            spec:
+              template:
+                spec:
+                  containers:
+                  - name: shutdown-manager
+                    requests:
+                      cpu: 10m
+                      memory: 32Mi
+                    limits:
+                      memory: 128Mi
       envoyService:
         externalTrafficPolicy: Local
   shutdown:
