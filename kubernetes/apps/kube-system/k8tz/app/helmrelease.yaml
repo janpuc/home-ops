@@ -15,6 +15,12 @@ spec:
     replicaCount: 1
     timezone: Europe/Warsaw
     cronJobTimeZone: true
+    resources:
+      limits:
+        memory: 48Mi
+      requests:
+        cpu: 10m
+        memory: 24Mi
     webhook:
       certManager:
         enabled: true
