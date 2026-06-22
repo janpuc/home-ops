@@ -19,6 +19,7 @@ spec:
           concurrencyPolicy: Forbid
           successfulJobsHistory: 1
           failedJobsHistory: 1
+          suspend: true
         containers:
           scan: &container
             image:
@@ -69,7 +70,7 @@ spec:
         cronjob:
           !!merge <<: *cronJobSpec
           schedule: "@hourly"
-          suspend: false
+          suspend: true
         containers:
           clean-database:
             !!merge <<: *container
