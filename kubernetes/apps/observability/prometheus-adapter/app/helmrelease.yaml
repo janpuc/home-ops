@@ -12,6 +12,12 @@ spec:
   values:
     prometheus:
       url: http://prometheus-operated.observability.svc.cluster.local
+    resources:
+      requests:
+        cpu: 10m
+        memory: 48Mi
+      limits:
+        memory: 96Mi
     rules:
       default: false
       external:
