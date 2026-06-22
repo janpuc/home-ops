@@ -23,6 +23,12 @@ spec:
         enabled: true
         storageClassName: ceph-block
         size: 50Gi
+      resources:
+        requests:
+          cpu: 75m
+          memory: 768Mi
+        limits:
+          memory: 1792Mi
       retentionPeriod: 90d
       route:
         enabled: true
