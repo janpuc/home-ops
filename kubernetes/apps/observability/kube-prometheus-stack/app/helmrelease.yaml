@@ -32,6 +32,12 @@ spec:
         alertmanagerConfiguration:
           name: alertmanager
         externalUrl: https://alertmanager.janpuc.com
+        resources:
+          requests:
+            cpu: 10m
+            memory: 48Mi
+          limits:
+            memory: 96Mi
         storage:
           volumeClaimTemplate:
             spec:
@@ -75,7 +81,10 @@ spec:
         retentionSize: 50GB
         resources:
           requests:
-            cpu: 100m
+            cpu: 300m
+            memory: 2048Mi
+          limits:
+            memory: 5120Mi
         storageSpec:
           volumeClaimTemplate:
             spec:
@@ -83,6 +92,20 @@ spec:
               resources:
                 requests:
                   storage: 50Gi
+    prometheusOperator:
+      prometheusConfigReloader:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 24Mi
+          limits:
+            memory: 48Mi
+      resources:
+        requests:
+          cpu: 10m
+          memory: 48Mi
+        limits:
+          memory: 96Mi
     prometheus-node-exporter:
       fullnameOverride: node-exporter
     kube-state-metrics:
