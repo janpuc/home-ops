@@ -13,3 +13,9 @@ spec:
     alertmanagerAddress: http://kube-prometheus-stack-alertmanager:9093
     networkPolicy:
       enabled: false
+    resources:
+      requests:
+        cpu: 10m
+        memory: 48Mi
+      limits:
+        memory: 96Mi
