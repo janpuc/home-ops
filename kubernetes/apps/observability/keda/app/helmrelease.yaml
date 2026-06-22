@@ -24,19 +24,22 @@ spec:
         enabled: true
         serviceMonitor:
           enabled: true
-      resources:
-        operator:
-          requests:
-            cpu: 10m
-            memory: 100Mi
-          limits: {}
-        metricServer:
-          requests:
-            cpu: 10m
-            memory: 100Mi
-          limits: {}
-        webhooks:
-          requests:
-            cpu: 10m
-            memory: 100Mi
-          limits: {}
+    resources:
+      operator:
+        requests:
+          cpu: 20m
+          memory: 192Mi
+        limits:
+          memory: 320Mi
+      metricServer:
+        requests:
+          cpu: 15m
+          memory: 64Mi
+        limits:
+          memory: 96Mi
+      webhooks:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          memory: 48Mi
