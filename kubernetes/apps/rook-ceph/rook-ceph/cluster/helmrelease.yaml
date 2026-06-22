@@ -43,7 +43,7 @@ spec:
           bdev_enable_discard: "true" # quote
           bdev_async_discard_threads: "1" # quote
           osd_class_update_on_start: "false" # quote
-          osd_memory_target: "6442450944" # 6Gi quote
+          osd_memory_target: "2147483648" # 2Gi quote
           bluestore_slow_ops_warn_lifetime: "600" # 10 minutes in seconds quote
           # device_failure_prediction_mode: local # requires mgr module
           device_failure_prediction_mode: none # disable for now
@@ -91,19 +91,19 @@ spec:
         mgr:
           requests:
             cpu: 75m
-            memory: 1280Mi
+            memory: 512Mi
           limits:
             memory: 2048Mi
         mon:
           requests:
             cpu: 75m
-            memory: 768Mi
+            memory: 512Mi
           limits:
             memory: 1280Mi
         osd:
           requests:
             cpu: 100m
-            memory: 1536Mi
+            memory: 1Gi
           limits:
             memory: 2560Mi
         prepareosd:
