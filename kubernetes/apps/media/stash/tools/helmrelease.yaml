@@ -34,7 +34,7 @@ spec:
                   -H "Content-Type: application/json" \
                   -d "{\"query\": \"$QUERY\"}"
             env:
-              STASH_URL: http://stash.default.svc.cluster.local:9999/graphql
+              STASH_URL: http://stash.media.svc.cluster.local:9999/graphql
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true

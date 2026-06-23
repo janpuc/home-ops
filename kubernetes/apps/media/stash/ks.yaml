@@ -16,7 +16,7 @@ spec:
     - name: rook-ceph-cluster
       namespace: rook-ceph
   interval: 1h
-  path: ./kubernetes/apps/default/stash/app
+  path: ./kubernetes/apps/media/stash/app
   postBuild:
     substitute:
       APP: stash
@@ -26,7 +26,7 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: default
+  targetNamespace: media
   wait: false
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -36,13 +36,13 @@ metadata:
 spec:
   dependsOn:
     - name: stash
-      namespace: default
+      namespace: media
   interval: 1h
-  path: ./kubernetes/apps/default/stash/tools
+  path: ./kubernetes/apps/media/stash/tools
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: default
+  targetNamespace: media
   wait: false
