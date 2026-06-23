@@ -20,8 +20,8 @@ spec:
             env:
               SYNC_CRON: "0 */6 * * *"
               DEFAULT_LANGUAGE: en
-              SUWAYOMI_URL: http://suwayomi.default.svc.cluster.local
-              KAVITA_URL: http://kavita.default.svc.cluster.local:5000
+              SUWAYOMI_URL: http://suwayomi.media.svc.cluster.local
+              KAVITA_URL: http://kavita.media.svc.cluster.local:5000
             resources:
               requests:
                 cpu: 10m

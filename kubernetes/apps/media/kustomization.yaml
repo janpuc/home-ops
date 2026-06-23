@@ -12,6 +12,7 @@ resources:
   - ./bazarr/ks.yaml
   - ./jellyfin/ks.yaml
   - ./kavita/ks.yaml
+  - ./manga-maid/ks.yaml
   - ./prowlarr/ks.yaml
   - ./radarr/ks.yaml
   - ./seerr/ks.yaml
