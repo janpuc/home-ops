@@ -94,7 +94,7 @@ spec:
           gethomepage.dev/icon: mdi-rabbit
           gethomepage.dev/name: Autobrr
           gethomepage.dev/widget.type: autobrr
-          gethomepage.dev/widget.url: "http://autobrr.default.svc.cluster.local"
+          gethomepage.dev/widget.url: "http://autobrr.downloads.svc.cluster.local"
           gethomepage.dev/widget.key: "{{`{{HOMEPAGE_VAR_AUTOBRR_API_KEY}}`}}"
           gethomepage.dev/pod-selector: app.kubernetes.io/name=autobrr
           gethomepage.dev/weight: "90"
