@@ -12,7 +12,7 @@ spec:
     - name: rook-ceph-cluster
       namespace: rook-ceph
   interval: 1h
-  path: ./kubernetes/apps/default/seerr/app
+  path: ./kubernetes/apps/media/seerr/app
   postBuild:
     substitute:
       APP: seerr
@@ -22,5 +22,5 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: default
+  targetNamespace: media
   wait: false

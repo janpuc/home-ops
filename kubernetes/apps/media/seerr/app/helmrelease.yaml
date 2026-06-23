@@ -80,7 +80,7 @@ spec:
           gethomepage.dev/icon: mdi-jellyfish-outline
           gethomepage.dev/name: Seerr
           gethomepage.dev/widget.type: jellyseerr
-          gethomepage.dev/widget.url: "http://seerr.default.svc.cluster.local"
+          gethomepage.dev/widget.url: "http://seerr.media.svc.cluster.local"
           gethomepage.dev/widget.key: "{{`{{HOMEPAGE_VAR_SEERR_API_KEY}}`}}"
           gethomepage.dev/widget.enableQueue: "true"
           gethomepage.dev/pod-selector: app.kubernetes.io/name=seerr
