@@ -17,4 +17,3 @@ resources:
   - ./openspoolman/ks.yaml
   - ./spoolman/ks.yaml
   - ./suwayomi/ks.yaml
-  # - ./thelounge/ks.yaml
