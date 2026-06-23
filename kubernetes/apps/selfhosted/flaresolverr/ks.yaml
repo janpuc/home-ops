@@ -8,11 +8,11 @@ spec:
   # components:
     # - ../../../../components/zeroscaler-internal # TODO
   interval: 1h
-  path: ./kubernetes/apps/default/flaresolverr/app
+  path: ./kubernetes/apps/selfhosted/flaresolverr/app
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: default
+  targetNamespace: selfhosted
   wait: false

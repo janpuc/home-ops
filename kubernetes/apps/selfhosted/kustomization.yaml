@@ -10,5 +10,6 @@ components:
 resources:
   - ./namespace.yaml
   - ./atuin/ks.yaml
+  - ./flaresolverr/ks.yaml
   - ./mealie/ks.yaml
   - ./searxng/ks.yaml
