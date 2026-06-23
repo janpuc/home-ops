@@ -15,4 +15,4 @@ resources:
   - ./notifier/ks.yaml
   - ./openspoolman/ks.yaml
   - ./spoolman/ks.yaml
-  - ./suwayomi/ks.yaml
+  # - ./suwayomi/ks.yaml
