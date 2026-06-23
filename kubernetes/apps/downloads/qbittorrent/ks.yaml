@@ -12,7 +12,7 @@ spec:
     - name: rook-ceph-cluster
       namespace: rook-ceph
   interval: 1h
-  path: ./kubernetes/apps/default/qbittorrent/app
+  path: ./kubernetes/apps/downloads/qbittorrent/app
   postBuild:
     substitute:
       APP: qbittorrent
@@ -22,5 +22,5 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: default
+  targetNamespace: downloads
   wait: false

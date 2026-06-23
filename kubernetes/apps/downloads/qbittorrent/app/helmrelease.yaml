@@ -139,7 +139,7 @@ spec:
           gethomepage.dev/icon: si-qbittorrent
           gethomepage.dev/name: qBittorrent
           gethomepage.dev/widget.type: qbittorrent
-          gethomepage.dev/widget.url: "http://qbittorrent.default.svc.cluster.local"
+          gethomepage.dev/widget.url: "http://qbittorrent.downloads.svc.cluster.local"
           gethomepage.dev/widget.enableLeechProgress: "true"
           gethomepage.dev/widget.enableLeechSize: "true"
           gethomepage.dev/pod-selector: app.kubernetes.io/name=qbittorrent
