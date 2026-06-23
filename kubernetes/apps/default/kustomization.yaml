@@ -17,10 +17,9 @@ resources:
   - ./manga-maid/ks.yaml
   - ./notifier/ks.yaml
   - ./openspoolman/ks.yaml
-  # - ./prowlarr/ks.yam
   - ./qbittorrent/ks.yaml
   - ./qui/ks.yaml
-  - ./radarr/ks.yaml
+  # - ./radarr/ks.yaml
   - ./sabnzbd/ks.yaml
   - ./seerr/ks.yaml
   - ./sonarr/ks.yaml
