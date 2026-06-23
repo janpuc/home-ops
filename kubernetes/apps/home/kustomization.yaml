@@ -10,4 +10,5 @@ components:
 resources:
   - ./namespace.yaml
   - ./home-assistant/ks.yaml
+  - ./openspoolman/ks.yaml
   - ./spoolman/ks.yaml
