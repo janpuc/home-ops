@@ -9,4 +9,5 @@ components:
 
 resources:
   - ./namespace.yaml
+  - ./atuin/ks.yaml
   - ./searxng/ks.yaml
