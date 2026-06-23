@@ -12,7 +12,7 @@ spec:
     - name: rook-ceph-cluster
       namespace: rook-ceph
   interval: 1h
-  path: ./kubernetes/apps/default/spoolman/app
+  path: ./kubernetes/apps/home/spoolman/app
   postBuild:
     substitute:
       APP: spoolman
@@ -22,5 +22,5 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: default
+  targetNamespace: home
   wait: false
