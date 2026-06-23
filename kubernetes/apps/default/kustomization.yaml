@@ -11,4 +11,4 @@ resources:
   - ./namespace.yaml
   - ./authelia/ks.yaml
   - ./notifier/ks.yaml
-  - ./openspoolman/ks.yaml
+  # - ./openspoolman/ks.yaml
