@@ -23,4 +23,3 @@ resources:
   - ./stash/ks.yaml
   - ./suwayomi/ks.yaml
   - ./thelounge/ks.yaml
-  # - ./whisparr/ks.yaml
