@@ -15,7 +15,7 @@ spec:
     - name: rook-ceph-cluster
       namespace: rook-ceph
   interval: 1h
-  path: ./kubernetes/apps/selfhosted/jellyfin/app
+  path: ./kubernetes/apps/media/jellyfin/app
   postBuild:
     substitute:
       APP: jellyfin
@@ -25,5 +25,5 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: selfhosted
+  targetNamespace: media
   wait: false
