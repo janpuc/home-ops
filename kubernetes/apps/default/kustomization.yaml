@@ -17,7 +17,6 @@ resources:
   - ./jellyfin/ks.yaml
   - ./kavita/ks.yaml
   - ./manga-maid/ks.yaml
-  # - ./mealie/ks.yaml
   - ./notifier/ks.yaml
   - ./openspoolman/ks.yaml
   - ./prowlarr/ks.yaml
