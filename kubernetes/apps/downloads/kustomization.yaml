@@ -11,4 +11,5 @@ resources:
   - ./namespace.yaml
   - ./autobrr/ks.yaml
   - ./qbittorrent/ks.yaml
+  - ./qui/ks.yaml
   - ./sabnzbd/ks.yaml

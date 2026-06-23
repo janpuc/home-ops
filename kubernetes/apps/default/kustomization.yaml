@@ -15,7 +15,6 @@ resources:
   - ./manga-maid/ks.yaml
   - ./notifier/ks.yaml
   - ./openspoolman/ks.yaml
-  # - ./qui/ks.yaml
   - ./spoolman/ks.yaml
   - ./suwayomi/ks.yaml
   - ./thelounge/ks.yaml
