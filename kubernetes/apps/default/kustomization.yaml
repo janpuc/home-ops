@@ -10,7 +10,6 @@ components:
 resources:
   - ./namespace.yaml
   - ./authelia/ks.yaml
-  - ./home-assistant/ks.yaml
   - ./notifier/ks.yaml
   - ./openspoolman/ks.yaml
   - ./spoolman/ks.yaml
