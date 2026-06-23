@@ -70,7 +70,7 @@ spec:
           gethomepage.dev/icon: mdi-book-open-variant
           gethomepage.dev/name: Kavita
           gethomepage.dev/widget.type: kavita
-          gethomepage.dev/widget.url: "http://kavita.default.svc.cluster.local:5000"
+          gethomepage.dev/widget.url: "http://kavita.media.svc.cluster.local:5000"
           gethomepage.dev/widget.key: "{{`{{HOMEPAGE_VAR_KAVITA_API_KEY}}`}}"
           gethomepage.dev/pod-selector: app.kubernetes.io/name=kavita
           gethomepage.dev/weight: "20"

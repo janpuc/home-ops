@@ -9,12 +9,12 @@ spec:
     - ../../../../components/zeroscaler
     - ../../../../components/volsync
   dependsOn:
-    - name: authelia # Kavita OIDC depends on Authelia being alive
-      namespace: default
+    - name: pocket-id-instance # Kavita OIDC depends on PocketID being alive
+      namespace: security
     - name: rook-ceph-cluster
       namespace: rook-ceph
   interval: 1h
-  path: ./kubernetes/apps/default/kavita/app
+  path: ./kubernetes/apps/media/kavita/app
   postBuild:
     substitute:
       APP: kavita
@@ -24,5 +24,5 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: default
+  targetNamespace: media
   wait: false

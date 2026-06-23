@@ -11,7 +11,6 @@ resources:
   - ./namespace.yaml
   - ./authelia/ks.yaml
   - ./home-assistant/ks.yaml
-  # - ./kavita/ks.yaml
   - ./manga-maid/ks.yaml
   - ./notifier/ks.yaml
   - ./openspoolman/ks.yaml
