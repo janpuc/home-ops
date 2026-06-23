@@ -17,4 +17,5 @@ resources:
   - ./seerr/ks.yaml
   - ./sonarr/ks.yaml
   - ./stash/ks.yaml
+  - ./suwayomi/ks.yaml
   - ./whisparr/ks.yaml
