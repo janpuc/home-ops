@@ -12,7 +12,7 @@ spec:
     - name: rook-ceph-cluster
       namespace: rook-ceph
   interval: 1h
-  path: ./kubernetes/apps/default/sabnzbd/app
+  path: ./kubernetes/apps/downloads/sabnzbd/app
   postBuild:
     substitute:
       APP: sabnzbd
@@ -21,5 +21,5 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: default
+  targetNamespace: downloads
   wait: false
