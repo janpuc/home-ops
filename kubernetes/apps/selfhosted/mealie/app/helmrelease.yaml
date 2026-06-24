@@ -81,6 +81,6 @@ spec:
             port: ${HTTP_PORT}
     persistence:
       config:
-        type: emptyDir
+        existingClaim: "{{ .Release.Name }}"
         globalMounts:
           - path: /app/data
