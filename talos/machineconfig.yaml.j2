@@ -57,6 +57,8 @@ machine:
     defaultRuntimeSeccompProfileEnabled: true
     disableManifestsDirectory: true
     extraConfig:
+      imageGCHighThresholdPercent: 70
+      imageGCLowThresholdPercent: 55
       memorySwap:
         swapBehavior: LimitedSwap
       serializeImagePulls: false
