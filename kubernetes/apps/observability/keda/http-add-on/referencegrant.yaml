@@ -6,10 +6,10 @@ spec:
   from:
     - group: gateway.networking.k8s.io
       kind: HTTPRoute
-      namespace: default
+      namespace: games
     - group: gateway.networking.k8s.io
       kind: HTTPRoute
-      namespace: games
+      namespace: selfhosted
   to:
     - group: ""
       kind: Service
