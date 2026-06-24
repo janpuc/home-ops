@@ -6,7 +6,7 @@ metadata:
 spec:
   name: Mealie
   callbackUrls:
-    - "https://recpies.janpuc.com/login*"
+    - "https://recipes.janpuc.com/login"
   allowedUserGroups:
     - name: id-admin
       namespace: security
