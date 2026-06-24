@@ -2,9 +2,9 @@
 version: v1alpha1
 machine:
   ca:
-    crt: op://Kubernetes/talos/MACHINE_CA_CRT
+    crt: ref+op://Kubernetes/talos/MACHINE_CA_CRT
     {% if ENV.CONTROLPLANE %}
-    key: op://Kubernetes/talos/MACHINE_CA_KEY
+    key: ref+op://Kubernetes/talos/MACHINE_CA_KEY
     {% endif %}
   features:
     apidCheckExtKeyUsage: true
@@ -102,12 +102,12 @@ machine:
     user.max_user_namespaces: "11255"
     vm.swappiness: "130"
     vm.page-cluster: "0"
-  token: op://Kubernetes/talos/MACHINE_TOKEN
+  token: ref+op://Kubernetes/talos/MACHINE_TOKEN
 cluster:
   ca:
-    crt: op://Kubernetes/talos/CLUSTER_CA_CRT
+    crt: ref+op://Kubernetes/talos/CLUSTER_CA_CRT
     {% if ENV.CONTROLPLANE %}
-    key: op://Kubernetes/talos/CLUSTER_CA_KEY
+    key: ref+op://Kubernetes/talos/CLUSTER_CA_KEY
     {% endif %}
   clusterName: main
   controlPlane:
@@ -119,7 +119,7 @@ cluster:
         disabled: true
       service:
         disabled: false
-  id: op://Kubernetes/talos/CLUSTER_ID
+  id: ref+op://Kubernetes/talos/CLUSTER_ID
   network:
     cni:
       name: none
@@ -128,12 +128,12 @@ cluster:
       - 10.42.0.0/16
     serviceSubnets:
       - 10.43.0.0/16
-  secret: op://kubernetes/talos/CLUSTER_SECRET
-  token: op://kubernetes/talos/CLUSTER_TOKEN
+  secret: ref+op://kubernetes/talos/CLUSTER_SECRET
+  token: ref+op://kubernetes/talos/CLUSTER_TOKEN
   {% if ENV.CONTROLPLANE %}
   aggregatorCA:
-    crt: op://kubernetes/talos/CLUSTER_AGGREGATORCA_CRT
-    key: op://kubernetes/talos/CLUSTER_AGGREGATORCA_KEY
+    crt: ref+op://kubernetes/talos/CLUSTER_AGGREGATORCA_CRT
+    key: ref+op://kubernetes/talos/CLUSTER_AGGREGATORCA_KEY
   allowSchedulingOnControlPlanes: true
   apiServer:
     auditPolicy:
@@ -160,8 +160,8 @@ cluster:
     advertisedSubnets:
       - 192.168.69.0/24
     ca:
-      crt: op://Kubernetes/talos/CLUSTER_ETCD_CA_CRT
-      key: op://Kubernetes/talos/CLUSTER_ETCD_CA_KEY
+      crt: ref+op://Kubernetes/talos/CLUSTER_ETCD_CA_CRT
+      key: ref+op://Kubernetes/talos/CLUSTER_ETCD_CA_KEY
     extraArgs:
       election-timeout: "3000"
       heartbeat-interval: "250"
@@ -190,9 +190,9 @@ cluster:
     extraArgs:
       bind-address: 0.0.0.0
     image: registry.k8s.io/kube-scheduler:v1.36.2
-  secretboxEncryptionSecret: op://kubernetes/talos/CLUSTER_SECRETBOXENCRYPTIONSECRET
+  secretboxEncryptionSecret: ref+op://kubernetes/talos/CLUSTER_SECRETBOXENCRYPTIONSECRET
   serviceAccount:
-    key: op://Kubernetes/talos/CLUSTER_SERVICEACCOUNT_KEY
+    key: ref+op://Kubernetes/talos/CLUSTER_SERVICEACCOUNT_KEY
   {% endif %}
 ---
 apiVersion: v1alpha1
