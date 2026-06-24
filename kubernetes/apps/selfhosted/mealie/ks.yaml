@@ -11,6 +11,8 @@ spec:
   dependsOn:
     - name: keda
       namespace: observability
+    - name: pocket-id-instance
+      namespace: security
     - name: rook-ceph-cluster
       namespace: rook-ceph
   interval: 1h
