@@ -9,6 +9,8 @@ spec:
     - ../../../../components/zeroscaler
     - ../../../../components/volsync
   dependsOn:
+    - name: pocket-id-instance
+      namespace: security
     - name: rook-ceph-cluster
       namespace: rook-ceph
   interval: 1h
