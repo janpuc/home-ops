@@ -26,8 +26,8 @@ spec:
               DB_ENGINE: sqlite
               OIDC_AUTH_ENABLED: "true"
               OIDC_CONFIGURATION_URL: https://id.janpuc.com/.well-known/openid-configuration
-              OIDC_USER_GROUP: id-users
-              OIDC_ADMIN_GROUP: id-admin
+              OIDC_USER_GROUP: ID-Users
+              OIDC_ADMIN_GROUP: ID-Admin
               OIDC_AUTO_REDIRECT: "true"
               OIDC_PROVIDER_NAME: "Pocket ID"
               OIDC_REMEMBER_ME: "true"
