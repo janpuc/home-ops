@@ -25,13 +25,10 @@ spec:
               UN_ACTIVITY: true
               UN_SONARR_0_URL: http://sonarr.media.svc.cluster.local
               UN_SONARR_0_PATHS_0: /media/Downloads/qbittorrent/complete/Series
-              UN_SONARR_0_PATHS_1: /media/Downloads/sabnzbd/Series
               UN_RADARR_0_URL: http://radarr.media.svc.cluster.local
               UN_RADARR_0_PATHS_0: /media/Downloads/qbittorrent/complete/Movies
-              UN_RADARR_0_PATHS_1: /media/Downloads/sabnzbd/Movies
               UN_WHISPARR_0_URL: http://whisparr.media.svc.cluster.local
               UN_WHISPARR_0_PATHS_0: /media/Downloads/qbittorrent/complete/Stash
-              UN_WHISPARR_0_PATHS_1: /media/Downloads/sabnzbd/Stash
             envFrom:
               - secretRef:
                   name: unpackerr-secret
