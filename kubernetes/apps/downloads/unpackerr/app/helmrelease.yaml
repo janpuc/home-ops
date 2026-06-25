@@ -1,0 +1,77 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: unpackerr
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: unpackerr
+  interval: 1h
+  values:
+    controllers:
+      unpackerr:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/unpackerr/unpackerr
+              tag: 0.15.2@sha256:89e13608521ece21dd300c39229fd595a55fbf4b8152771af5670a7455b5c747
+            env:
+              UN_WEBSERVER_METRICS: true
+              UN_WEBSERVER_LISTEN_ADDR: 0.0.0.0:80
+              UN_WEBSERVER_LOG_FILE: /logs/webserver.log
+              UN_ACTIVITY: true
+              UN_SONARR_0_URL: http://sonarr.media.svc.cluster.local
+              UN_SONARR_0_PATHS_0: /media/Downloads/qbittorrent/complete/Series
+              UN_SONARR_0_PATHS_1: /media/Downloads/sabnzbd/Series
+              UN_RADARR_0_URL: http://radarr.media.svc.cluster.local
+              UN_RADARR_0_PATHS_0: /media/Downloads/qbittorrent/complete/Movies
+              UN_RADARR_0_PATHS_1: /media/Downloads/sabnzbd/Movies
+              UN_WHISPARR_0_URL: http://whisparr.media.svc.cluster.local
+              UN_WHISPARR_0_PATHS_0: /media/Downloads/qbittorrent/complete/Stash
+              UN_WHISPARR_0_PATHS_1: /media/Downloads/sabnzbd/Stash
+            envFrom:
+              - secretRef:
+                  name: unpackerr-secret
+            probes:
+              liveness:
+                enabled: true
+              readiness:
+                enabled: true
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 10m
+                memory: 256Mi
+              limits:
+                memory: 2Gi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+    service:
+      app:
+        controller: unpackerr
+        ports:
+          http:
+            port: 80
+    serviceMonitor:
+      app:
+        serviceName: unpackerr
+        endpoints:
+          - port: http
+    persistence:
+      logs:
+        type: emptyDir
+      media:
+        type: nfs
+        server: bigmouth.internal
+        path: /mnt/Vault/Media
+        globalMounts:
+          - path: /media
