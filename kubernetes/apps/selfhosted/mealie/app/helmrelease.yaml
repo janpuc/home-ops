@@ -24,6 +24,20 @@ spec:
               ALLOW_PASSWORD_LOGIN: "false"
               BASE_URL: https://recipes.janpuc.com
               DB_ENGINE: sqlite
+              THEME_DARK_PRIMARY: "#cba6f7"
+              THEME_DARK_ACCENT: "#f5c2e7"
+              THEME_DARK_SECONDARY: "#b4befe"
+              THEME_DARK_SUCCESS: "#a6e3a1"
+              THEME_DARK_INFO: "#89b4fa"
+              THEME_DARK_WARNING: "#fab387"
+              THEME_DARK_ERROR: "#f38ba8"
+              THEME_LIGHT_PRIMARY: "#8839ef"
+              THEME_LIGHT_ACCENT: "#ea76cb"
+              THEME_LIGHT_SECONDARY: "#7287fd"
+              THEME_LIGHT_SUCCESS: "#40a02b"
+              THEME_LIGHT_INFO: "#1e66f5"
+              THEME_LIGHT_WARNING: "#df8e1d"
+              THEME_LIGHT_ERROR: "#d20f39"
               OIDC_AUTH_ENABLED: "true"
               OIDC_CONFIGURATION_URL: https://id.janpuc.com/.well-known/openid-configuration
               OIDC_USER_GROUP: ID-Users
