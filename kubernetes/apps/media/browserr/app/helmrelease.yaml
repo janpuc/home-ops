@@ -1,0 +1,96 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: browserr
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: browserr
+  interval: 1h
+  values:
+    controllers:
+      browserr:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/janpuc/browserr
+              tag: 0.1.0@sha256:a031dcea2b4c0320d9468744302e82551757fbb006637aff1201363e5e638ca7
+            env:
+              PORT: &port 80
+              PUBLIC_URL: "https://{{ .Release.Name }}.janpuc.com"
+              LOCK_CONFIG: true
+              SEERR_INTERNAL_URL: http://seerr.media.svc.cluster.local
+              SEERR_EXTERNAL_URL: https://requests.janpuc.com
+              SEERR_REQUEST_MODE: redirect
+              DEFAULT_REGION: PL
+              DATABASE_URL: sqlite:///data/browserr.db
+              REDIS_URL: redis://browserr-dragonfly.media.svc.cluster.local:6379
+              ENABLE_RECOMMENDATIONS: true
+              ENABLE_EMBEDDINGS: true
+              RECS_REFRESH_CRON: "0 */6 * * *"
+              ENABLE_LIBRARY_RAILS: true
+              ENABLE_TRAILER_AUTOPLAY: true
+              HERO_ROTATE_SECONDS: 12
+            envFrom:
+              - secretRef:
+                  name: "{{ .Release.Name }}-secret"
+            probes:
+              liveness:
+                enabled: true
+                spec:
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/health
+                    port: *port
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            resources:
+              requests:
+                cpu: 10m
+                memory: 256Mi
+              limits:
+                memory: 512Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: {drop: ["ALL"]}
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      app:
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        hostnames:
+          - "{{ .Release.Name }}.janpuc.com"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+    persistence:
+      data:
+        existingClaim: "{{ .Release.Name }}"
+      tmp:
+        type: emptyDir
