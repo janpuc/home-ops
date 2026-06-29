@@ -25,7 +25,8 @@ spec:
               LOCK_CONFIG: true
               SEERR_INTERNAL_URL: http://seerr.media.svc.cluster.local
               SEERR_EXTERNAL_URL: https://requests.janpuc.com
-              SEERR_REQUEST_MODE: redirect
+              SEERR_REQUEST_MODE: proxy
+              AUTH_MODE: seerr
               DEFAULT_REGION: PL
               DATABASE_URL: sqlite:///data/browserr.db
               REDIS_URL: redis://browserr-dragonfly.media.svc.cluster.local:6379
