@@ -92,5 +92,7 @@ spec:
     persistence:
       data:
         existingClaim: "{{ .Release.Name }}"
-      tmp:
+      cache:
         type: emptyDir
+        globalMounts:
+          - path: /app/.next/cache
