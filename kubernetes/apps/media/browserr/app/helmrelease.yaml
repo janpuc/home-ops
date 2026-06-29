@@ -18,7 +18,7 @@ spec:
           app:
             image:
               repository: ghcr.io/janpuc/browserr
-              tag: edge@sha256:f07e28e703a1395bc703221a2f1f979a9491bf1857b36b910faebc22b6713d9f
+              tag: edge@sha256:04e7fa2baa7c5ded87e0cff71b88c2d3165b1645d186058c757e2e90c818dfa3
             env:
               PORT: &port 80
               PUBLIC_URL: "https://{{ .Release.Name }}.janpuc.com"
