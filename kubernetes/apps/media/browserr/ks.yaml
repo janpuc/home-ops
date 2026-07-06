@@ -9,7 +9,7 @@ spec:
     - ../../../../components/dragonfly
     - ../../../../components/zeroscaler
     - ../../../../components/volsync
-    - ../../../../components/kopiur
+    - ../../../../components/kopiur/backup
   dependsOn:
     - name: dragonfly-operator
       namespace: database

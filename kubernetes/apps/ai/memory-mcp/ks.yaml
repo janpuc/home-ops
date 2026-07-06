@@ -11,7 +11,7 @@ spec:
   components:
     - ../../../../components/zeroscaler
     - ../../../../components/volsync
-    - ../../../../components/kopiur
+    - ../../../../components/kopiur/backup
   dependsOn:
     - name: toolhive-operator-crds
       namespace: ai

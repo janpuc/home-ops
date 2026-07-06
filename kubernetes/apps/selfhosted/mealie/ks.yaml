@@ -8,7 +8,7 @@ spec:
   components:
     - ../../../../components/zeroscaler-http
     - ../../../../components/volsync
-    - ../../../../components/kopiur
+    - ../../../../components/kopiur/backup
   dependsOn:
     - name: keda
       namespace: observability
