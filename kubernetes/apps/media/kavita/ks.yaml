@@ -8,6 +8,7 @@ spec:
   components:
     - ../../../../components/zeroscaler
     - ../../../../components/volsync
+    - ../../../../components/kopiur
   dependsOn:
     - name: pocket-id-instance # Kavita OIDC depends on PocketID being alive
       namespace: security

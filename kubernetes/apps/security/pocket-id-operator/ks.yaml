@@ -23,6 +23,7 @@ spec:
   components:
     - ../../../../components/zeroscaler
     - ../../../../components/volsync
+    - ../../../../components/kopiur
   dependsOn:
     - name: onepassword
       namespace: external-secrets

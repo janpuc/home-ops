@@ -8,6 +8,7 @@ spec:
   components:
     - ../../../../components/zeroscaler
     - ../../../../components/volsync
+    - ../../../../components/kopiur
     # - ../../../../components/zeroscaler-http # TODO
     # - ../../../../components/zeroscaler-internal # TODO
   dependsOn:
