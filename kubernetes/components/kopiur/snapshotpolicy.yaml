@@ -17,15 +17,15 @@ spec:
   sources:
     - pvc:
         name: ${APP}
-  verification:
-    deep:
-      schedule:
-        cron: H 5 1 * *
-        jitter: 1h
-        timezone: Europe/Warsaw
-    quick:
-      schedule:
-        cron: H 3 * * *
-        jitter: 1h
-        timezone: Europe/Warsaw
+  # verification:
+  #   deep:
+  #     schedule:
+  #       cron: H 5 1 * *
+  #       jitter: 1h
+  #       timezone: Europe/Warsaw
+  #   quick:
+  #     schedule:
+  #       cron: H 3 * * *
+  #       jitter: 1h
+  #       timezone: Europe/Warsaw
   volumeSnapshotClassName: ${KOPIUR_SNAPSHOTCLASS:=csi-ceph-block}
