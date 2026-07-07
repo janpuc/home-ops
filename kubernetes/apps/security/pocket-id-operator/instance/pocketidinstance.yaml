@@ -61,7 +61,7 @@ spec:
           key: SMTP_PASSWORD
     tls: "starttls"
   geoip:
-    dbPath: "/app/data/GeoLite2-City.mmdb"
+    dbPath: "/tmp/GeoLite2-City.mmdb"
     maxmindLicenseKey:
       valueFrom:
         secretKeyRef:
