@@ -19,7 +19,7 @@ spec:
   postBuild:
     substitute:
       APP: jellyfin
-      VOLSYNC_CAPACITY: 20Gi
+      KOPIUR_CAPACITY: 20Gi
   prune: true
   sourceRef:
     kind: GitRepository

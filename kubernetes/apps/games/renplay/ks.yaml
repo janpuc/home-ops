@@ -22,7 +22,7 @@ spec:
       HTTP_PORT: "8080"
       HTTP_HOST: renplay.janpuc.com
       HTTP_COOLDOWN: "3600"
-      VOLSYNC_CAPACITY: 10Gi
+      KOPIUR_CAPACITY: 10Gi
   prune: true
   sourceRef:
     kind: GitRepository

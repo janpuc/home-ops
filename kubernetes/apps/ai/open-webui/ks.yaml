@@ -13,8 +13,8 @@ spec:
     - ../../../../components/kopiur/backup
     # - ../../../../components/zeroscaler-http # TODO
   dependsOn:
-    - name: volsync
-      namespace: volsync-system
+    - name: kopiur
+      namespace: kopiur-system
     - name: dragonfly-operator
       namespace: database
     - name: pocket-id-instance

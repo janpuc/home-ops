@@ -18,7 +18,7 @@ spec:
   postBuild:
     substitute:
       APP: authelia
-      VOLSYNC_CAPACITY: 2Gi
+      KOPIUR_CAPACITY: 2Gi
   prune: true
   sourceRef:
     kind: GitRepository

@@ -20,7 +20,7 @@ spec:
   postBuild:
     substitute:
       APP: stash
-      VOLSYNC_CAPACITY: 5Gi
+      KOPIUR_CAPACITY: 5Gi
   prune: true
   sourceRef:
     kind: GitRepository

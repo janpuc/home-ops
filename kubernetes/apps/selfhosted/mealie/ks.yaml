@@ -24,7 +24,7 @@ spec:
       HTTP_PORT: "9000"
       HTTP_HOST: recipes.janpuc.com
       HTTP_COOLDOWN: "3600"
-      VOLSYNC_CAPACITY: 20Gi
+      KOPIUR_CAPACITY: 20Gi
   prune: true
   sourceRef:
     kind: GitRepository
