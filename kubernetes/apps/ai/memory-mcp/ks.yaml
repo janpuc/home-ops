@@ -10,7 +10,6 @@ spec:
       app.kubernetes.io/name: memory-mcp
   components:
     - ../../../../components/zeroscaler
-    - ../../../../components/volsync
     - ../../../../components/kopiur/backup
   dependsOn:
     - name: toolhive-operator-crds

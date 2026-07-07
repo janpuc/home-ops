@@ -10,7 +10,6 @@ spec:
       app.kubernetes.io/name: open-webui
   components:
     - ../../../../components/dragonfly
-    - ../../../../components/volsync
     - ../../../../components/kopiur/backup
     # - ../../../../components/zeroscaler-http # TODO
   dependsOn:

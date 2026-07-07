@@ -8,7 +8,6 @@ spec:
   components:
     - ../../../../components/gpu
     - ../../../../components/zeroscaler
-    - ../../../../components/volsync
     - ../../../../components/kopiur/backup
     # - ../../../../components/zeroscaler-http # TODO: Add internal cron?
   dependsOn:
