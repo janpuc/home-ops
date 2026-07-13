@@ -24,6 +24,8 @@ spec:
               MEDIBROWSERR_URL: "https://{{ .Release.Name }}.janpuc.com"
               MEDIBROWSERR_DEFAULT_LANGUAGE: en
               MEDIBROWSERR_DEFAULT_INTERVAL: "15"
+              MEDIBROWSERR_QUIET_HOURS_ENABLED: "true"
+              MEDIBROWSERR_QUIET_HOURS: "23-7"
             envFrom:
               - secretRef:
                   name: "{{ .Release.Name }}-secret"
