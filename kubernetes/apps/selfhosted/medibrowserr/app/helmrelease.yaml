@@ -18,7 +18,7 @@ spec:
           app:
             image:
               repository: ghcr.io/janpuc/medibrowserr
-              tag: 1.1.0@sha256:fcf25b68894d0ad70595e22f39eaf0b3b264a7649a25fca4c5a4562b33bc4fb1
+              tag: 1.2.0@sha256:1f696a6383c1360e8906ffcd9e764a5d2b7cf300efb3fbb983de1ce005251dcb
             env:
               PORT: &port 3000
               MEDIBROWSERR_URL: "https://{{ .Release.Name }}.janpuc.com"
