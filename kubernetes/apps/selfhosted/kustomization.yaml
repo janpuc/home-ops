@@ -13,4 +13,5 @@ resources:
   - ./atuin/ks.yaml
   - ./flaresolverr/ks.yaml
   - ./mealie/ks.yaml
+  - ./medibrowserr/ks.yaml
   - ./searxng/ks.yaml
