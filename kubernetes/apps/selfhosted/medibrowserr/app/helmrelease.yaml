@@ -18,12 +18,12 @@ spec:
           app:
             image:
               repository: ghcr.io/janpuc/medibrowserr
-              tag: 1.0.0@sha256:da23a7913ec00fb2c71cee5857b50a7d98fb292351fb0e3b4bdaf746b002196e
+              tag: 1.1.0@sha256:fcf25b68894d0ad70595e22f39eaf0b3b264a7649a25fca4c5a4562b33bc4fb1
             env:
               PORT: &port 3000
               MEDIBROWSERR_URL: "https://{{ .Release.Name }}.janpuc.com"
               MEDIBROWSERR_DEFAULT_LANGUAGE: en
-              MEDIBROWSERR_DEFAULT_INTERVAL: "5"
+              MEDIBROWSERR_DEFAULT_INTERVAL: "15"
             envFrom:
               - secretRef:
                   name: "{{ .Release.Name }}-secret"
