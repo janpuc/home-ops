@@ -4,7 +4,7 @@ kind: PocketIDOIDCClient
 metadata:
   name: jellyfin
 spec:
-  name: jellyfin
+  name: Jellyfin
   callbackUrls:
     - "https://jellyfin.janpuc.com/sso/OIDC/Callback/pocket-id"
   allowedUserGroups:
