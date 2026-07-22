@@ -35,6 +35,8 @@ spec:
             - 192.168.69.0/24
           cluster:
             - 192.168.69.0/24
+        connections:
+          requireMsgr2: true
       storage:
         devicePathFilter: /dev/disk/by-id/ata-SSDPR-CX400-256-G2_.*
         useAllDevices: false
