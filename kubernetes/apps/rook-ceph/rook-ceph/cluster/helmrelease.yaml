@@ -9,54 +9,16 @@ spec:
     kind: OCIRepository
     name: rook-ceph-cluster
   interval: 1h
+  timeout: 10m
   values:
-    monitoring:
-      enabled: true
-      createPrometheusRules: true
-    toolbox:
-      enabled: true
-      resources:
-        requests:
-          cpu: 100m
-          memory: 128Mi
-        limits: {}
-    route:
-      dashboard:
-        annotations:
-          gethomepage.dev/enabled: "true"
-          gethomepage.dev/description: Ceph storage dashboard
-          gethomepage.dev/group: Storage
-          gethomepage.dev/icon: si-ceph
-          gethomepage.dev/name: Rook Ceph
-          gethomepage.dev/pod-selector: app.kubernetes.io/name=ceph-mgr
-          gethomepage.dev/weight: "10"
-        host:
-          name: rook.janpuc.com
-          path: /
-          pathType: PathPrefix
-        parentRefs:
-          - name: envoy-internal
-            namespace: network
     cephClusterSpec:
-      cephConfig:
-        global:
-          bdev_enable_discard: "true" # quote
-          bdev_async_discard_threads: "1" # quote
-          osd_class_update_on_start: "false" # quote
-          osd_memory_target: "2147483648" # 2Gi quote
-          bluestore_slow_ops_warn_lifetime: "600" # 10 minutes in seconds quote
-          # device_failure_prediction_mode: local # requires mgr module
-          device_failure_prediction_mode: none # disable for now
-          mon_data_avail_warn: "10" # Low space warning at 10%
       cleanupPolicy:
         wipeDevicesFromOtherClusters: true
       crashCollector:
         disable: false
       csi:
         readAffinity:
-          enabled: false # https://github.com/rook/rook/issues/16839
-          crushLocationLabels:
-            - kubernetes.io/hostname
+          enabled: false # https://github.com/ceph/ceph-csi/issues/5772
       dashboard:
         enabled: true
         urlPrefix: /
@@ -64,81 +26,29 @@ spec:
         prometheusEndpoint: http://prometheus-operated.observability.svc.cluster.local:9090
       mgr:
         modules:
-          - name: diskprediction_local
-            enabled: false # disable for now
-          - name: insights
-            enabled: true
           - name: pg_autoscaler
             enabled: true
-          - name: rook
-            enabled: true
       network:
-        provider: host
-        addressRanges:
-          public:
-            - 192.168.69.0/24
-          cluster:
-            - 192.168.69.0/24
         connections:
           requireMsgr2: true
       storage:
-        useAllNodes: true
-        useAllDevices: false
         devicePathFilter: /dev/disk/by-id/ata-SSDPR-CX400-256-G2_.*
-        config:
-          osdsPerDevice: "1"
-      resources:
-        mgr:
-          requests:
-            cpu: 75m
-            memory: 512Mi
-          limits:
-            memory: 2048Mi
-        mon:
-          requests:
-            cpu: 75m
-            memory: 512Mi
-          limits:
-            memory: 1280Mi
-        osd:
-          requests:
-            cpu: 100m
-            memory: 1Gi
-          limits:
-            memory: 2560Mi
-        prepareosd:
-          requests:
-            cpu: 500m
-            memory: 50Mi
-          limits: {}
-        mgr-sidecar:
-          requests:
-            cpu: 100m
-            memory: 40Mi
-          limits: {}
-        crashcollector:
-          requests:
-            cpu: 10m
-            memory: 16Mi
-          limits:
-            memory: 24Mi
-        logcollector:
-          requests:
-            cpu: 10m
-            memory: 16Mi
-          limits:
-            memory: 24Mi
-        cleanup:
-          requests:
-            cpu: 100m
-            memory: 100Mi
-          limits: {}
-        exporter:
-          requests:
-            cpu: 10m
-            memory: 24Mi
-          limits:
-            memory: 48Mi
+        useAllDevices: false
+        useAllNodes: true
+    monitoring:
+      enabled: true
+      createPrometheusRules: true
+    toolbox:
+      enabled: true
+    route:
+      dashboard:
+        host:
+          name: rook.janpuc.com
+          path: /
+          pathType: PathPrefix
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
     cephBlockPools:
       - name: ceph-blockpool
         spec:
@@ -148,28 +58,80 @@ spec:
         storageClass:
           enabled: true
           name: ceph-block
-          isDefault: true
-          reclaimPolicy: Delete
           allowVolumeExpansion: true
-          volumeBindingMode: Immediate
+          isDefault: true
           mountOptions:
             - discard
           parameters:
-            compression_mode: aggressive
             compression_algorithm: zstd
-            imageFormat: "2"
-            imageFeatures: layering,fast-diff,object-map,deep-flatten,exclusive-lock
-            csi.storage.k8s.io/provisioner-secret-name: rook-csi-rbd-provisioner
-            csi.storage.k8s.io/provisioner-secret-namespace: "{{ .Release.Namespace }}"
+            compression_mode: passive
             csi.storage.k8s.io/controller-expand-secret-name: rook-csi-rbd-provisioner
             csi.storage.k8s.io/controller-expand-secret-namespace: "{{ .Release.Namespace }}"
+            csi.storage.k8s.io/controller-publish-secret-name: rook-csi-rbd-provisioner
+            csi.storage.k8s.io/controller-publish-secret-namespace: "{{ .Release.Namespace }}"
             csi.storage.k8s.io/node-stage-secret-name: rook-csi-rbd-node
             csi.storage.k8s.io/node-stage-secret-namespace: "{{ .Release.Namespace }}"
-            csi.storage.k8s.io/fstype: ext4
+            csi.storage.k8s.io/provisioner-secret-name: rook-csi-rbd-provisioner
+            csi.storage.k8s.io/provisioner-secret-namespace: "{{ .Release.Namespace }}"
+            imageFeatures: deep-flatten,exclusive-lock,fast-diff,layering,object-map
+            imageFormat: "2"
+          reclaimPolicy: Delete
+          volumeBindingMode: Immediate
     cephBlockPoolsVolumeSnapshotClass:
       enabled: true
       name: csi-ceph-blockpool
-      isDefault: false
       deletionPolicy: Delete
-    cephFileSystems: []
+      isDefault: true
+    cephFileSystems:
+      - name: ceph-filesystem
+        spec:
+          metadataPool:
+            replicated:
+              size: 3
+          dataPools:
+            - name: data0
+              failureDomain: host
+              replicated:
+                size: 3
+          metadataServer:
+            activeCount: 1
+            activeStandby: true
+            placement:
+              topologySpreadConstraints:
+                - maxSkew: 1
+                  topologyKey: kubernetes.io/hostname
+                  whenUnsatisfiable: DoNotSchedule
+                  labelSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: ceph-mds
+                      app.kubernetes.io/part-of: ceph-filesystem
+            priorityClassName: system-cluster-critical
+            resources:
+              requests:
+                cpu: 100m
+                memory: 1Gi
+              limits:
+                memory: 2Gi
+        storageClass:
+          enabled: true
+          name: ceph-filesystem
+          allowVolumeExpansion: true
+          isDefault: false
+          parameters:
+            csi.storage.k8s.io/controller-expand-secret-name: rook-csi-cephfs-provisioner
+            csi.storage.k8s.io/controller-expand-secret-namespace: "{{ .Release.Namespace }}"
+            csi.storage.k8s.io/controller-publish-secret-name: rook-csi-cephfs-provisioner
+            csi.storage.k8s.io/controller-publish-secret-namespace: "{{ .Release.Namespace }}"
+            csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
+            csi.storage.k8s.io/node-stage-secret-namespace: "{{ .Release.Namespace }}"
+            csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
+            csi.storage.k8s.io/provisioner-secret-namespace: "{{ .Release.Namespace }}"
+          pool: data0
+          reclaimPolicy: Delete
+          volumeBindingMode: Immediate
+    cephFileSystemVolumeSnapshotClass:
+      enabled: true
+      name: csi-ceph-filesystem
+      deletionPolicy: Delete
+      isDefault: false
     cephObjectStores: []
