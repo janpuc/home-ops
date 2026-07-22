@@ -29,8 +29,6 @@ spec:
           - name: pg_autoscaler
             enabled: true
       network:
-        connections:
-          requireMsgr2: true
         provider: host
         addressRanges:
           public:
