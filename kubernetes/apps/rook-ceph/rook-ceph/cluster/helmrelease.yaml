@@ -16,6 +16,12 @@ spec:
         wipeDevicesFromOtherClusters: true
       crashCollector:
         disable: false
+      cephConfig:
+        global:
+          osd_memory_target: "2147483648"
+          bdev_enable_discard: "true"
+          bdev_async_discard_threads: "1"
+          bluestore_slow_ops_warn_lifetime: "600"
       csi:
         readAffinity:
           enabled: false # https://github.com/ceph/ceph-csi/issues/5772
