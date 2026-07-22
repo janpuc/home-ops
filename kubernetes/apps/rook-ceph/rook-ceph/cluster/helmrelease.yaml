@@ -35,6 +35,58 @@ spec:
         devicePathFilter: /dev/disk/by-id/ata-SSDPR-CX400-256-G2_.*
         useAllDevices: false
         useAllNodes: true
+      resources:
+        mgr:
+          requests:
+            cpu: 75m
+            memory: 512Mi
+          limits:
+            memory: 2048Mi
+        mon:
+          requests:
+            cpu: 75m
+            memory: 512Mi
+          limits:
+            memory: 1280Mi
+        osd:
+          requests:
+            cpu: 100m
+            memory: 1Gi
+          limits:
+            memory: 2560Mi
+        prepareosd:
+          requests:
+            cpu: 500m
+            memory: 50Mi
+          limits: {}
+        mgr-sidecar:
+          requests:
+            cpu: 100m
+            memory: 40Mi
+          limits: {}
+        crashcollector:
+          requests:
+            cpu: 10m
+            memory: 16Mi
+          limits:
+            memory: 24Mi
+        logcollector:
+          requests:
+            cpu: 10m
+            memory: 16Mi
+          limits:
+            memory: 24Mi
+        cleanup:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits: {}
+        exporter:
+          requests:
+            cpu: 10m
+            memory: 24Mi
+          limits:
+            memory: 48Mi
     monitoring:
       enabled: true
       createPrometheusRules: true
