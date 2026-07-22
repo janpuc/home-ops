@@ -12,7 +12,7 @@ spec:
       value: /tmp
   groupRef:
     name: mcp-tools
-  image: ghcr.io/homeassistant-ai/ha-mcp:7.14.1
+  image: ghcr.io/homeassistant-ai/ha-mcp:7.14.2
   podTemplateSpec:
     spec:
       containers:
