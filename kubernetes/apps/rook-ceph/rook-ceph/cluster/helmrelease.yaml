@@ -11,8 +11,8 @@ spec:
   interval: 1h
   values:
     monitoring:
-      enabled: true
-      createPrometheusRules: true
+      enabled: false
+      # createPrometheusRules: true
     toolbox:
       enabled: true
       resources:
