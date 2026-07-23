@@ -29,11 +29,6 @@ spec:
   runtime: llamacpp
   image: ghcr.io/ggml-org/llama.cpp:server-vulkan-b10103@sha256:d3f031d5c6bc815174acc05b4cd960e989df6fca600f703028dca21c33896bd1
   replicas: 1
-  podSecurityContext:
-    fsGroup: 102
-    supplementalGroups:
-      - 44
-      - 992
   # per-slot ctx = contextSize/parallelSlots; 2 slots = 4096, enough for long memini docs.
   contextSize: 8192
   parallelSlots: 2
