@@ -1,0 +1,82 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/inference.llmkube.dev/model_v1alpha1.json
+apiVersion: inference.llmkube.dev/v1alpha1
+kind: Model
+metadata:
+  name: qwen3-embedding-0.6b
+spec:
+  format: gguf
+  hardware:
+    accelerator: vulkan
+    gpu:
+      count: 1
+      enabled: true
+      layers: 99
+      vendor: amd
+      resourceClaims:
+        - name: gpu
+          resourceClaimTemplateName: llmkube-models-gpu
+  quantization: Q8_0
+  source: https://huggingface.co/Qwen/Qwen3-Embedding-0.6B-GGUF/resolve/main/Qwen3-Embedding-0.6B-Q8_0.gguf
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/inference.llmkube.dev/inferenceservice_v1alpha1.json
+apiVersion: inference.llmkube.dev/v1alpha1
+kind: InferenceService
+metadata:
+  name: qwen3-embedding-0.6b
+spec:
+  modelRef: qwen3-embedding-0.6b
+  runtime: llamacpp
+  image: ghcr.io/ggml-org/llama.cpp:server-vulkan-b10103@sha256:d3f031d5c6bc815174acc05b4cd960e989df6fca600f703028dca21c33896bd1
+  replicas: 1
+  podSecurityContext:
+    fsGroup: 102
+    supplementalGroups:
+      - 44
+      - 992
+  # per-slot ctx = contextSize/parallelSlots; 2 slots = 4096, enough for long memini docs.
+  contextSize: 8192
+  parallelSlots: 2
+  batchSize: 8192
+  uBatchSize: 4096
+  resources:
+    gpu: 1
+    cpu: 100m
+    memory: 2Gi
+  extraArgs:
+    # Qwen3-Embedding uses last-token pooling with left padding;
+    # --embedding + --pooling last exposes the OpenAI-compatible
+    # /v1/embeddings endpoint.
+    - --embedding
+    - --pooling
+    - last
+    - --cache-ram
+    - "0"
+    - --no-mmap
+    - --sleep-idle-seconds
+    - "300"
+    - --alias
+    - qwen3-embedding-0.6b
+    - --metrics
+  endpoint:
+    port: 8080
+    type: ClusterIP
+  probeOverrides:
+    startup:
+      httpGet:
+        path: /health
+        port: 8080
+      periodSeconds: 10
+      failureThreshold: 60
+    liveness:
+      httpGet:
+        path: /health
+        port: 8080
+      periodSeconds: 30
+      failureThreshold: 3
+    readiness:
+      httpGet:
+        path: /health
+        port: 8080
+      periodSeconds: 10
+      failureThreshold: 3

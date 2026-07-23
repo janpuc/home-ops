@@ -16,6 +16,7 @@ resources:
   - ./kubectl-mcp/ks.yaml
   - ./memory-mcp/ks.yaml
   - ./litellm/ks.yaml
+  - ./llmkube/ks.yaml
   - ./open-webui/ks.yaml
   - ./prometheus-mcp/ks.yaml
   - ./sidero-mcp/ks.yaml
