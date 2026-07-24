@@ -3,10 +3,20 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: minimax-shim
+  name: memini
 spec:
+  components:
+    - ../../../../components/kopiur/backup
+  dependsOn:
+    - name: kopiur
+      namespace: kopiur-system
   interval: 1h
-  path: ./kubernetes/apps/ai/minimax-shim/app
+  path: ./kubernetes/apps/ai/memini/app
+  postBuild:
+    substitute:
+      APP: memini
+      KOPIUR_MOVER_UID: "1000"
+      KOPIUR_MOVER_GID: "1000"
   prune: true
   sourceRef:
     kind: GitRepository
