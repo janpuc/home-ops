@@ -5,11 +5,8 @@ kind: Kustomization
 metadata:
   name: ha-mcp
 spec:
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: ha-mcp
   dependsOn:
-    - name: toolhive-operator-crds
+    - name: litellm-operator
       namespace: ai
   interval: 1h
   path: ./kubernetes/apps/ai/ha-mcp/app

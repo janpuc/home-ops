@@ -1,43 +1,28 @@
 ---
-# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/toolhive.stacklok.dev/mcpserver_v1beta1.json
-apiVersion: toolhive.stacklok.dev/v1beta1
-kind: MCPServer
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmmcpserver_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMMCPServer
 metadata:
   name: ha-mcp
 spec:
-  env:
-    - name: HOMEASSISTANT_URL
-      value: http://hass.janpuc.internal:8123
-    - name: TMPDIR
-      value: /tmp
-  groupRef:
-    name: mcp-tools
-  image: ghcr.io/homeassistant-ai/ha-mcp:7.14.2
-  podTemplateSpec:
-    spec:
-      containers:
-        - name: mcp
-          command:
-            - ha-mcp-web
-          resources:
-            limits:
-              memory: 192Mi
-            requests:
-              cpu: 10m
-              memory: 128Mi
-          volumeMounts:
-            - name: tmp
-              mountPath: /tmp
-      volumes:
-        - name: tmp
-          emptyDir: {}
-  resources:
-    limits:
-      memory: 96Mi
-    requests:
-      cpu: 10m
-      memory: 48Mi
-  secrets:
-    - name: ha-mcp-secret
-      key: HOMEASSISTANT_TOKEN
-  transport: streamable-http
+  alias: ha_mcp
+  workload:
+    # renovate: datasource=docker depName=ghcr.io/homeassistant-ai/ha-mcp
+    image: ghcr.io/homeassistant-ai/ha-mcp:7.14.2
+    port: 8086
+    command:
+      - ha-mcp-web
+    env:
+      - name: HOMEASSISTANT_URL
+        value: http://hass.janpuc.internal:8123
+      - name: HOMEASSISTANT_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: ha-mcp-secret
+            key: HOMEASSISTANT_TOKEN
+    volumes:
+      - name: tmp
+        emptyDir: {}
+    volumeMounts:
+      - name: tmp
+        mountPath: /tmp
