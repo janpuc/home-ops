@@ -14,11 +14,12 @@ resources:
   - ./github-mcp/ks.yaml
   - ./ha-mcp/ks.yaml
   - ./kubectl-mcp/ks.yaml
-  - ./memory-mcp/ks.yaml
+  # - ./memory-mcp/ks.yaml
   - ./litellm/ks.yaml
+  - ./litellm-operator/ks.yaml
   - ./llmkube/ks.yaml
   - ./open-webui/ks.yaml
-  - ./prometheus-mcp/ks.yaml
+  # - ./prometheus-mcp/ks.yaml
   - ./sidero-mcp/ks.yaml
   - ./toolhive/ks.yaml
-  - ./victoria-logs-mcp/ks.yaml
+  # - ./victoria-logs-mcp/ks.yaml
