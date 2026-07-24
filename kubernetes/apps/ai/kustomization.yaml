@@ -13,7 +13,7 @@ resources:
   - ./context7-mcp/ks.yaml
   # - ./github-mcp/ks.yaml
   - ./ha-mcp/ks.yaml
-  - ./kubectl-mcp/ks.yaml
+  # - ./kubectl-mcp/ks.yaml
   - ./litellm/ks.yaml
   - ./litellm-operator/ks.yaml
   - ./llmkube/ks.yaml
