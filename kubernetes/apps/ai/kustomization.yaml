@@ -15,6 +15,7 @@ resources:
   - ./ha-mcp/ks.yaml
   - ./kubectl-mcp/ks.yaml
   # - ./memory-mcp/ks.yaml
+  - ./minimax-shim/ks.yaml
   - ./litellm/ks.yaml
   - ./litellm-operator/ks.yaml
   - ./llmkube/ks.yaml
