@@ -5,7 +5,7 @@ kind: LiteLLMMCPServer
 metadata:
   name: ha-mcp
 spec:
-  alias: ha_mcp
+  alias: ha
   workload:
     # renovate: datasource=docker depName=ghcr.io/homeassistant-ai/ha-mcp
     image: ghcr.io/homeassistant-ai/ha-mcp:7.14.2
