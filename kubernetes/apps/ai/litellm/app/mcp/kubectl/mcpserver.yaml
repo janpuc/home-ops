@@ -1,0 +1,15 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmmcpserver_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMMCPServer
+metadata:
+  name: kubectl-mcp
+spec:
+  alias: kubectl
+  workload:
+    # renovate: datasource=docker depName=ghcr.io/rohitg00/kubectl-mcp-server
+    image: ghcr.io/rohitg00/kubectl-mcp-server:1.24.0
+    port: 8000
+    command:
+      - kubectl-mcp-server
+    serviceAccountName: kubectl-mcp-sa
