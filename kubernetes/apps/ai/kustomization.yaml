@@ -10,7 +10,6 @@ components:
 
 resources:
   - ./namespace.yaml
-  # - ./github-mcp/ks.yaml
   - ./litellm/ks.yaml
   - ./litellm-operator/ks.yaml
   # - ./llmkube/ks.yaml

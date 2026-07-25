@@ -1,0 +1,19 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmmcpserver_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMMCPServer
+metadata:
+  name: github-mcp
+spec:
+  alias: guthub
+  workload:
+    # renovate: datasource=docker depName=ghcr.io/github/github-mcp-server
+    image: ghcr.io/github/github-mcp-server:v1.6.0
+    port: 8082
+    args: ["http"]
+    env:
+      - name: GITHUB_PERSONAL_ACCESS_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: github-mcp-secret
+            key: GITHUB_PERSONAL_ACCESS_TOKEN
