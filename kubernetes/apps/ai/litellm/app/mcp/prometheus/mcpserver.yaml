@@ -1,0 +1,19 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmmcpserver_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMMCPServer
+metadata:
+  name: prometheus-mcp
+spec:
+  alias: prometheus
+  workload:
+    # renovate: datasource=docker depName=ghcr.io/pab1it0/prometheus-mcp-server
+    image: ghcr.io/pab1it0/prometheus-mcp-server:1.6.1
+    port: 8080
+    env:
+      - name: PROMETHEUS_URL
+        value: http://prometheus-operated.observability.svc.cluster.local:9090
+      - name: PROMETHEUS_DISABLE_LINKS
+        value: "true"
+      - name: PROMETHEUS_MCP_SERVER_TRANSPORT
+        value: http

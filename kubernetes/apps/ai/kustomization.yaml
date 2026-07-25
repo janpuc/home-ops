@@ -16,6 +16,3 @@ resources:
   - ./memini/ks.yaml
   # - ./minimax-shim/ks.yaml
   - ./open-webui/ks.yaml
-  # - ./prometheus-mcp/ks.yaml
-  # - ./sidero-mcp/ks.yaml
-  # - ./victoria-logs-mcp/ks.yaml
