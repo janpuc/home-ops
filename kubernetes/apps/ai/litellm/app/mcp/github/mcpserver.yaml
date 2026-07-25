@@ -8,7 +8,7 @@ spec:
   alias: github
   workload:
     # renovate: datasource=docker depName=ghcr.io/github/github-mcp-server
-    image: ghcr.io/github/github-mcp-server:v1.6.0
+    image: ghcr.io/github/github-mcp-server:v1.7.0
     port: 8082
     args: ["http"]
     env:
