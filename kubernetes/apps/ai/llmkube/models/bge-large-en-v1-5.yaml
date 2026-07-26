@@ -26,8 +26,8 @@ spec:
   # per-slot ctx = contextSize/parallelSlots; 2 slots = 4096, enough for long memini docs.
   contextSize: 512
   parallelSlots: 4
-  batchSize: 1024
-  uBatchSize: 256
+  batchSize: 2048
+  uBatchSize: 1024
   resources:
     cpu: 2000m
     memory: 2Gi
