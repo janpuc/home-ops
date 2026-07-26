@@ -11,7 +11,7 @@ spec:
     gpu:
       enabled: false
   quantization: Q8_0
-  source: https://huggingface.co/Qwen/Qwen3-Embedding-0.6B-GGUF/resolve/main/Qwen3-Embedding-0.6B-Q8_0.gguf
+  source: https://huggingface.co/Qwen/Qwen3-Embedding-0.6B-GGUF/resolve/main/Qwen3-Embedding-0.6B-Q4_K_M.gguf
 ---
 # yaml-language-server: $schema=https://k8s-schemas.home-operations.com/inference.llmkube.dev/inferenceservice_v1alpha1.json
 apiVersion: inference.llmkube.dev/v1alpha1
@@ -25,12 +25,12 @@ spec:
   replicas: 1
   # per-slot ctx = contextSize/parallelSlots; 2 slots = 4096, enough for long memini docs.
   contextSize: 4096
-  parallelSlots: 1
+  parallelSlots: 2
   batchSize: 2048
   uBatchSize: 512
   resources:
-    cpu: 2000m
-    memory: 1Gi
+    cpu: 4000m
+    memory: 4Gi
   extraArgs:
     # Qwen3-Embedding uses last-token pooling with left padding;
     # --embedding + --pooling last exposes the OpenAI-compatible
@@ -44,7 +44,7 @@ spec:
     - "4"
     - --threads-batch
     - "4"
-    - --no-mmap
+    - --cont-batching
     - --sleep-idle-seconds
     - "300"
     - --alias
