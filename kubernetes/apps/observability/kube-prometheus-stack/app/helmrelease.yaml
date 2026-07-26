@@ -114,6 +114,8 @@ spec:
           memory: 64Mi
         limits:
           memory: 96Mi
+      extraArgs:
+        - --collector.amdgpu
     kube-state-metrics:
       fullnameOverride: kube-state-metrics
       resources:
