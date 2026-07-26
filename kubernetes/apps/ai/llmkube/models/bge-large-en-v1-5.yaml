@@ -3,7 +3,7 @@
 apiVersion: inference.llmkube.dev/v1alpha1
 kind: Model
 metadata:
-  name: bge-small-en-v1.5
+  name: bge-large-en-v1.5
 spec:
   format: gguf
   hardware:
@@ -11,15 +11,15 @@ spec:
     gpu:
       enabled: false
   quantization: Q8_0
-  source: https://huggingface.co/CompendiumLabs/bge-small-en-v1.5-gguf/resolve/main/bge-small-en-v1.5-q8_0.gguf
+  source: https://huggingface.co/CompendiumLabs/bge-large-en-v1.5-gguf/resolve/main/bge-large-en-v1.5-q8_0.gguf
 ---
 # yaml-language-server: $schema=https://k8s-schemas.home-operations.com/inference.llmkube.dev/inferenceservice_v1alpha1.json
 apiVersion: inference.llmkube.dev/v1alpha1
 kind: InferenceService
 metadata:
-  name: bge-small-en-v1.5
+  name: bge-large-en-v1.5
 spec:
-  modelRef: bge-small-en-v1.5
+  modelRef: bge-large-en-v1.5
   runtime: llamacpp
   image: ghcr.io/ggml-org/llama.cpp:server-b10133@sha256:3e8914c1aab600a330ada97c10fb5fb02ff1c15ac39f2ece218db125cf54594e
   replicas: 1
@@ -29,8 +29,8 @@ spec:
   batchSize: 1024
   uBatchSize: 256
   resources:
-    cpu: 1000m
-    memory: 1Gi
+    cpu: 2000m
+    memory: 2Gi
   extraArgs:
     - --embedding
     - --pooling
@@ -43,7 +43,7 @@ spec:
     - --sleep-idle-seconds
     - "300"
     - --alias
-    - bge-small-en-v1.5
+    - bge-large-en-v1.5
   endpoint:
     port: 8080
     type: ClusterIP
