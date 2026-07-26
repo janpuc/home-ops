@@ -24,7 +24,7 @@ spec:
   image: ghcr.io/ggml-org/llama.cpp:server-b10133@sha256:3e8914c1aab600a330ada97c10fb5fb02ff1c15ac39f2ece218db125cf54594e
   replicas: 1
   contextSize: 8192
-  parallelSlots: 1
+  parallelSlots: 4
   batchSize: 2048
   uBatchSize: 2048
   resources:
