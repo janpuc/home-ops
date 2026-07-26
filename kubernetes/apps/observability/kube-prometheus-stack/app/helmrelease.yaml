@@ -133,6 +133,78 @@ spec:
         matchLabels:
           dashboards: grafana
     additionalPrometheusRulesMap:
+      amd-gpu-rules:
+        groups:
+          - name: amd-gpu-memory
+            interval: 30s
+            rules:
+              - record: node:amd_gtt_free_bytes
+                expr: |
+                  node_amdgpu_gpu_memory_total_bytes{type="gtt"}
+                    - node_amdgpu_gpu_memory_used_bytes{type="gtt"}
+              - record: node:amd_vram_free_bytes
+                expr: |
+                  node_amdgpu_gpu_memory_total_bytes{type="vram"}
+                    - node_amdgpu_gpu_memory_used_bytes{type="vram"}
+              - record: node:effective_mem_available_bytes
+                expr: |
+                  node_memory_MemAvailable_bytes
+                    + on(instance) node_amdgpu_gpu_memory_total_bytes{type="gtt"}
+                    - on(instance) node_amdgpu_gpu_memory_used_bytes{type="gtt"}
+              - alert: AmdGttRunningLow
+                expr: node:amd_gtt_free_bytes < 2 * 1024^3
+                for: 2m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "AMD iGPU GTT free < 2 GiB on {{ $labels.instance }}"
+                  description: |
+                    Only {{ $value | humanize1024 }}B of GTT (shared system RAM used by
+                    the AMD iGPU) is free. With a Vulkan/ROCm workload pulling buffer
+                    sizes this large, you are close to the point where kubelet can no
+                    longer see the pressure. Node {{ $labels.instance }}.
+              - alert: AmdGttCritical
+                expr: node:amd_gtt_free_bytes < 1 * 1024^3
+                for: 1m
+                labels:
+                  severity: critical
+                annotations:
+                  summary: "AMD iGPU GTT free < 1 GiB on {{ $labels.instance }}"
+                  description: |
+                    Critical: only {{ $value | humanize1024 }}B of GTT left. GPU work
+                    on this node is starving other workloads of memory that kubelet
+                    cannot see. Expect cascading OOMs on the same node very soon.
+              - alert: NodeEffectiveMemoryLow
+                expr: node:effective_mem_available_bytes < 2.5 * 1024^3
+                for: 2m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "Effective memory low on {{ $labels.instance }} ({{ $value | humanize1024 }}B)"
+                  description: |
+                    cgroup-reclaimable memory + free GTT combined is below 2.5 GiB on
+                    {{ $labels.instance }}. Consider draining the GTT workload.
+              - alert: NodeKernelMemoryPressureHigh
+                expr: |
+                  (
+                    node_memory_MemAvailable_bytes
+                      / on(instance) node_memory_MemTotal_bytes
+                  ) < 0.08
+                for: 2m
+                labels:
+                  severity: critical
+                annotations:
+                  summary: "MemAvailable < 8 % on {{ $labels.instance }}"
+                  description: |
+                    Node {{ $labels.instance }} has <8% cgroup-visible memory free.
+                    OOMKilled fires are imminent. Check which pods on this node are
+                    drawing the most.
+              - alert: AmdGpuCollectorMissing
+                expr: absent(node_amdgpu_gpu_memory_total_bytes{type="gtt"})
+                for: 5m
+                labels:
+                  severity: warning
+                  description: "Re-apply node-exporter extraArgs in kube-prometheus-stack HelmRelease."
       dockerhub-rules:
         groups:
           - name: dockerhub
