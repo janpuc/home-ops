@@ -26,7 +26,7 @@ metadata:
 spec:
   modelRef: qwen3-embedding-0.6b
   runtime: llamacpp
-  image: ghcr.io/ggml-org/llama.cpp:server-vulkan-b10103@sha256:d3f031d5c6bc815174acc05b4cd960e989df6fca600f703028dca21c33896bd1
+  image: ghcr.io/ggml-org/llama.cpp:server-vulkan-b10133@sha256:e7249fa3c18189a825898832cc4d722d7f9c0160c29540ced793c833ab9f2432
   replicas: 1
   # per-slot ctx = contextSize/parallelSlots; 2 slots = 4096, enough for long memini docs.
   contextSize: 8192
