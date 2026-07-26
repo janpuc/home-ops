@@ -3,7 +3,7 @@
 apiVersion: inference.llmkube.dev/v1alpha1
 kind: Model
 metadata:
-  name: qwen3-embedding-0.6b
+  name: bge-small-en-v1.5
 spec:
   format: gguf
   hardware:
@@ -17,39 +17,33 @@ spec:
 apiVersion: inference.llmkube.dev/v1alpha1
 kind: InferenceService
 metadata:
-  name: qwen3-embedding-0.6b
+  name: bge-small-en-v1.5
 spec:
-  modelRef: qwen3-embedding-0.6b
+  modelRef: bge-small-en-v1.5
   runtime: llamacpp
   image: ghcr.io/ggml-org/llama.cpp:server-b10133@sha256:3e8914c1aab600a330ada97c10fb5fb02ff1c15ac39f2ece218db125cf54594e
   replicas: 1
   # per-slot ctx = contextSize/parallelSlots; 2 slots = 4096, enough for long memini docs.
-  contextSize: 4096
-  parallelSlots: 2
-  batchSize: 2048
-  uBatchSize: 512
+  contextSize: 512
+  parallelSlots: 4
+  batchSize: 1024
+  uBatchSize: 256
   resources:
-    cpu: 4000m
-    memory: 4Gi
+    cpu: 1000m
+    memory: 1Gi
   extraArgs:
-    # Qwen3-Embedding uses last-token pooling with left padding;
-    # --embedding + --pooling last exposes the OpenAI-compatible
-    # /v1/embeddings endpoint.
     - --embedding
     - --pooling
-    - last
-    - --cache-ram
-    - "0"
+    - cls
     - --threads
     - "4"
-    - --threads-batch
-    - "4"
     - --cont-batching
+    - --cache-ram
+    - "0"
     - --sleep-idle-seconds
     - "300"
     - --alias
-    - qwen3-embedding-0.6b
-    - --metrics
+    - bge-small-en-v1.5
   endpoint:
     port: 8080
     type: ClusterIP
