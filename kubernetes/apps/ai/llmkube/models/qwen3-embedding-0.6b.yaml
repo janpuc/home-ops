@@ -7,14 +7,9 @@ metadata:
 spec:
   format: gguf
   hardware:
-    accelerator: vulkan
+    accelerator: cpu
     gpu:
-      enabled: true
-      layers: 99
-      vendor: amd
-      resourceClaims:
-        - name: gpu
-          resourceClaimTemplateName: llmkube-models-gpu
+      enabled: false
   quantization: Q8_0
   source: https://huggingface.co/Qwen/Qwen3-Embedding-0.6B-GGUF/resolve/main/Qwen3-Embedding-0.6B-Q8_0.gguf
 ---
@@ -26,16 +21,16 @@ metadata:
 spec:
   modelRef: qwen3-embedding-0.6b
   runtime: llamacpp
-  image: ghcr.io/ggml-org/llama.cpp:server-vulkan-b10133@sha256:e7249fa3c18189a825898832cc4d722d7f9c0160c29540ced793c833ab9f2432
+  image: ghcr.io/ggml-org/llama.cpp:server-b10133@sha256:3e8914c1aab600a330ada97c10fb5fb02ff1c15ac39f2ece218db125cf54594e
   replicas: 1
   # per-slot ctx = contextSize/parallelSlots; 2 slots = 4096, enough for long memini docs.
-  contextSize: 8192
-  parallelSlots: 2
-  batchSize: 8192
-  uBatchSize: 4096
+  contextSize: 4096
+  parallelSlots: 1
+  batchSize: 2048
+  uBatchSize: 512
   resources:
-    cpu: 100m
-    memory: 2Gi
+    cpu: 2000m
+    memory: 1Gi
   extraArgs:
     # Qwen3-Embedding uses last-token pooling with left padding;
     # --embedding + --pooling last exposes the OpenAI-compatible
@@ -45,6 +40,10 @@ spec:
     - last
     - --cache-ram
     - "0"
+    - --threads
+    - "4"
+    - --threads-batch
+    - "4"
     - --no-mmap
     - --sleep-idle-seconds
     - "300"
