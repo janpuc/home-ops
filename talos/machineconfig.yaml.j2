@@ -62,6 +62,13 @@ machine:
       memorySwap:
         swapBehavior: LimitedSwap
       serializeImagePulls: false
+      evictionHard:
+        memory.available: 1Gi
+        nodefs.available: 5%
+      evictionSoft:
+        memory.available: 4Gi
+      evictionSoftGracePeriod:
+        memory.available: 2m
     extraMounts:
       - destination: /var/openebs/local-hostpath
         type: bind
