@@ -24,10 +24,10 @@ spec:
   image: ghcr.io/ggml-org/llama.cpp:server-b10133@sha256:3e8914c1aab600a330ada97c10fb5fb02ff1c15ac39f2ece218db125cf54594e
   replicas: 1
   # per-slot ctx = contextSize/parallelSlots; 2 slots = 4096, enough for long memini docs.
-  contextSize: 512
+  contextSize: 2048
   parallelSlots: 4
   batchSize: 2048
-  uBatchSize: 1024
+  uBatchSize: 2048
   resources:
     cpu: 2000m
     memory: 2Gi
