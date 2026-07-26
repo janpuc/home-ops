@@ -115,7 +115,7 @@ spec:
         limits:
           memory: 96Mi
       extraArgs:
-        - --collector.amdgpu
+        - --collector.drm
     kube-state-metrics:
       fullnameOverride: kube-state-metrics
       resources:
@@ -139,23 +139,18 @@ spec:
             interval: 30s
             rules:
               - record: node:amd_gtt_free_bytes
-                expr: |
-                  node_amdgpu_gpu_memory_total_bytes{type="gtt"}
-                    - node_amdgpu_gpu_memory_used_bytes{type="gtt"}
+                expr: node_drm_memory_bytes_total{type="gtt"} - node_drm_memory_bytes_used{type="gtt"}
               - record: node:amd_vram_free_bytes
-                expr: |
-                  node_amdgpu_gpu_memory_total_bytes{type="vram"}
-                    - node_amdgpu_gpu_memory_used_bytes{type="vram"}
+                expr: node_drm_memory_bytes_total{type="vram"} - node_drm_memory_bytes_used{type="vram"}
               - record: node:effective_mem_available_bytes
                 expr: |
                   node_memory_MemAvailable_bytes
-                    + on(instance) node_amdgpu_gpu_memory_total_bytes{type="gtt"}
-                    - on(instance) node_amdgpu_gpu_memory_used_bytes{type="gtt"}
+                    + on(instance) node_drm_memory_bytes_total{type="gtt"}
+                    - on(instance) node_drm_memory_bytes_used{type="gtt"}
               - alert: AmdGttRunningLow
                 expr: node:amd_gtt_free_bytes < 2 * 1024^3
                 for: 2m
-                labels:
-                  severity: warning
+                labels: { severity: warning }
                 annotations:
                   summary: "AMD iGPU GTT free < 2 GiB on {{ $labels.instance }}"
                   description: |
@@ -166,8 +161,7 @@ spec:
               - alert: AmdGttCritical
                 expr: node:amd_gtt_free_bytes < 1 * 1024^3
                 for: 1m
-                labels:
-                  severity: critical
+                labels: { severity: critical }
                 annotations:
                   summary: "AMD iGPU GTT free < 1 GiB on {{ $labels.instance }}"
                   description: |
@@ -177,8 +171,7 @@ spec:
               - alert: NodeEffectiveMemoryLow
                 expr: node:effective_mem_available_bytes < 2.5 * 1024^3
                 for: 2m
-                labels:
-                  severity: warning
+                labels: { severity: warning }
                 annotations:
                   summary: "Effective memory low on {{ $labels.instance }} ({{ $value | humanize1024 }}B)"
                   description: |
@@ -191,19 +184,18 @@ spec:
                       / on(instance) node_memory_MemTotal_bytes
                   ) < 0.08
                 for: 2m
-                labels:
-                  severity: critical
+                labels: { severity: critical }
                 annotations:
                   summary: "MemAvailable < 8 % on {{ $labels.instance }}"
                   description: |
                     Node {{ $labels.instance }} has <8% cgroup-visible memory free.
-                    OOMKilled fires are imminent. Check which pods on this node are
-                    drawing the most.
-              - alert: AmdGpuCollectorMissing
-                expr: absent(node_amdgpu_gpu_memory_total_bytes{type="gtt"})
+                    OOMKilled fires are imminent.
+              - alert: AmdDrmCollectorMissing
+                expr: absent(node_drm_memory_bytes_total{type="gtt"})
                 for: 5m
-                labels:
-                  severity: warning
+                labels: { severity: warning }
+                annotations:
+                  summary: "node_exporter drm collector stopped reporting"
                   description: "Re-apply node-exporter extraArgs in kube-prometheus-stack HelmRelease."
       dockerhub-rules:
         groups:
