@@ -6,6 +6,9 @@ metadata:
   name: github-mcp
 spec:
   alias: github
+  authTokenRef:
+    name: github-mcp-secret
+    key: GITHUB_PERSONAL_ACCESS_TOKEN
   workload:
     # renovate: datasource=docker depName=ghcr.io/github/github-mcp-server
     image: ghcr.io/github/github-mcp-server:v1.7.0
