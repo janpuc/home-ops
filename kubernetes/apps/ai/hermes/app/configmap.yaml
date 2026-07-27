@@ -9,6 +9,8 @@ data:
         base_url: http://litellm.ai:4000/v1
         key_env: LITELLM_API_KEY
         models:
+          minimax/MiniMax-M3:
+            context_length: 1000000
           opencode-go/minimax-m3:
             context_length: 1000000
           opencode-go/glm-5.2:
@@ -20,7 +22,7 @@ data:
           opencode-go/qwen3.6-plus:
             context_length: 262144
     model:
-      default: opencode-go/minimax-m3
+      default: minimax/MiniMax-M3
       provider: custom:litellm
       context_length: 1000000
     model_aliases:
@@ -28,7 +30,7 @@ data:
         model: opencode-go/qwen3.6-plus
         provider: custom:litellm
       minimax:
-        model: opencode-go/minimax-m3
+        model: minimax/MiniMax-M3
         provider: custom:litellm
       glm:
         model: opencode-go/glm-5.2
@@ -41,26 +43,28 @@ data:
         provider: custom:litellm
     fallback_providers:
       - provider: custom:litellm
+        model: minimax/MiniMax-M3
+      - provider: custom:litellm
         model: opencode-go/qwen3.6-plus
       - provider: custom:litellm
         model: opencode-go/deepseek-v4-flash
     auxiliary:
       approval:
         provider: custom:litellm
-        model: opencode-go/minimax-m3
+        model: minimax/MiniMax-M3
         timeout: 60
       compression:
         provider: custom:litellm
-        model: opencode-go/minimax-m3
+        model: minimax/MiniMax-M3
       web_extract:
         provider: custom:litellm
-        model: opencode-go/minimax-m3
+        model: minimax/MiniMax-M3
       session_search:
         provider: custom:litellm
         model: opencode-go/deepseek-v4-flash
       vision:
         provider: custom:litellm
-        model: opencode-go/minimax-m3
+        model: minimax/MiniMax-M3
       goal_judge:
         provider: custom:litellm
         model: opencode-go/deepseek-v4-flash
@@ -128,14 +132,14 @@ data:
           enabled: true
           reference_models:
             - provider: custom:litellm
-              model: opencode-go/minimax-m3
+              model: minimax/MiniMax-M3
             - provider: custom:litellm
               model: opencode-go/glm-5.2
             - provider: custom:litellm
               model: opencode-go/mimo-v2.5
           aggregator:
             provider: custom:litellm
-            model: opencode-go/minimax-m3
+            model: minimax/MiniMax-M3
           reference_temperature: 0.6
           aggregator_temperature: 0.4
           max_tokens: 8192

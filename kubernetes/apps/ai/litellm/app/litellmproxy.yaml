@@ -17,25 +17,18 @@ spec:
     num_retries: 3
     timeout: 600
     context_window_fallbacks:
-      - neuralwatt/qwen3.6-35b-fast: ["neuralwatt/kimi-k2.6-fast", "neuralwatt/glm-5.2-fast"]
-      - neuralwatt/qwen3.6-35b: ["neuralwatt/kimi-k2.6", "neuralwatt/glm-5.2"]
-      - neuralwatt/qwen3.5-397b-fast: ["neuralwatt/glm-5.2-fast"]
-      - neuralwatt/qwen3.5-397b: ["neuralwatt/glm-5.2"]
-      - neuralwatt/glm-5.2-short-fast: ["neuralwatt/glm-5.2-fast"]
-      - neuralwatt/glm-5.2-short: ["neuralwatt/glm-5.2"]
-      - neuralwatt/kimi-k2.6-fast: ["neuralwatt/glm-5.2-fast"]
-      - neuralwatt/kimi-k2.6: ["neuralwatt/glm-5.2"]
-      - neuralwatt/kimi-k2.7-code: ["neuralwatt/glm-5.2"]
-      # direct same-model failover
-      - opencode-go/glm-5.2: ["zai-org/glm-5.2"]
-      - opencode-go/kimi-k2.6: ["moonshotai/kimi-k2.6"]
-      - opencode-go/minimax-m3: ["minimaxai/minimax-m3"]
-      # cross-family failover (lanes Lilac has no direct twin for)
-      - opencode-go/kimi-k2.7-code: ["moonshotai/kimi-k2.6"]
-      - opencode-go/mimo-v2.5: ["moonshotai/kimi-k2.6"]
-      - opencode-go/qwen3.7-max: ["zai-org/glm-5.2"]
-      - opencode-go/qwen3.6-plus: ["zai-org/glm-5.2"]
-      - opencode-go/deepseek-v4-flash: ["moonshotai/kimi-k2.6"]
+      - opencode-go/glm-5.2: ["minimax/MiniMax-M3"]
+      - opencode-go/kimi-k2.6: ["minimax/MiniMax-M3"]
+      - opencode-go/kimi-k2.7-code: ["minimax/MiniMax-M3"]
+      - opencode-go/mimo-v2.5: ["opencode-go/glm-5.2", "minimax/MiniMax-M3"]
+      - opencode-go/qwen3.7-max: ["minimax/MiniMax-M3"]
+      - opencode-go/qwen3.6-plus: ["minimax/MiniMax-M3"]
+      - opencode-go/deepseek-v4-flash: ["opencode-go/glm-5.2", "minimax/MiniMax-M3"]
+      - opencode-go/minimax-m3: ["minimax/MiniMax-M3"]
+      - minimax/MiniMax-M3: ["opencode-go/minimax-m3"]
+      - minimax/MiniMax-M3-anthropic: ["minimax/MiniMax-M3"]
+      - minimax/MiniMax-M2-7: ["minimax/MiniMax-M3"]
+      - minimax/MiniMax-M2-7-anthropic: ["minimax/MiniMax-M2-7", "minimax/MiniMax-M3"]
   litellmSettings:
     success_callback:
       - prometheus
