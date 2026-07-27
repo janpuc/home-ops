@@ -120,6 +120,11 @@ spec:
             env:
               API_SERVER_ENABLED: "true"
               API_SERVER_HOST: 0.0.0.0
+              API_SERVER_KEY:
+                valueFrom:
+                  secretKeyRef:
+                    name: hermes-config
+                    key: API_SERVER_KEY
               GOPATH: /opt/data/go
               HERMES_GID: "1000"
               HERMES_HOME: /opt/data
