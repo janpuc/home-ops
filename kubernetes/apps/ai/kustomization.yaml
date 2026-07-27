@@ -11,7 +11,7 @@ components:
 resources:
   - ./namespace.yaml
   - ./hermes/ks.yaml
-  # - ./hermes-matrix/ks.yaml
+  - ./hermes-matrix/ks.yaml
   - ./litellm/ks.yaml
   - ./litellm-operator/ks.yaml
   - ./llmkube/ks.yaml
