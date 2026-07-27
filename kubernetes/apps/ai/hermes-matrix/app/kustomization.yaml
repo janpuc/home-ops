@@ -1,0 +1,19 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./externalsecret.yaml
+  - ./helmrelease.yaml
+  - ./ocirepository.yaml
+patches:
+  # skills/.curator_state is unreadable even by the workload's own user;
+  # let the snapshot complete instead of failing on it.
+  - target:
+      kind: SnapshotPolicy
+    patch: |
+      - op: add
+        path: /spec/errorHandling
+        value:
+          ignoreFileErrors: true
+          ignoreDirErrors: true

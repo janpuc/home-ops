@@ -3,9 +3,8 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
+  - ./configmap.yaml
   - ./externalsecret.yaml
-  - ./litellmproxy.yaml
-  - ./litellmmodels.yaml
-  - ./servicemonitor.yaml
-  - ./mcp/
-  - ./models/
+  - ./helmrelease.yaml
+  - ./ocirepository.yaml
+  - ./pocketidoidcclient.yaml

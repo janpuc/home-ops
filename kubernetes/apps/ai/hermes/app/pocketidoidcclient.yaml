@@ -1,0 +1,17 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: hermes
+spec:
+  name: Hermes Agent
+  callbackUrls:
+    - "https://hermes.janpuc.com/oauth/callback"
+  allowedUserGroups:
+    - name: id-admin
+      namespace: security
+  secret:
+    name: hermes-oidc-credentials
+    keys:
+      clientID: HERMES_DASHBOARD_OIDC_CLIENT_ID
+      clientSecret: HERMES_DASHBOARD_OIDC_CLIENT_SECRET
