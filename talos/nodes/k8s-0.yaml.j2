@@ -3,7 +3,7 @@ machine:
   kernel:
     modules:
       - name: amdgpu
-        options:
+        parameters:
           - gttsize=2048
   nodeLabels:
     topology.kubernetes.io/zone: m
