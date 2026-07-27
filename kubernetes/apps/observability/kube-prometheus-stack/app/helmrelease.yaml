@@ -148,26 +148,38 @@ spec:
                     + on(instance) node_drm_memory_gtt_size_bytes
                     - on(instance) node_drm_memory_gtt_used_bytes
               - alert: AmdGttRunningLow
-                expr: node:amd_gtt_free_bytes < 2 * 1024^3
+                expr: |
+                  (
+                    node:amd_gtt_free_bytes
+                      / on(instance) node_drm_memory_gtt_size_bytes
+                  ) < 0.25
                 for: 2m
                 labels: { severity: warning }
                 annotations:
-                  summary: "AMD iGPU GTT free < 2 GiB on {{ $labels.instance }}"
+                  summary: "AMD iGPU GTT free < 25 % of cap on {{ $labels.instance }}"
                   description: |
-                    Only {{ $value | humanize1024 }}B of GTT (shared system RAM used by
-                    the AMD iGPU) is free. With a Vulkan/ROCm workload pulling buffer
-                    sizes this large, you are close to the point where kubelet can no
-                    longer see the pressure. Node {{ $labels.instance }}.
+                    Only {{ $value | humanizePercentage }} of the configured GTT
+                    aperture is free on {{ $labels.instance }} (cap =
+                    {{ with query (printf "node_drm_memory_gtt_size_bytes{instance='%s'}" $labels.instance) }}{{ . | first | value | humanize1024 }}B{{ end }}).
+                    A Vulkan/ROCm workload is pulling close to its GTT budget;
+                    further allocations may fail or, if the kernel has not yet
+                    enforced the cap, starve other workloads of memory kubelet
+                    cannot see.
               - alert: AmdGttCritical
-                expr: node:amd_gtt_free_bytes < 1 * 1024^3
+                expr: |
+                  (
+                    node:amd_gtt_free_bytes
+                      / on(instance) node_drm_memory_gtt_size_bytes
+                  ) < 0.10
                 for: 1m
                 labels: { severity: critical }
                 annotations:
-                  summary: "AMD iGPU GTT free < 1 GiB on {{ $labels.instance }}"
+                  summary: "AMD iGPU GTT free < 10 % of cap on {{ $labels.instance }}"
                   description: |
-                    Critical: only {{ $value | humanize1024 }}B of GTT left. GPU work
-                    on this node is starving other workloads of memory that kubelet
-                    cannot see. Expect cascading OOMs on the same node very soon.
+                    Critical: only {{ $value | humanizePercentage }} of the
+                    configured GTT aperture is free on {{ $labels.instance }}.
+                    Expect allocation failures or, if a misbehaving workload
+                    slipped past the cap, cascading OOMs.
               - alert: NodeEffectiveMemoryLow
                 expr: node:effective_mem_available_bytes < 2.5 * 1024^3
                 for: 2m
@@ -197,6 +209,22 @@ spec:
                 annotations:
                   summary: "node_exporter drm collector stopped reporting"
                   description: "Re-apply node-exporter extraArgs in kube-prometheus-stack HelmRelease."
+              - alert: AmdGttCapMismatch
+                expr: |
+                  node_drm_memory_gtt_size_bytes != 2147483648
+                  and node_drm_memory_gtt_size_bytes != 3221225472
+                for: 10m
+                labels: { severity: warning }
+                annotations:
+                  summary: "GTT cap on {{ $labels.instance }} doesn't match any configured value"
+                  description: |
+                    node_drm_memory_gtt_size_bytes = {{ $value | humanize1024 }}B
+                    on {{ $labels.instance }}, which is neither the media
+                    cap (2 GiB) nor the AI cap (3 GiB). The node has likely
+                    not been rebooted since the gttsize= module option was
+                    added to its Talos config, or Talos did not honour the
+                    option. Reboot the node to pick up the new module
+                    parameters.
       dockerhub-rules:
         groups:
           - name: dockerhub

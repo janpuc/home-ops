@@ -1,7 +1,13 @@
 ---
 machine:
+  kernel:
+    modules:
+      - name: amdgpu
+        options:
+          - gttsize=3072
   nodeLabels:
     topology.kubernetes.io/zone: m
+    janpuc.com/workload: ai
   type: controlplane
 ---
 apiVersion: v1alpha1
