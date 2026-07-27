@@ -6,7 +6,7 @@ metadata:
 spec:
   name: Hermes Agent
   callbackUrls:
-    - "https://hermes.janpuc.com/oauth/callback"
+    - "https://hermes.janpuc.com/auth/callback"
   allowedUserGroups:
     - name: id-admin
       namespace: security
