@@ -63,12 +63,8 @@ machine:
         swapBehavior: LimitedSwap
       serializeImagePulls: false
       evictionHard:
-        memory.available: 1Gi
+        memory.available: 512Mi
         nodefs.available: 5%
-      evictionSoft:
-        memory.available: 4Gi
-      evictionSoftGracePeriod:
-        memory.available: 2m
     extraMounts:
       - destination: /var/openebs/local-hostpath
         type: bind
@@ -109,7 +105,7 @@ machine:
     sunrpc.tcp_max_slot_table_entries: "128"
     sunrpc.tcp_slot_table_entries: "128"
     user.max_user_namespaces: "11255"
-    vm.swappiness: "130"
+    vm.swappiness: "10"
     vm.page-cluster: "0"
   token: ref+op://Kubernetes/talos/MACHINE_TOKEN
 cluster:
@@ -158,11 +154,23 @@ cluster:
       feature-gates: MutatingAdmissionPolicy=true,HPAScaleToZero=true
       runtime-config: admissionregistration.k8s.io/v1beta1=true
     image: registry.k8s.io/kube-apiserver:v1.36.2
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+      limits:
+        memory: 2Gi
   controllerManager:
     extraArgs:
       bind-address: 0.0.0.0
       feature-gates: HPAScaleToZero=true
     image: registry.k8s.io/kube-controller-manager:v1.36.2
+    resources:
+      requests:
+        cpu: 50m
+        memory: 256Mi
+      limits:
+        memory: 768Mi
   coreDNS:
     disabled: true
   etcd:
@@ -199,6 +207,12 @@ cluster:
     extraArgs:
       bind-address: 0.0.0.0
     image: registry.k8s.io/kube-scheduler:v1.36.2
+    resources:
+      requests:
+        cpu: 10m
+        memory: 64Mi
+      limits:
+        memory: 256Mi
   secretboxEncryptionSecret: ref+op://kubernetes/talos/CLUSTER_SECRETBOXENCRYPTIONSECRET
   serviceAccount:
     key: ref+op://Kubernetes/talos/CLUSTER_SERVICEACCOUNT_KEY
