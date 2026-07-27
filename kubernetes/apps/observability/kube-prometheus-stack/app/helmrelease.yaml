@@ -139,14 +139,14 @@ spec:
             interval: 30s
             rules:
               - record: node:amd_gtt_free_bytes
-                expr: node_drm_memory_bytes_total{type="gtt"} - node_drm_memory_bytes_used{type="gtt"}
+                expr: node_drm_memory_gtt_size_bytes - node_drm_memory_gtt_used_bytes
               - record: node:amd_vram_free_bytes
-                expr: node_drm_memory_bytes_total{type="vram"} - node_drm_memory_bytes_used{type="vram"}
+                expr: node_drm_memory_vram_size_bytes - node_drm_memory_vram_used_bytes
               - record: node:effective_mem_available_bytes
                 expr: |
                   node_memory_MemAvailable_bytes
-                    + on(instance) node_drm_memory_bytes_total{type="gtt"}
-                    - on(instance) node_drm_memory_bytes_used{type="gtt"}
+                    + on(instance) node_drm_memory_gtt_size_bytes
+                    - on(instance) node_drm_memory_gtt_used_bytes
               - alert: AmdGttRunningLow
                 expr: node:amd_gtt_free_bytes < 2 * 1024^3
                 for: 2m
@@ -191,7 +191,7 @@ spec:
                     Node {{ $labels.instance }} has <8% cgroup-visible memory free.
                     OOMKilled fires are imminent.
               - alert: AmdDrmCollectorMissing
-                expr: absent(node_drm_memory_bytes_total{type="gtt"})
+                expr: absent(node_drm_memory_gtt_size_bytes)
                 for: 5m
                 labels: { severity: warning }
                 annotations:
