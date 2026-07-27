@@ -7,9 +7,14 @@ metadata:
 spec:
   format: gguf
   hardware:
-    accelerator: cpu
+    accelerator: vulkan
     gpu:
-      enabled: false
+      enabled: true
+      layers: 99
+      vendor: amd
+      resourceClaims:
+        - name: gpu
+          resourceClaimTemplateName: llmkube-models-gpu
   quantization: Q8_0
   source: https://huggingface.co/gpustack/bge-m3-GGUF/resolve/main/bge-m3-Q8_0.gguf
 ---
@@ -21,14 +26,14 @@ metadata:
 spec:
   modelRef: bge-m3
   runtime: llamacpp
-  image: ghcr.io/ggml-org/llama.cpp:server-b10133@sha256:3e8914c1aab600a330ada97c10fb5fb02ff1c15ac39f2ece218db125cf54594e
+  image: ghcr.io/ggml-org/llama.cpp:server-vulkan-b10133@sha256:e7249fa3c18189a825898832cc4d722d7f9c0160c29540ced793c833ab9f2432
   replicas: 1
   contextSize: 8192
   parallelSlots: 4
   batchSize: 2048
   uBatchSize: 2048
   resources:
-    cpu: 2000m
+    cpu: 100m
     memory: 2Gi
   extraArgs:
     - --embedding
