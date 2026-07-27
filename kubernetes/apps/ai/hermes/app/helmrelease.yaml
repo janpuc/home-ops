@@ -11,6 +11,7 @@ spec:
   interval: 15m
   values:
     defaultPodOptions:
+      automountServiceAccountToken: true
       terminationGracePeriodSeconds: 120
       securityContext:
         fsGroup: 1000
