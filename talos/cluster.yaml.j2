@@ -8,15 +8,6 @@ machine:
     diskQuotaSupport: true
     rbac: true
   token: op://Kubernetes/talos/MACHINE_TOKEN
-  kubelet:
-    extraMounts:
-      - destination: /var/openebs/local-hostpath
-        type: bind
-        source: /var/openebs/local-hostpath
-        options:
-          - rbind
-          - rshared
-          - rw
 cluster:
   ca:
     crt: op://Kubernetes/talos/CLUSTER_CA_CRT
@@ -152,6 +143,14 @@ config:
     nodefs.available: 5%
   shutdownGracePeriod: 120s
   shutdownGracePeriodCriticalPods: 60s
+  extraMounts:
+    - destination: /var/openebs/local-hostpath
+      type: bind
+      source: /var/openebs/local-hostpath
+      options:
+        - rbind
+        - rshared
+        - rw
 defaultRuntimeSeccompProfileEnabled: true
 image: ghcr.io/siderolabs/kubelet:v1.36.3
 ---
