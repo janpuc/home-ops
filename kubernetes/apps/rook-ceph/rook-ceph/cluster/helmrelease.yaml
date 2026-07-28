@@ -38,7 +38,7 @@ spec:
         connections:
           requireMsgr2: true
       storage:
-        devicePathFilter: /dev/disk/by-id/ata-SSDPR-CX400-256-G2_.*
+        devicePathFilter: /dev/disk/by-id/nvme-.*
         useAllDevices: false
         useAllNodes: true
       resources:

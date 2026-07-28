@@ -50,7 +50,7 @@ installer:
   image: factory.talos.dev/metal-installer/{{ schematic }}:v1.14.0-beta.0
 provisioning:
   diskSelector:
-    match: disk.transport == 'nvme'
+    match: disk.model == 'SSDPR-CX400-256-'
   wipe: false
 ---
 apiVersion: v1alpha1
@@ -58,10 +58,22 @@ kind: VolumeConfig
 name: EPHEMERAL
 provisioning:
   diskSelector:
-    match: disk.transport == 'nvme'
+    match: disk.model == 'SSDPR-CX400-256-'
   minSize: 2GB
-  maxSize: 248GB
+  maxSize: 120GB
   grow: false
+---
+apiVersion: v1alpha1
+kind: RawVolumeConfig
+name: miroir-slow
+provisioning:
+  diskSelector:
+    match: disk.model == 'SSDPR-CX400-256-'
+  minSize: 100GB
+---
+apiVersion: v1alpha1
+kind: FilesystemTrimConfig
+interval: 168h0m0s
 ---
 apiVersion: v1alpha1
 kind: WatchdogTimerConfig
@@ -75,6 +87,20 @@ name: nbd
 apiVersion: v1alpha1
 kind: KernelModuleConfig
 name: amdgpu
+---
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: dm_thin_pool
+---
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: drbd
+parameters:
+  - usermode_helper=disabled
+---
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: drbd_transport_tcp
 ---
 apiVersion: v1alpha1
 kind: SysctlConfig
@@ -143,14 +169,6 @@ config:
     nodefs.available: 5%
   shutdownGracePeriod: 120s
   shutdownGracePeriodCriticalPods: 60s
-  extraMounts:
-    - destination: /var/openebs/local-hostpath
-      type: bind
-      source: /var/openebs/local-hostpath
-      options:
-        - rbind
-        - rshared
-        - rw
 defaultRuntimeSeccompProfileEnabled: true
 image: ghcr.io/siderolabs/kubelet:v1.36.3
 ---
