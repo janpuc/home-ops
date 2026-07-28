@@ -6,6 +6,7 @@ metadata:
   name: github-mcp
 spec:
   alias: github
+  authType: bearer_token
   authTokenRef:
     name: github-mcp-secret
     key: GITHUB_PERSONAL_ACCESS_TOKEN
