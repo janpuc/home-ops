@@ -23,13 +23,13 @@ spec:
     cache:
       capacity: 10Gi
       mode: Ephemeral
-      storageClassName: miroir-slow-local
+      storageClassName: miroir-fast-local
     podSecurityContext:
       fsGroup: 1000
       fsGroupChangePolicy: OnRootMismatch
     scratch:
       capacity: 10Gi
-      storageClassName: miroir-slow-local
+      storageClassName: miroir-fast-local
     securityContext:
       runAsUser: 1000
       runAsGroup: 1000
