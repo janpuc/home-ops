@@ -11,8 +11,8 @@ spec:
   dependsOn:
     - name: keda
       namespace: observability
-    - name: rook-ceph-cluster
-      namespace: rook-ceph
+    - name: miroir-config
+      namespace: miroir-system
   interval: 1h
   path: ./kubernetes/apps/games/renplay/app
   postBuild:

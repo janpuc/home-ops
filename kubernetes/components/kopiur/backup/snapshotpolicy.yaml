@@ -23,4 +23,4 @@ spec:
     quick:
       schedule:
         cron: H 3 * * *
-  volumeSnapshotClassName: ${KOPIUR_SNAPSHOTCLASS:=csi-ceph-blockpool}
+  volumeSnapshotClassName: ${KOPIUR_SNAPSHOTCLASS:=miroir}

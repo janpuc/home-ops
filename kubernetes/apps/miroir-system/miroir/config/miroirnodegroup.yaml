@@ -10,6 +10,9 @@ spec:
       node-role.kubernetes.io/control-plane: ""
   template:
     pools:
+      - name: fast
+        lvmthin:
+          device: /dev/disk/by-partlabel/r-miroir-fast
       - name: slow
         lvmthin:
           device: /dev/disk/by-partlabel/r-miroir-slow

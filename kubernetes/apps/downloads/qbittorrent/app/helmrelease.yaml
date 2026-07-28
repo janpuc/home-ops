@@ -53,7 +53,7 @@ spec:
             securityContext:
               allowPrivilegeEscalation: true
               readOnlyRootFilesystem: false
-              capabilities: {drop: ["ALL"]}
+              capabilities: { drop: ["ALL"] }
           gluetun:
             image:
               repository: ghcr.io/qdm12/gluetun
@@ -117,7 +117,7 @@ spec:
               runAsUser: 0
               runAsGroup: 0
               runAsNonRoot: false
-              capabilities: {drop: ["ALL"]}
+              capabilities: { drop: ["ALL"] }
     defaultPodOptions:
       securityContext:
         runAsNonRoot: false
@@ -166,7 +166,7 @@ spec:
                 resources:
                   requests:
                     storage: 1Mi
-                storageClassName: openebs-hostpath
+                storageClassName: miroir-slow-local
                 volumeMode: Filesystem
       media:
         type: nfs

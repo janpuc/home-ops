@@ -53,7 +53,7 @@ spec:
               securityContext:
                 allowPrivilegeEscalation: false
                 readOnlyRootFilesystem: true
-                capabilities: {drop: ["ALL"]}
+                capabilities: { drop: ["ALL"] }
           securityContext:
             runAsNonRoot: true
             runAsUser: 1000
@@ -97,5 +97,5 @@ spec:
       resources:
         requests:
           storage: 10Gi
-      storageClassName: ceph-block
+      storageClassName: miroir-slow
   disableDefaultSecurityContext: All

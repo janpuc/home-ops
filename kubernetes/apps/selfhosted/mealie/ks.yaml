@@ -13,8 +13,8 @@ spec:
       namespace: observability
     - name: pocket-id-instance
       namespace: security
-    - name: rook-ceph-cluster
-      namespace: rook-ceph
+    - name: miroir-config
+      namespace: miroir-system
   interval: 1h
   path: ./kubernetes/apps/selfhosted/mealie/app
   postBuild:

@@ -11,8 +11,8 @@ spec:
   dependsOn:
     - name: pocket-id-instance
       namespace: security
-    - name: rook-ceph-cluster
-      namespace: rook-ceph
+    - name: miroir-config
+      namespace: miroir-system
   interval: 1h
   path: ./kubernetes/apps/downloads/qui/app
   postBuild:

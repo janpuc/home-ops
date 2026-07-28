@@ -9,8 +9,8 @@ spec:
     - ../../../../components/kopiur/backup
     # - ../../../../components/zeroscaler-http # TODO
   dependsOn:
-    - name: rook-ceph-cluster
-      namespace: rook-ceph
+    - name: miroir-config
+      namespace: miroir-system
   interval: 1h
   path: ./kubernetes/apps/selfhosted/atuin/app
   postBuild:

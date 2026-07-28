@@ -23,13 +23,13 @@ spec:
     cache:
       capacity: 1Mi
       mode: Ephemeral
-      storageClassName: openebs-hostpath
+      storageClassName: miroir-slow-local
     podSecurityContext:
       fsGroup: 1000
       fsGroupChangePolicy: OnRootMismatch
     scratch:
       capacity: 1Mi
-      storageClassName: openebs-hostpath
+      storageClassName: miroir-slow-local
     securityContext:
       runAsUser: 1000
       runAsGroup: 1000

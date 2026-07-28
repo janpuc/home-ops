@@ -72,6 +72,14 @@ provisioning:
   minSize: 100GB
 ---
 apiVersion: v1alpha1
+kind: RawVolumeConfig
+name: miroir-fast
+provisioning:
+  diskSelector:
+    match: disk.transport == 'nvme'
+  minSize: 100GB
+---
+apiVersion: v1alpha1
 kind: FilesystemTrimConfig
 interval: 168h0m0s
 ---

@@ -27,8 +27,8 @@ spec:
     - name: onepassword
       namespace: external-secrets
     - name: pocket-id-operator
-    - name: rook-ceph-cluster
-      namespace: rook-ceph
+    - name: miroir-config
+      namespace: miroir-system
     - name: kopiur
       namespace: kopiur-system
   interval: 1h
