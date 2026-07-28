@@ -28,9 +28,6 @@ releases:
         args:
           - wait
           - --for=create
-          - crd/ciliumbgpadvertisements.cilium.io
-          - crd/ciliumbgpclusterconfigs.cilium.io
-          - crd/ciliumbgppeerconfigs.cilium.io
           - crd/ciliumloadbalancerippools.cilium.io
           - --timeout=2m
         events:
@@ -68,7 +65,7 @@ releases:
     needs:
       - cert-manager/cert-manager
 
-  - name: onepassword-connect
+  - name: onepassword
     namespace: external-secrets
     hooks:
       - # Wait for CRDs to be available
@@ -97,7 +94,7 @@ releases:
   - name: flux-operator
     namespace: flux-system
     needs:
-      - external-secrets/onepassword-connect
+      - external-secrets/onepassword
 
   - name: flux-instance
     namespace: flux-system

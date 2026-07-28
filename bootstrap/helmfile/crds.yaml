@@ -24,8 +24,8 @@ releases:
   - name: envoy-gateway
     namespace: network
 
-  - name: grafana-operator
-    namespace: o11y
+  - name: grafana
+    namespace: observability
 
   - name: kube-prometheus-stack
-    namespace: o11y
+    namespace: observability
