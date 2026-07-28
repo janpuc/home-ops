@@ -14,7 +14,7 @@ cluster:
   clusterName: main
   controlPlane:
     endpoint: https://k8s.janpuc.com:6443
-  token: op://kubernetes/talos/CLUSTER_TOKEN
+  token: op://Kubernetes/talos/CLUSTER_TOKEN
 ---
 apiVersion: v1alpha1
 kind: ResolverConfig
@@ -42,7 +42,7 @@ endpoint: https://discovery.talos.dev/
 apiVersion: v1alpha1
 kind: DiscoveryIdentityConfig
 clusterID: op://Kubernetes/talos/CLUSTER_ID
-clusterSecret: op://kubernetes/talos/CLUSTER_SECRET
+clusterSecret: op://Kubernetes/talos/CLUSTER_SECRET
 ---
 apiVersion: v1alpha1
 kind: UnattendedInstallConfig
