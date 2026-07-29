@@ -33,6 +33,7 @@ spec:
                     key: MEMINI_API_KEY
               MEMINI_BACKEND: sqlite
               MEMINI_DEFAULT_NAMESPACE: default
+              MEMINI_CLIENT_DEFAULTS: '{"inject_briefing_pinned":10,"inject_briefing_max_tok":3000,"recall_limit":5,"inject_recall_max_tok":400}'
               MEMINI_DEDUP_SIMILARITY: "0.80"
               MEMINI_DEDUP_TIERS: semantic,procedural
               MEMINI_SHORT_TERM_CAP: "300"
