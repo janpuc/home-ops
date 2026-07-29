@@ -29,9 +29,9 @@ spec:
   image: ghcr.io/ggml-org/llama.cpp:server-vulkan-b10143@sha256:eddb40b8a348a652c8829ef036df9bbbae537755ae7026bf6d4b403840cd468e
   replicas: 1
   contextSize: 8192
-  parallelSlots: 4
-  batchSize: 2048
-  uBatchSize: 2048
+  parallelSlots: 2
+  batchSize: 8192
+  uBatchSize: 4096
   resources:
     cpu: 100m
     memory: 2Gi
