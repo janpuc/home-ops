@@ -12,21 +12,6 @@ spec:
   values:
     autoEvictAfter: 1h
     autoDiskfulAfter: 10m
-    # Fork pin. Upstream 0.11.11's agent can never complete an
-    # autoDiskfulAfter diskless->diskful conversion: probeMetadata treats a
-    # resource that is merely up in the kernel as having live metadata, but
-    # a converting leg is up as a diskless client over a still-blank
-    # backing, so create-md is skipped and adjust error-loops "No valid meta
-    # data found" forever. This image is the upstream agent digest with only
-    # that one fix relayered on, so the drbd/lvm/zfs userland is unchanged.
-    # Remove this block once the fix is upstream.
-    agent:
-      image:
-        repository: ghcr.io/janpuc/miroir-agent
-        tag: 0.11.11-probemetadata-fix
-        # Clears the digest the release pipeline pins in the chart's
-        # values; a set digest takes precedence over the tag.
-        digest: ""
     drbd:
       alExtents: 6007
     groupSnapshots:
