@@ -11,6 +11,7 @@ spec:
   interval: 1h
   values:
     autoEvictAfter: 1h
+    autoDiskfulAfter: 10m
     drbd:
       alExtents: 6007
     groupSnapshots:

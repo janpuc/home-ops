@@ -1,0 +1,85 @@
+# yaml-language-server: $schema=https://prometheus-operator.dev/doc/api/v1/#monitoring.coreos.com/v1.PrometheusRule
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: miroir-system-autodiskful-watch
+spec:
+  groups:
+    - name: miroir-system.autodiskful
+      interval: 30s
+      rules:
+        - alert: MiroirAutoDiskfulPoolFilling
+          expr: |
+            miroir_pool_allocated_bytes / miroir_pool_capacity_bytes > 0.6
+          for: 30m
+          labels:
+            severity: warning
+          annotations:
+            summary: >-
+              Mirror pool past 60% allocated on {{ "{{" }} $labels.node {{ "}}" }} ({{ "{{" }} $labels.pool {{ "}}" }})
+            description: >-
+              Pool allocation crossed 60 % while the auto-diskful ramp from
+              `autoDiskfulAfter: 10m` is in flight. Watch for the chart's
+              MiroirPoolUsageHigh (80%, 15m) to fire next. See
+              RUNBOOK-mirror-autodiskful.md before responding. Current
+              usage: {{ "{{" }} $value | humanizePercentage {{ "}}" }}.
+        - alert: MiroirAutoDiskfulPromotingUnderPressure
+          expr: |
+            (
+              miroir_pool_allocated_bytes / miroir_pool_capacity_bytes > 0.6
+            )
+            and on(pool, node) (
+              sum(changes(miroir_volume_diskless_primary{pool="{{ "{{" }} $labels.pool {{ "}}" }}",node="{{ "{{" }} $labels.node {{ "}}" }}"}[1h])) > 0
+            )
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: >-
+              Auto-diskful is converting legs on {{ "{{" }} $labels.node {{ "}}" }} while pool is past 60 %
+            description: >-
+              The pool on this node is past 60 % allocated AND at least one
+              diskless leg flipped to diskful in the last hour. The
+              auto-diskful timer is adding full replicas; check pool
+              headroom before they complete. See
+              RUNBOOK-mirror-autodiskful.md.
+        - record: miroir:autodiskful_conversions_total_1h
+          expr: |
+            sum by (pool, node) (
+              changes(miroir_volume_diskless_primary == 0[1h])
+                and on (volume) (miroir_volume_diskless_primary == 1)
+            )
+        - alert: MiroirAutoDiskfulBurst
+          expr: |
+            sum(
+              changes(miroir_volume_diskless_primary == 0[1h])
+                and on (volume) (miroir_volume_diskless_primary == 1)
+            ) > 6
+          for: 15m
+          labels:
+            severity: info
+          annotations:
+            summary: >-
+              {{ "{{" }} $value {{ "}}" }} diskless -> diskful conversions in the last hour (above 6/hr threshold)
+            description: >-
+              The auto-diskful ramp is larger than the overnight baseline
+              (1-3/hr on a typical workload). Possible reasons: a new
+              node joined, a dead node recovered, or a StuckPod wave just
+              settled. Check `miroir:autodiskful_conversions_total_1h`
+              per-pool/per-node to localize, then consult
+              RUNBOOK-mirror-autodiskful.md if you want to slow this
+              down by raising `autoDiskfulAfter` from 10m.
+        - alert: MiroirAutoDiskfulAllVolumesConverted
+          expr: count(miroir_volume_diskless_primary == 1) == 0
+          for: 15m
+          labels:
+            severity: info
+          annotations:
+            summary: All Mirror volumes are now diskful on consumer nodes
+            description: >-
+              None of the MiroirVolumes currently has a diskless primary
+              leg. The auto-diskful ramp either completed (expected after
+              enabling `autoDiskfulAfter`) or there were no consumer-
+              side legs to convert. Compare to the 6 firing alerts you
+              started with. CHECK pool allocation before deleting the
+              rule.
