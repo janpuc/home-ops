@@ -36,7 +36,11 @@ spec:
               MEMINI_DEDUP_SIMILARITY: "0.80"
               MEMINI_SHORT_TERM_CAP: "300"
               MEMINI_DEMOTE_AFTER: 1440h
-              MEMINI_EMBED_BASE_URL: http://bge-m3.ai.svc.cluster.local:8080/v1
+              MEMINI_EMBED_BASE_URL: http://bge-embedding-m3.ai.svc.cluster.local:8080/v1
+              # Stays "bge-m3" even though the InferenceService is now named
+              # bge-embedding-m3: memini stores this string and refuses to boot
+              # if it changes, so renaming it would force a full re-embed of
+              # every memory. llama.cpp still serves it under --alias bge-m3.
               MEMINI_EMBED_MODEL: bge-m3
               MEMINI_EMBED_DIMS: "1024"
               MEMINI_EMBED_MAX_CONCURRENCY: "2"
@@ -52,6 +56,17 @@ spec:
               MEMINI_TOMBSTONE_TTL: 720h
               MEMINI_WRITE_EMBED_TIMEOUT: "30s"
               MEMINI_RECALL_EMBED_TIMEOUT: "10s"
+              MEMINI_RERANK: http://bge-reranker-v2-m3.ai.svc.cluster.local:8080/v1
+              MEMINI_RERANK_MODEL: bge-reranker-v2-m3
+              # Pool > recall limit is the point: without it the reranker only
+              # reorders what already ranked in, never rescues a better hit.
+              # Start at 20 on this iGPU and raise toward 50 once latency is known.
+              MEMINI_RERANK_POOL: "20"
+              MEMINI_RERANK_MAX_DOC_CHARS: "2048"
+              # Default 6000 would shard a 20-doc pool into ~7 SERIAL /rerank
+              # calls and blow MEMINI_RERANK_TIMEOUT; keep the whole pool in one.
+              MEMINI_RERANK_MAX_BATCH_CHARS: "48000"
+              MEMINI_RERANK_TIMEOUT: "10s"
             resources:
               requests:
                 cpu: 25m

@@ -3,7 +3,7 @@
 apiVersion: inference.llmkube.dev/v1alpha1
 kind: Model
 metadata:
-  name: bge-m3
+  name: bge-embedding-m3
 spec:
   format: gguf
   hardware:
@@ -22,9 +22,9 @@ spec:
 apiVersion: inference.llmkube.dev/v1alpha1
 kind: InferenceService
 metadata:
-  name: bge-m3
+  name: bge-embedding-m3
 spec:
-  modelRef: bge-m3
+  modelRef: bge-embedding-m3
   runtime: llamacpp
   image: ghcr.io/ggml-org/llama.cpp:server-vulkan-b10143@sha256:eddb40b8a348a652c8829ef036df9bbbae537755ae7026bf6d4b403840cd468e
   replicas: 1
@@ -47,6 +47,12 @@ spec:
     - "0"
     - --sleep-idle-seconds
     - "300"
+    # DO NOT rename this alias to match the resource name. memini records the
+    # value of MEMINI_EMBED_MODEL in its store and refuses to boot if it ever
+    # disagrees (cmd/memini/root.go reconcileEmbedModel) — the check is a plain
+    # string compare, so changing it would require re-embedding every memory
+    # even though the weights are identical. The k8s resource was renamed to
+    # bge-embedding-m3; the served model identity stays bge-m3 on purpose.
     - --alias
     - bge-m3
     - --metrics

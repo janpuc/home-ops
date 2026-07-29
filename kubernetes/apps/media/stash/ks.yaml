@@ -6,13 +6,10 @@ metadata:
   name: stash
 spec:
   components:
-    - ../../../../components/gpu
     - ../../../../components/zeroscaler
     - ../../../../components/kopiur/backup
     # - ../../../../components/zeroscaler-http # TODO: Add internal cron?
   dependsOn:
-    - name: k8s-gpu-dra-driver
-      namespace: kube-system
     - name: miroir-config
       namespace: miroir-system
   interval: 1h

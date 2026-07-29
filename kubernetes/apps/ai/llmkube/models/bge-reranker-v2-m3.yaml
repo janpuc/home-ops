@@ -1,0 +1,81 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/inference.llmkube.dev/model_v1alpha1.json
+apiVersion: inference.llmkube.dev/v1alpha1
+kind: Model
+metadata:
+  name: bge-reranker-v2-m3
+spec:
+  format: gguf
+  hardware:
+    accelerator: vulkan
+    gpu:
+      enabled: true
+      layers: 99
+      vendor: amd
+      resourceClaims:
+        - name: gpu
+          resourceClaimTemplateName: llmkube-models-gpu
+  # Q8_0 (606 MiB) to match bge-m3; the iGPU GTT aperture is capped at 2 GiB
+  # by amdgpu.gttsize=2048, so keep an eye on mem_info_gtt_used before
+  # reaching for a larger quant.
+  quantization: Q8_0
+  source: https://huggingface.co/gpustack/bge-reranker-v2-m3-GGUF/resolve/main/bge-reranker-v2-m3-Q8_0.gguf
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/inference.llmkube.dev/inferenceservice_v1alpha1.json
+apiVersion: inference.llmkube.dev/v1alpha1
+kind: InferenceService
+metadata:
+  name: bge-reranker-v2-m3
+spec:
+  modelRef: bge-reranker-v2-m3
+  runtime: llamacpp
+  image: ghcr.io/ggml-org/llama.cpp:server-vulkan-b10156@sha256:31bca24d4ecd1ee8decae5d626ae833bb5d34b94ba9d2f308e7cedcd6bb3e247
+  replicas: 1
+  # per-slot ctx = contextSize/parallelSlots; 2 slots = 4096, well above
+  # MEMINI_RERANK_MAX_DOC_CHARS (2048 chars ~ 512 tokens) plus the query.
+  contextSize: 8192
+  parallelSlots: 2
+  batchSize: 8192
+  uBatchSize: 4096
+  resources:
+    cpu: 100m
+    memory: 2Gi
+  extraArgs:
+    # bge-reranker-v2-m3 is a BERT cross-encoder; --reranking + --pooling rank
+    # exposes the Cohere-style /v1/rerank endpoint memini calls.
+    - --reranking
+    - --pooling
+    - rank
+    - --embedding
+    - --threads
+    - "4"
+    - --cache-ram
+    - "0"
+    - --no-mmap
+    - --sleep-idle-seconds
+    - "300"
+    - --alias
+    - bge-reranker-v2-m3
+    - --metrics
+  endpoint:
+    port: 8080
+    type: ClusterIP
+  probeOverrides:
+    startup:
+      httpGet:
+        path: /health
+        port: 8080
+      periodSeconds: 10
+      failureThreshold: 60
+    liveness:
+      httpGet:
+        path: /health
+        port: 8080
+      periodSeconds: 30
+      failureThreshold: 3
+    readiness:
+      httpGet:
+        path: /health
+        port: 8080
+      periodSeconds: 10
+      failureThreshold: 3

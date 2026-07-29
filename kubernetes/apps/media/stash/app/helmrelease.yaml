@@ -12,10 +12,6 @@ spec:
   values:
     controllers:
       stash:
-        pod:
-          resourceClaims:
-            - name: gpu
-              resourceClaimTemplateName: stash-gpu
         containers:
           app:
             image:
@@ -38,8 +34,6 @@ spec:
                   failureThreshold: 30
                   periodSeconds: 10
             resources:
-              claims:
-                - name: gpu
               requests:
                 cpu: 10m
                 memory: 128Mi
@@ -48,7 +42,7 @@ spec:
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
-              capabilities: {drop: ["ALL"]}
+              capabilities: { drop: ["ALL"] }
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
