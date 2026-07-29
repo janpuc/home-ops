@@ -34,6 +34,7 @@ spec:
               MEMINI_BACKEND: sqlite
               MEMINI_DEFAULT_NAMESPACE: default
               MEMINI_DEDUP_SIMILARITY: "0.80"
+              MEMINI_DEDUP_TIERS: semantic,procedural
               MEMINI_SHORT_TERM_CAP: "300"
               MEMINI_DEMOTE_AFTER: 1440h
               MEMINI_EMBED_BASE_URL: http://bge-embedding-m3.ai.svc.cluster.local:8080/v1
