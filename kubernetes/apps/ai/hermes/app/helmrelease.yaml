@@ -150,7 +150,13 @@ spec:
                     name: hermes-config
                     key: LITELLM_API_KEY
               MEMINI_BASE_URL: http://memini.ai.svc.cluster.local:8080
-              MEMINI_NAMESPACE: hermes
+              # Hermes writes at the ROOT of the namespace tree (renamed from the
+              # flat "hermes" on 2026-07-30). It is a general assistant, not a
+              # per-project agent, so its durable facts belong where every project
+              # below can inherit them. Its session churn stays put regardless:
+              # the ancestor cascade reads durable tiers ONLY, so working/episodic
+              # writes here never leak into homelab/* reads.
+              MEMINI_NAMESPACE: homelab
               MEMINI_API_KEY:
                 valueFrom:
                   secretKeyRef:
