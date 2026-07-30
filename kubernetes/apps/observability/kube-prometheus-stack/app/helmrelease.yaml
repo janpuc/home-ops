@@ -152,11 +152,11 @@ spec:
                   (
                     node:amd_gtt_free_bytes
                       / on(instance) node_drm_memory_gtt_size_bytes
-                  ) < 0.25
+                  ) < 0.20
                 for: 2m
                 labels: { severity: warning }
                 annotations:
-                  summary: "AMD iGPU GTT free < 25 % of cap on {{ $labels.instance }}"
+                  summary: "AMD iGPU GTT free < 20 % of cap on {{ $labels.instance }}"
                   description: |
                     Only {{ $value | humanizePercentage }} of the configured GTT
                     aperture is free on {{ $labels.instance }} (cap =
