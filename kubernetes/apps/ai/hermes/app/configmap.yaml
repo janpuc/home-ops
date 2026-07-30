@@ -14,13 +14,29 @@ data:
           opencode-go/minimax-m3:
             context_length: 1000000
           opencode-go/glm-5.2:
-            context_length: 1048560
+            context_length: 1000000
           opencode-go/deepseek-v4-flash:
-            context_length: 131072
+            context_length: 1000000
           opencode-go/mimo-v2.5:
-            context_length: 262144
+            context_length: 1000000
           opencode-go/qwen3.6-plus:
+            context_length: 1000000
+          opencode-go/kimi-k3:
+            context_length: 1048576
+          opencode-go/kimi-k2.7-code:
             context_length: 262144
+          opencode-go/deepseek-v4-pro:
+            context_length: 1000000
+          opencode-go/qwen3.7-max:
+            context_length: 1000000
+          opencode-go/qwen3.7-plus:
+            context_length: 1000000
+          opencode-go/mimo-v2.5-pro:
+            context_length: 1048576
+          opencode-go/grok-4.5:
+            context_length: 500000
+          opencode-go/minimax-m2.7:
+            context_length: 204800
     model:
       default: minimax/MiniMax-M3
       provider: custom:litellm
@@ -35,17 +51,32 @@ data:
       glm:
         model: opencode-go/glm-5.2
         provider: custom:litellm
-      glm-turbo:
+      flash:
         model: opencode-go/deepseek-v4-flash
         provider: custom:litellm
       mimo:
         model: opencode-go/mimo-v2.5
         provider: custom:litellm
+      k3:
+        model: opencode-go/kimi-k3
+        provider: custom:litellm
+      kimi-code:
+        model: opencode-go/kimi-k2.7-code
+        provider: custom:litellm
+      deepseek:
+        model: opencode-go/deepseek-v4-pro
+        provider: custom:litellm
+      grok:
+        model: opencode-go/grok-4.5
+        provider: custom:litellm
+      qwen-max:
+        model: opencode-go/qwen3.7-max
+        provider: custom:litellm
     fallback_providers:
       - provider: custom:litellm
-        model: minimax/MiniMax-M3
+        model: opencode-go/minimax-m3
       - provider: custom:litellm
-        model: opencode-go/qwen3.6-plus
+        model: opencode-go/glm-5.2
       - provider: custom:litellm
         model: opencode-go/deepseek-v4-flash
     auxiliary:
@@ -128,20 +159,41 @@ data:
     moa:
       default_preset: council
       presets:
+        # Four distinct pretraining lineages (Moonshot / Zhipu / DeepSeek /
+        # Qwen) so the members fail differently, all served by opencode-go.
+        # The aggregator is deliberately a fifth family on a *different*
+        # provider, so aggregation survives an opencode-go outage and is not
+        # biased toward any one reference.
         council:
           enabled: true
           reference_models:
             - provider: custom:litellm
-              model: minimax/MiniMax-M3
+              model: opencode-go/kimi-k3
             - provider: custom:litellm
               model: opencode-go/glm-5.2
             - provider: custom:litellm
-              model: opencode-go/mimo-v2.5
+              model: opencode-go/deepseek-v4-pro
+            - provider: custom:litellm
+              model: opencode-go/qwen3.7-max
           aggregator:
             provider: custom:litellm
             model: minimax/MiniMax-M3
           reference_temperature: 0.6
           aggregator_temperature: 0.4
+          max_tokens: 16384
+        # Three calls instead of five, for when a council is overkill.
+        quick:
+          enabled: true
+          reference_models:
+            - provider: custom:litellm
+              model: opencode-go/deepseek-v4-flash
+            - provider: custom:litellm
+              model: opencode-go/qwen3.6-plus
+          aggregator:
+            provider: custom:litellm
+            model: opencode-go/glm-5.2
+          reference_temperature: 0.7
+          aggregator_temperature: 0.3
           max_tokens: 8192
     platforms:
       matrix:

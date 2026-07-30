@@ -1,24 +1,21 @@
----
 # yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmmodel_v1alpha1.json
 apiVersion: litellm.home-operations.com/v1alpha1
 kind: LiteLLMModel
 metadata:
-  name: minimax-m2-7
+  name: opencode-go-mimo-v2-5-pro
 spec:
-  modelName: minimax/MiniMax-M2-7
+  modelName: opencode-go/mimo-v2.5-pro
   params:
-    model: minimax/MiniMax-M2.7
-    apiBase: https://api.minimax.io/v1
+    model: openai/mimo-v2.5-pro
+    apiBase: https://opencode.ai/zen/go/v1
     apiKeyRef:
       name: litellm
-      key: MINIMAX_API_KEY
-    additional:
-      extra_body:
-        reasoning_split: true
+      key: OPENCODE_GO_API_KEY
+    dropParams: true
   info:
-    maxTokens: 204800
-    maxInputTokens: 204800
-    maxOutputTokens: 131072
+    maxInputTokens: 1048576
+    maxOutputTokens: 128000
     supportsFunctionCalling: true
+    supportsPromptCaching: true
     extra:
       supports_reasoning: true
