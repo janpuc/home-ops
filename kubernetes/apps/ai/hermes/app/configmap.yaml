@@ -38,8 +38,15 @@ data:
           opencode-go/minimax-m2.7:
             context_length: 204800
     model:
-      default: minimax/MiniMax-M3
-      provider: custom:litellm
+      # provider "moa" is the virtual MoA facade: "default" is a PRESET NAME
+      # here, not a litellm model id. This makes the council the acting model
+      # for every prompt, so the fan-out no longer has to be invoked with /moa.
+      # Auxiliary tasks (title generation, compression, vision, ...) and the
+      # prompt-caching policy both resolve automatically to the preset's
+      # aggregator slot (minimax/MiniMax-M3), so they are unaffected by this.
+      # context_length is kept aligned with that aggregator.
+      default: council
+      provider: moa
       context_length: 1000000
     model_aliases:
       qwen:
@@ -180,6 +187,18 @@ data:
             model: minimax/MiniMax-M3
           reference_temperature: 0.6
           aggregator_temperature: 0.4
+          # Advisors run ONCE per user turn, then MiniMax-M3 works the task
+          # alone. The default (per_iteration) re-polls all four advisors after
+          # every tool result, so a 25-iteration kubectl/terminal task would
+          # cost 100 advisor calls instead of 4.
+          fanout: user_turn
+          # Advisor generation dominates MoA turn latency (~0.88 correlation
+          # with output tokens) and the aggregator only needs the gist of each
+          # judgement, not a full answer.
+          reference_max_tokens: 600
+          # NOTE: as of v2026.7.7 the preset's max_tokens does NOT cap the
+          # aggregator - moa_loop passes the caller's value straight through so
+          # the acting model uses its real maximum. Kept for forward compat.
           max_tokens: 16384
         # Three calls instead of five, for when a council is overkill.
         quick:
@@ -194,6 +213,9 @@ data:
             model: opencode-go/glm-5.2
           reference_temperature: 0.7
           aggregator_temperature: 0.3
+          # Deliberately left on the default per_iteration fanout: only two
+          # advisors, so refreshing their advice each iteration stays cheap.
+          reference_max_tokens: 400
           max_tokens: 8192
     platforms:
       matrix:
