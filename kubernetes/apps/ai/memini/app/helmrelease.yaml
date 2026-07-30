@@ -84,6 +84,20 @@ spec:
               # calls and blow MEMINI_RERANK_TIMEOUT; keep the whole pool in one.
               MEMINI_RERANK_MAX_BATCH_CHARS: "48000"
               MEMINI_RERANK_TIMEOUT: "10s"
+              # Absolute floor on the cross-encoder's relevance score, applied
+              # across the whole pool before the recall limit. This is what makes
+              # recall return EMPTY on an unanswerable query instead of the
+              # least-irrelevant leftovers — the fused score can't do it, because
+              # its min-max normalisation inflates the best of a bad pool.
+              #
+              # bge-reranker emits unbounded LOGITS, not 0..1. Measured here:
+              # 4 answerable queries scored 0.42..3.82 at the top with >=2 items
+              # above 0; 2 deliberately-unanswerable ones topped out at -8.36 and
+              # -7.17 with nothing above 0. Hence 0.1 — it cannot be exactly 0
+              # (that is the "disabled" sentinel) and 0.5 would have gated a
+              # legitimate query whose best hit was 0.42. Cross-encoder only:
+              # pairing this with MEMINI_RERANK=llm is a boot error.
+              MEMINI_RERANK_MIN_SCORE: "0.1"
             resources:
               requests:
                 cpu: 25m
