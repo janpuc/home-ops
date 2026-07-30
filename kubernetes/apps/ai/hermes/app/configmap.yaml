@@ -135,7 +135,58 @@ data:
     approvals:
       mode: smart
       timeout: 60
-      cron_mode: deny
+      # cron_mode is binary: "deny" blocks every approval-gated command in a
+      # cron session, "approve" auto-approves ALL of them. approvals.mode: smart
+      # does NOT apply to cron - approval.py::_get_cron_approval_mode only ever
+      # returns deny or approve. Switched to approve so scheduled jobs can act
+      # (remediate, commit, restart) instead of only reading.
+      cron_mode: approve
+      # The guardrail that makes the above safe. These fnmatch globs are matched
+      # against terminal commands BEFORE the approve/--yolo/mode:off bypass, so
+      # they hold even under cron_mode: approve. Case-insensitive.
+      deny:
+        # Cluster-destroying Talos operations
+        - "*talosctl*reset*"
+        - "*talosctl*wipe*"
+        - "*talosctl*upgrade*"
+        # Irreversible git history rewrites / working-tree destruction
+        - "git push*--force*"
+        - "git push*-f *"
+        - "git reset --hard*"
+        - "git clean*-*f*"
+        - "git filter-branch*"
+        # Flux/Helm teardown - prune is fine, deleting the controllers is not
+        - "*flux uninstall*"
+        - "*helm uninstall*"
+        - "*helm delete*"
+        # Blanket kubectl deletes
+        - "*kubectl delete*--all*"
+        - "*kubectl delete ns*"
+        - "*kubectl delete namespace*"
+        - "*kubectl delete pvc*"
+        - "*kubectl delete pv *"
+        # Storage / filesystem
+        - "*mkfs*"
+        - "*rm -rf /*"
+        - "*dd if=*of=/dev/*"
+        - "*wipefs*"
+        # Piping the internet into a shell
+        - "*curl*|*sh*"
+        - "*wget*|*sh*"
+    # Shell hooks (agent/shell_hooks.py). A pre_tool_call hook may return
+    # {"decision": "block", "reason": "..."} on stdout to refuse a tool call.
+    # Commands run via shlex.split with shell=False, so the interpreter is
+    # named explicitly rather than relying on a shebang + exec bit.
+    hooks:
+      pre_tool_call:
+        - command: /usr/bin/python3 /opt/data/hook-scripts/home-ops-guard.py
+          matcher: terminal
+          timeout: 10
+    # Required: registration prompts for consent on first use of each
+    # (event, command) pair and writes ~/.hermes/shell-hooks-allowlist.json.
+    # The gateway and cron have no TTY, so without this the hook silently
+    # never registers.
+    hooks_auto_accept: true
     security:
       redact_secrets: true
       website_blocklist:
@@ -221,9 +272,168 @@ data:
       platforms:
         matrix:
           tool_progress: "off"
+    # One Hermes entry per upstream MCP server instead of a single aggregated
+    # "homelab" pointing at http://litellm.ai:4000/mcp. Two reasons:
+    #
+    #   1. The aggregate registered all 418 tools unfiltered (mcp_tool.py
+    #      _register_server_tools: "neither include nor exclude set -> register
+    #      all tools"), costing ~154k tokens of schema JSON on EVERY request.
+    #      Note `hermes prompt-size` does NOT show this - it runs offline and
+    #      only counts the 35 built-in tools.
+    #   2. Split entries become separate `mcp-<name>` toolsets, so they can be
+    #      scoped per platform via `platform_toolsets:` later if wanted.
+    #
+    # LiteLLM routes a single server at /mcp/<name>/ - the TRAILING SLASH is
+    # required; /mcp/<name>/mcp returns 0 tools.
+    #
+    # Tool names change as a result: mcp__homelab__kubectl_get_pods is now
+    # mcp__kubectl__kubectl_get_pods. Skills under /opt/data/skills were
+    # rewritten to match.
     mcp_servers:
-      homelab:
-        url: http://litellm.ai:4000/mcp
+      # 275 tools upstream (~44.9k tok) -> 95 (~16.8k tok). Dropped whole
+      # families this cluster does not run: kind, vind, kubevirt, istio, capi,
+      # keda, argo-rollouts, flagger, velero backup/restore, multi-cluster and
+      # the ~35 helm_* tools (Flux owns Helm here).
+      kubectl:
+        url: http://litellm.ai:4000/mcp/kubectl/
+        headers:
+          Authorization: "Bearer $${LITELLM_API_KEY}"
+        tools:
+          include:
+            - kubectl-get_pods
+            - kubectl-get_nodes
+            - kubectl-get_nodes_summary
+            - kubectl-get_node_metrics
+            - kubectl-get_pod_metrics
+            - kubectl-get_deployments
+            - kubectl-get_statefulsets
+            - kubectl-get_daemonsets
+            - kubectl-get_replicasets
+            - kubectl-get_services
+            - kubectl-get_endpoints
+            - kubectl-get_ingress
+            - kubectl-get_configmaps
+            - kubectl-get_secrets
+            - kubectl-get_namespaces
+            - kubectl-get_events
+            - kubectl-get_pod_events
+            - kubectl-get_pod_conditions
+            - kubectl-get_pvcs
+            - kubectl-get_persistent_volumes
+            - kubectl-get_storage_classes
+            - kubectl-get_jobs
+            - kubectl-get_hpa
+            - kubectl-get_pdb
+            - kubectl-get_crds
+            - kubectl-get_api_resources
+            - kubectl-get_cluster_info
+            - kubectl-get_cluster_version
+            - kubectl-get_logs
+            - kubectl-get_previous_logs
+            - kubectl-get_resource_quotas
+            - kubectl-get_service_accounts
+            - kubectl-get_rbac_roles
+            - kubectl-get_cluster_roles
+            - kubectl-health_check
+            - kubectl-check_pod_health
+            - kubectl-diagnose_pod_crash
+            - kubectl-check_dns_resolution
+            - kubectl-diagnose_network_connectivity
+            - kubectl-detect_pending_pods
+            - kubectl-get_evicted_pods
+            - kubectl-trace_service_chain
+            - kubectl-analyze_pod_security
+            - kubectl-analyze_network_policies
+            - kubectl-audit_rbac_permissions
+            - kubectl-check_crd_exists
+            - kubectl-get_resource_usage
+            - kubectl-get_resource_trends
+            - kubectl-get_resource_recommendations
+            - kubectl-get_overprovisioned_resources
+            - kubectl-get_idle_resources
+            - kubectl-optimize_resource_requests
+            - kubectl-node_top_tool
+            - kubectl-node_stats_summary_tool
+            - kubectl-node_logs_tool
+            - kubectl-node_management
+            - kubectl-exec_in_pod
+            - kubectl-kubectl_generic
+            - kubectl-kubectl_describe
+            - kubectl-kubectl_explain
+            - kubectl-kubectl_apply
+            - kubectl-kubectl_patch
+            - kubectl-kubectl_rollout
+            - kubectl-kubectl_cp
+            - kubectl-port_forward
+            - kubectl-delete_resource
+            - kubectl-restart_deployment
+            - kubectl-scale_deployment
+            - kubectl-cleanup_pods
+            - kubectl-wait_for_condition
+            - kubectl-label_resource
+            - kubectl-annotate_resource
+            - kubectl-cilium_status_tool
+            - kubectl-cilium_endpoints_list_tool
+            - kubectl-cilium_nodes_list_tool
+            - kubectl-cilium_policies_list_tool
+            - kubectl-cilium_policy_get_tool
+            - kubectl-hubble_flows_query_tool
+            - kubectl-certs_list_tool
+            - kubectl-certs_get_tool
+            - kubectl-certs_status_explain_tool
+            - kubectl-certs_challenges_list_tool
+            - kubectl-certs_requests_list_tool
+            - kubectl-certs_issuers_list_tool
+            - kubectl-certs_renew_tool
+            - kubectl-gitops_detect_engine_tool
+            - kubectl-gitops_apps_list_tool
+            - kubectl-gitops_app_get_tool
+            - kubectl-gitops_app_status_tool
+            - kubectl-gitops_app_sync_tool
+            - kubectl-gitops_sources_list_tool
+            - kubectl-gitops_source_get_tool
+            - kubectl-get_current_context
+            - kubectl-get_server_config_status
+            - kubectl-compare_namespaces
+      # Biggest offender by bytes: 78 tools / ~72.2k tok, because the config_set_*
+      # and manage_* schemas are enormous (ha_manage_addon alone is 15.8 KB).
+      # Kept the read/query surface plus the service call and todo tools the
+      # ha-car-status and ev-charge-reminder skills use: ~14.4k tok.
+      ha:
+        url: http://litellm.ai:4000/mcp/ha/
+        headers:
+          Authorization: "Bearer $${LITELLM_API_KEY}"
+        tools:
+          include:
+            - ha-ha_get_state
+            - ha-ha_search
+            - ha-ha_call_service
+            - ha-ha_get_history
+            - ha-ha_get_entity
+            - ha-ha_get_overview
+            - ha-ha_list_floors_areas
+            - ha-ha_list_services
+            - ha-ha_eval_template
+            - ha-ha_get_todo
+            - ha-ha_set_todo_item
+            - ha-ha_config_get_calendar_events
+            - ha-ha_get_logs
+            - ha-ha_bulk_control
+            - ha-ha_get_device
+      github:
+        url: http://litellm.ai:4000/mcp/github/
+        headers:
+          Authorization: "Bearer $${LITELLM_API_KEY}"
+      prometheus:
+        url: http://litellm.ai:4000/mcp/prometheus/
+        headers:
+          Authorization: "Bearer $${LITELLM_API_KEY}"
+      victoria_logs:
+        url: http://litellm.ai:4000/mcp/victoria_logs/
+        headers:
+          Authorization: "Bearer $${LITELLM_API_KEY}"
+      context7:
+        url: http://litellm.ai:4000/mcp/context7/
         headers:
           Authorization: "Bearer $${LITELLM_API_KEY}"
     web:
@@ -235,3 +445,105 @@ data:
     SUMMARY_LLM_API_KEY={{ .LITELLM_MASTER_KEY }}
     API_SERVER_KEY={{ .API_SERVER_KEY }}
     GATEWAY_ALLOWED_USERS={{ .GATEWAY_ALLOWED_USERS }}
+  # pre_tool_call shell hook. Enforces the standing home-ops convention -
+  # pull first, never auto-commit, edit only when asked - as a hard gate
+  # instead of relying on the agent remembering it. Copied to
+  # /opt/data/hook-scripts/ by the init container.
+  #
+  # Deliberately contains no "0x24{...}" sequences: Flux postBuild
+  # substitution runs over this ConfigMap.
+  home-ops-guard.py: |-
+    """Block git write operations inside a home-ops checkout.
+
+    Wire protocol (agent/shell_hooks.py): a JSON payload arrives on stdin;
+    printing {"decision": "block", "reason": ...} refuses the call. Any other
+    output - or none - lets it through. Failing open is deliberate: a broken
+    guard must not wedge the agent.
+    """
+    import json
+    import shlex
+    import sys
+
+    # git subcommands that mutate history, refs, or the working tree.
+    WRITE_SUBCOMMANDS = {
+        "commit", "push", "merge", "rebase", "cherry-pick", "revert",
+        "reset", "clean", "am", "apply", "restore", "checkout", "switch",
+        "stash", "filter-branch", "update-ref", "gc", "prune", "mv", "rm",
+    }
+    # Destructive only with a delete/force flag; read-only otherwise.
+    CONDITIONAL = {"tag": ("-d", "-D", "--delete"), "branch": ("-D", "--delete")}
+
+    SPLITTERS = ("&&", "||", ";", "|", "\n")
+
+
+    def segments(command):
+        """Split a compound shell command into individual invocations."""
+        parts = [command]
+        for sep in SPLITTERS:
+            nxt = []
+            for chunk in parts:
+                nxt.extend(chunk.split(sep))
+            parts = nxt
+        return [p.strip() for p in parts if p.strip()]
+
+
+    def offending_subcommand(segment):
+        """Return the git subcommand if this segment is a git write, else None."""
+        try:
+            tokens = shlex.split(segment)
+        except ValueError:
+            return None
+        # Skip env-var prefixes (FOO=bar git ...) and a sudo wrapper.
+        while tokens and ("=" in tokens[0].split(" ")[0] or tokens[0] == "sudo"):
+            tokens.pop(0)
+        if not tokens or tokens[0] != "git":
+            return None
+        # Skip git's own global flags, including -C <path>.
+        rest = tokens[1:]
+        while rest and rest[0].startswith("-"):
+            if rest[0] in ("-C", "-c", "--git-dir", "--work-tree"):
+                rest = rest[2:]
+            else:
+                rest = rest[1:]
+        if not rest:
+            return None
+        sub = rest[0]
+        if sub in WRITE_SUBCOMMANDS:
+            return sub
+        flags = CONDITIONAL.get(sub)
+        if flags and any(f in rest[1:] for f in flags):
+            return sub
+        return None
+
+
+    def main():
+        try:
+            payload = json.load(sys.stdin)
+        except Exception:
+            return
+        if payload.get("tool_name") != "terminal":
+            return
+        command = (payload.get("tool_input") or {}).get("command") or ""
+        cwd = payload.get("cwd") or ""
+
+        # Only guard home-ops. Other repos in the workspace are fair game.
+        if "home-ops" not in cwd and "home-ops" not in command:
+            return
+
+        for segment in segments(command):
+            sub = offending_subcommand(segment)
+            if sub:
+                print(json.dumps({
+                    "decision": "block",
+                    "reason": (
+                        "Blocked 'git " + sub + "' in a home-ops checkout. "
+                        "home-ops is read-only for the agent: pull first, never "
+                        "auto-commit, and only edit when explicitly asked. Report "
+                        "the change you want to make and let the user run it, or "
+                        "ask for confirmation first."
+                    ),
+                }))
+                return
+
+
+    main()
