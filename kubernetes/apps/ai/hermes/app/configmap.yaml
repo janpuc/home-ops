@@ -38,15 +38,8 @@ data:
           opencode-go/minimax-m2.7:
             context_length: 204800
     model:
-      # provider "moa" is the virtual MoA facade: "default" is a PRESET NAME
-      # here, not a litellm model id. This makes the council the acting model
-      # for every prompt, so the fan-out no longer has to be invoked with /moa.
-      # Auxiliary tasks (title generation, compression, vision, ...) and the
-      # prompt-caching policy both resolve automatically to the preset's
-      # aggregator slot (minimax/MiniMax-M3), so they are unaffected by this.
-      # context_length is kept aligned with that aggregator.
-      default: council
-      provider: moa
+      default: minimax/MiniMax-M3
+      provider: custom:litellm
       context_length: 1000000
     model_aliases:
       qwen:
