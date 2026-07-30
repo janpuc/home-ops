@@ -189,19 +189,6 @@ spec:
                   description: |
                     cgroup-reclaimable memory + free GTT combined is below 2.5 GiB on
                     {{ $labels.instance }}. Consider draining the GTT workload.
-              - alert: NodeKernelMemoryPressureHigh
-                expr: |
-                  (
-                    node_memory_MemAvailable_bytes
-                      / on(instance) node_memory_MemTotal_bytes
-                  ) < 0.08
-                for: 2m
-                labels: { severity: critical }
-                annotations:
-                  summary: "MemAvailable < 8 % on {{ $labels.instance }}"
-                  description: |
-                    Node {{ $labels.instance }} has <8% cgroup-visible memory free.
-                    OOMKilled fires are imminent.
               - alert: AmdDrmCollectorMissing
                 expr: absent(node_drm_memory_gtt_size_bytes)
                 for: 5m
