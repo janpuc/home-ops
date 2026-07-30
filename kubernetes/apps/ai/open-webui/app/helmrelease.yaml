@@ -43,6 +43,11 @@ spec:
               ENABLE_WEBSOCKET_SUPPORT: true
               WEBSOCKET_MANAGER: redis
               WEBSOCKET_REDIS_URL: redis://open-webui-dragonfly:6379
+              # memini — the filter's base_url and home Valves seed from these,
+              # so they are declared here rather than living only in the UI.
+              # MEMINI_API_KEY comes from open-webui-secret via envFrom.
+              MEMINI_BASE_URL: http://memini.ai.svc.cluster.local:8080
+              MEMINI_HOME: personal/jan
             envFrom:
               - secretRef:
                   name: open-webui-secret

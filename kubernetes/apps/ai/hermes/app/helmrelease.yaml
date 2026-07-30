@@ -157,6 +157,10 @@ spec:
               # the ancestor cascade reads durable tiers ONLY, so working/episodic
               # writes here never leak into homelab/* reads.
               MEMINI_NAMESPACE: homelab
+              # Personal namespace, merged read-only into every recall. Required
+              # for the morning brief: Janek's profile, voice preferences and
+              # news framing live here, not in homelab.
+              MEMINI_HOME: personal/jan
               MEMINI_API_KEY:
                 valueFrom:
                   secretKeyRef:
