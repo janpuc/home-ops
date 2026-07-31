@@ -1,0 +1,211 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hermes-matrix-configmap
+data:
+  # Per-room personas. The proxy resolves these against the real Matrix room ID
+  # and forwards the result to the main agent as a system message, so each room
+  # behaves differently while sharing one bot account and one gateway.
+  #
+  # Rooms are also separate Hermes sessions automatically (the Matrix adapter
+  # derives a session per room), so context does not bleed between them.
+  #
+  # Room IDs are NOT stored here. The {{ }} placeholders are rendered by the
+  # hermes-matrix ExternalSecret (templateFrom -> this key) from the 1Password
+  # `hermes` item, so this file stays safe to publish. The rendered result lands
+  # in the hermes-matrix Secret as `config.yaml`.
+  #
+  # NOTE: per-room prompts only work because of the patched matrix.py below.
+  config.yaml: |-
+    platforms:
+      matrix:
+        extra:
+          # Whitelist: the bot ignores every other room, including the
+          # "Matrix.org (Official Account)" room it was auto-joined into.
+          allowed_rooms: "{{ .MATRIX_ROOM_CLUSTER }},{{ .MATRIX_ROOM_ASSISTANT }},{{ .MATRIX_ROOM_HOME }},{{ .MATRIX_ROOM_NOTIFY }},{{ .MATRIX_ROOM_ALERTS }},{{ .MATRIX_ROOM_DIGEST }},{{ .MATRIX_ROOM_INBOX }},{{ .MATRIX_ROOM_DM }}"
+          channel_prompts:
+            # ── Hermes · Cluster ──────────────────────────────────────────
+            "{{ .MATRIX_ROOM_CLUSTER }}": |-
+              This room is for Kubernetes, Flux, storage and incident work on
+              the janpuc/home-ops cluster (3-node Talos control plane, Cilium
+              CNI, miroir/DRBD storage, Envoy Gateway, Flux-managed).
+
+              Behave like an on-call SRE:
+              - Lead with evidence. Run the read-only check before asserting.
+              - State what you verified and what you inferred, separately.
+              - On miroir, judge data safety by per-node diskState and
+                splitBrain, never by readyReplicas - that goes stale when an
+                agent wedges.
+              - home-ops is read-only: pull first, never auto-commit, and only
+                edit when explicitly asked.
+              - Be terse. Tables and command output over prose.
+
+              Load the relevant skill before working rather than improvising:
+              cluster-resource-pressure-investigation, homelab-mcp-debugging,
+              flux-operator-stack-debugging, home-ops-flux-app-template or
+              hermes-cron-debugging. The /cluster bundle loads the set.
+
+            # ── Hermes · Assistant ────────────────────────────────────────
+            "{{ .MATRIX_ROOM_ASSISTANT }}": |-
+              This room is general-purpose: lookups, planning, restaurants,
+              travel, research, everyday questions. It is NOT for cluster work
+              - if asked about infrastructure, suggest moving to the Cluster
+              room.
+
+              Be conversational and concise. Always cite sources for factual
+              claims. For anything involving opening hours, addresses or venue
+              details, verify against OpenStreetMap rather than guessing.
+              Answer in English.
+
+            # ── Hermes · Home ─────────────────────────────────────────────
+            "{{ .MATRIX_ROOM_HOME }}": |-
+              This room controls the house via Home Assistant.
+
+              - Prefer ha_search / ha_get_state to find the right entity before
+                acting; never guess an entity_id.
+              - For any state-changing call, say what you are about to change
+                and to what, then do it and confirm the resulting state.
+              - "Is everything alright?" means: check for unavailable entities,
+                open doors/windows, low batteries, and anything left on that
+                usually is not.
+              - Keep replies short - this is a phone-first room.
+
+              The ha-car-status and ev-charge-reminder skills cover the EV6;
+              load them rather than reconstructing the entity names.
+
+            # ── Hermes · Notify ───────────────────────────────────────────
+            "{{ .MATRIX_ROOM_NOTIFY }}": |-
+              This room is the always-on notification channel: scheduled
+              briefings, reminders and anything the user explicitly asked to be
+              told later. It is the one room that should stay unmuted, so the
+              bar for posting here is high.
+
+              Post finished output, not working notes. No tool narration, no
+              "let me check" - just the result. If a scheduled job has nothing
+              worth saying, say nothing.
+
+              The morning-briefing, weather-forecast, news-curated and
+              file-delivery-to-chat skills cover most of what runs here; the
+              /briefing bundle loads them together.
+
+            # ── Hermes · Alerts ───────────────────────────────────────────
+            "{{ .MATRIX_ROOM_ALERTS }}": |-
+              This room receives infrastructure alerts for triage.
+
+              For each alert, answer three things in order:
+              1. Is this real, or an artifact of a stale/wedged component?
+              2. What is the blast radius right now - what is actually down?
+              3. What is the single next diagnostic step?
+
+              Do not propose remediation that touches storage, reboots nodes,
+              or deletes resources without asking first. Prior incident: on
+              2026-07-31 an hourly-snapshot freeze storm made 33 volumes report
+              0 replicas while every replica was actually UpToDate - check
+              before believing an alert's severity.
+
+            # ── Hermes · Digest ───────────────────────────────────────────
+            "{{ .MATRIX_ROOM_DIGEST }}": |-
+              This room carries the periodic rollup: pending Renovate PRs,
+              certificate expiry, backup success rate, volume health and
+              capacity trends.
+
+              Write it as a scannable digest - short sections, concrete
+              numbers, deltas against last time where you can. Flag only what
+              changed or what needs a decision. No filler.
+
+            # ── Hermes · Inbox ────────────────────────────────────────────
+            "{{ .MATRIX_ROOM_INBOX }}": |-
+              This room is a capture inbox. The user drops links, ideas and
+              half-thoughts here with little context.
+
+              Default action: store it in long-term memory with enough context
+              to be findable later, pick the right namespace, and reply with a
+              one-line confirmation of what you saved and where. Ask a
+              clarifying question only when the item is genuinely ambiguous.
+              Do not expand a dropped link into an essay unless asked.
+
+  # Backport: upstream hermes wires per-channel prompts into MessageEvent for
+  # Telegram and Slack but never for Matrix. This image is hermes v0.15.2
+  # (2026.5.29.2), roughly two months behind the main agent's v0.18.2, and
+  # predates channel_overrides entirely.
+  #
+  # Everything needed is already in the image - MessageEvent.channel_prompt and
+  # resolve_channel_prompt() in platforms/base.py, and run.py consumes
+  # event.channel_prompt in half a dozen places. Only the two MessageEvent
+  # constructions in platforms/matrix.py fail to set it. This patches those two
+  # call sites and nothing else.
+  #
+  # It is anchored and fails closed: if a base-image bump changes those blocks,
+  # the init container exits non-zero and the pod will not start, rather than
+  # silently collapsing every room back to one shared persona.
+  #
+  # Drop this file and the patch-matrix init container once the upstream image
+  # ships a hermes new enough to wire Matrix channel prompts itself.
+  patch-matrix.py: |-
+    """Backport per-room system prompts to the hermes-matrix Matrix adapter."""
+    import hashlib
+    import io
+    import sys
+
+    SRC, OUT = sys.argv[1], sys.argv[2]
+
+    INJECT = "            channel_prompt=_rcp(self.config.extra, room_id),\n"
+    IMPORT = "        from gateway.platforms.base import resolve_channel_prompt as _rcp\n"
+
+    # Both enclosing methods take room_id: str as a parameter.
+    ANCHORS = [
+        (
+            "_handle_text_message",
+            "        msg_event = MessageEvent(\n"
+            "            text=body,\n"
+            "            message_type=msg_type,\n"
+            "            source=source,\n"
+            "            raw_message=source_content,\n"
+            "            message_id=event_id,\n"
+            "            reply_to_message_id=reply_to,\n"
+            "        )\n",
+        ),
+        (
+            "_handle_media_message",
+            "        msg_event = MessageEvent(\n"
+            "            text=body,\n"
+            "            message_type=msg_type,\n"
+            "            source=source,\n"
+            "            raw_message=source_content,\n"
+            "            message_id=event_id,\n"
+            "            media_urls=media_urls,\n"
+            "            media_types=media_types,\n"
+            "        )\n",
+        ),
+    ]
+
+    src = io.open(SRC, encoding="utf-8").read()
+    print("source: %s (%d bytes, sha256=%s)"
+          % (SRC, len(src), hashlib.sha256(src.encode()).hexdigest()[:16]))
+
+    if "_rcp(self.config.extra, room_id)" in src:
+        print("already patched - copying through unchanged")
+        io.open(OUT, "w", encoding="utf-8").write(src)
+        sys.exit(0)
+
+    out = src
+    for label, anchor in ANCHORS:
+        count = out.count(anchor)
+        if count != 1:
+            sys.stderr.write(
+                "FATAL: anchor for %s matched %d times (expected exactly 1).\n"
+                "The base image changed; re-derive the patch before deploying.\n"
+                % (label, count)
+            )
+            sys.exit(1)
+        patched = IMPORT + anchor[: -len("        )\n")] + INJECT + "        )\n"
+        out = out.replace(anchor, patched, 1)
+        print("patched: %s" % label)
+
+    # Syntax gate so a malformed edit never reaches the app container.
+    compile(out, OUT, "exec")
+
+    io.open(OUT, "w", encoding="utf-8").write(out)
+    print("wrote %s (%d bytes, sha256=%s)"
+          % (OUT, len(out), hashlib.sha256(out.encode()).hexdigest()[:16]))
