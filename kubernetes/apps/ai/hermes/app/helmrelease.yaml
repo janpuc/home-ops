@@ -68,6 +68,20 @@ spec:
                 mkdir -p /opt/data/hook-scripts
                 cp /run/config/home-ops-guard.py /opt/data/hook-scripts/home-ops-guard.py
                 chmod 644 /opt/data/hook-scripts/home-ops-guard.py
+                # matrix-post: deliver into a named Matrix room from cron jobs
+                # and skills. /opt/data/.local/bin is already on PATH; this init
+                # container runs before install-tools, so create it first.
+                mkdir -p /opt/data/.local/bin
+                cp /run/config/matrix-post.py /opt/data/.local/bin/matrix-post
+                chmod 755 /opt/data/.local/bin/matrix-post
+                # Weekly rollup for the #digest room. The generator goes on
+                # PATH; the cron wrapper must live under HERMES_HOME/scripts,
+                # which is the only location `hermes cron --script` accepts.
+                cp /run/config/weekly-digest.py /opt/data/.local/bin/weekly-digest
+                chmod 755 /opt/data/.local/bin/weekly-digest
+                mkdir -p /opt/data/scripts
+                cp /run/config/weekly-digest-run.sh /opt/data/scripts/weekly-digest-run.sh
+                chmod 755 /opt/data/scripts/weekly-digest-run.sh
             securityContext:
               allowPrivilegeEscalation: false
               capabilities:
@@ -198,6 +212,18 @@ spec:
                   -s homelab-mcp-debugging -s home-ops-flux-app-template \
                   -s flux-operator-stack-debugging -s hermes-cron-debugging \
                   -d "Homelab cluster debugging: resource pressure, Flux, MCP, cron" || true
+
+                # Weekly digest into the #digest Matrix room, Monday 08:00.
+                # --no-agent means no LLM runs at all: the script IS the job.
+                # It posts to Matrix itself and prints nothing, so a healthy
+                # run is silent and costs nothing. `schedule` is positional.
+                if ! $HERMES cron list 2>/dev/null | grep -q "weekly-digest"; then
+                  $HERMES cron create "0 8 * * 1" \
+                    --name weekly-digest \
+                    --script weekly-digest-run.sh \
+                    --no-agent \
+                    --deliver local || true
+                fi
             securityContext:
               allowPrivilegeEscalation: false
               capabilities:
@@ -276,6 +302,11 @@ spec:
             envFrom:
               - secretRef:
                   name: "{{ .Release.Name }}-oidc-credentials"
+              # MATRIX_HOMESERVER / MATRIX_ACCESS_TOKEN / MATRIX_ROOM_* — read
+              # whole so the private room IDs stay out of this manifest. Used by
+              # matrix-post.
+              - secretRef:
+                  name: hermes-matrix-access
             resources:
               requests:
                 cpu: 500m
@@ -395,6 +426,12 @@ spec:
                 subPath: config.yaml
               - path: /run/config/home-ops-guard.py
                 subPath: home-ops-guard.py
+              - path: /run/config/matrix-post.py
+                subPath: matrix-post.py
+              - path: /run/config/weekly-digest.py
+                subPath: weekly-digest.py
+              - path: /run/config/weekly-digest-run.sh
+                subPath: weekly-digest-run.sh
       config:
         type: secret
         name: hermes-config
@@ -519,6 +556,55 @@ spec:
                 - "get"
                 - "list"
                 - "watch"
+            # Storage and backup state. Without these the agent is blind to the
+            # exact layer that caused the 2026-07-31 snapshot-freeze incident -
+            # it could not have triaged the alert storm even if asked. Read-only.
+            - apiGroups:
+                - "miroir.home-operations.com"
+              resources:
+                - miroirvolumes
+                - miroirnodes
+                - miroirnodegroups
+                - miroirsnapshots
+                - miroirsnapshotgroups
+              verbs:
+                - "get"
+                - "list"
+                - "watch"
+            - apiGroups:
+                - "kopiur.home-operations.com"
+              resources:
+                - snapshots
+                - snapshotpolicies
+                - snapshotschedules
+                - restores
+                - repositories
+                - clusterrepositories
+              verbs:
+                - "get"
+                - "list"
+                - "watch"
+            # Certificate expiry for the digest.
+            - apiGroups:
+                - "cert-manager.io"
+              resources:
+                - certificates
+                - certificaterequests
+                - issuers
+                - clusterissuers
+              verbs:
+                - "get"
+                - "list"
+                - "watch"
+            # kubectl top - capacity trends.
+            - apiGroups:
+                - "metrics.k8s.io"
+              resources:
+                - nodes
+                - pods
+              verbs:
+                - "get"
+                - "list"
         hermes-pod-delete:
           type: ClusterRole
           rules:

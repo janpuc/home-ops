@@ -445,6 +445,399 @@ data:
     SUMMARY_LLM_API_KEY={{ .LITELLM_MASTER_KEY }}
     API_SERVER_KEY={{ .API_SERVER_KEY }}
     GATEWAY_ALLOWED_USERS={{ .GATEWAY_ALLOWED_USERS }}
+  # Deliver a message into a named Matrix room from anywhere the agent runs -
+  # cron jobs, skills, scripts. Installed to /opt/data/.local/bin/matrix-post,
+  # which is already on PATH.
+  #
+  # Replaces the file-delivery-to-chat approach of shelling out to kubectl to
+  # scrape MATRIX_ACCESS_TOKEN from the hermes-matrix pod at runtime: the
+  # credentials now arrive as env from the hermes-matrix-access Secret.
+  #
+  # Rooms are addressed by alias (cluster, notify, alerts, digest, ...) which
+  # resolves to MATRIX_ROOM_<ALIAS>, so the private room IDs stay out of every
+  # caller and out of git.
+  #
+  # Deliberately contains no "0x24{...}" sequences: Flux postBuild substitution
+  # runs over this ConfigMap.
+  matrix-post.py: |-
+    """Post a message into a named Hermes Matrix room.
+
+    Usage:
+        matrix-post <room-alias> [text ...]      # text, or stdin if omitted
+        matrix-post digest --html < body.html    # send pre-rendered HTML
+        matrix-post notify --text "..."          # m.text instead of m.notice
+
+    Room alias resolves to the MATRIX_ROOM_<ALIAS> environment variable.
+    Exits non-zero with a readable message on any failure so a cron job that
+    cannot deliver fails loudly instead of silently succeeding.
+    """
+    import json
+    import os
+    import sys
+    import time
+    import urllib.error
+    import urllib.request
+
+    ALIASES = ("cluster", "assistant", "home", "notify",
+               "alerts", "digest", "inbox", "dm")
+
+
+    def die(msg, code=1):
+        sys.stderr.write("matrix-post: %s\n" % msg)
+        sys.exit(code)
+
+
+    def main():
+        args = [a for a in sys.argv[1:]]
+        if not args or args[0] in ("-h", "--help"):
+            die("usage: matrix-post <%s> [--html] [--text] [message]"
+                % "|".join(ALIASES), 0 if args else 2)
+
+        alias = args.pop(0).lower()
+        if alias not in ALIASES:
+            die("unknown room %r (expected one of: %s)" % (alias, ", ".join(ALIASES)), 2)
+
+        as_html = False
+        msgtype = "m.notice"
+        rest = []
+        for a in args:
+            if a == "--html":
+                as_html = True
+            elif a == "--text":
+                msgtype = "m.text"
+            elif a == "--notice":
+                msgtype = "m.notice"
+            else:
+                rest.append(a)
+
+        body = " ".join(rest) if rest else sys.stdin.read()
+        body = body.strip()
+        if not body:
+            die("refusing to send an empty message", 2)
+
+        hs = os.environ.get("MATRIX_HOMESERVER", "").rstrip("/")
+        tok = os.environ.get("MATRIX_ACCESS_TOKEN", "")
+        room = os.environ.get("MATRIX_ROOM_" + alias.upper(), "")
+        if not hs or not tok:
+            die("MATRIX_HOMESERVER / MATRIX_ACCESS_TOKEN not set in this environment")
+        if not room:
+            die("MATRIX_ROOM_%s is not set" % alias.upper())
+
+        content = {"msgtype": msgtype, "body": body}
+        if as_html:
+            # body doubles as the plain-text fallback for clients without HTML.
+            content["format"] = "org.matrix.custom.html"
+            content["formatted_body"] = body
+
+        txn = "hermes-%d" % int(time.time() * 1000)
+        url = "%s/_matrix/client/v3/rooms/%s/send/m.room.message/%s" % (hs, room, txn)
+        req = urllib.request.Request(
+            url, data=json.dumps(content).encode(), method="PUT",
+            headers={"Authorization": "Bearer " + tok,
+                     "Content-Type": "application/json"},
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=30) as r:
+                print(json.loads(r.read().decode()).get("event_id", ""))
+        except urllib.error.HTTPError as e:
+            # Never surface the token; the response body is safe to show.
+            die("HTTP %s posting to %s: %s" % (e.code, alias, e.read()[:300].decode("utf-8", "replace")))
+        except Exception as e:
+            die("%s posting to %s" % (type(e).__name__, alias))
+
+
+    main()
+
+  # Weekly homelab rollup, emitted as HTML on stdout and delivered by the
+  # weekly-digest-run wrapper. Deterministic on purpose: a factual rollup is
+  # cheaper and more reliable as a script than as an agent turn, and the
+  # #digest room persona handles follow-up questions about it.
+  #
+  # Every section degrades to a one-line note rather than raising, so a missing
+  # RBAC grant or an uninstalled CRD never costs the whole digest.
+  #
+  # Deliberately contains no "0x24{...}" sequences: Flux postBuild substitution
+  # runs over this ConfigMap.
+  weekly-digest.py: |-
+    """Emit the homelab weekly digest as HTML on stdout.
+
+    Deterministic and cheap on purpose: this is a factual rollup, so it runs as a
+    plain script rather than an agent turn. Pipe it into matrix-post:
+
+        weekly-digest | matrix-post digest --html
+
+    Every section degrades to a one-line note instead of raising, so a missing RBAC
+    grant or a CRD that is not installed never costs the whole digest.
+    """
+    import datetime
+    import os
+    import html
+    import json
+    import subprocess
+    import sys
+
+    KUBECTL = "kubectl"
+    NOW = datetime.datetime.now(datetime.timezone.utc)
+    OUT = []
+
+
+    def kc(args, timeout=60):
+        """Run kubectl and return parsed JSON, or None on any failure."""
+        try:
+            p = subprocess.run(
+                [KUBECTL] + args + ["-o", "json"],
+                capture_output=True, text=True, timeout=timeout,
+            )
+            if p.returncode != 0:
+                return None
+            return json.loads(p.stdout)
+        except Exception:
+            return None
+
+
+    def age_days(ts):
+        if not ts:
+            return None
+        try:
+            t = datetime.datetime.fromisoformat(ts.replace("Z", "+00:00"))
+            return (NOW - t).total_seconds() / 86400.0
+        except Exception:
+            return None
+
+
+    def h(s):
+        return html.escape(str(s))
+
+
+    def section(title, lines, empty="nothing to report"):
+        OUT.append("<b>%s</b><br/>" % h(title))
+        if not lines:
+            OUT.append("&nbsp;&nbsp;%s<br/><br/>" % h(empty))
+            return
+        for ln in lines:
+            OUT.append("&nbsp;&nbsp;%s<br/>" % ln)
+        OUT.append("<br/>")
+
+
+    def ready_cond(obj):
+        for c in (obj.get("status", {}) or {}).get("conditions", []) or []:
+            if c.get("type") == "Ready":
+                return c.get("status"), c.get("reason", ""), c.get("message", "")
+        return None, "", ""
+
+
+    # ── Flux ────────────────────────────────────────────────────────────────────
+    def flux():
+        bad = []
+        total = 0
+        for kind, res in (("Kustomization", "kustomizations"), ("HelmRelease", "helmreleases")):
+            d = kc(["get", res, "-A"])
+            if d is None:
+                bad.append("<i>%s: not readable</i>" % kind)
+                continue
+            for it in d.get("items", []):
+                total += 1
+                st, reason, _ = ready_cond(it)
+                if st != "True":
+                    bad.append("%s <code>%s/%s</code> — %s" % (
+                        kind, h(it["metadata"]["namespace"]),
+                        h(it["metadata"]["name"]), h(reason or st)))
+        section("Flux (%d objects)" % total, bad, "all reconciled")
+
+
+    # ── Storage ─────────────────────────────────────────────────────────────────
+    def storage():
+        d = kc(["get", "miroirvolumes", "-A"])
+        if d is None:
+            section("Storage", ["<i>miroirvolumes not readable</i>"])
+            return
+        phases = {}
+        problems = []
+        for it in d.get("items", []):
+            st = it.get("status", {}) or {}
+            ph = st.get("phase", "?")
+            phases[ph] = phases.get(ph, 0) + 1
+            rr = str(st.get("readyReplicas", ""))
+            if rr.startswith("0/"):
+                problems.append("<code>%s</code> has NO ready replica (%s)"
+                                % (h(it["metadata"]["name"][:26]), h(rr)))
+        lines = [", ".join("%s: %d" % (k, v) for k, v in sorted(phases.items()))]
+        lines += problems
+        section("Storage (%d volumes)" % sum(phases.values()), lines)
+
+
+    # ── Backups ─────────────────────────────────────────────────────────────────
+    def backups():
+        d = kc(["get", "snapshots.kopiur.home-operations.com", "-A"])
+        if d is None:
+            section("Backups", ["<i>kopiur snapshots not readable</i>"])
+            return
+        recent_ok = recent_fail = 0
+        for it in d.get("items", []):
+            a = age_days(it.get("metadata", {}).get("creationTimestamp"))
+            if a is None or a > 7:
+                continue
+            ph = str((it.get("status", {}) or {}).get("phase", ""))
+            if ph == "Failed":
+                recent_fail += 1
+            elif ph == "Succeeded":
+                recent_ok += 1
+        tot = recent_ok + recent_fail
+        rate = (100.0 * recent_ok / tot) if tot else 0.0
+        lines = ["last 7d: %d ok, %d failed (%.0f%% success)" % (recent_ok, recent_fail, rate)]
+
+        p = kc(["get", "snapshotpolicies.kopiur.home-operations.com", "-A"])
+        if p is not None:
+            stale = []
+            for it in p.get("items", []):
+                # Field is lastSuccessfulSnapshot, not lastSnapshotTime.
+                last = (it.get("status", {}) or {}).get("lastSuccessfulSnapshot")
+                a = age_days(last)
+                # Cadence is every 2h, so 24h without one is genuinely stale.
+                if a is None or a > 1.0:
+                    stale.append("<code>%s/%s</code> (%s)" % (
+                        h(it["metadata"]["namespace"]), h(it["metadata"]["name"]),
+                        "never" if a is None else "%.1fd ago" % a))
+            if stale:
+                lines.append("no snapshot in 24h: " + ", ".join(stale[:8]))
+        section("Backups", lines)
+
+
+    # ── Certificates ────────────────────────────────────────────────────────────
+    def certs():
+        d = kc(["get", "certificates.cert-manager.io", "-A"])
+        if d is None:
+            section("Certificates", ["<i>cert-manager certificates not readable</i>"])
+            return
+        # A fixed "expires within 30 days" window is wrong here: these are 7-day
+        # certificates, so it would fire every single week on a perfectly healthy
+        # cert. What actually matters is whether cert-manager is keeping up, so
+        # compare against the controller's own renewalTime and Ready condition.
+        problems = []
+        for it in d.get("items", []):
+            ns, name = it["metadata"]["namespace"], it["metadata"]["name"]
+            st = it.get("status", {}) or {}
+            ready, reason, _ = ready_cond(it)
+            if ready != "True":
+                problems.append("<code>%s/%s</code> not Ready — %s"
+                                % (h(ns), h(name), h(reason or ready)))
+                continue
+            overdue = age_days(st.get("renewalTime"))
+            if overdue is not None and overdue > 0:
+                problems.append("<code>%s/%s</code> renewal overdue by %.1fd"
+                                % (h(ns), h(name), overdue))
+                continue
+            left = age_days(st.get("notAfter"))
+            if left is not None and -left < 2:
+                problems.append("<code>%s/%s</code> expires in %.1fd and has not renewed"
+                                % (h(ns), h(name), -left))
+        section("Certificates (%d)" % len(d.get("items", [])), problems,
+                "all Ready and renewing on schedule")
+
+
+    # ── Capacity ────────────────────────────────────────────────────────────────
+    def capacity():
+        nodes = kc(["get", "nodes"])
+        pods = kc(["get", "pods", "-A", "--field-selector", "status.phase=Running"])
+        if nodes is None or pods is None:
+            section("Capacity", ["<i>nodes/pods not readable</i>"])
+            return
+
+        def cpu(v):
+            if not v:
+                return 0.0
+            v = str(v)
+            return float(v[:-1]) / 1000.0 if v.endswith("m") else float(v)
+
+        def mem(v):
+            if not v:
+                return 0.0
+            v = str(v)
+            for suf, mult in (("Ki", 1 / 1024.0), ("Mi", 1.0), ("Gi", 1024.0)):
+                if v.endswith(suf):
+                    return float(v[:-2]) * mult
+            try:
+                return float(v) / (1024 * 1024)
+            except Exception:
+                return 0.0
+
+        req_c = req_m = 0.0
+        for p in pods.get("items", []):
+            for c in p["spec"].get("containers", []):
+                r = (c.get("resources", {}) or {}).get("requests", {}) or {}
+                req_c += cpu(r.get("cpu"))
+                req_m += mem(r.get("memory"))
+        alloc_c = alloc_m = 0.0
+        for n in nodes.get("items", []):
+            a = n["status"].get("allocatable", {})
+            alloc_c += cpu(a.get("cpu"))
+            alloc_m += mem(a.get("memory"))
+
+        lines = [
+            "CPU requests %.1f / %.1f cores (%.0f%%)" % (
+                req_c, alloc_c, 100 * req_c / alloc_c if alloc_c else 0),
+            "Memory requests %.1f / %.1f GiB (%.0f%%)" % (
+                req_m / 1024, alloc_m / 1024, 100 * req_m / alloc_m if alloc_m else 0),
+            "%d running pods across %d nodes" % (
+                len(pods.get("items", [])), len(nodes.get("items", []))),
+        ]
+        section("Capacity", lines)
+
+
+    # ── Renovate ────────────────────────────────────────────────────────────────
+    def renovate():
+        # gh reads GH_TOKEN/GITHUB_TOKEN; the pod only exposes HOMELAB_GH_TOKEN, so
+        # map it across rather than requiring `gh auth login` state on the PVC.
+        env = dict(os.environ)
+        if not env.get("GH_TOKEN") and env.get("HOMELAB_GH_TOKEN"):
+            env["GH_TOKEN"] = env["HOMELAB_GH_TOKEN"]
+        try:
+            p = subprocess.run(
+                ["gh", "pr", "list", "--repo", "janpuc/home-ops",
+                 "--state", "open", "--limit", "50",
+                 "--json", "number,title,isDraft,createdAt"],
+                capture_output=True, text=True, timeout=60, env=env,
+            )
+            if p.returncode != 0:
+                section("Renovate / PRs", ["<i>gh pr list failed</i>"])
+                return
+            prs = json.loads(p.stdout or "[]")
+        except Exception:
+            section("Renovate / PRs", ["<i>gh unavailable</i>"])
+            return
+
+        if not prs:
+            section("Renovate / PRs", [], "no open PRs")
+            return
+        lines = ["%d open" % len(prs)]
+        for pr in sorted(prs, key=lambda x: x.get("createdAt") or "")[:10]:
+            a = age_days(pr.get("createdAt"))
+            lines.append("#%s %s%s" % (
+                pr["number"], h(pr["title"][:66]),
+                " <i>(%.0fd old)</i>" % a if a and a > 7 else ""))
+        section("Renovate / PRs", lines)
+
+
+    OUT.append("<b>Homelab weekly digest</b> — %s<br/><br/>"
+               % NOW.strftime("%Y-%m-%d %H:%M UTC"))
+    for fn in (flux, storage, backups, certs, capacity, renovate):
+        try:
+            fn()
+        except Exception as e:
+            OUT.append("<b>%s</b><br/>&nbsp;&nbsp;<i>section failed: %s</i><br/><br/>"
+                       % (h(fn.__name__), h(type(e).__name__)))
+
+    sys.stdout.write("".join(OUT))
+
+  # Cron entrypoint. Prints nothing on success so the job stays silent unless
+  # delivery actually fails — the #notify room is for output, #digest gets the
+  # rollup itself, and a healthy run should be invisible.
+  weekly-digest-run.sh: |-
+    #!/bin/sh
+    set -eu
+    export PATH=/opt/hermes/.venv/bin:/opt/data/.local/bin:/opt/data/.local/homebrew/bin:/usr/local/bin:/usr/bin:/bin
+    weekly-digest | matrix-post digest --html >/dev/null
+
   # pre_tool_call shell hook. Enforces the standing home-ops convention -
   # pull first, never auto-commit, edit only when asked - as a hard gate
   # instead of relying on the agent remembering it. Copied to
