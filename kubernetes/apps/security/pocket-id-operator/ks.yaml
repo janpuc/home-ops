@@ -37,6 +37,7 @@ spec:
     substitute:
       APP: pocket-id
       KOPIUR_CAPACITY: 1Gi
+      KOPIUR_IGNORE_DIR_ERRORS: "true"
   prune: true
   sourceRef:
     kind: GitRepository
