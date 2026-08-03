@@ -8,7 +8,7 @@ spec:
   alias: prometheus
   workload:
     # renovate: datasource=docker depName=ghcr.io/pab1it0/prometheus-mcp-server
-    image: ghcr.io/pab1it0/prometheus-mcp-server:1.6.1
+    image: ghcr.io/pab1it0/prometheus-mcp-server:1.6.2
     port: 8080
     env:
       - name: PROMETHEUS_URL
