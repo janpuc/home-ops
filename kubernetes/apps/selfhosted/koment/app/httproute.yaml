@@ -11,6 +11,22 @@ spec:
     - name: envoy-internal
       namespace: network
   rules:
-    - backendRefs:
+    - matches:
+        - headers:
+            - name: authorization
+              type: RegularExpression
+              value: "^Bearer\\s.+$"
+      backendRefs:
+        - name: koment
+          port: 8080
+    - filters:
+        - type: RequestHeaderModifier
+          requestHeaderModifier:
+            add:
+              - name: X-Forwarded-User
+                value: anonymous
+              - name: X-Forwarded-Email
+                value: anonymous@janpuc.com
+      backendRefs:
         - name: koment
           port: 8080
