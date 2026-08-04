@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6QQN4RF6SCYCMP09HABG2Z
+file: .lefthook.toml
+kind: why
+body: |-
+  Verbatim from home-operations/.github/lefthook.common.toml. Kept
+  byte-identical so any future re-sync from upstream is a no-op for this
+  block. `stage_fixed = true` is what makes the sequential ordering
+  self-healing — gofmt's rewrite lands in the index before `koment-check`
+  reads the worktree, so anchors see the formatted line numbers.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: |-
+    [pre-commit.commands.format-go]
+    glob = ["*.go"]
+    run = "gofmt -s -w {staged_files}"
+    stage_fixed = true
+  before: |
+    parallel = false
+    skip = ["merge", "rebase"]
+  after: |2-
+
+    [pre-commit.commands.format-rust]
+    glob = ["*.rs"]
+  last_seen_line: 5
+git:
+  commit: 1fdb7a6db043a9dc382ed8623ba9de62d8e8dc0f
+  path: .lefthook.toml
+  line: 5
+author:
+  name: claude-code
+  kind: agent
+  source: session

@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6QPSPJQNA1YKY5YAFA77NW
+file: .lefthook.toml
+kind: invariant
+body: |-
+  Pre-commit commands run sequentially so every `format-*` step finishes (and
+  `stage_fixed = true` amends the index) before `koment-check` and
+  `koment-agents-check` read source. The previous upstream-imported
+  lefthook.common.toml had `parallel = true`, which raced formatters against
+  the koment checks — gofmt would rewrite lines while `koment check` was
+  already resolving anchors, leaving stale state. Sequential execution is the
+  contract the comment-gated formatter + comment-gated checker both depend on.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: |-
+    [pre-commit]
+    parallel = false
+  after: |-
+    skip = ["merge", "rebase"]
+
+    [pre-commit.commands.format-go]
+  last_seen_line: 1
+git:
+  commit: 1fdb7a6db043a9dc382ed8623ba9de62d8e8dc0f
+  path: .lefthook.toml
+  line: 1
+author:
+  name: claude-code
+  kind: agent
+  source: session
