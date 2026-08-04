@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "koment": {
+      "args": ["mcp", "--write"],
+      "command": "koment"
+    }
+  }
+}
