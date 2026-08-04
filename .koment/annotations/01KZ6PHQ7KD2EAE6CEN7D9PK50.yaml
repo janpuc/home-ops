@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6PHQ7KD2EAE6CEN7D9PK50
+file: kubernetes/apps/ai/hermes/app/configmap.yaml
+kind: why
+body: |-
+  The one MCP server here that does not go through LiteLLM, because koment is
+  self-hosted in this cluster and LiteLLM would add a proxy hop with nothing
+  to contribute. KOMENT_API_KEY is a scoped bearer whose SHA-256 hash lives in
+  koment's credentials.yaml, not a LiteLLM key.
+
+  Over this transport hermes gets koment_get, koment_search,
+  koment_repositories and — because the credential carries write scope —
+  koment_add, which opens a review pull request rather than committing.
+  koment_reanchor, koment_convert_comment and koment_acknowledge_comment are
+  stdio-only and deliberately out of reach, which suits this repo: convert has
+  no YAML detector and acknowledge is forbidden by AGENTS.md.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: |2-
+          koment:
+            url: http://koment.selfhosted.svc.cluster.local:8080/mcp
+  before: |2-
+            url: http://litellm.ai:4000/mcp/context7/
+            headers:
+              Authorization: "Bearer $${LITELLM_API_KEY}"
+  after: |2-
+            headers:
+              Authorization: "Bearer $${KOMENT_API_KEY}"
+        web:
+  last_seen_line: 374
+git:
+  commit: 1090aed12e7e7b23e5967dd2d49c714d1567ba91
+  path: kubernetes/apps/ai/hermes/app/configmap.yaml
+  line: 374
+author:
+  name: claude-code
+  kind: agent
+  source: session

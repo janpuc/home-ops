@@ -371,6 +371,10 @@ data:
         url: http://litellm.ai:4000/mcp/context7/
         headers:
           Authorization: "Bearer $${LITELLM_API_KEY}"
+      koment:
+        url: http://koment.selfhosted.svc.cluster.local:8080/mcp
+        headers:
+          Authorization: "Bearer $${KOMENT_API_KEY}"
     web:
       search_backend: searxng
   env: |-
@@ -380,6 +384,7 @@ data:
     SUMMARY_LLM_API_KEY={{ .LITELLM_MASTER_KEY }}
     API_SERVER_KEY={{ .API_SERVER_KEY }}
     GATEWAY_ALLOWED_USERS={{ .GATEWAY_ALLOWED_USERS }}
+    KOMENT_API_KEY={{ .KOMENT_HERMES_TOKEN }}
   matrix-post.py: |-
     """Post a message into a named Hermes Matrix room.
 

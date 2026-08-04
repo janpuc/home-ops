@@ -82,6 +82,18 @@ graph TD
 
 ---
 
+## <img src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f4ac/512.gif" alt="💬" width="20" height="20"> Annotations
+
+This repository carries no explanatory comments of its own. The reasoning behind a non-obvious setting — why Envoy runs `externalTrafficPolicy: Cluster`, why a reranker's batch size is pinned to 1024, why a model alias deliberately disagrees with its resource name — lives in [koment](https://github.com/janpuc/koment) annotations under [.koment](./.koment/) rather than beside the code. The only comments left in the tree are machine-read directives and lines copied verbatim from upstream.
+
+The point is that annotations are checked and comments are not. Each one is anchored to a verbatim excerpt of the code it describes, so `koment check` fails the moment that code changes underneath it — no silently stale rationale.
+
+📖 **[Browse the annotations](https://janpuc.github.io/home-ops/)** — a searchable snapshot of `main`, rendered by [koment-pages.yaml](./.github/workflows/koment-pages.yaml) on every push.
+
+Locally, `koment ui` serves the same view against the working tree, `koment check` runs on every commit via lefthook, and agents read annotations over MCP before touching a file. [AGENTS.md](./AGENTS.md) documents the rules that apply here.
+
+---
+
 ## <img src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f30e/512.gif" alt="🌎" width="20" height="20"> DNS
 
 In my cluster there are two instances of [ExternalDNS](https://github.com/kubernetes-sigs/external-dns) running. One for syncing private DNS records to my `UDR` using [ExternalDNS webhook provider for UniFi](https://github.com/kashalls/external-dns-unifi-webhook), while another instance syncs public DNS to `Cloudflare`. This setup is managed by creating ingresses with two specific classes: `internal` for private DNS and `external` for public DNS. The `external-dns` instances then syncs the DNS records to their respective platforms accordingly.

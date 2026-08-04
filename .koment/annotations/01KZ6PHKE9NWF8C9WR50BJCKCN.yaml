@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6PHKE9NWF8C9WR50BJCKCN
+file: kubernetes/apps/selfhosted/koment/app/httproute.yaml
+kind: gotcha
+body: |-
+  A browser hitting this host will be refused until something in front asserts
+  an authenticated identity. koment serve requires auth on every source,
+  rationale, UI and MCP route on a non-loopback listener; only /livez and
+  /readyz are public.
+
+  It accepts a human identity solely from X-Forwarded-User / X-Forwarded-Email
+  / X-Forwarded-Preferred-Username, and only when the request comes from a
+  CIDR in auth.trustedProxies (set to the pod network so Envoy qualifies).
+  This cluster has no SecurityPolicy or OIDC filter on Envoy Gateway today, so
+  nothing sets those headers and the route resolves but denies.
+
+  Two ways to finish it: attach an Envoy Gateway SecurityPolicy with OIDC
+  against pocket-id, or keep using it as a bearer-token endpoint — which is
+  all hermes needs. The public read path is the GitHub Pages snapshot, which
+  needs none of this.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: |2-
+      hostnames:
+        - koment.janpuc.com
+  before: |-
+    metadata:
+      name: koment
+    spec:
+  after: |2-
+      parentRefs:
+        - name: envoy-internal
+          namespace: network
+  last_seen_line: 8
+author:
+  name: claude-code
+  kind: agent
+  source: session

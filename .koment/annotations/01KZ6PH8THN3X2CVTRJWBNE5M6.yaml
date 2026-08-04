@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6PH8THN3X2CVTRJWBNE5M6
+file: kubernetes/apps/selfhosted/koment/app/helmrelease.yaml
+kind: why
+body: |-
+  Without this the chart names everything `koment-koment` (release name +
+  chart name), and hermes' mcp_servers URL in
+  kubernetes/apps/ai/hermes/app/configmap.yaml points at
+  http://koment.selfhosted.svc.cluster.local:8080/mcp. Removing the override
+  renames the Service and silently breaks that lookup — hermes just loses
+  the koment toolset with no obvious error.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: "    fullnameOverride: koment"
+  before: |2-
+        remediation:
+          retries: 3
+      values:
+  after: |2-
+        repositories:
+          - id: home-ops
+            name: home-ops
+  last_seen_line: 20
+author:
+  name: claude-code
+  kind: agent
+  source: session

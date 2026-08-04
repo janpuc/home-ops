@@ -1,0 +1,42 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6PHE949W21CXJ8MEDWMA7T
+file: kubernetes/apps/selfhosted/koment/app/helmrelease.yaml
+kind: why
+body: |-
+  This is koment's served tier, not `koment mcp`. It was chosen because every
+  MCP server this cluster consumes is HTTP, and `koment mcp --write` is valid
+  only over stdio — HTTP transports of that command are permanently
+  read-only. `koment serve` is the only mode that offers writes over HTTP.
+
+  It serves immutable commit snapshots pulled from the GitHub remote rather
+  than a local checkout, so what hermes reads is what is on `main`, not
+  anyone's working tree. That is the right semantics for reviewing a PR.
+
+  Writes never touch the replica or push the default branch: a scoped writer's
+  koment_add opens a review pull request and returns its URL. That is what
+  makes handing hermes a write-scoped credential safe.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: |2-
+        repositories:
+          - id: home-ops
+            name: home-ops
+            provider: github
+            remote: janpuc/home-ops
+            defaultBranch: main
+            default: true
+  before: |2-
+          retries: 3
+      values:
+        fullnameOverride: koment
+  after: |2-
+        syncInterval: 5m
+        github:
+          existingSecret: koment-secret
+  last_seen_line: 21
+author:
+  name: claude-code
+  kind: agent
+  source: session

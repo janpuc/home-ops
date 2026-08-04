@@ -12,6 +12,7 @@ resources:
   - ./namespace.yaml
   - ./atuin/ks.yaml
   - ./flaresolverr/ks.yaml
+  - ./koment/ks.yaml
   - ./mealie/ks.yaml
   - ./medibrowserr/ks.yaml
   - ./searxng/ks.yaml
