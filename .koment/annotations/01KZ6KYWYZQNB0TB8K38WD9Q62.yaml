@@ -1,0 +1,47 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6KYWYZQNB0TB8K38WD9Q62
+file: kubernetes/apps/ai/llmkube/models/bge-reranker-v2-m3.yaml
+kind: invariant
+body: |-
+  These four are pinned between a hard upper and a hard lower bound; do not
+  copy them from bge-embedding-m3, whose compute buffer is far smaller at the
+  same batch because it is an embedding model rather than a cross-encoder.
+
+  Upper bound — the 2 GiB GTT aperture (amdgpu.gttsize=2048). At uBatchSize
+  4096 llama.cpp forces n_batch = n_ubatch = 4096, and the graph alone took
+  GTT to 1.82/2.00 GiB; any batch past roughly 700 tokens then killed the
+  device with `vk::Queue::submit: ErrorDeviceLost`.
+
+  Lower bound — the physical batch must hold a WHOLE (query, doc) pair or
+  llama.cpp rejects it with "input (N tokens) is too large to process". memini
+  caps a doc at MEMINI_RERANK_MAX_DOC_CHARS=2048, measured at 619 tokens for
+  English prose, so 1024 covers it with room for denser text.
+
+  So: uBatchSize >= the largest pair you expect, and n_ctx_slot
+  (contextSize/parallelSlots) >= uBatchSize.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: |2-
+      contextSize: 4096
+      parallelSlots: 2
+      batchSize: 1024
+      uBatchSize: 1024
+  before: |2-
+      runtime: llamacpp
+      image: ghcr.io/ggml-org/llama.cpp:server-vulkan-b10200@sha256:5b69b5a99886b6bdc24c281b9a041c21e0e9d5502018c55098d4b09cac6ee5a4
+      replicas: 1
+  after: |2-
+      resources:
+        cpu: 100m
+        memory: 2Gi
+  last_seen_line: 31
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/llmkube/models/bge-reranker-v2-m3.yaml
+  line: 31
+author:
+  name: claude-code
+  kind: agent
+  source: session

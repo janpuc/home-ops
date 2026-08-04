@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6MJ713J2BDV5XHK95QR7FK
+file: kubernetes/apps/ai/hermes/app/configmap.yaml
+kind: why
+body: |-
+  Enforces the standing home-ops convention — pull first, never auto-commit,
+  edit only when asked — as a hard gate rather than relying on the agent
+  remembering it. The init container copies it to /opt/data/hook-scripts/ and
+  config.yaml registers it as the pre_tool_call hook.
+
+  Like the other embedded scripts here it deliberately contains no "${...}"
+  sequences, because Flux postBuild substitution runs over this ConfigMap.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: |2-
+      home-ops-guard.py: |-
+        """Block git write operations inside a home-ops checkout.
+  before: |2
+        export PATH=/opt/hermes/.venv/bin:/opt/data/.local/bin:/opt/data/.local/homebrew/bin:/usr/local/bin:/usr/bin:/bin
+        weekly-digest | matrix-post digest --html >/dev/null
+  after: |2-
+
+        Wire protocol (agent/shell_hooks.py): a JSON payload arrives on stdin;
+        printing {"decision": "block", "reason": ...} refuses the call. Any other
+  last_seen_line: 733
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/hermes/app/configmap.yaml
+  line: 733
+author:
+  name: claude-code
+  kind: agent
+  source: session

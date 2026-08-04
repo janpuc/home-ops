@@ -1,0 +1,41 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6M1FA18P9JBVV0V4V0K39R
+file: kubernetes/apps/ai/memini/app/helmrelease.yaml
+kind: anti-pattern
+body: |-
+  Disabled deliberately. Do not re-enable without re-measuring.
+
+  0.1 was tried on 2026-07-30 to make recall return empty on nonsense queries,
+  and it did exactly that. But bge-reranker emits unbounded logits and scores
+  generically-phrased questions about the user NEGATIVE: "user profile" -0.35,
+  "who is the user" -4.10, against "tell me about Janek" +0.34. Any positive
+  floor therefore blindfolds precisely the personal/jan recalls that matter
+  most — Open WebUI answered "I don't have any personal memories about this
+  user" while 39 of them sat in the store.
+
+  A negative floor is not an escape hatch: config.validate() refuses
+  MEMINI_RERANK_MIN_SCORE < 0 at boot, so this knob is on/off only. Disabling
+  it costs nothing in ordering, which is the reranker's real value; relevance
+  is still gated by inject_recall_min_score on the injection path.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: '              MEMINI_RERANK_MIN_SCORE: "0"'
+  before: |2-
+                  MEMINI_RERANK_MAX_DOC_CHARS: "1024"
+                  MEMINI_RERANK_MAX_BATCH_CHARS: "48000"
+                  MEMINI_RERANK_TIMEOUT: "10s"
+  after: |2-
+                resources:
+                  requests:
+                    cpu: 25m
+  last_seen_line: 64
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/memini/app/helmrelease.yaml
+  line: 64
+author:
+  name: claude-code
+  kind: agent
+  source: session

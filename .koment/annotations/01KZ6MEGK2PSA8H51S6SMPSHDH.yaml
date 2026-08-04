@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6MEGK2PSA8H51S6SMPSHDH
+file: kubernetes/apps/ai/hermes/app/configmap.yaml
+kind: why
+body: |-
+  Home Assistant was the biggest offender by bytes: 78 tools at roughly 72.2k
+  tokens, driven by the config_set_* and manage_* schemas — ha_manage_addon
+  alone is 15.8 KB. The include list below keeps the read/query surface plus
+  the service-call and todo tools that the ha-car-status and
+  ev-charge-reminder skills need, bringing it to about 14.4k tokens.
+
+  Be specific when adding here: one manage_* tool can cost more than the
+  entire kept set.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: |2-
+          ha:
+            url: http://litellm.ai:4000/mcp/ha/
+  before: |2-
+                - kubectl-get_current_context
+                - kubectl-get_server_config_status
+                - kubectl-compare_namespaces
+  after: |2-
+            headers:
+              Authorization: "Bearer $${LITELLM_API_KEY}"
+            tools:
+  last_seen_line: 337
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/hermes/app/configmap.yaml
+  line: 337
+author:
+  name: claude-code
+  kind: agent
+  source: session

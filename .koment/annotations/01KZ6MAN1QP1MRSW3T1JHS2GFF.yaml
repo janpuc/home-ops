@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6MAN1QP1MRSW3T1JHS2GFF
+file: kubernetes/apps/ai/hermes/app/externalsecret.yaml
+kind: why
+body: |-
+  Matrix posting credentials for the MAIN agent, which previously had none of
+  its own. Anything the agent produced outside a live chat turn — cron
+  output, a generated file — could only reach a room through the
+  file-delivery-to-chat skill, which scraped MATRIX_ACCESS_TOKEN out of the
+  running hermes-matrix pod with kubectl at runtime. That worked, but it was
+  fragile and coupled a skill to a pod name.
+
+  Giving the agent its own read of the same credentials is what lets
+  matrix-post deliver to a named room directly, which the digest cron and any
+  future alert triage depend on.
+
+  It is a separate Secret rather than more keys on hermes-config specifically
+  so it can be envFrom'd whole: the room IDs are private and belong in env,
+  never in this manifest.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: |-
+    metadata:
+      name: hermes-matrix-access
+  before: |-
+    ---
+    apiVersion: external-secrets.io/v1
+    kind: ExternalSecret
+  after: |-
+    spec:
+      refreshInterval: 5m
+      secretStoreRef:
+  last_seen_line: 39
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/hermes/app/externalsecret.yaml
+  line: 39
+author:
+  name: claude-code
+  kind: agent
+  source: session

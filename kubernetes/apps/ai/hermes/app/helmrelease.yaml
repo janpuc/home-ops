@@ -37,8 +37,6 @@ spec:
               - -c
               - |
                 set -e
-                # hermes-agent >= v2026.7.x ships root-only playwright .deps files;
-                # tolerate those but still fail on any other copy error.
                 cp -r /opt/hermes/. /agent-src/ 2>/tmp/cp.err || true
                 if grep -v 'Permission denied' /tmp/cp.err; then exit 1; fi
                 test -e /agent-src/.venv
@@ -61,22 +59,12 @@ spec:
                 mkdir -p /opt/data
                 cp /run/config/config.yaml /opt/data/config.yaml
                 chmod 600 /opt/data/config.yaml
-                # pre_tool_call shell hook. config.yaml invokes it as
-                # "/usr/bin/python3 .../home-ops-guard.py" (shlex.split,
-                # shell=False), so no exec bit is required - but it must be
-                # readable by the agent's uid.
                 mkdir -p /opt/data/hook-scripts
                 cp /run/config/home-ops-guard.py /opt/data/hook-scripts/home-ops-guard.py
                 chmod 644 /opt/data/hook-scripts/home-ops-guard.py
-                # matrix-post: deliver into a named Matrix room from cron jobs
-                # and skills. /opt/data/.local/bin is already on PATH; this init
-                # container runs before install-tools, so create it first.
                 mkdir -p /opt/data/.local/bin
                 cp /run/config/matrix-post.py /opt/data/.local/bin/matrix-post
                 chmod 755 /opt/data/.local/bin/matrix-post
-                # Weekly rollup for the #digest room. The generator goes on
-                # PATH; the cron wrapper must live under HERMES_HOME/scripts,
-                # which is the only location `hermes cron --script` accepts.
                 cp /run/config/weekly-digest.py /opt/data/.local/bin/weekly-digest
                 chmod 755 /opt/data/.local/bin/weekly-digest
                 mkdir -p /opt/data/scripts
@@ -133,15 +121,6 @@ spec:
                   rm -rf memini-src
                 fi
 
-                # --- Language servers + linters for `hermes lsp` ------------
-                # `hermes lsp status` warned: "bash-language-server is installed
-                # but shellcheck is missing - diagnostics will be empty", and
-                # only pyright was registered. Everything lands under
-                # /opt/data/.local/bin, which is already on PATH.
-
-                # ShellCheck itself - static binary, no runtime deps.
-                # (Comment deliberately not written as "shellcheck: ..." - that
-                # form parses as a lint directive and errors out SC1073.)
                 if [ ! -f /opt/data/.local/bin/shellcheck ]; then
                   cd /tmp
                   curl -fsSL https://github.com/koalaman/shellcheck/releases/download/v0.10.0/shellcheck-v0.10.0.linux.x86_64.tar.xz -o sc.tar.xz
@@ -150,22 +129,16 @@ spec:
                   rm -rf sc.tar.xz shellcheck-v0.10.0
                 fi
 
-                # Node-based servers. --prefix keeps them out of the image's
-                # read-only /usr/local and inside the PVC.
                 if [ ! -f /opt/data/.local/bin/typescript-language-server ]; then
                   npm install -g --prefix /opt/data/.local \
                     typescript@5.7.2 typescript-language-server@4.3.3
                 fi
 
-                # yaml-language-server: this repo is almost entirely YAML, and
-                # it validates against the # yaml-language-server: $schema=
-                # comments already at the top of every manifest here.
                 if [ ! -f /opt/data/.local/bin/yaml-language-server ]; then
                   npm install -g --prefix /opt/data/.local \
                     yaml-language-server@1.15.0
                 fi
 
-                # gopls. GOBIN (not GOPATH/bin) so it lands on PATH directly.
                 if [ ! -f /opt/data/.local/bin/gopls ]; then
                   GOBIN=/opt/data/.local/bin \
                   GOPATH=/opt/data/go \
@@ -173,24 +146,16 @@ spec:
                   /opt/data/.local/go/bin/go install golang.org/x/tools/gopls@v0.17.1
                 fi
 
-                # --- Workspace bootstrap ------------------------------------
-                # Kanban board, project and skill bundles. Declared here rather
-                # than created by hand in the pod so a rebuilt PVC comes back
-                # identical. HERMES_HOME must be set explicitly: this init
-                # container does not inherit the app container's env.
                 export HOME=/opt/data
                 export HERMES_HOME=/opt/data
                 HERMES=/opt/hermes/.venv/bin/hermes
 
-                # Documented idempotent.
                 $HERMES kanban init >/dev/null 2>&1 || true
 
-                # Board slugs are immutable, so guard on the slug.
                 if ! $HERMES kanban boards list 2>/dev/null | grep -qw home-ops; then
                   $HERMES kanban boards create home-ops --name "home-ops" || true
                 fi
 
-                # Project = named multi-folder workspace, bound to that board.
                 if ! $HERMES project list 2>/dev/null | grep -qw home-ops; then
                   $HERMES project create "home-ops" \
                     /opt/data/workspace/home-ops \
@@ -200,8 +165,6 @@ spec:
                     --description "Flux-managed homelab cluster. Primary checkout plus the fork-sync clone." || true
                 fi
 
-                # Bundles become /slash commands. --force keeps this block the
-                # single source of truth rather than whatever is on the PVC.
                 $HERMES bundles create briefing --force \
                   -s morning-briefing -s weather-forecast -s news-curated \
                   -s file-delivery-to-chat \
@@ -213,10 +176,6 @@ spec:
                   -s flux-operator-stack-debugging -s hermes-cron-debugging \
                   -d "Homelab cluster debugging: resource pressure, Flux, MCP, cron" || true
 
-                # Weekly digest into the #digest Matrix room, Monday 08:00.
-                # --no-agent means no LLM runs at all: the script IS the job.
-                # It posts to Matrix itself and prints nothing, so a healthy
-                # run is silent and costs nothing. `schedule` is positional.
                 if ! $HERMES cron list 2>/dev/null | grep -q "weekly-digest"; then
                   $HERMES cron create "0 8 * * 1" \
                     --name weekly-digest \
@@ -263,16 +222,7 @@ spec:
                     name: hermes-config
                     key: LITELLM_API_KEY
               MEMINI_BASE_URL: http://memini.ai.svc.cluster.local:8080
-              # Hermes writes at the ROOT of the namespace tree (renamed from the
-              # flat "hermes" on 2026-07-30). It is a general assistant, not a
-              # per-project agent, so its durable facts belong where every project
-              # below can inherit them. Its session churn stays put regardless:
-              # the ancestor cascade reads durable tiers ONLY, so working/episodic
-              # writes here never leak into homelab/* reads.
               MEMINI_NAMESPACE: homelab
-              # Personal namespace, merged read-only into every recall. Required
-              # for the morning brief: Janek's profile, voice preferences and
-              # news framing live here, not in homelab.
               MEMINI_HOME: personal/jan
               MEMINI_API_KEY:
                 valueFrom:
@@ -302,9 +252,6 @@ spec:
             envFrom:
               - secretRef:
                   name: "{{ .Release.Name }}-oidc-credentials"
-              # MATRIX_HOMESERVER / MATRIX_ACCESS_TOKEN / MATRIX_ROOM_* — read
-              # whole so the private room IDs stay out of this manifest. Used by
-              # matrix-post.
               - secretRef:
                   name: hermes-matrix-access
             resources:
@@ -556,9 +503,6 @@ spec:
                 - "get"
                 - "list"
                 - "watch"
-            # Storage and backup state. Without these the agent is blind to the
-            # exact layer that caused the 2026-07-31 snapshot-freeze incident -
-            # it could not have triaged the alert storm even if asked. Read-only.
             - apiGroups:
                 - "miroir.home-operations.com"
               resources:
@@ -584,7 +528,6 @@ spec:
                 - "get"
                 - "list"
                 - "watch"
-            # Certificate expiry for the digest.
             - apiGroups:
                 - "cert-manager.io"
               resources:
@@ -596,7 +539,6 @@ spec:
                 - "get"
                 - "list"
                 - "watch"
-            # kubectl top - capacity trends.
             - apiGroups:
                 - "metrics.k8s.io"
               resources:

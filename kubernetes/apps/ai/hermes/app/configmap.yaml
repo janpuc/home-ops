@@ -135,57 +135,35 @@ data:
     approvals:
       mode: smart
       timeout: 60
-      # cron_mode is binary: "deny" blocks every approval-gated command in a
-      # cron session, "approve" auto-approves ALL of them. approvals.mode: smart
-      # does NOT apply to cron - approval.py::_get_cron_approval_mode only ever
-      # returns deny or approve. Switched to approve so scheduled jobs can act
-      # (remediate, commit, restart) instead of only reading.
       cron_mode: approve
-      # The guardrail that makes the above safe. These fnmatch globs are matched
-      # against terminal commands BEFORE the approve/--yolo/mode:off bypass, so
-      # they hold even under cron_mode: approve. Case-insensitive.
       deny:
-        # Cluster-destroying Talos operations
         - "*talosctl*reset*"
         - "*talosctl*wipe*"
         - "*talosctl*upgrade*"
-        # Irreversible git history rewrites / working-tree destruction
         - "git push*--force*"
         - "git push*-f *"
         - "git reset --hard*"
         - "git clean*-*f*"
         - "git filter-branch*"
-        # Flux/Helm teardown - prune is fine, deleting the controllers is not
         - "*flux uninstall*"
         - "*helm uninstall*"
         - "*helm delete*"
-        # Blanket kubectl deletes
         - "*kubectl delete*--all*"
         - "*kubectl delete ns*"
         - "*kubectl delete namespace*"
         - "*kubectl delete pvc*"
         - "*kubectl delete pv *"
-        # Storage / filesystem
         - "*mkfs*"
         - "*rm -rf /*"
         - "*dd if=*of=/dev/*"
         - "*wipefs*"
-        # Piping the internet into a shell
         - "*curl*|*sh*"
         - "*wget*|*sh*"
-    # Shell hooks (agent/shell_hooks.py). A pre_tool_call hook may return
-    # {"decision": "block", "reason": "..."} on stdout to refuse a tool call.
-    # Commands run via shlex.split with shell=False, so the interpreter is
-    # named explicitly rather than relying on a shebang + exec bit.
     hooks:
       pre_tool_call:
         - command: /usr/bin/python3 /opt/data/hook-scripts/home-ops-guard.py
           matcher: terminal
           timeout: 10
-    # Required: registration prompts for consent on first use of each
-    # (event, command) pair and writes ~/.hermes/shell-hooks-allowlist.json.
-    # The gateway and cron have no TTY, so without this the hook silently
-    # never registers.
     hooks_auto_accept: true
     security:
       redact_secrets: true
@@ -210,11 +188,6 @@ data:
     moa:
       default_preset: council
       presets:
-        # Four distinct pretraining lineages (Moonshot / Zhipu / DeepSeek /
-        # Qwen) so the members fail differently, all served by opencode-go.
-        # The aggregator is deliberately a fifth family on a *different*
-        # provider, so aggregation survives an opencode-go outage and is not
-        # biased toward any one reference.
         council:
           enabled: true
           reference_models:
@@ -231,20 +204,9 @@ data:
             model: minimax/MiniMax-M3
           reference_temperature: 0.6
           aggregator_temperature: 0.4
-          # Advisors run ONCE per user turn, then MiniMax-M3 works the task
-          # alone. The default (per_iteration) re-polls all four advisors after
-          # every tool result, so a 25-iteration kubectl/terminal task would
-          # cost 100 advisor calls instead of 4.
           fanout: user_turn
-          # Advisor generation dominates MoA turn latency (~0.88 correlation
-          # with output tokens) and the aggregator only needs the gist of each
-          # judgement, not a full answer.
           reference_max_tokens: 600
-          # NOTE: as of v2026.7.7 the preset's max_tokens does NOT cap the
-          # aggregator - moa_loop passes the caller's value straight through so
-          # the acting model uses its real maximum. Kept for forward compat.
           max_tokens: 16384
-        # Three calls instead of five, for when a council is overkill.
         quick:
           enabled: true
           reference_models:
@@ -257,8 +219,6 @@ data:
             model: opencode-go/glm-5.2
           reference_temperature: 0.7
           aggregator_temperature: 0.3
-          # Deliberately left on the default per_iteration fanout: only two
-          # advisors, so refreshing their advice each iteration stays cheap.
           reference_max_tokens: 400
           max_tokens: 8192
     platforms:
@@ -272,28 +232,7 @@ data:
       platforms:
         matrix:
           tool_progress: "off"
-    # One Hermes entry per upstream MCP server instead of a single aggregated
-    # "homelab" pointing at http://litellm.ai:4000/mcp. Two reasons:
-    #
-    #   1. The aggregate registered all 418 tools unfiltered (mcp_tool.py
-    #      _register_server_tools: "neither include nor exclude set -> register
-    #      all tools"), costing ~154k tokens of schema JSON on EVERY request.
-    #      Note `hermes prompt-size` does NOT show this - it runs offline and
-    #      only counts the 35 built-in tools.
-    #   2. Split entries become separate `mcp-<name>` toolsets, so they can be
-    #      scoped per platform via `platform_toolsets:` later if wanted.
-    #
-    # LiteLLM routes a single server at /mcp/<name>/ - the TRAILING SLASH is
-    # required; /mcp/<name>/mcp returns 0 tools.
-    #
-    # Tool names change as a result: mcp__homelab__kubectl_get_pods is now
-    # mcp__kubectl__kubectl_get_pods. Skills under /opt/data/skills were
-    # rewritten to match.
     mcp_servers:
-      # 275 tools upstream (~44.9k tok) -> 95 (~16.8k tok). Dropped whole
-      # families this cluster does not run: kind, vind, kubevirt, istio, capi,
-      # keda, argo-rollouts, flagger, velero backup/restore, multi-cluster and
-      # the ~35 helm_* tools (Flux owns Helm here).
       kubectl:
         url: http://litellm.ai:4000/mcp/kubectl/
         headers:
@@ -395,10 +334,6 @@ data:
             - kubectl-get_current_context
             - kubectl-get_server_config_status
             - kubectl-compare_namespaces
-      # Biggest offender by bytes: 78 tools / ~72.2k tok, because the config_set_*
-      # and manage_* schemas are enormous (ha_manage_addon alone is 15.8 KB).
-      # Kept the read/query surface plus the service call and todo tools the
-      # ha-car-status and ev-charge-reminder skills use: ~14.4k tok.
       ha:
         url: http://litellm.ai:4000/mcp/ha/
         headers:
@@ -445,20 +380,6 @@ data:
     SUMMARY_LLM_API_KEY={{ .LITELLM_MASTER_KEY }}
     API_SERVER_KEY={{ .API_SERVER_KEY }}
     GATEWAY_ALLOWED_USERS={{ .GATEWAY_ALLOWED_USERS }}
-  # Deliver a message into a named Matrix room from anywhere the agent runs -
-  # cron jobs, skills, scripts. Installed to /opt/data/.local/bin/matrix-post,
-  # which is already on PATH.
-  #
-  # Replaces the file-delivery-to-chat approach of shelling out to kubectl to
-  # scrape MATRIX_ACCESS_TOKEN from the hermes-matrix pod at runtime: the
-  # credentials now arrive as env from the hermes-matrix-access Secret.
-  #
-  # Rooms are addressed by alias (cluster, notify, alerts, digest, ...) which
-  # resolves to MATRIX_ROOM_<ALIAS>, so the private room IDs stay out of every
-  # caller and out of git.
-  #
-  # Deliberately contains no "0x24{...}" sequences: Flux postBuild substitution
-  # runs over this ConfigMap.
   matrix-post.py: |-
     """Post a message into a named Hermes Matrix room.
 
@@ -525,7 +446,6 @@ data:
 
         content = {"msgtype": msgtype, "body": body}
         if as_html:
-            # body doubles as the plain-text fallback for clients without HTML.
             content["format"] = "org.matrix.custom.html"
             content["formatted_body"] = body
 
@@ -540,7 +460,6 @@ data:
             with urllib.request.urlopen(req, timeout=30) as r:
                 print(json.loads(r.read().decode()).get("event_id", ""))
         except urllib.error.HTTPError as e:
-            # Never surface the token; the response body is safe to show.
             die("HTTP %s posting to %s: %s" % (e.code, alias, e.read()[:300].decode("utf-8", "replace")))
         except Exception as e:
             die("%s posting to %s" % (type(e).__name__, alias))
@@ -548,16 +467,6 @@ data:
 
     main()
 
-  # Weekly homelab rollup, emitted as HTML on stdout and delivered by the
-  # weekly-digest-run wrapper. Deterministic on purpose: a factual rollup is
-  # cheaper and more reliable as a script than as an agent turn, and the
-  # #digest room persona handles follow-up questions about it.
-  #
-  # Every section degrades to a one-line note rather than raising, so a missing
-  # RBAC grant or an uninstalled CRD never costs the whole digest.
-  #
-  # Deliberately contains no "0x24{...}" sequences: Flux postBuild substitution
-  # runs over this ConfigMap.
   weekly-digest.py: |-
     """Emit the homelab weekly digest as HTML on stdout.
 
@@ -626,7 +535,6 @@ data:
         return None, "", ""
 
 
-    # ── Flux ────────────────────────────────────────────────────────────────────
     def flux():
         bad = []
         total = 0
@@ -645,7 +553,6 @@ data:
         section("Flux (%d objects)" % total, bad, "all reconciled")
 
 
-    # ── Storage ─────────────────────────────────────────────────────────────────
     def storage():
         d = kc(["get", "miroirvolumes", "-A"])
         if d is None:
@@ -666,7 +573,6 @@ data:
         section("Storage (%d volumes)" % sum(phases.values()), lines)
 
 
-    # ── Backups ─────────────────────────────────────────────────────────────────
     def backups():
         d = kc(["get", "snapshots.kopiur.home-operations.com", "-A"])
         if d is None:
@@ -690,10 +596,8 @@ data:
         if p is not None:
             stale = []
             for it in p.get("items", []):
-                # Field is lastSuccessfulSnapshot, not lastSnapshotTime.
                 last = (it.get("status", {}) or {}).get("lastSuccessfulSnapshot")
                 a = age_days(last)
-                # Cadence is every 2h, so 24h without one is genuinely stale.
                 if a is None or a > 1.0:
                     stale.append("<code>%s/%s</code> (%s)" % (
                         h(it["metadata"]["namespace"]), h(it["metadata"]["name"]),
@@ -703,16 +607,11 @@ data:
         section("Backups", lines)
 
 
-    # ── Certificates ────────────────────────────────────────────────────────────
     def certs():
         d = kc(["get", "certificates.cert-manager.io", "-A"])
         if d is None:
             section("Certificates", ["<i>cert-manager certificates not readable</i>"])
             return
-        # A fixed "expires within 30 days" window is wrong here: these are 7-day
-        # certificates, so it would fire every single week on a perfectly healthy
-        # cert. What actually matters is whether cert-manager is keeping up, so
-        # compare against the controller's own renewalTime and Ready condition.
         problems = []
         for it in d.get("items", []):
             ns, name = it["metadata"]["namespace"], it["metadata"]["name"]
@@ -735,7 +634,6 @@ data:
                 "all Ready and renewing on schedule")
 
 
-    # ── Capacity ────────────────────────────────────────────────────────────────
     def capacity():
         nodes = kc(["get", "nodes"])
         pods = kc(["get", "pods", "-A", "--field-selector", "status.phase=Running"])
@@ -784,10 +682,7 @@ data:
         section("Capacity", lines)
 
 
-    # ── Renovate ────────────────────────────────────────────────────────────────
     def renovate():
-        # gh reads GH_TOKEN/GITHUB_TOKEN; the pod only exposes HOMELAB_GH_TOKEN, so
-        # map it across rather than requiring `gh auth login` state on the PVC.
         env = dict(os.environ)
         if not env.get("GH_TOKEN") and env.get("HOMELAB_GH_TOKEN"):
             env["GH_TOKEN"] = env["HOMELAB_GH_TOKEN"]
@@ -829,22 +724,12 @@ data:
 
     sys.stdout.write("".join(OUT))
 
-  # Cron entrypoint. Prints nothing on success so the job stays silent unless
-  # delivery actually fails — the #notify room is for output, #digest gets the
-  # rollup itself, and a healthy run should be invisible.
   weekly-digest-run.sh: |-
     #!/bin/sh
     set -eu
     export PATH=/opt/hermes/.venv/bin:/opt/data/.local/bin:/opt/data/.local/homebrew/bin:/usr/local/bin:/usr/bin:/bin
     weekly-digest | matrix-post digest --html >/dev/null
 
-  # pre_tool_call shell hook. Enforces the standing home-ops convention -
-  # pull first, never auto-commit, edit only when asked - as a hard gate
-  # instead of relying on the agent remembering it. Copied to
-  # /opt/data/hook-scripts/ by the init container.
-  #
-  # Deliberately contains no "0x24{...}" sequences: Flux postBuild
-  # substitution runs over this ConfigMap.
   home-ops-guard.py: |-
     """Block git write operations inside a home-ops checkout.
 
@@ -857,13 +742,11 @@ data:
     import shlex
     import sys
 
-    # git subcommands that mutate history, refs, or the working tree.
     WRITE_SUBCOMMANDS = {
         "commit", "push", "merge", "rebase", "cherry-pick", "revert",
         "reset", "clean", "am", "apply", "restore", "checkout", "switch",
         "stash", "filter-branch", "update-ref", "gc", "prune", "mv", "rm",
     }
-    # Destructive only with a delete/force flag; read-only otherwise.
     CONDITIONAL = {"tag": ("-d", "-D", "--delete"), "branch": ("-D", "--delete")}
 
     SPLITTERS = ("&&", "||", ";", "|", "\n")
@@ -886,12 +769,10 @@ data:
             tokens = shlex.split(segment)
         except ValueError:
             return None
-        # Skip env-var prefixes (FOO=bar git ...) and a sudo wrapper.
         while tokens and ("=" in tokens[0].split(" ")[0] or tokens[0] == "sudo"):
             tokens.pop(0)
         if not tokens or tokens[0] != "git":
             return None
-        # Skip git's own global flags, including -C <path>.
         rest = tokens[1:]
         while rest and rest[0].startswith("-"):
             if rest[0] in ("-C", "-c", "--git-dir", "--work-tree"):
@@ -919,7 +800,6 @@ data:
         command = (payload.get("tool_input") or {}).get("command") or ""
         cwd = payload.get("cwd") or ""
 
-        # Only guard home-ops. Other repos in the workspace are fair game.
         if "home-ops" not in cwd and "home-ops" not in command:
             return
 

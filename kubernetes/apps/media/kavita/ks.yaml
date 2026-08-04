@@ -9,7 +9,7 @@ spec:
     - ../../../../components/zeroscaler
     - ../../../../components/kopiur/backup
   dependsOn:
-    - name: pocket-id-instance # Kavita OIDC depends on PocketID being alive
+    - name: pocket-id-instance
       namespace: security
     - name: miroir-config
       namespace: miroir-system

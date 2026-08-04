@@ -1,0 +1,42 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6M38ETP0MPE6RJ0CXAC64C
+file: kubernetes/apps/ai/hermes-matrix/app/configmap.yaml
+kind: why
+body: |-
+  A backport, and it should not outlive its cause. Upstream hermes wires
+  per-channel prompts into MessageEvent for Telegram and Slack but never for
+  Matrix. This deployment runs hermes v0.15.2 (2026.5.29.2), roughly two
+  months behind the main agent's v0.18.2, predating channel_overrides
+  entirely.
+
+  Everything needed is already in the image — MessageEvent.channel_prompt
+  and resolve_channel_prompt() in platforms/base.py, and run.py consumes
+  event.channel_prompt in half a dozen places. Only the two MessageEvent
+  constructions in platforms/matrix.py fail to set it, so this touches those
+  two call sites and nothing else.
+
+  Delete this key and the patch-matrix init container once the upstream image
+  ships a hermes new enough to wire Matrix channel prompts itself.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: |2-
+      patch-matrix.py: |-
+        """Backport per-room system prompts to the hermes-matrix Matrix adapter."""
+  before: |2
+                  clarifying question only when the item is genuinely ambiguous.
+                  Do not expand a dropped link into an essay unless asked.
+  after: |2-
+        import hashlib
+        import io
+        import sys
+  last_seen_line: 106
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/hermes-matrix/app/configmap.yaml
+  line: 106
+author:
+  name: claude-code
+  kind: agent
+  source: session

@@ -23,24 +23,10 @@ spec:
       hermes-matrix:
         annotations:
           reloader.stakater.com/auto: "true"
-        # Single replica with Recreate: two Matrix clients on one account /
-        # crypto store would clash over device identity.
         replicas: 1
         strategy: Recreate
         type: deployment
         initContainers:
-          # THIS DEPLOYMENT RUNS A PATCHED gateway/platforms/matrix.py.
-          #
-          # The upstream image is hermes v0.15.2 (2026.5.29.2) and never wires
-          # per-channel prompts into MessageEvent for Matrix (Telegram and Slack
-          # do). Everything else is already present in the image, so the patch
-          # only touches the two MessageEvent constructions. See the long
-          # comment in configmap.yaml for the full rationale and the removal
-          # condition.
-          #
-          # The patch is anchored: if a base-image bump changes those blocks,
-          # this container exits non-zero and the pod stays down rather than
-          # quietly reverting every room to a single shared persona.
           patch-matrix:
             image:
               repository: registry.erwanleboucher.dev/eleboucher/hermes-matrix
@@ -53,9 +39,6 @@ spec:
                 python3 /run/config/patch-matrix.py \
                   /usr/local/lib/python3.12/site-packages/gateway/platforms/matrix.py \
                   /patched/matrix.py
-                # Per-room personas. Rendered by the hermes-matrix-config
-                # ExternalSecret (private room IDs), and copied in because the
-                # proxy reads config.yaml from HERMES_HOME, which is the PVC.
                 cp /run/secret/config.yaml /data/config.yaml
                 chmod 600 /data/config.yaml
             securityContext:
@@ -71,10 +54,7 @@ spec:
             env:
               HERMES_HOME: /data
               MATRIX_ENCRYPTION: "true"
-              # Proxy mode — forward decrypted text to the main agent's API server.
               GATEWAY_PROXY_URL: http://hermes.ai.svc.cluster.local:8642
-              # MATRIX_HOME_ROOM comes from the hermes-matrix secret and now
-              # resolves to the dedicated Notify room — room IDs stay private.
             envFrom:
               - secretRef:
                   name: hermes-matrix
@@ -98,8 +78,6 @@ spec:
               - path: /data
             app:
               - path: /data
-      # Patched matrix.py, produced by the init container and mounted over the
-      # site-packages copy for the app container only.
       patched:
         type: emptyDir
         advancedMounts:
@@ -109,7 +87,6 @@ spec:
             app:
               - path: /usr/local/lib/python3.12/site-packages/gateway/platforms/matrix.py
                 subPath: matrix.py
-      # Patch script only — no room IDs, safe to keep in git.
       config:
         type: configMap
         name: hermes-matrix-configmap
@@ -117,7 +94,6 @@ spec:
           hermes-matrix:
             patch-matrix:
               - path: /run/config
-      # Rendered config.yaml with the private room IDs substituted in.
       config-secret:
         type: secret
         name: hermes-matrix-config

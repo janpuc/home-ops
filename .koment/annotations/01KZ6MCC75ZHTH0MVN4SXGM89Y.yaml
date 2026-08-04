@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6MCC75ZHTH0MVN4SXGM89Y
+file: kubernetes/apps/ai/hermes/app/configmap.yaml
+kind: invariant
+body: |-
+  This list is the guardrail that makes cron_mode: approve safe, and it is the
+  only thing standing between a scheduled job and an unrecoverable cluster.
+  These fnmatch globs are matched against terminal commands BEFORE the approve
+  / --yolo / mode:off bypass, so they hold even under cron_mode: approve.
+  Matching is case-insensitive.
+
+  The groups, in order: cluster-destroying Talos operations (reset, wipe,
+  upgrade); irreversible git history rewrites and working-tree destruction
+  (force push, reset --hard, clean -f, filter-branch); Flux and Helm teardown
+  — pruning is fine, deleting the controllers is not; blanket kubectl
+  deletes including namespaces, PVCs and PVs; storage and filesystem
+  destruction (mkfs, rm -rf /, dd to a device, wipefs); and piping the
+  internet into a shell.
+
+  Entries should be removed only with a specific reason. Adding to a group is
+  cheap; deleting from one silently widens what a cron session may do.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: |2-
+          deny:
+            - "*talosctl*reset*"
+  before: |2-
+          mode: smart
+          timeout: 60
+          cron_mode: approve
+  after: |2-
+            - "*talosctl*wipe*"
+            - "*talosctl*upgrade*"
+            - "git push*--force*"
+  last_seen_line: 139
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/hermes/app/configmap.yaml
+  line: 139
+author:
+  name: claude-code
+  kind: agent
+  source: session

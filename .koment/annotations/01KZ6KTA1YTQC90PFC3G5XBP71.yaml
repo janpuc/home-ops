@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6KTA1YTQC90PFC3G5XBP71
+file: talos/schematic.yaml.j2
+kind: why
+body: |-
+  Caps the iGPU GTT aperture at 2 GiB, down from the 8 GiB default. Everything
+  that shares this iGPU is sized against that ceiling: the llmkube
+  InferenceService batch/context settings for bge-embedding-m3 and
+  bge-reranker-v2-m3 were measured against a 2 GiB aperture, and the reranker
+  already ran the graph to 1.82/2.00 GiB. Raising this number is not free —
+  it hands the GPU memory the host would otherwise keep, and it invalidates
+  the batch sizing recorded on those two manifests.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: "- amdgpu.gttsize=2048"
+  before: |2-
+      extraKernelArgs:
+        - amd_iommu=on # PCI Passthrough
+        - iommu=pt # PCI Passthrough
+  after: |2-
+      systemExtensions:
+        officialExtensions:
+          - siderolabs/amd-ucode # AMD iGPU
+  last_seen_line: 6
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: talos/schematic.yaml.j2
+  line: 6
+author:
+  name: claude-code
+  kind: agent
+  source: session

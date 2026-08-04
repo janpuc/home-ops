@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6M4XBQ2NYACZKV4JJ7Z7NK
+file: kubernetes/apps/ai/hermes-matrix/app/helmrelease.yaml
+kind: why
+body: |-
+  This deployment is a proxy, not a second agent: it terminates Matrix
+  encryption and forwards the decrypted text to the main hermes API server,
+  which does the actual work.
+
+  The secret is pulled in whole rather than key-by-key because the room IDs
+  are private. MATRIX_HOME_ROOM arrives that way and resolves to the dedicated
+  Notify room, so no room ID ever appears in this manifest.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: |2-
+                  GATEWAY_PROXY_URL: http://hermes.ai.svc.cluster.local:8642
+                envFrom:
+                  - secretRef:
+                      name: hermes-matrix
+  before: |2-
+                env:
+                  HERMES_HOME: /data
+                  MATRIX_ENCRYPTION: "true"
+  after: |2-
+                resources:
+                  requests:
+                    cpu: 25m
+  last_seen_line: 57
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/hermes-matrix/app/helmrelease.yaml
+  line: 57
+author:
+  name: claude-code
+  kind: agent
+  source: session

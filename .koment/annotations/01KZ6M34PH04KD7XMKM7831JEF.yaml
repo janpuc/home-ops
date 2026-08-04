@@ -1,0 +1,31 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6M34PH04KD7XMKM7831JEF
+file: kubernetes/apps/ai/hermes-matrix/app/configmap.yaml
+kind: why
+body: |-
+  A whitelist, not a convenience list: the bot ignores every room not named
+  here, including the "Matrix.org (Official Account)" room it was auto-joined
+  into. Adding a room to channel_prompts without adding it here leaves the bot
+  silent in it.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: '          allowed_rooms: "{{ .MATRIX_ROOM_CLUSTER }},{{ .MATRIX_ROOM_ASSISTANT }},{{ .MATRIX_ROOM_HOME }},{{ .MATRIX_ROOM_NOTIFY }},{{ .MATRIX_ROOM_ALERTS }},{{ .MATRIX_ROOM_DIGEST }},{{ .MATRIX_ROOM_INBOX }},{{ .MATRIX_ROOM_DM }}"'
+  before: |2-
+        platforms:
+          matrix:
+            extra:
+  after: |2-
+              channel_prompts:
+                "{{ .MATRIX_ROOM_CLUSTER }}": |-
+                  This room is for Kubernetes, Flux, storage and incident work on
+  last_seen_line: 11
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/hermes-matrix/app/configmap.yaml
+  line: 11
+author:
+  name: claude-code
+  kind: agent
+  source: session

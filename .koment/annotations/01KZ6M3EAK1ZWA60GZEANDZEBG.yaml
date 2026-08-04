@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6M3EAK1ZWA60GZEANDZEBG
+file: kubernetes/apps/ai/hermes-matrix/app/configmap.yaml
+kind: why
+body: |-
+  Syntax gate. The patched source is only written after it compiles, so a
+  malformed edit fails here in the init container instead of reaching the app
+  container as an unimportable module.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: '    compile(out, OUT, "exec")'
+  before: |2
+            out = out.replace(anchor, patched, 1)
+            print("patched: %s" % label)
+  after: |2-
+
+        io.open(OUT, "w", encoding="utf-8").write(out)
+        print("wrote %s (%d bytes, sha256=%s)"
+  last_seen_line: 166
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/hermes-matrix/app/configmap.yaml
+  line: 166
+author:
+  name: claude-code
+  kind: agent
+  source: session

@@ -1,0 +1,31 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6MJ43JWBMQSSZ9TJB6WB4Q
+file: kubernetes/apps/ai/hermes/app/configmap.yaml
+kind: why
+body: |-
+  The cron entrypoint. It prints nothing on success — stdout is redirected
+  to /dev/null — so the job stays silent unless delivery actually fails.
+  That is the point: the #notify room is for output, #digest receives the
+  rollup itself, and a healthy run should be invisible. Adding logging here
+  would post noise into a room chosen for being unmuted.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: "  weekly-digest-run.sh: |-"
+  before: |2
+
+        sys.stdout.write("".join(OUT))
+  after: |2-
+        #!/bin/sh
+        set -eu
+        export PATH=/opt/hermes/.venv/bin:/opt/data/.local/bin:/opt/data/.local/homebrew/bin:/usr/local/bin:/usr/bin:/bin
+  last_seen_line: 727
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/hermes/app/configmap.yaml
+  line: 727
+author:
+  name: claude-code
+  kind: agent
+  source: session

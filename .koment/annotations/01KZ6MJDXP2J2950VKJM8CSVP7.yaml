@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6MJDXP2J2950VKJM8CSVP7
+file: kubernetes/apps/ai/hermes/app/configmap.yaml
+kind: gotcha
+body: |-
+  Both of these loops exist to stop trivial evasion of the guard. The first
+  strips env-var prefixes and a sudo wrapper, so `FOO=bar git push` and `sudo
+  git push` still resolve to git. The second skips git's own global flags —
+  importantly -C, -c, --git-dir and --work-tree consume a following argument,
+  so they are advanced by two rather than one; without that, `git -C /repo
+  push` would present "-C" as the subcommand and slip through.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: |2-
+            while tokens and ("=" in tokens[0].split(" ")[0] or tokens[0] == "sudo"):
+                tokens.pop(0)
+  before: |2-
+                tokens = shlex.split(segment)
+            except ValueError:
+                return None
+  after: |2-
+            if not tokens or tokens[0] != "git":
+                return None
+            rest = tokens[1:]
+  last_seen_line: 772
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/hermes/app/configmap.yaml
+  line: 772
+author:
+  name: claude-code
+  kind: agent
+  source: session

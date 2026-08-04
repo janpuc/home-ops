@@ -15,9 +15,6 @@ spec:
       resourceClaims:
         - name: gpu
           resourceClaimTemplateName: llmkube-models-gpu
-  # Q8_0 (606 MiB) to match bge-m3; the iGPU GTT aperture is capped at 2 GiB
-  # by amdgpu.gttsize=2048, so keep an eye on mem_info_gtt_used before
-  # reaching for a larger quant.
   quantization: Q8_0
   source: https://huggingface.co/gpustack/bge-reranker-v2-m3-GGUF/resolve/main/bge-reranker-v2-m3-Q8_0.gguf
 ---
@@ -31,17 +28,6 @@ spec:
   runtime: llamacpp
   image: ghcr.io/ggml-org/llama.cpp:server-vulkan-b10200@sha256:5b69b5a99886b6bdc24c281b9a041c21e0e9d5502018c55098d4b09cac6ee5a4
   replicas: 1
-  # Sized for the 2 GiB GTT aperture (amdgpu.gttsize=2048), NOT copied from
-  # bge-m3: a cross-encoder's compute buffer is far larger than an embedding
-  # model's at the same batch. At uBatchSize 4096 llama.cpp forces
-  # n_batch = n_ubatch = 4096 and the graph alone took GTT to 1.82/2.00 GiB,
-  # so any batch past ~700 tokens killed the device with
-  # `vk::Queue::submit: ErrorDeviceLost`.
-  # The physical batch must hold a WHOLE (query, doc) pair or llama.cpp rejects
-  # it with "input (N tokens) is too large to process". memini caps a doc at
-  # MEMINI_RERANK_MAX_DOC_CHARS=2048, measured at 619 tokens for English prose,
-  # so 1024 covers that with room for denser text. Keep uBatchSize >= the
-  # largest pair you expect, and n_ctx_slot (contextSize/parallelSlots) >= it.
   contextSize: 4096
   parallelSlots: 2
   batchSize: 1024
@@ -50,8 +36,6 @@ spec:
     cpu: 100m
     memory: 2Gi
   extraArgs:
-    # bge-reranker-v2-m3 is a BERT cross-encoder; --reranking + --pooling rank
-    # exposes the Cohere-style /v1/rerank endpoint memini calls.
     - --reranking
     - --pooling
     - rank

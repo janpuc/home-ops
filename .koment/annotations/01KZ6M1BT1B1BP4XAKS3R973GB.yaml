@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6M1BT1B1BP4XAKS3R973GB
+file: kubernetes/apps/ai/memini/app/helmrelease.yaml
+kind: why
+body: |-
+  Raised far above the 6000 default so the entire pool goes to /rerank in a
+  single call. At 6000 a 20-doc pool shards into roughly 7 SERIAL rerank
+  calls, which blows MEMINI_RERANK_TIMEOUT.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: '              MEMINI_RERANK_MAX_BATCH_CHARS: "48000"'
+  before: |2-
+                  MEMINI_RERANK_MODEL: bge-reranker-v2-m3
+                  MEMINI_RERANK_POOL: "10"
+                  MEMINI_RERANK_MAX_DOC_CHARS: "1024"
+  after: |2-
+                  MEMINI_RERANK_TIMEOUT: "10s"
+                  MEMINI_RERANK_MIN_SCORE: "0"
+                resources:
+  last_seen_line: 62
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/memini/app/helmrelease.yaml
+  line: 62
+author:
+  name: claude-code
+  kind: agent
+  source: session

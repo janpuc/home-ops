@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6KZSDBSSM4ZEPYTMSBCXE6
+file: kubernetes/apps/ai/llmkube/models/bge-embedding-m3.yaml
+kind: why
+body: |-
+  What matters is per-slot context, which llama.cpp derives as
+  contextSize/parallelSlots — so 8192 across 2 slots gives 4096 each, enough
+  for long memini docs. Raising parallelSlots without raising contextSize
+  shrinks every slot and starts truncating documents. These numbers are far
+  larger than the reranker's next door because an embedding model's compute
+  buffer is much smaller at the same batch; the two share one 2 GiB GTT
+  aperture and are not interchangeable.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: |2-
+      contextSize: 8192
+      parallelSlots: 2
+      batchSize: 8192
+      uBatchSize: 4096
+  before: |2-
+      runtime: llamacpp
+      image: ghcr.io/ggml-org/llama.cpp:server-vulkan-b10200@sha256:5b69b5a99886b6bdc24c281b9a041c21e0e9d5502018c55098d4b09cac6ee5a4
+      replicas: 1
+  after: |2-
+      resources:
+        cpu: 100m
+        memory: 2Gi
+  last_seen_line: 31
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/llmkube/models/bge-embedding-m3.yaml
+  line: 31
+author:
+  name: claude-code
+  kind: agent
+  source: session

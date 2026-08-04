@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6MDT18PH5S1YRXZYTF8P7Q
+file: kubernetes/apps/ai/hermes/app/configmap.yaml
+kind: why
+body: |-
+  This include list is a token-budget decision, not a capability one: 275
+  tools upstream (~44.9k tokens) down to 95 (~16.8k). What was dropped is
+  whole families this cluster does not run — kind, vind, kubevirt, istio,
+  capi, keda, argo-rollouts, flagger, velero backup/restore, multi-cluster —
+  plus the roughly 35 helm_* tools, since Flux owns Helm here.
+
+  Adding a tool back is fine; adding a family back costs real tokens on every
+  request.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: |2-
+            tools:
+              include:
+                - kubectl-get_pods
+  before: |2-
+            url: http://litellm.ai:4000/mcp/kubectl/
+            headers:
+              Authorization: "Bearer $${LITELLM_API_KEY}"
+  after: |2-
+                - kubectl-get_nodes
+                - kubectl-get_nodes_summary
+                - kubectl-get_node_metrics
+  last_seen_line: 240
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/hermes/app/configmap.yaml
+  line: 240
+author:
+  name: claude-code
+  kind: agent
+  source: session

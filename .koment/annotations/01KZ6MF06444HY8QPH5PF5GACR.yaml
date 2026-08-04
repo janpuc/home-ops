@@ -1,0 +1,44 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6MF06444HY8QPH5PF5GACR
+file: kubernetes/apps/ai/hermes/app/configmap.yaml
+kind: why
+body: |-
+  Delivers a message into a named Matrix room from anywhere the agent runs —
+  cron jobs, skills, scripts. The init container installs it as
+  /opt/data/.local/bin/matrix-post, which is already on PATH.
+
+  It replaces the file-delivery-to-chat approach of shelling out to kubectl to
+  scrape MATRIX_ACCESS_TOKEN from the running hermes-matrix pod: the
+  credentials now arrive as env from the hermes-matrix-access Secret, so
+  nothing is coupled to a pod name.
+
+  Rooms are addressed by alias (cluster, notify, alerts, digest, ...) which
+  resolves to MATRIX_ROOM_<ALIAS>. That is what keeps the private room IDs out
+  of every caller and out of git.
+
+  This script deliberately contains no "${...}" sequences. Flux postBuild
+  substitution runs over this ConfigMap and would eat them.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: |2-
+      matrix-post.py: |-
+        """Post a message into a named Hermes Matrix room.
+  before: |2-
+        SUMMARY_LLM_API_KEY={{ .LITELLM_MASTER_KEY }}
+        API_SERVER_KEY={{ .API_SERVER_KEY }}
+        GATEWAY_ALLOWED_USERS={{ .GATEWAY_ALLOWED_USERS }}
+  after: |2-
+
+        Usage:
+            matrix-post <room-alias> [text ...]      # text, or stdin if omitted
+  last_seen_line: 383
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/hermes/app/configmap.yaml
+  line: 383
+author:
+  name: claude-code
+  kind: agent
+  source: session

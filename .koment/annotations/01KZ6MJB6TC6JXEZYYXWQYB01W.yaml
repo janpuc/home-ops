@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6MJB6TC6JXEZYYXWQYB01W
+file: kubernetes/apps/ai/hermes/app/configmap.yaml
+kind: invariant
+body: |-
+  WRITE_SUBCOMMANDS is every git subcommand that mutates history, refs or the
+  working tree — unconditionally blocked. CONDITIONAL below holds the two
+  that are destructive only with a delete or force flag (tag, branch) and
+  read-only otherwise, so they are matched on their flags instead.
+
+  Both sets are allow-by-omission: a subcommand missing from here passes the
+  guard. That is the correct failure direction for a hook that must not wedge
+  the agent, but it means adding a new mutating git subcommand to the list is
+  the only way it gets blocked.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: "    WRITE_SUBCOMMANDS = {"
+  before: |2
+        import shlex
+        import sys
+  after: |2-
+            "commit", "push", "merge", "rebase", "cherry-pick", "revert",
+            "reset", "clean", "am", "apply", "restore", "checkout", "switch",
+            "stash", "filter-branch", "update-ref", "gc", "prune", "mv", "rm",
+  last_seen_line: 745
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/hermes/app/configmap.yaml
+  line: 745
+author:
+  name: claude-code
+  kind: agent
+  source: session

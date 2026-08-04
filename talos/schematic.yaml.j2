@@ -3,7 +3,7 @@ customization:
   extraKernelArgs:
     - amd_iommu=on # PCI Passthrough
     - iommu=pt # PCI Passthrough
-    - amdgpu.gttsize=2048 # Cap iGPU GTT aperture at 2 GiB (was 8 GiB default).
+    - amdgpu.gttsize=2048
   systemExtensions:
     officialExtensions:
       - siderolabs/amd-ucode # AMD iGPU

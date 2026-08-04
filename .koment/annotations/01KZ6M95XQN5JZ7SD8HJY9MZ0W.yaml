@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6M95XQN5JZ7SD8HJY9MZ0W
+file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
+kind: why
+body: |-
+  --prefix is what keeps the Node-based language servers out of the image's
+  read-only /usr/local and inside the PVC, so they survive a pod restart
+  without being reinstalled. The same applies to the yaml-language-server
+  install below it, which is here because this repo is almost entirely YAML
+  and validates against the `# yaml-language-server: $schema=` directives at
+  the top of every manifest.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: |2-
+                      npm install -g --prefix /opt/data/.local \
+                        typescript@5.7.2 typescript-language-server@4.3.3
+  before: |2-
+                    fi
+
+                    if [ ! -f /opt/data/.local/bin/typescript-language-server ]; then
+  after: |2-
+                    fi
+
+                    if [ ! -f /opt/data/.local/bin/yaml-language-server ]; then
+  last_seen_line: 133
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/hermes/app/helmrelease.yaml
+  line: 133
+author:
+  name: claude-code
+  kind: agent
+  source: session

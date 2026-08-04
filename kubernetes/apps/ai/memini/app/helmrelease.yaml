@@ -36,25 +36,10 @@ spec:
               MEMINI_CLIENT_DEFAULTS: '{"inject_briefing_pinned":10,"inject_briefing_max_tok":3000,"recall_limit":5,"inject_recall_max_tok":400}'
               MEMINI_DEDUP_SIMILARITY: "0.80"
               MEMINI_DEDUP_TIERS: semantic,procedural
-              # Merge each near-duplicate cluster into one comprehensive memory
-              # instead of arbitrarily keeping one member's text. Requires the
-              # LLM, which only started working on 2026-07-29.
-              #
-              # Note the asymmetry before touching MEMINI_DEDUP_SIMILARITY:
-              # tombstoned duplicates stay recoverable (SetSuperseded, and
-              # TOMBSTONE_TTL keeps them 30 days), but the SURVIVOR's content is
-              # overwritten via Upsert with no in-store history — only a PVC
-              # restore brings it back. A false-positive cluster is therefore
-              # much more expensive with merge on than it was with it off, so
-              # 0.80 is the aggressive end of what is safe here.
               MEMINI_DEDUP_LLM_MERGE: "true"
               MEMINI_SHORT_TERM_CAP: "300"
               MEMINI_DEMOTE_AFTER: 1440h
               MEMINI_EMBED_BASE_URL: http://bge-embedding-m3.ai.svc.cluster.local:8080/v1
-              # Stays "bge-m3" even though the InferenceService is now named
-              # bge-embedding-m3: memini stores this string and refuses to boot
-              # if it changes, so renaming it would force a full re-embed of
-              # every memory. llama.cpp still serves it under --alias bge-m3.
               MEMINI_EMBED_MODEL: bge-m3
               MEMINI_EMBED_DIMS: "1024"
               MEMINI_EMBED_MAX_CONCURRENCY: "2"
@@ -72,31 +57,10 @@ spec:
               MEMINI_RECALL_EMBED_TIMEOUT: "10s"
               MEMINI_RERANK: http://bge-reranker-v2-m3.ai.svc.cluster.local:8080/v1
               MEMINI_RERANK_MODEL: bge-reranker-v2-m3
-              # Measured on this iGPU: ~130 ms/doc at 350 chars, ~335 ms/doc at
-              # 1024. Latency is linear in POOL x doc length, so POOL 20 at the
-              # 2048 cap would be ~14s and blow MEMINI_RERANK_TIMEOUT, silently
-              # dropping every recall back to composite order. 10 x 1024 keeps
-              # the worst case ~3.4s (typical ~1.3s) while still giving 3x the
-              # recall limit of rescue depth, which is the point of a pool.
               MEMINI_RERANK_POOL: "10"
               MEMINI_RERANK_MAX_DOC_CHARS: "1024"
-              # Default 6000 would shard a 20-doc pool into ~7 SERIAL /rerank
-              # calls and blow MEMINI_RERANK_TIMEOUT; keep the whole pool in one.
               MEMINI_RERANK_MAX_BATCH_CHARS: "48000"
               MEMINI_RERANK_TIMEOUT: "10s"
-              # DISABLED (0) deliberately — do not re-enable without re-measuring.
-              # Tried 0.1 on 2026-07-30 to make recall return EMPTY on nonsense
-              # queries, which it did. But bge-reranker emits unbounded LOGITS and
-              # scores generically-phrased questions about the user NEGATIVE:
-              # "user profile" -0.35, "who is the user" -4.10, versus "tell me
-              # about Janek" +0.34. So any positive floor blindfolds exactly the
-              # personal/jan recalls that matter — Open WebUI answered "I don't
-              # have any personal memories about this user" with 39 sitting there.
-              # A negative floor is not an option: config.validate() refuses
-              # MEMINI_RERANK_MIN_SCORE < 0 at boot, so the knob is on/off only.
-              # Ordering (the reranker's real value) is unaffected by disabling
-              # it; relevance is still gated by inject_recall_min_score on the
-              # injection path.
               MEMINI_RERANK_MIN_SCORE: "0"
             resources:
               requests:

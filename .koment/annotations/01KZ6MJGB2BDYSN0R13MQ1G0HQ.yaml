@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6MJGB2BDYSN0R13MQ1G0HQ
+file: kubernetes/apps/ai/hermes/app/configmap.yaml
+kind: why
+body: |-
+  Scoped to home-ops only — other repos in the workspace are fair game and
+  the agent is expected to commit freely in them. The check is deliberately
+  loose (cwd OR the command text) so a `git -C .../home-ops push` issued from
+  elsewhere is still caught.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: |2-
+            if "home-ops" not in cwd and "home-ops" not in command:
+                return
+  before: |2
+            command = (payload.get("tool_input") or {}).get("command") or ""
+            cwd = payload.get("cwd") or ""
+  after: |2-
+
+            for segment in segments(command):
+                sub = offending_subcommand(segment)
+  last_seen_line: 803
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/hermes/app/configmap.yaml
+  line: 803
+author:
+  name: claude-code
+  kind: agent
+  source: session

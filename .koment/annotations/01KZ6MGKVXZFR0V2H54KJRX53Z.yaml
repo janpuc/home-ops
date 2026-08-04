@@ -1,0 +1,36 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6MGKVXZFR0V2H54KJRX53Z
+file: kubernetes/apps/ai/hermes/app/configmap.yaml
+kind: gotcha
+body: |-
+  The field is lastSuccessfulSnapshot, not lastSnapshotTime — the latter
+  exists and updates on failed attempts, so reading it would report healthy
+  backups that never actually succeeded.
+
+  The 1.0-day threshold is derived from cadence: snapshots run every 2h, so
+  24h without a successful one is genuinely stale rather than merely unlucky.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: |2-
+                    last = (it.get("status", {}) or {}).get("lastSuccessfulSnapshot")
+                    a = age_days(last)
+                    if a is None or a > 1.0:
+  before: |2-
+            if p is not None:
+                stale = []
+                for it in p.get("items", []):
+  after: |2-
+                        stale.append("<code>%s/%s</code> (%s)" % (
+                            h(it["metadata"]["namespace"]), h(it["metadata"]["name"]),
+                            "never" if a is None else "%.1fd ago" % a))
+  last_seen_line: 599
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/hermes/app/configmap.yaml
+  line: 599
+author:
+  name: claude-code
+  kind: agent
+  source: session

@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6M5TVF5HJ3BAQMKZQBH015
+file: kubernetes/apps/ai/hermes-matrix/app/externalsecret.yaml
+kind: gotcha
+body: |-
+  The private Matrix room IDs live in their own `hermes-rooms` Secure Note
+  rather than in the `hermes` item, and that split is a 1Password CLI
+  workaround, not organisation. Every PASSWORD-category item in this vault has
+  an empty password field, which makes `op item edit` fail the CLI validator
+  with "Password item requires ps value" — those items are only editable
+  through the Connect API or the GUI. A Secure Note has no such constraint, so
+  the room IDs stay editable from the CLI.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: |2-
+        - extract:
+            key: hermes-rooms
+    ---
+  before: |2-
+            key: litellm
+        - extract:
+            key: hermes
+  after: |-
+    apiVersion: external-secrets.io/v1
+    kind: ExternalSecret
+    metadata:
+  last_seen_line: 29
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/hermes-matrix/app/externalsecret.yaml
+  line: 29
+author:
+  name: claude-code
+  kind: agent
+  source: session

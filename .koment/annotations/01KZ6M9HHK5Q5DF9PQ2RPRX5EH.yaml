@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6M9HHK5Q5DF9PQ2RPRX5EH
+file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
+kind: why
+body: |-
+  Everything below this line bootstraps the workspace — kanban board,
+  project and skill bundles — declaratively, so a rebuilt PVC comes back
+  identical instead of depending on someone having created them by hand in the
+  pod.
+
+  HERMES_HOME has to be exported explicitly: this init container does not
+  inherit the app container's env, and the hermes CLI silently targets the
+  wrong root without it.
+
+  Each step is guarded differently for a reason. `kanban init` is documented
+  idempotent, so it runs unconditionally. Board slugs are immutable, so the
+  board is guarded on its slug rather than its name. A project is a named
+  multi-folder workspace bound to that board. Bundles use --force so this
+  block, not whatever happens to be on the PVC, is the single source of truth
+  for what the /slash commands contain.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: |2-
+                    export HOME=/opt/data
+                    export HERMES_HOME=/opt/data
+                    HERMES=/opt/hermes/.venv/bin/hermes
+  before: |2
+                      /opt/data/.local/go/bin/go install golang.org/x/tools/gopls@v0.17.1
+                    fi
+  after: |2
+
+                    $HERMES kanban init >/dev/null 2>&1 || true
+  last_seen_line: 149
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/hermes/app/helmrelease.yaml
+  line: 149
+author:
+  name: claude-code
+  kind: agent
+  source: session

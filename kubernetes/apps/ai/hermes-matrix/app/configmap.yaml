@@ -4,28 +4,12 @@ kind: ConfigMap
 metadata:
   name: hermes-matrix-configmap
 data:
-  # Per-room personas. The proxy resolves these against the real Matrix room ID
-  # and forwards the result to the main agent as a system message, so each room
-  # behaves differently while sharing one bot account and one gateway.
-  #
-  # Rooms are also separate Hermes sessions automatically (the Matrix adapter
-  # derives a session per room), so context does not bleed between them.
-  #
-  # Room IDs are NOT stored here. The {{ }} placeholders are rendered by the
-  # hermes-matrix ExternalSecret (templateFrom -> this key) from the 1Password
-  # `hermes` item, so this file stays safe to publish. The rendered result lands
-  # in the hermes-matrix Secret as `config.yaml`.
-  #
-  # NOTE: per-room prompts only work because of the patched matrix.py below.
   config.yaml: |-
     platforms:
       matrix:
         extra:
-          # Whitelist: the bot ignores every other room, including the
-          # "Matrix.org (Official Account)" room it was auto-joined into.
           allowed_rooms: "{{ .MATRIX_ROOM_CLUSTER }},{{ .MATRIX_ROOM_ASSISTANT }},{{ .MATRIX_ROOM_HOME }},{{ .MATRIX_ROOM_NOTIFY }},{{ .MATRIX_ROOM_ALERTS }},{{ .MATRIX_ROOM_DIGEST }},{{ .MATRIX_ROOM_INBOX }},{{ .MATRIX_ROOM_DM }}"
           channel_prompts:
-            # ── Hermes · Cluster ──────────────────────────────────────────
             "{{ .MATRIX_ROOM_CLUSTER }}": |-
               This room is for Kubernetes, Flux, storage and incident work on
               the janpuc/home-ops cluster (3-node Talos control plane, Cilium
@@ -46,7 +30,6 @@ data:
               flux-operator-stack-debugging, home-ops-flux-app-template or
               hermes-cron-debugging. The /cluster bundle loads the set.
 
-            # ── Hermes · Assistant ────────────────────────────────────────
             "{{ .MATRIX_ROOM_ASSISTANT }}": |-
               This room is general-purpose: lookups, planning, restaurants,
               travel, research, everyday questions. It is NOT for cluster work
@@ -58,7 +41,6 @@ data:
               details, verify against OpenStreetMap rather than guessing.
               Answer in English.
 
-            # ── Hermes · Home ─────────────────────────────────────────────
             "{{ .MATRIX_ROOM_HOME }}": |-
               This room controls the house via Home Assistant.
 
@@ -74,7 +56,6 @@ data:
               The ha-car-status and ev-charge-reminder skills cover the EV6;
               load them rather than reconstructing the entity names.
 
-            # ── Hermes · Notify ───────────────────────────────────────────
             "{{ .MATRIX_ROOM_NOTIFY }}": |-
               This room is the always-on notification channel: scheduled
               briefings, reminders and anything the user explicitly asked to be
@@ -89,7 +70,6 @@ data:
               file-delivery-to-chat skills cover most of what runs here; the
               /briefing bundle loads them together.
 
-            # ── Hermes · Alerts ───────────────────────────────────────────
             "{{ .MATRIX_ROOM_ALERTS }}": |-
               This room receives infrastructure alerts for triage.
 
@@ -104,7 +84,6 @@ data:
               0 replicas while every replica was actually UpToDate - check
               before believing an alert's severity.
 
-            # ── Hermes · Digest ───────────────────────────────────────────
             "{{ .MATRIX_ROOM_DIGEST }}": |-
               This room carries the periodic rollup: pending Renovate PRs,
               certificate expiry, backup success rate, volume health and
@@ -114,7 +93,6 @@ data:
               numbers, deltas against last time where you can. Flag only what
               changed or what needs a decision. No filler.
 
-            # ── Hermes · Inbox ────────────────────────────────────────────
             "{{ .MATRIX_ROOM_INBOX }}": |-
               This room is a capture inbox. The user drops links, ideas and
               half-thoughts here with little context.
@@ -125,23 +103,6 @@ data:
               clarifying question only when the item is genuinely ambiguous.
               Do not expand a dropped link into an essay unless asked.
 
-  # Backport: upstream hermes wires per-channel prompts into MessageEvent for
-  # Telegram and Slack but never for Matrix. This image is hermes v0.15.2
-  # (2026.5.29.2), roughly two months behind the main agent's v0.18.2, and
-  # predates channel_overrides entirely.
-  #
-  # Everything needed is already in the image - MessageEvent.channel_prompt and
-  # resolve_channel_prompt() in platforms/base.py, and run.py consumes
-  # event.channel_prompt in half a dozen places. Only the two MessageEvent
-  # constructions in platforms/matrix.py fail to set it. This patches those two
-  # call sites and nothing else.
-  #
-  # It is anchored and fails closed: if a base-image bump changes those blocks,
-  # the init container exits non-zero and the pod will not start, rather than
-  # silently collapsing every room back to one shared persona.
-  #
-  # Drop this file and the patch-matrix init container once the upstream image
-  # ships a hermes new enough to wire Matrix channel prompts itself.
   patch-matrix.py: |-
     """Backport per-room system prompts to the hermes-matrix Matrix adapter."""
     import hashlib
@@ -153,7 +114,6 @@ data:
     INJECT = "            channel_prompt=_rcp(self.config.extra, room_id),\n"
     IMPORT = "        from gateway.platforms.base import resolve_channel_prompt as _rcp\n"
 
-    # Both enclosing methods take room_id: str as a parameter.
     ANCHORS = [
         (
             "_handle_text_message",
@@ -203,7 +163,6 @@ data:
         out = out.replace(anchor, patched, 1)
         print("patched: %s" % label)
 
-    # Syntax gate so a malformed edit never reaches the app container.
     compile(out, OUT, "exec")
 
     io.open(OUT, "w", encoding="utf-8").write(out)

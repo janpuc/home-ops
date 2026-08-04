@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6M9M2X7FM8KQ66P1EAXYZJ
+file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
+kind: why
+body: |-
+  Weekly digest into the #digest Matrix room, Mondays at 08:00. --no-agent
+  means no LLM runs at all — the script IS the job. It posts to Matrix
+  itself and prints nothing, so a healthy run is silent and costs nothing.
+
+  `schedule` is positional, which is why the cron expression comes before the
+  flags rather than behind a --schedule.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: |2-
+                      $HERMES cron create "0 8 * * 1" \
+                        --name weekly-digest \
+                        --script weekly-digest-run.sh \
+                        --no-agent \
+  before: |2-
+                      -d "Homelab cluster debugging: resource pressure, Flux, MCP, cron" || true
+
+                    if ! $HERMES cron list 2>/dev/null | grep -q "weekly-digest"; then
+  after: |2-
+                        --deliver local || true
+                    fi
+                securityContext:
+  last_seen_line: 180
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/hermes/app/helmrelease.yaml
+  line: 180
+author:
+  name: claude-code
+  kind: agent
+  source: session

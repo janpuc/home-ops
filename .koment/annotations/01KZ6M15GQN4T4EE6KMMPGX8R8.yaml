@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6M15GQN4T4EE6KMMPGX8R8
+file: kubernetes/apps/ai/memini/app/helmrelease.yaml
+kind: invariant
+body: |-
+  Stays "bge-m3" even though the InferenceService next to it is named
+  bge-embedding-m3. memini persists this string in its store and refuses to
+  boot if it ever disagrees, so renaming it to match the resource would force
+  a full re-embed of every memory for no benefit — llama.cpp still serves
+  the identical weights under --alias bge-m3. The matching invariant is
+  recorded on kubernetes/apps/ai/llmkube/models/bge-embedding-m3.yaml; the two
+  must be changed together or not at all.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: "              MEMINI_EMBED_MODEL: bge-m3"
+  before: |2-
+                  MEMINI_SHORT_TERM_CAP: "300"
+                  MEMINI_DEMOTE_AFTER: 1440h
+                  MEMINI_EMBED_BASE_URL: http://bge-embedding-m3.ai.svc.cluster.local:8080/v1
+  after: |2-
+                  MEMINI_EMBED_DIMS: "1024"
+                  MEMINI_EMBED_MAX_CONCURRENCY: "2"
+                  MEMINI_LOG_FORMAT: json
+  last_seen_line: 43
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/memini/app/helmrelease.yaml
+  line: 43
+author:
+  name: claude-code
+  kind: agent
+  source: session

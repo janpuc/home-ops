@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6KWNKGY20G6FS1FHPP9EB3
+file: kubernetes/apps/ai/open-webui/app/helmrelease.yaml
+kind: why
+body: |-
+  The memini Open WebUI filter seeds its base_url and home Valves from these
+  env vars, so declaring them here keeps the wiring in git instead of only in
+  the UI's Valve settings, where a container rebuild or a reinstalled filter
+  would lose them. MEMINI_API_KEY is deliberately not here — it arrives from
+  open-webui-secret via envFrom.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: |2-
+                  MEMINI_BASE_URL: http://memini.ai.svc.cluster.local:8080
+                  MEMINI_HOME: personal/jan
+  before: |2-
+                  ENABLE_WEBSOCKET_SUPPORT: true
+                  WEBSOCKET_MANAGER: redis
+                  WEBSOCKET_REDIS_URL: redis://open-webui-dragonfly:6379
+  after: |2-
+                envFrom:
+                  - secretRef:
+                      name: open-webui-secret
+  last_seen_line: 42
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/open-webui/app/helmrelease.yaml
+  line: 42
+author:
+  name: claude-code
+  kind: agent
+  source: session

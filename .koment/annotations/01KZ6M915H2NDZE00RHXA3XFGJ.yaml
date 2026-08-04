@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6M915H2NDZE00RHXA3XFGJ
+file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
+kind: invariant
+body: |-
+  The weekly rollup is split across two paths on purpose. The generator goes
+  on PATH as /opt/data/.local/bin/weekly-digest, but the cron wrapper must
+  live under HERMES_HOME/scripts — that is the only location `hermes cron
+  --script` will accept. Moving the wrapper anywhere else breaks the cron job
+  with no error at install time.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: |2-
+                    mkdir -p /opt/data/scripts
+                    cp /run/config/weekly-digest-run.sh /opt/data/scripts/weekly-digest-run.sh
+  before: |2-
+                    chmod 755 /opt/data/.local/bin/matrix-post
+                    cp /run/config/weekly-digest.py /opt/data/.local/bin/weekly-digest
+                    chmod 755 /opt/data/.local/bin/weekly-digest
+  after: |2-
+                    chmod 755 /opt/data/scripts/weekly-digest-run.sh
+                securityContext:
+                  allowPrivilegeEscalation: false
+  last_seen_line: 70
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/hermes/app/helmrelease.yaml
+  line: 70
+author:
+  name: claude-code
+  kind: agent
+  source: session

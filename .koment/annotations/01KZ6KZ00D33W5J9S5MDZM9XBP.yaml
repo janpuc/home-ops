@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6KZ00D33W5J9S5MDZM9XBP
+file: kubernetes/apps/ai/llmkube/models/bge-reranker-v2-m3.yaml
+kind: why
+body: |-
+  bge-reranker-v2-m3 is a BERT cross-encoder, not an embedding model.
+  --reranking together with --pooling rank is what exposes the Cohere-style
+  /v1/rerank endpoint that memini calls; without both, the server comes up
+  healthy but memini's rerank requests fail and recall silently falls back to
+  composite ordering.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: |2-
+        - --reranking
+        - --pooling
+        - rank
+  before: |2-
+        cpu: 100m
+        memory: 2Gi
+      extraArgs:
+  after: |2-
+        - --embedding
+        - --threads
+        - "4"
+  last_seen_line: 39
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/llmkube/models/bge-reranker-v2-m3.yaml
+  line: 39
+author:
+  name: claude-code
+  kind: agent
+  source: session

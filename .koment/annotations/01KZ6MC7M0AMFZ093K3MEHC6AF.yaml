@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6MC7M0AMFZ093K3MEHC6AF
+file: kubernetes/apps/ai/hermes/app/configmap.yaml
+kind: gotcha
+body: |-
+  cron_mode is binary: "deny" blocks every approval-gated command in a cron
+  session, "approve" auto-approves ALL of them. approvals.mode: smart above
+  does NOT apply to cron — approval.py::_get_cron_approval_mode only ever
+  returns deny or approve. It is set to approve so scheduled jobs can actually
+  act (remediate, commit, restart) instead of only reading.
+
+  What makes that safe is the deny list immediately below, not the approval
+  mode. Read that annotation before changing either.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: "      cron_mode: approve"
+  before: |2-
+        approvals:
+          mode: smart
+          timeout: 60
+  after: |2-
+          deny:
+            - "*talosctl*reset*"
+            - "*talosctl*wipe*"
+  last_seen_line: 138
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/hermes/app/configmap.yaml
+  line: 138
+author:
+  name: claude-code
+  kind: agent
+  source: session

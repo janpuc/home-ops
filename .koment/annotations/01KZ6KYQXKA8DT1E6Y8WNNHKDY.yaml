@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6KYQXKA8DT1E6Y8WNNHKDY
+file: kubernetes/apps/ai/llmkube/models/bge-reranker-v2-m3.yaml
+kind: why
+body: |-
+  Q8_0 is 606 MiB, chosen to match bge-m3 rather than for accuracy reasons.
+  The iGPU GTT aperture is capped at 2 GiB by amdgpu.gttsize=2048 in
+  talos/schematic.yaml.j2 and this model shares it with bge-embedding-m3, so
+  weights and compute buffer together have very little headroom. Check
+  mem_info_gtt_used before reaching for a larger quant.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: |2-
+      quantization: Q8_0
+      source: https://huggingface.co/gpustack/bge-reranker-v2-m3-GGUF/resolve/main/bge-reranker-v2-m3-Q8_0.gguf
+  before: |2-
+          resourceClaims:
+            - name: gpu
+              resourceClaimTemplateName: llmkube-models-gpu
+  after: |-
+    ---
+    # yaml-language-server: $schema=https://k8s-schemas.home-operations.com/inference.llmkube.dev/inferenceservice_v1alpha1.json
+    apiVersion: inference.llmkube.dev/v1alpha1
+  last_seen_line: 18
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/llmkube/models/bge-reranker-v2-m3.yaml
+  line: 18
+author:
+  name: claude-code
+  kind: agent
+  source: session

@@ -28,7 +28,6 @@ spec:
   runtime: llamacpp
   image: ghcr.io/ggml-org/llama.cpp:server-vulkan-b10200@sha256:5b69b5a99886b6bdc24c281b9a041c21e0e9d5502018c55098d4b09cac6ee5a4
   replicas: 1
-  # per-slot ctx = contextSize/parallelSlots; 2 slots = 4096, enough for long memini docs.
   contextSize: 8192
   parallelSlots: 2
   batchSize: 8192
@@ -47,12 +46,6 @@ spec:
     - "0"
     - --sleep-idle-seconds
     - "300"
-    # DO NOT rename this alias to match the resource name. memini records the
-    # value of MEMINI_EMBED_MODEL in its store and refuses to boot if it ever
-    # disagrees (cmd/memini/root.go reconcileEmbedModel) — the check is a plain
-    # string compare, so changing it would require re-embedding every memory
-    # even though the weights are identical. The k8s resource was renamed to
-    # bge-embedding-m3; the served model identity stays bge-m3 on purpose.
     - --alias
     - bge-m3
     - --metrics

@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6MCJ3RTNR4RAA4T4DKKQZF
+file: kubernetes/apps/ai/hermes/app/configmap.yaml
+kind: gotcha
+body: |-
+  Required, not a convenience. Registration normally prompts for consent on
+  first use of each (event, command) pair and records the answer in
+  ~/.hermes/shell-hooks-allowlist.json. The gateway and cron have no TTY, so
+  without this the hook silently never registers — the guard appears
+  configured and simply never runs.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: "    hooks_auto_accept: true"
+  before: |2-
+            - command: /usr/bin/python3 /opt/data/hook-scripts/home-ops-guard.py
+              matcher: terminal
+              timeout: 10
+  after: |2-
+        security:
+          redact_secrets: true
+          website_blocklist:
+  last_seen_line: 167
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/hermes/app/configmap.yaml
+  line: 167
+author:
+  name: claude-code
+  kind: agent
+  source: session

@@ -1,0 +1,31 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6KXFTY3CGF3VYW9RZ65DHM
+file: kubernetes/apps/ai/hermes-matrix/app/kustomization.yaml
+kind: why
+body: |-
+  skills/.curator_state is unreadable even by the workload's own user, so a
+  strict snapshot fails on it and no backup is taken at all. Tolerating file
+  and directory read errors trades an exact snapshot for one that actually
+  completes. If backups start silently missing real data, this is the first
+  thing to suspect.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: |2-
+            value:
+              ignoreFileErrors: true
+              ignoreDirErrors: true
+  before: |2-
+        patch: |
+          - op: add
+            path: /spec/errorHandling
+  last_seen_line: 16
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/hermes-matrix/app/kustomization.yaml
+  line: 16
+author:
+  name: claude-code
+  kind: agent
+  source: session

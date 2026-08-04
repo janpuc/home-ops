@@ -20,7 +20,6 @@ spec:
               repository: ghcr.io/open-webui/open-webui
               tag: v0.11.0@sha256:72c0ba641ba75e7aa52655cb242570906ececd09b1140fb736483038a22b3228
             env:
-              # OAuth
               ENABLE_OAUTH_SIGNUP: true
               ENABLE_OAUTH_PERSISTENT_CONFIG: false
               OAUTH_MERGE_ACCOUNTS_BY_EMAIL: true
@@ -29,23 +28,17 @@ spec:
               OAUTH_SCOPES: "openid profile email groups"
               OPENID_PROVIDER_URL: https://id.janpuc.com/.well-known/openid-configuration
               OPENID_REDIRECT_URI: https://chat.janpuc.com/oauth/oidc/callback
-              # Features
               ENABLE_LOGIN_FORM: false
               ENABLE_OLLAMA_API: false
               ENABLE_OPENAI_API: false
               ENABLE_RAG_WEB_SEARCH: true
               ENABLE_SEARCH_QUERY: true
               ENABLE_SIGNUP: false
-              # Search
               RAG_WEB_SEARCH_ENGINE: searxng
               SEARXNG_QUERY_URL: http://searxng.selfhosted.svc.cluster.local:8080/search?q=<query>
-              # Websockets
               ENABLE_WEBSOCKET_SUPPORT: true
               WEBSOCKET_MANAGER: redis
               WEBSOCKET_REDIS_URL: redis://open-webui-dragonfly:6379
-              # memini — the filter's base_url and home Valves seed from these,
-              # so they are declared here rather than living only in the UI.
-              # MEMINI_API_KEY comes from open-webui-secret via envFrom.
               MEMINI_BASE_URL: http://memini.ai.svc.cluster.local:8080
               MEMINI_HOME: personal/jan
             envFrom:

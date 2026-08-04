@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
+version: 1
+id: 01KZ6MGRJQG2ZB3V830S0ZR6JY
+file: kubernetes/apps/ai/hermes/app/configmap.yaml
+kind: why
+body: |-
+  Certificate health is judged against cert-manager's own renewalTime and
+  Ready condition rather than a fixed "expires within 30 days" window. These
+  are 7-day certificates, so a 30-day window would fire every single week on a
+  perfectly healthy cert. The question worth asking is whether cert-manager is
+  keeping up, not how close expiry is.
+created: "2026-08-04"
+anchor:
+  scope: excerpt
+  excerpt: '            overdue = age_days(st.get("renewalTime"))'
+  before: |2-
+                    problems.append("<code>%s/%s</code> not Ready — %s"
+                                    % (h(ns), h(name), h(reason or ready)))
+                    continue
+  after: |2-
+                if overdue is not None and overdue > 0:
+                    problems.append("<code>%s/%s</code> renewal overdue by %.1fd"
+                                    % (h(ns), h(name), overdue))
+  last_seen_line: 624
+git:
+  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+  path: kubernetes/apps/ai/hermes/app/configmap.yaml
+  line: 624
+author:
+  name: claude-code
+  kind: agent
+  source: session
