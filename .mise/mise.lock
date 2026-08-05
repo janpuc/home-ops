@@ -72,82 +72,82 @@ url_api = "https://api.github.com/repos/rhysd/actionlint/releases/assets/3849249
 provenance = "github-attestations"
 
 [[tools."github:janpuc/koment"]]
-version = "0.6.0"
+version = "0.7.0"
 backend = "github:janpuc/koment"
 
 [tools."github:janpuc/koment"."platforms.linux-arm64"]
-checksum = "sha256:63d10c4360724d93e845641dc751dcf599839fd744cc3ae1ab982b62d6868a52"
-url = "https://github.com/janpuc/koment/releases/download/v0.6.0/koment_0.6.0_linux_arm64.tar.gz"
-url_api = "https://api.github.com/repos/janpuc/koment/releases/assets/502314032"
+checksum = "sha256:1274d76970a85c45acb43ceec53787a7645df1c666b9079fb62c2efe3994378b"
+url = "https://github.com/janpuc/koment/releases/download/v0.7.0/koment_0.7.0_linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/janpuc/koment/releases/assets/502417916"
 
 [tools."github:janpuc/koment"."platforms.linux-arm64-musl"]
-checksum = "sha256:63d10c4360724d93e845641dc751dcf599839fd744cc3ae1ab982b62d6868a52"
-url = "https://github.com/janpuc/koment/releases/download/v0.6.0/koment_0.6.0_linux_arm64.tar.gz"
-url_api = "https://api.github.com/repos/janpuc/koment/releases/assets/502314032"
+checksum = "sha256:1274d76970a85c45acb43ceec53787a7645df1c666b9079fb62c2efe3994378b"
+url = "https://github.com/janpuc/koment/releases/download/v0.7.0/koment_0.7.0_linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/janpuc/koment/releases/assets/502417916"
 
 [tools."github:janpuc/koment"."platforms.linux-x64"]
-checksum = "sha256:65dda13ae1d458cb0aa2be3fc0c1bd4e49a18e0240bd54015fe4e5bd457a9b0a"
-url = "https://github.com/janpuc/koment/releases/download/v0.6.0/koment_0.6.0_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/janpuc/koment/releases/assets/502314035"
+checksum = "sha256:12428c17f5c8a59ba3451bb3f0f2a13dd66f9ac5bbaf43544482f581718e8187"
+url = "https://github.com/janpuc/koment/releases/download/v0.7.0/koment_0.7.0_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/janpuc/koment/releases/assets/502417918"
 
 [tools."github:janpuc/koment"."platforms.linux-x64-musl"]
-checksum = "sha256:65dda13ae1d458cb0aa2be3fc0c1bd4e49a18e0240bd54015fe4e5bd457a9b0a"
-url = "https://github.com/janpuc/koment/releases/download/v0.6.0/koment_0.6.0_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/janpuc/koment/releases/assets/502314035"
+checksum = "sha256:12428c17f5c8a59ba3451bb3f0f2a13dd66f9ac5bbaf43544482f581718e8187"
+url = "https://github.com/janpuc/koment/releases/download/v0.7.0/koment_0.7.0_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/janpuc/koment/releases/assets/502417918"
 
 [tools."github:janpuc/koment"."platforms.macos-arm64"]
-checksum = "sha256:f534780962292563eee8222590079f4fd634f73d91714f5569c7508410c33ef7"
-url = "https://github.com/janpuc/koment/releases/download/v0.6.0/koment_0.6.0_darwin_arm64.tar.gz"
-url_api = "https://api.github.com/repos/janpuc/koment/releases/assets/502314036"
+checksum = "sha256:f8679640e6b50f335f3426a353c99d80211a5edda14228e2d8942d28fb4e7f2b"
+url = "https://github.com/janpuc/koment/releases/download/v0.7.0/koment_0.7.0_darwin_arm64.tar.gz"
+url_api = "https://api.github.com/repos/janpuc/koment/releases/assets/502417915"
 
 [tools."github:janpuc/koment"."platforms.macos-x64"]
-checksum = "sha256:315fd72cccd47b2ca9c3e959a0f90e7b1336f0183eb4e3ce54c40bcca35964c8"
-url = "https://github.com/janpuc/koment/releases/download/v0.6.0/koment_0.6.0_darwin_amd64.tar.gz"
-url_api = "https://api.github.com/repos/janpuc/koment/releases/assets/502314034"
+checksum = "sha256:fdc854b5cd45db153f2c8f8fd5178e9eba17b224678e4b264029797f71e95f1b"
+url = "https://github.com/janpuc/koment/releases/download/v0.7.0/koment_0.7.0_darwin_amd64.tar.gz"
+url_api = "https://api.github.com/repos/janpuc/koment/releases/assets/502417914"
 
 [tools."github:janpuc/koment"."platforms.windows-x64"]
-checksum = "sha256:caea20e64e9d7cc2a67fbd851ecfcc4ca5d3c93ad35a2dc745e982745979a53f"
-url = "https://github.com/janpuc/koment/releases/download/v0.6.0/koment_0.6.0_windows_amd64.zip"
-url_api = "https://api.github.com/repos/janpuc/koment/releases/assets/502314033"
+checksum = "sha256:9fa71325c559092e2ea3c8aab138319dc532e24119290b608ed7f8422f1a8807"
+url = "https://github.com/janpuc/koment/releases/download/v0.7.0/koment_0.7.0_windows_amd64.zip"
+url_api = "https://api.github.com/repos/janpuc/koment/releases/assets/502417917"
 
 [[tools."github:mitsuhiko/minijinja"]]
-version = "2.21.0"
+version = "2.22.0"
 backend = "github:mitsuhiko/minijinja"
 
 [tools."github:mitsuhiko/minijinja"."platforms.linux-arm64"]
-checksum = "sha256:60c7d2aef34c311ce9598c483ab277e6185c555a7497b18bd5ff436eafb0f2f0"
-url = "https://github.com/mitsuhiko/minijinja/releases/download/2.21.0/minijinja-cli-aarch64-unknown-linux-gnu.tar.xz"
-url_api = "https://api.github.com/repos/mitsuhiko/minijinja/releases/assets/450244904"
+checksum = "sha256:2d1ddaa7c16e2025f70e76122d8685334d7e6078e72994966f4098fc2e76c026"
+url = "https://github.com/mitsuhiko/minijinja/releases/download/2.22.0/minijinja-cli-aarch64-unknown-linux-gnu.tar.xz"
+url_api = "https://api.github.com/repos/mitsuhiko/minijinja/releases/assets/501316166"
 
 [tools."github:mitsuhiko/minijinja"."platforms.linux-arm64-musl"]
-checksum = "sha256:2fb95a98cee9650dd8e2124a28303c432e4a08ac7636336faa3d20e7a3f5ffee"
-url = "https://github.com/mitsuhiko/minijinja/releases/download/2.21.0/minijinja-cli-aarch64-unknown-linux-musl.tar.xz"
-url_api = "https://api.github.com/repos/mitsuhiko/minijinja/releases/assets/450244906"
+checksum = "sha256:4b2dc7157f824b02bbdfde7f76f02b07114ef7b9b289cd862a978ad3323d9c08"
+url = "https://github.com/mitsuhiko/minijinja/releases/download/2.22.0/minijinja-cli-aarch64-unknown-linux-musl.tar.xz"
+url_api = "https://api.github.com/repos/mitsuhiko/minijinja/releases/assets/501316168"
 
 [tools."github:mitsuhiko/minijinja"."platforms.linux-x64"]
-checksum = "sha256:0e75820f2e833aa35af22365fc8fbadc3e65e62fd3af2d074b79a977afe22354"
-url = "https://github.com/mitsuhiko/minijinja/releases/download/2.21.0/minijinja-cli-x86_64-unknown-linux-gnu.tar.xz"
-url_api = "https://api.github.com/repos/mitsuhiko/minijinja/releases/assets/450244942"
+checksum = "sha256:4400fe9b6128b9d1ebac483987c6bb5fd14d237f7bcfeb9098748ee80b45c589"
+url = "https://github.com/mitsuhiko/minijinja/releases/download/2.22.0/minijinja-cli-x86_64-unknown-linux-gnu.tar.xz"
+url_api = "https://api.github.com/repos/mitsuhiko/minijinja/releases/assets/501316225"
 
 [tools."github:mitsuhiko/minijinja"."platforms.linux-x64-musl"]
-checksum = "sha256:d2c91c46739f7e41b8666d877a65881c180f81011890da9229d2a4b1e1991b2f"
-url = "https://github.com/mitsuhiko/minijinja/releases/download/2.21.0/minijinja-cli-x86_64-unknown-linux-musl.tar.xz"
-url_api = "https://api.github.com/repos/mitsuhiko/minijinja/releases/assets/450244948"
+checksum = "sha256:f2aee96668d7fb4c2d381458f2dcdd816ed524148945b7a41b2cbef46c32c3a4"
+url = "https://github.com/mitsuhiko/minijinja/releases/download/2.22.0/minijinja-cli-x86_64-unknown-linux-musl.tar.xz"
+url_api = "https://api.github.com/repos/mitsuhiko/minijinja/releases/assets/501316228"
 
 [tools."github:mitsuhiko/minijinja"."platforms.macos-arm64"]
-checksum = "sha256:894dd61341cb9e6e2ca305c9d4d9191aed011d58b7bcb189fe881acb10c282a2"
-url = "https://github.com/mitsuhiko/minijinja/releases/download/2.21.0/minijinja-cli-aarch64-apple-darwin.tar.xz"
-url_api = "https://api.github.com/repos/mitsuhiko/minijinja/releases/assets/450244892"
+checksum = "sha256:b93bd42462ae7702115de07c4ca0126d1f165968c94dbc6e1bf4419c6634fcfa"
+url = "https://github.com/mitsuhiko/minijinja/releases/download/2.22.0/minijinja-cli-aarch64-apple-darwin.tar.xz"
+url_api = "https://api.github.com/repos/mitsuhiko/minijinja/releases/assets/501316155"
 
 [tools."github:mitsuhiko/minijinja"."platforms.macos-x64"]
-checksum = "sha256:059372d00d5cc02f21a6088ed71b63dac89e433a560e6ccce2f5ad2ad9937233"
-url = "https://github.com/mitsuhiko/minijinja/releases/download/2.21.0/minijinja-cli-x86_64-apple-darwin.tar.xz"
-url_api = "https://api.github.com/repos/mitsuhiko/minijinja/releases/assets/450244932"
+checksum = "sha256:6e1818e7f8f3e1b02974b54a7e958e80b1554257d2555b6f7ecf4075fa7b16da"
+url = "https://github.com/mitsuhiko/minijinja/releases/download/2.22.0/minijinja-cli-x86_64-apple-darwin.tar.xz"
+url_api = "https://api.github.com/repos/mitsuhiko/minijinja/releases/assets/501316218"
 
 [tools."github:mitsuhiko/minijinja"."platforms.windows-x64"]
-checksum = "sha256:ce86a18d883e82b8b46d2480db6a80233e50d1452fab3a513d8e0d396f34014e"
-url = "https://github.com/mitsuhiko/minijinja/releases/download/2.21.0/minijinja-cli-x86_64-pc-windows-msvc.zip"
-url_api = "https://api.github.com/repos/mitsuhiko/minijinja/releases/assets/450244937"
+checksum = "sha256:41b7e929931682597f641531f18dc4dfa4c01216caccba90e93abda971e17958"
+url = "https://github.com/mitsuhiko/minijinja/releases/download/2.22.0/minijinja-cli-x86_64-pc-windows-msvc.zip"
+url_api = "https://api.github.com/repos/mitsuhiko/minijinja/releases/assets/501316221"
 
 [[tools.jq]]
 version = "1.8.2"
@@ -196,43 +196,43 @@ url_api = "https://api.github.com/repos/jqlang/jq/releases/assets/453012788"
 provenance = "github-attestations"
 
 [[tools.just]]
-version = "1.57.0"
+version = "1.58.0"
 backend = "aqua:casey/just"
 
 [tools.just."platforms.linux-arm64"]
-checksum = "sha256:f225044a81adea6e0b3a8b9370aaf374e6af76c8735ae263ac993df55fd137ec"
-url = "https://github.com/casey/just/releases/download/1.57.0/just-1.57.0-aarch64-unknown-linux-musl.tar.gz"
-url_api = "https://api.github.com/repos/casey/just/releases/assets/481976912"
+checksum = "sha256:748237128c4c40cbdabc65e841d05ceba13cc23a91eaba395495894c1d9764df"
+url = "https://github.com/casey/just/releases/download/1.58.0/just-1.58.0-aarch64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/casey/just/releases/assets/500510099"
 
 [tools.just."platforms.linux-arm64-musl"]
-checksum = "sha256:f225044a81adea6e0b3a8b9370aaf374e6af76c8735ae263ac993df55fd137ec"
-url = "https://github.com/casey/just/releases/download/1.57.0/just-1.57.0-aarch64-unknown-linux-musl.tar.gz"
-url_api = "https://api.github.com/repos/casey/just/releases/assets/481976912"
+checksum = "sha256:748237128c4c40cbdabc65e841d05ceba13cc23a91eaba395495894c1d9764df"
+url = "https://github.com/casey/just/releases/download/1.58.0/just-1.58.0-aarch64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/casey/just/releases/assets/500510099"
 
 [tools.just."platforms.linux-x64"]
-checksum = "sha256:45b548094283cb9739af8f13273b8cddeee869f5b4ef2bb631b1f311cb566155"
-url = "https://github.com/casey/just/releases/download/1.57.0/just-1.57.0-x86_64-unknown-linux-musl.tar.gz"
-url_api = "https://api.github.com/repos/casey/just/releases/assets/481976790"
+checksum = "sha256:4a5cc2f53e6f0f8c59092a6cc38291eb729d46a7dd95d3ae582008881b84931d"
+url = "https://github.com/casey/just/releases/download/1.58.0/just-1.58.0-x86_64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/casey/just/releases/assets/500509978"
 
 [tools.just."platforms.linux-x64-musl"]
-checksum = "sha256:45b548094283cb9739af8f13273b8cddeee869f5b4ef2bb631b1f311cb566155"
-url = "https://github.com/casey/just/releases/download/1.57.0/just-1.57.0-x86_64-unknown-linux-musl.tar.gz"
-url_api = "https://api.github.com/repos/casey/just/releases/assets/481976790"
+checksum = "sha256:4a5cc2f53e6f0f8c59092a6cc38291eb729d46a7dd95d3ae582008881b84931d"
+url = "https://github.com/casey/just/releases/download/1.58.0/just-1.58.0-x86_64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/casey/just/releases/assets/500509978"
 
 [tools.just."platforms.macos-arm64"]
-checksum = "sha256:0381db216c2f97ce31d838a1562c1064dfbfa73f5a8a81581338a2cd9217df47"
-url = "https://github.com/casey/just/releases/download/1.57.0/just-1.57.0-aarch64-apple-darwin.tar.gz"
-url_api = "https://api.github.com/repos/casey/just/releases/assets/481976803"
+checksum = "sha256:50ae3e996c974a0bf32ea7d10f495070df33f1b43e0616b2769e3d4821ed8f48"
+url = "https://github.com/casey/just/releases/download/1.58.0/just-1.58.0-aarch64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/casey/just/releases/assets/500509965"
 
 [tools.just."platforms.macos-x64"]
-checksum = "sha256:5e6ade3698095576274b2b32cc9e5d467185e8e40b04949004c04cc3d7e962dc"
-url = "https://github.com/casey/just/releases/download/1.57.0/just-1.57.0-x86_64-apple-darwin.tar.gz"
-url_api = "https://api.github.com/repos/casey/just/releases/assets/481976824"
+checksum = "sha256:9a09cfef66aaa79da58203970103a0684307716caaabd3e9844cacc4dc0f4023"
+url = "https://github.com/casey/just/releases/download/1.58.0/just-1.58.0-x86_64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/casey/just/releases/assets/500510084"
 
 [tools.just."platforms.windows-x64"]
-checksum = "sha256:4c7391d17cb1d17b758b52004ee6411372b8a13ff37c3c9b9031625cb6026e09"
-url = "https://github.com/casey/just/releases/download/1.57.0/just-1.57.0-x86_64-pc-windows-msvc.zip"
-url_api = "https://api.github.com/repos/casey/just/releases/assets/481977734"
+checksum = "sha256:759f16fb7aa17c5c8b9594b6d4a8c1a6630dfd042cf2b3ff84841454d3d188dc"
+url = "https://github.com/casey/just/releases/download/1.58.0/just-1.58.0-x86_64-pc-windows-msvc.zip"
+url_api = "https://api.github.com/repos/casey/just/releases/assets/500511374"
 
 [[tools.lefthook]]
 version = "2.1.10"
@@ -281,39 +281,39 @@ url_api = "https://api.github.com/repos/evilmartians/lefthook/releases/assets/47
 provenance = "github-attestations"
 
 [[tools.node]]
-version = "26.5.1"
+version = "26.6.0"
 backend = "core:node"
 
 [tools.node."platforms.linux-arm64"]
-checksum = "sha256:21194bbf41c18d9ec277545c4d14cce8597d57a9d9f494c323d8121a25de33e8"
-url = "https://nodejs.org/dist/v26.5.1/node-v26.5.1-linux-arm64.tar.gz"
+checksum = "sha256:51c59de738843677a3c97bccbdbf9895141cb308bf25a95daeafd1aade09f0d5"
+url = "https://nodejs.org/dist/v26.6.0/node-v26.6.0-linux-arm64.tar.gz"
 
 [tools.node."platforms.linux-arm64-musl"]
-checksum = "sha256:34f620b8dad6e8c9188623e46b20f1a07283dcb1b32eba471efb08ca573444b3"
-url = "https://unofficial-builds.nodejs.org/download/release/v26.5.1/node-v26.5.1-linux-arm64-musl.tar.gz"
+checksum = "sha256:a4ad7beedb23618d1febb55b02b4e96b19f90d61e80a3d8bb52d621b8acf3f82"
+url = "https://unofficial-builds.nodejs.org/download/release/v26.6.0/node-v26.6.0-linux-arm64-musl.tar.gz"
 
 [tools.node."platforms.linux-x64"]
-checksum = "sha256:2b07f09c218d473a26442bff5a90151f53f7b7c0a23bad244eda2c26303a2ba7"
-url = "https://nodejs.org/dist/v26.5.1/node-v26.5.1-linux-x64.tar.gz"
+checksum = "sha256:714f352a7539c5ce09af15e440cbaadbe935bb23ba23fcee66b066d00a063822"
+url = "https://nodejs.org/dist/v26.6.0/node-v26.6.0-linux-x64.tar.gz"
 
 [tools.node."platforms.linux-x64-musl"]
-checksum = "sha256:95ca909bbb80688262c5b27d98ced7878bdecff2cf1f62069fa7c9c61afc0a5b"
-url = "https://unofficial-builds.nodejs.org/download/release/v26.5.1/node-v26.5.1-linux-x64-musl.tar.gz"
+checksum = "sha256:60e6a77f6fc69f77925f15c1af78e70320c9a64fe541668c7662906ef5adf3c0"
+url = "https://unofficial-builds.nodejs.org/download/release/v26.6.0/node-v26.6.0-linux-x64-musl.tar.gz"
 
 [tools.node."platforms.macos-arm64"]
-checksum = "sha256:f4387df0b46556516d19abf2f2d6806481ac8368aa7f9d96bafed422a56a1d01"
-url = "https://nodejs.org/dist/v26.5.1/node-v26.5.1-darwin-arm64.tar.gz"
+checksum = "sha256:75480cd43b6fcb35d8e772dd18983fbd9f691b2f03b1c94393206098e9944b5e"
+url = "https://nodejs.org/dist/v26.6.0/node-v26.6.0-darwin-arm64.tar.gz"
 
 [tools.node."platforms.macos-x64"]
-checksum = "sha256:077d5c936868dab19d21f77f1e71ce13697e80b3e86a399dcab238902a2ebf93"
-url = "https://nodejs.org/dist/v26.5.1/node-v26.5.1-darwin-x64.tar.gz"
+checksum = "sha256:de075ffc09f33cc4b44ed38e1e4b2ef71f699b986f6d5952329da4973220726d"
+url = "https://nodejs.org/dist/v26.6.0/node-v26.6.0-darwin-x64.tar.gz"
 
 [tools.node."platforms.windows-x64"]
-checksum = "sha256:c432c996b95cbf7568f13a0fbb37526de84a27e3a5c520c3be15f05a9a168212"
-url = "https://nodejs.org/dist/v26.5.1/node-v26.5.1-win-x64.zip"
+checksum = "sha256:aa81c8552f251ff280134985ccdaf16d336e2961b1e2c3eeb7b7b2221509f723"
+url = "https://nodejs.org/dist/v26.6.0/node-v26.6.0-win-x64.zip"
 
 [[tools.oxfmt]]
-version = "0.61.0"
+version = "0.62.0"
 backend = "npm:oxfmt"
 
 [[tools.shellcheck]]
@@ -448,41 +448,41 @@ url_api = "https://api.github.com/repos/mikefarah/yq/releases/assets/440146721"
 provenance = "cosign"
 
 [[tools.zizmor]]
-version = "1.28.0"
+version = "1.29.0"
 backend = "aqua:zizmorcore/zizmor"
 
 [tools.zizmor."platforms.linux-arm64"]
-checksum = "sha256:324e43770cfacf4216f8aefb287263b5b5c733c85b03bf7583b5cc4a0460239e"
-url = "https://github.com/zizmorcore/zizmor/releases/download/v1.28.0/zizmor-aarch64-unknown-linux-gnu.tar.gz"
-url_api = "https://api.github.com/repos/zizmorcore/zizmor/releases/assets/485211654"
+checksum = "sha256:415eaa7c0a06479a701b8e44a3e812c1047decc848ec4bede7bd6bbf49f22d20"
+url = "https://github.com/zizmorcore/zizmor/releases/download/v1.29.0/zizmor-aarch64-unknown-linux-gnu.tar.gz"
+url_api = "https://api.github.com/repos/zizmorcore/zizmor/releases/assets/498263143"
 provenance = "github-attestations"
 
 [tools.zizmor."platforms.linux-arm64-musl"]
 provenance = "github-attestations"
 
 [tools.zizmor."platforms.linux-x64"]
-checksum = "sha256:e87b67160194884e375a46a12c57ccc904f762b53845f254fab7f17d98809c09"
-url = "https://github.com/zizmorcore/zizmor/releases/download/v1.28.0/zizmor-x86_64-unknown-linux-gnu.tar.gz"
-url_api = "https://api.github.com/repos/zizmorcore/zizmor/releases/assets/485211657"
+checksum = "sha256:dd96df044a6e8538d5f423790f453bdd03d49e5b2bcc38214acc41a2f1297839"
+url = "https://github.com/zizmorcore/zizmor/releases/download/v1.29.0/zizmor-x86_64-unknown-linux-gnu.tar.gz"
+url_api = "https://api.github.com/repos/zizmorcore/zizmor/releases/assets/498263145"
 provenance = "github-attestations"
 
 [tools.zizmor."platforms.linux-x64-musl"]
 provenance = "github-attestations"
 
 [tools.zizmor."platforms.macos-arm64"]
-checksum = "sha256:54949bbd6b4c8527046bb8990bac9e0dab3eec787640f4e6199ae121dd1040be"
-url = "https://github.com/zizmorcore/zizmor/releases/download/v1.28.0/zizmor-aarch64-apple-darwin.tar.gz"
-url_api = "https://api.github.com/repos/zizmorcore/zizmor/releases/assets/485211655"
+checksum = "sha256:720322fade9e83a9c7953944c438f2ba942636b86b96a8f0e6b15ce94c8a6b6f"
+url = "https://github.com/zizmorcore/zizmor/releases/download/v1.29.0/zizmor-aarch64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/zizmorcore/zizmor/releases/assets/498263141"
 provenance = "github-attestations"
 
 [tools.zizmor."platforms.macos-x64"]
-checksum = "sha256:40a58d8560d65c71357b3977d0da425773bf8f10bf1ffd38099d963d3afdf3aa"
-url = "https://github.com/zizmorcore/zizmor/releases/download/v1.28.0/zizmor-x86_64-apple-darwin.tar.gz"
-url_api = "https://api.github.com/repos/zizmorcore/zizmor/releases/assets/485211652"
+checksum = "sha256:648b72ab9941a7f2a8d65d7b68a8e76cef789538c8df3a3950384d38423375b0"
+url = "https://github.com/zizmorcore/zizmor/releases/download/v1.29.0/zizmor-x86_64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/zizmorcore/zizmor/releases/assets/498263144"
 provenance = "github-attestations"
 
 [tools.zizmor."platforms.windows-x64"]
-checksum = "sha256:06e5b2345323201ed4c55897651862fee3b43f79ddced799f1236f0f0d1c1c0f"
-url = "https://github.com/zizmorcore/zizmor/releases/download/v1.28.0/zizmor-x86_64-pc-windows-msvc.zip"
-url_api = "https://api.github.com/repos/zizmorcore/zizmor/releases/assets/485211651"
+checksum = "sha256:68a6bc6888f10bf0d53658c75885e7c1b7a0588d4c1fbc3f0ca280ad7324bf06"
+url = "https://github.com/zizmorcore/zizmor/releases/download/v1.29.0/zizmor-x86_64-pc-windows-msvc.zip"
+url_api = "https://api.github.com/repos/zizmorcore/zizmor/releases/assets/498263142"
 provenance = "github-attestations"
