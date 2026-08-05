@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6KXDHWB36K27KK4N3AP8BG
 file: kubernetes/apps/downloads/qbittorrent/app/helmrelease.yaml
 kind: gotcha
+title: gluetun entrypoint strips wireguard rules to coexist with Cilium
 body: |-
   gluetun's entrypoint is wrapped only to delete its own wireguard policy
   routes before starting. Those rules collide with Cilium's routing and the

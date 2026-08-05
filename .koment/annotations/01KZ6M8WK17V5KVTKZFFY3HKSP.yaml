@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6M8WK17V5KVTKZFFY3HKSP
 file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
 kind: why
+title: home-ops-guard.py is 644 because shlex names the interpreter
 body: |-
   The pre_tool_call shell hook. 644 rather than 755 is deliberate and correct:
   config.yaml invokes it as "/usr/bin/python3 .../home-ops-guard.py" through

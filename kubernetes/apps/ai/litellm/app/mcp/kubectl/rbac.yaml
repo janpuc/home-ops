@@ -10,7 +10,21 @@ metadata:
   name: kubectl-mcp-read-all
 rules:
   - apiGroups: [""]
-    resources: ["pods", "nodes", "services", "namespaces", "configmaps", "persistentvolumes", "persistentvolumeclaims", "endpoints", "resourcequotas", "limitranges", "serviceaccounts", "events"]
+    resources:
+      [
+        "pods",
+        "nodes",
+        "services",
+        "namespaces",
+        "configmaps",
+        "persistentvolumes",
+        "persistentvolumeclaims",
+        "endpoints",
+        "resourcequotas",
+        "limitranges",
+        "serviceaccounts",
+        "events",
+      ]
     verbs: ["get", "list", "watch"]
   - apiGroups: [""]
     resources: ["pods/log"]

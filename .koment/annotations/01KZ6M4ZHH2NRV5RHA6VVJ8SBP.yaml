@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6M4ZHH2NRV5RHA6VVJ8SBP
 file: kubernetes/apps/ai/hermes-matrix/app/helmrelease.yaml
 kind: why
+title: patched volume mounts app-only so the init reads pristine upstream
 body: |-
   Holds the patched matrix.py that the init container produces. It is mounted
   over the site-packages copy for the app container ONLY — the init

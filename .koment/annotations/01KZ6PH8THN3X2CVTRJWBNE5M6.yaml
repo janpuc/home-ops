@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6PH8THN3X2CVTRJWBNE5M6
 file: kubernetes/apps/selfhosted/koment/app/helmrelease.yaml
 kind: why
+title: fullnameOverride stops the chart naming the Service koment-koment
 body: |-
   Without this the chart names everything `koment-koment` (release name +
   chart name), and hermes' mcp_servers URL in

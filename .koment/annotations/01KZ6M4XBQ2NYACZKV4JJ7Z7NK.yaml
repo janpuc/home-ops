@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6M4XBQ2NYACZKV4JJ7Z7NK
 file: kubernetes/apps/ai/hermes-matrix/app/helmrelease.yaml
 kind: why
+title: hermes-matrix forwards into the main hermes API server
 body: |-
   This deployment is a proxy, not a second agent: it terminates Matrix
   encryption and forwards the decrypted text to the main hermes API server,

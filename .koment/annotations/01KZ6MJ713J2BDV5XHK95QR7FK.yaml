@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6MJ713J2BDV5XHK95QR7FK
 file: kubernetes/apps/ai/hermes/app/configmap.yaml
 kind: why
+title: home-ops-guard.py enforces pull-first as a hard gate
 body: |-
   Enforces the standing home-ops convention — pull first, never auto-commit,
   edit only when asked — as a hard gate rather than relying on the agent

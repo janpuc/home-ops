@@ -72,43 +72,43 @@ url_api = "https://api.github.com/repos/rhysd/actionlint/releases/assets/3849249
 provenance = "github-attestations"
 
 [[tools."github:janpuc/koment"]]
-version = "0.4.0"
+version = "0.6.0"
 backend = "github:janpuc/koment"
 
 [tools."github:janpuc/koment"."platforms.linux-arm64"]
-checksum = "sha256:ac6c75f6ea7f15633d4b52e33d0e0092ac1862d8b60be2c19d43c9951e716382"
-url = "https://github.com/janpuc/koment/releases/download/v0.4.0/koment_0.4.0_linux_arm64.tar.gz"
-url_api = "https://api.github.com/repos/janpuc/koment/releases/assets/501420175"
+checksum = "sha256:63d10c4360724d93e845641dc751dcf599839fd744cc3ae1ab982b62d6868a52"
+url = "https://github.com/janpuc/koment/releases/download/v0.6.0/koment_0.6.0_linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/janpuc/koment/releases/assets/502314032"
 
 [tools."github:janpuc/koment"."platforms.linux-arm64-musl"]
-checksum = "sha256:ac6c75f6ea7f15633d4b52e33d0e0092ac1862d8b60be2c19d43c9951e716382"
-url = "https://github.com/janpuc/koment/releases/download/v0.4.0/koment_0.4.0_linux_arm64.tar.gz"
-url_api = "https://api.github.com/repos/janpuc/koment/releases/assets/501420175"
+checksum = "sha256:63d10c4360724d93e845641dc751dcf599839fd744cc3ae1ab982b62d6868a52"
+url = "https://github.com/janpuc/koment/releases/download/v0.6.0/koment_0.6.0_linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/janpuc/koment/releases/assets/502314032"
 
 [tools."github:janpuc/koment"."platforms.linux-x64"]
-checksum = "sha256:3daaef6b7625f6ef10afc2e7d81d06cb931864e3d072fa971cf562d3140dd072"
-url = "https://github.com/janpuc/koment/releases/download/v0.4.0/koment_0.4.0_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/janpuc/koment/releases/assets/501420176"
+checksum = "sha256:65dda13ae1d458cb0aa2be3fc0c1bd4e49a18e0240bd54015fe4e5bd457a9b0a"
+url = "https://github.com/janpuc/koment/releases/download/v0.6.0/koment_0.6.0_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/janpuc/koment/releases/assets/502314035"
 
 [tools."github:janpuc/koment"."platforms.linux-x64-musl"]
-checksum = "sha256:3daaef6b7625f6ef10afc2e7d81d06cb931864e3d072fa971cf562d3140dd072"
-url = "https://github.com/janpuc/koment/releases/download/v0.4.0/koment_0.4.0_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/janpuc/koment/releases/assets/501420176"
+checksum = "sha256:65dda13ae1d458cb0aa2be3fc0c1bd4e49a18e0240bd54015fe4e5bd457a9b0a"
+url = "https://github.com/janpuc/koment/releases/download/v0.6.0/koment_0.6.0_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/janpuc/koment/releases/assets/502314035"
 
 [tools."github:janpuc/koment"."platforms.macos-arm64"]
-checksum = "sha256:e5079292e6f9b3183959f9183ff4ac505eaaf796037d30369c48c67dc8e99594"
-url = "https://github.com/janpuc/koment/releases/download/v0.4.0/koment_0.4.0_darwin_arm64.tar.gz"
-url_api = "https://api.github.com/repos/janpuc/koment/releases/assets/501420177"
+checksum = "sha256:f534780962292563eee8222590079f4fd634f73d91714f5569c7508410c33ef7"
+url = "https://github.com/janpuc/koment/releases/download/v0.6.0/koment_0.6.0_darwin_arm64.tar.gz"
+url_api = "https://api.github.com/repos/janpuc/koment/releases/assets/502314036"
 
 [tools."github:janpuc/koment"."platforms.macos-x64"]
-checksum = "sha256:5a38842bae493b0da67c491ec64878abf6db0e5ff5f6f5ccb58bfe1ead043ef5"
-url = "https://github.com/janpuc/koment/releases/download/v0.4.0/koment_0.4.0_darwin_amd64.tar.gz"
-url_api = "https://api.github.com/repos/janpuc/koment/releases/assets/501420174"
+checksum = "sha256:315fd72cccd47b2ca9c3e959a0f90e7b1336f0183eb4e3ce54c40bcca35964c8"
+url = "https://github.com/janpuc/koment/releases/download/v0.6.0/koment_0.6.0_darwin_amd64.tar.gz"
+url_api = "https://api.github.com/repos/janpuc/koment/releases/assets/502314034"
 
 [tools."github:janpuc/koment"."platforms.windows-x64"]
-checksum = "sha256:a903381fd237c7dc24be2834d7ef86c26821b800c973771e2eba72484722523b"
-url = "https://github.com/janpuc/koment/releases/download/v0.4.0/koment_0.4.0_windows_amd64.zip"
-url_api = "https://api.github.com/repos/janpuc/koment/releases/assets/501420179"
+checksum = "sha256:caea20e64e9d7cc2a67fbd851ecfcc4ca5d3c93ad35a2dc745e982745979a53f"
+url = "https://github.com/janpuc/koment/releases/download/v0.6.0/koment_0.6.0_windows_amd64.zip"
+url_api = "https://api.github.com/repos/janpuc/koment/releases/assets/502314033"
 
 [[tools."github:mitsuhiko/minijinja"]]
 version = "2.21.0"

@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6QQN4RF6SCYCMP09HABG2Z
 file: .lefthook.toml
 kind: why
+title: format-go block kept verbatim for clean upstream re-syncs
 body: |-
   Verbatim from home-operations/.github/lefthook.common.toml. Kept
   byte-identical so any future re-sync from upstream is a no-op for this

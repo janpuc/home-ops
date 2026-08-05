@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6PHQ7KD2EAE6CEN7D9PK50
 file: kubernetes/apps/ai/hermes/app/configmap.yaml
 kind: why
+title: koment MCP reaches hermes directly without a LiteLLM hop
 body: |-
   The one MCP server here that does not go through LiteLLM, because koment is
   self-hosted in this cluster and LiteLLM would add a proxy hop with nothing

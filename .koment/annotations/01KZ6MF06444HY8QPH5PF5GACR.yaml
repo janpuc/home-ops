@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6MF06444HY8QPH5PF5GACR
 file: kubernetes/apps/ai/hermes/app/configmap.yaml
 kind: why
+title: matrix-post.py delivers into named Matrix rooms from anywhere
 body: |-
   Delivers a message into a named Matrix room from anywhere the agent runs —
   cron jobs, skills, scripts. The init container installs it as

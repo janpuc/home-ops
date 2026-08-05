@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6MDPVRCMZT612X1EKN2E31
 file: kubernetes/apps/ai/hermes/app/configmap.yaml
 kind: why
+title: split MCP entries per server to stop registering all 418 tools
 body: |-
   One Hermes entry per upstream MCP server, rather than a single aggregated
   "homelab" entry pointing at http://litellm.ai:4000/mcp. Two reasons:

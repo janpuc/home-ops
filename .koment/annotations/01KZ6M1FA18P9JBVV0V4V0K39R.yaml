@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6M1FA18P9JBVV0V4V0K39R
 file: kubernetes/apps/ai/memini/app/helmrelease.yaml
 kind: anti-pattern
+title: positive RERANK_MIN_SCORE blindfolds personal recall
 body: |-
   Disabled deliberately. Do not re-enable without re-measuring.
 

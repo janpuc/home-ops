@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6KWNKGY20G6FS1FHPP9EB3
 file: kubernetes/apps/ai/open-webui/app/helmrelease.yaml
 kind: why
+title: memini filter wiring lives in env to survive reinstalls
 body: |-
   The memini Open WebUI filter seeds its base_url and home Valves from these
   env vars, so declaring them here keeps the wiring in git instead of only in

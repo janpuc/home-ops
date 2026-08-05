@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6M15GQN4T4EE6KMMPGX8R8
 file: kubernetes/apps/ai/memini/app/helmrelease.yaml
 kind: invariant
+title: MEMINI_EMBED_MODEL value pinned across memini and the embedder
 body: |-
   Stays "bge-m3" even though the InferenceService next to it is named
   bge-embedding-m3. memini persists this string in its store and refuses to

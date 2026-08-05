@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6KTA1YTQC90PFC3G5XBP71
 file: talos/schematic.yaml.j2
 kind: why
+title: iGPU GTT aperture held at 2 GiB for llmkube batch sizing
 body: |-
   Caps the iGPU GTT aperture at 2 GiB, down from the 8 GiB default. Everything
   that shares this iGPU is sized against that ceiling: the llmkube

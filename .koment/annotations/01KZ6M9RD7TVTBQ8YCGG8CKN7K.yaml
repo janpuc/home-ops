@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6M9RD7TVTBQ8YCGG8CKN7K
 file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
 kind: why
+title: hermes writes at homelab root, reads personal/jan as ancestor
 body: |-
   Hermes writes at the ROOT of the namespace tree — renamed from the flat
   "hermes" on 2026-07-30. It is a general assistant rather than a per-project

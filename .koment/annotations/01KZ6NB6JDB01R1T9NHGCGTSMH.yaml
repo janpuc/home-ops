@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6NB6JDB01R1T9NHGCGTSMH
 file: .github/workflows/koment-pages.yaml
 kind: why
+title: pages write and id-token write live only on the deploy job
 body: |-
   These two are the minimum GitHub Pages deployment needs and they live on the
   deploy job alone, never at workflow level: pages: write publishes the

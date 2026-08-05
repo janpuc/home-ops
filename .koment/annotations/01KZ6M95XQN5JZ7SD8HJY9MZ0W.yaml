@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6M95XQN5JZ7SD8HJY9MZ0W
 file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
 kind: why
+title: --prefix targets PVC so language servers survive pod restarts
 body: |-
   --prefix is what keeps the Node-based language servers out of the image's
   read-only /usr/local and inside the PVC, so they survive a pod restart

@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6KYQXKA8DT1E6Y8WNNHKDY
 file: kubernetes/apps/ai/llmkube/models/bge-reranker-v2-m3.yaml
 kind: why
+title: reranker Q8_0 sized to share 2 GiB GTT with the embedder
 body: |-
   Q8_0 is 606 MiB, chosen to match bge-m3 rather than for accuracy reasons.
   The iGPU GTT aperture is capped at 2 GiB by amdgpu.gttsize=2048 in

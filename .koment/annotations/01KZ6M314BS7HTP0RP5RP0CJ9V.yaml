@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6M314BS7HTP0RP5RP0CJ9V
 file: kubernetes/apps/ai/hermes-matrix/app/configmap.yaml
 kind: why
+title: per-room Matrix personas with private IDs filled in by Secret
 body: |-
   Per-room personas. The proxy resolves each entry against the real Matrix
   room ID and forwards the result to the main agent as a system message, so

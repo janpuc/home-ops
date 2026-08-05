@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6MCMZT45K2WX8TS2JCK4EX
 file: kubernetes/apps/ai/hermes/app/configmap.yaml
 kind: why
+title: aggregator stays on a different provider from the four advisors
 body: |-
   The council's four reference models are four distinct pretraining lineages
   — Moonshot, Zhipu, DeepSeek, Qwen — chosen so the members fail

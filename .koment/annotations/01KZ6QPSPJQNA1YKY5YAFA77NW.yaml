@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6QPSPJQNA1YKY5YAFA77NW
 file: .lefthook.toml
 kind: invariant
+title: parallel = false keeps format-then-check from racing itself
 body: |-
   Pre-commit commands run sequentially so every `format-*` step finishes (and
   `stage_fixed = true` amends the index) before `koment-check` and

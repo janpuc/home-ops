@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6MGRJQG2ZB3V830S0ZR6JY
 file: kubernetes/apps/ai/hermes/app/configmap.yaml
 kind: why
+title: cert health judged by cert-manager renewal, not expiry window
 body: |-
   Certificate health is judged against cert-manager's own renewalTime and
   Ready condition rather than a fixed "expires within 30 days" window. These

@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6M1BT1B1BP4XAKS3R973GB
 file: kubernetes/apps/ai/memini/app/helmrelease.yaml
 kind: why
+title: rerank batch chars raised so a 20-doc pool ships in one call
 body: |-
   Raised far above the 6000 default so the entire pool goes to /rerank in a
   single call. At 6000 a 20-doc pool shards into roughly 7 SERIAL rerank

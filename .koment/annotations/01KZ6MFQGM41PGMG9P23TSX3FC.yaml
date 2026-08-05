@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6MFQGM41PGMG9P23TSX3FC
 file: kubernetes/apps/ai/hermes/app/configmap.yaml
 kind: why
+title: body stays plain text so non-HTML Matrix clients render cleanly
 body: |-
   The plain `body` field is left as-is and doubles as the plain-text fallback
   for clients that do not render HTML — only formatted_body carries the

@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6MGKVXZFR0V2H54KJRX53Z
 file: kubernetes/apps/ai/hermes/app/configmap.yaml
 kind: gotcha
+title: snapshot freshness must read lastSuccessfulSnapshot, not time
 body: |-
   The field is lastSuccessfulSnapshot, not lastSnapshotTime — the latter
   exists and updates on failed attempts, so reading it would report healthy

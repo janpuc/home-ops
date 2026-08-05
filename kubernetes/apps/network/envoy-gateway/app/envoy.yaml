@@ -28,12 +28,12 @@ spec:
               template:
                 spec:
                   containers:
-                  - name: shutdown-manager
-                    requests:
-                      cpu: 10m
-                      memory: 32Mi
-                    limits:
-                      memory: 128Mi
+                    - name: shutdown-manager
+                      requests:
+                        cpu: 10m
+                        memory: 32Mi
+                      limits:
+                        memory: 128Mi
       envoyService:
         externalTrafficPolicy: Cluster
   shutdown:

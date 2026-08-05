@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6MC7M0AMFZ093K3MEHC6AF
 file: kubernetes/apps/ai/hermes/app/configmap.yaml
 kind: gotcha
+title: cron_mode is binary; the deny list is the actual safety
 body: |-
   cron_mode is binary: "deny" blocks every approval-gated command in a cron
   session, "approve" auto-approves ALL of them. approvals.mode: smart above

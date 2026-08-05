@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6MFTH9QB7EGXX060EMKEVA
 file: kubernetes/apps/ai/hermes/app/configmap.yaml
 kind: invariant
+title: matrix-post error path never echoes the bearer token
 body: |-
   Never surface the access token in an error path. The HTTP response body is
   safe to show and is genuinely useful for diagnosis, so it is included; the

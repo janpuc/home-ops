@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6KZ00D33W5J9S5MDZM9XBP
 file: kubernetes/apps/ai/llmkube/models/bge-reranker-v2-m3.yaml
 kind: why
+title: reranker flags must enable /v1/rerank or memini falls back
 body: |-
   bge-reranker-v2-m3 is a BERT cross-encoder, not an embedding model.
   --reranking together with --pooling rank is what exposes the Cohere-style

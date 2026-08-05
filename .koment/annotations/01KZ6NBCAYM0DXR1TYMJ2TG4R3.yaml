@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6NBCAYM0DXR1TYMJ2TG4R3
 file: .github/workflows/koment-pages.yaml
 kind: gotcha
+title: koment version input must move with the mise config pin
 body: |-
   The koment version is pinned in TWO places and they must be bumped together:
   this `version` input and `"github:janpuc/koment"` in .mise/config.toml.

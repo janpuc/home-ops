@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6MJB6TC6JXEZYYXWQYB01W
 file: kubernetes/apps/ai/hermes/app/configmap.yaml
 kind: invariant
+title: WRITE_SUBCOMMANDS is allow-by-omission; new git verbs slip through
 body: |-
   WRITE_SUBCOMMANDS is every git subcommand that mutates history, refs or the
   working tree — unconditionally blocked. CONDITIONAL below holds the two

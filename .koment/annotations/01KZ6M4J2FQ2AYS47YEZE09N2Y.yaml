@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6M4J2FQ2AYS47YEZE09N2Y
 file: kubernetes/apps/ai/hermes-matrix/app/helmrelease.yaml
 kind: invariant
+title: replicas 1 with Recreate keeps Matrix crypto store single-writer
 body: |-
   Both halves are load-bearing and neither is a default worth "tidying up".
   Two Matrix clients sharing one account and one crypto store clash over

@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6PHE949W21CXJ8MEDWMA7T
 file: kubernetes/apps/selfhosted/koment/app/helmrelease.yaml
 kind: why
+title: koment serve over HTTP is the only writable MCP transport
 body: |-
   This is koment's served tier, not `koment mcp`. It was chosen because every
   MCP server this cluster consumes is HTTP, and `koment mcp --write` is valid

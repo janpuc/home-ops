@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6M9M2X7FM8KQ66P1EAXYZJ
 file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
 kind: why
+title: weekly digest is --no-agent so the script IS the job
 body: |-
   Weekly digest into the #digest Matrix room, Mondays at 08:00. --no-agent
   means no LLM runs at all — the script IS the job. It posts to Matrix

@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6MCR8FGV36E8C97PJEV386
 file: kubernetes/apps/ai/hermes/app/configmap.yaml
 kind: why
+title: council preset fans out per user turn, not per tool iteration
 body: |-
   fanout: user_turn runs the advisors ONCE per user turn, after which
   MiniMax-M3 works the task alone. The default, per_iteration, re-polls all

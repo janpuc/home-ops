@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6QQ4J499ADHRFX8F2QRN51
 file: .lefthook.toml
 kind: why
+title: lefthook common commands inlined locally to escape parallel=true
 body: |-
   Mirrored from home-operations/.github/lefthook.common.toml. The upstream
   sync was broken deliberately on 2026-08-04 because lefthook merges remotes

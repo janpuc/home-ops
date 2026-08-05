@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6M5QFJY01D7HSHZ0SQAW9X
 file: kubernetes/apps/ai/hermes-matrix/app/externalsecret.yaml
 kind: why
+title: MATRIX_HOME_ROOM points at Notify so muted rooms don't lose output
 body: |-
   The home room is pointed at Notify rather than at a conversational room so
   scheduled output and reminders all land in one place. That is what lets the

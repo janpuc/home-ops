@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6MP3S8J1W6ZR0HBVW30RBY
 file: kubernetes/apps/network/envoy-gateway/app/envoy.yaml
 kind: gotcha
+title: Envoy gateway uses Cluster to dodge pod-less-node L2 blackhole
 body: |-
   Do not "fix" this to Local. Local is the tidier-looking choice — it
   preserves the client source IP and avoids an extra hop — and setting it

@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6MFXNSCF3Q4698KXX59N4Q
 file: kubernetes/apps/ai/hermes/app/configmap.yaml
 kind: why
+title: weekly-digest.py is deterministic on purpose, not an agent turn
 body: |-
   Weekly homelab rollup, emitted as HTML on stdout and delivered by the
   weekly-digest-run wrapper. It is deterministic on purpose: a factual rollup

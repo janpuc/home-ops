@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6M980E4C8M0KX1BD7JXSDQ
 file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
 kind: why
+title: GOBIN puts gopls straight on PATH instead of GOPATH/bin
 body: |-
   GOBIN, not GOPATH/bin, so gopls installs straight onto PATH instead of
   landing in /opt/data/go/bin where nothing would find it.

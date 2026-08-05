@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6M915H2NDZE00RHXA3XFGJ
 file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
 kind: invariant
+title: weekly digest wrapper lives under HERMES_HOME/scripts for hermes cron
 body: |-
   The weekly rollup is split across two paths on purpose. The generator goes
   on PATH as /opt/data/.local/bin/weekly-digest, but the cron wrapper must

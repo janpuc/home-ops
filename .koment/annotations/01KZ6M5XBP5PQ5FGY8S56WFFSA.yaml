@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6M5XBP5PQ5FGY8S56WFFSA
 file: kubernetes/apps/ai/hermes-matrix/app/externalsecret.yaml
 kind: why
+title: hermes-matrix-config exists because config.yaml isn't a valid env var
 body: |-
   A second Secret purely so the rendered config.yaml never reaches the app
   container via envFrom. "config.yaml" is not a valid env var identifier, so

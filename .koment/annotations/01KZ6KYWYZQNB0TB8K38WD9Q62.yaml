@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6KYWYZQNB0TB8K38WD9Q62
 file: kubernetes/apps/ai/llmkube/models/bge-reranker-v2-m3.yaml
 kind: invariant
+title: reranker batch numbers pinned between GTT ceiling and doc cap
 body: |-
   These four are pinned between a hard upper and a hard lower bound; do not
   copy them from bge-embedding-m3, whose compute buffer is far smaller at the

@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6M8YWK11JGVN6GS5GQ1YGE
 file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
 kind: why
+title: matrix-post init container creates .local/bin before install-tools
 body: |-
   matrix-post delivers into a named Matrix room from cron jobs and skills.
   /opt/data/.local/bin is already on PATH, and this init container runs before

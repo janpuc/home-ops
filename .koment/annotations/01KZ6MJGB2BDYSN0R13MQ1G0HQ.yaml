@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6MJGB2BDYSN0R13MQ1G0HQ
 file: kubernetes/apps/ai/hermes/app/configmap.yaml
 kind: why
+title: home-ops-guard scopes the block to home-ops only
 body: |-
   Scoped to home-ops only — other repos in the workspace are fair game and
   the agent is expected to commit freely in them. The check is deliberately

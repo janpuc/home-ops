@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6M93K42GR5T80M77EEXSYT
 file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
 kind: why
+title: install-tools adds bash-language-server and shellcheck to PATH
 body: |-
   This block and the three after it install the language servers and linters
   that `hermes lsp` needs. `hermes lsp status` used to warn

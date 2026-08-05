@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6VYBS25S2JJZ9T42RD4HSY
 file: kubernetes/apps/selfhosted/koment/app/httproute.yaml
 kind: why
+title: bearer rule precedes fall-through or Hermes auth breaks silently
 body: |-
   Two rules in declaration order. Rule 1 catches authenticated traffic by
   matching on the Authorization header and forwards it untouched so Hermes's

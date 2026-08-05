@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6M9HHK5Q5DF9PQ2RPRX5EH
 file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
 kind: why
+title: workspace bootstrap is declarative so a rebuilt PVC returns identical
 body: |-
   Everything below this line bootstraps the workspace — kanban board,
   project and skill bundles — declaratively, so a rebuilt PVC comes back

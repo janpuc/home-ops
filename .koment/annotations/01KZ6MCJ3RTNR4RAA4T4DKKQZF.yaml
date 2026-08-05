@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6MCJ3RTNR4RAA4T4DKKQZF
 file: kubernetes/apps/ai/hermes/app/configmap.yaml
 kind: gotcha
+title: hooks_auto_accept is required or headless hooks never register
 body: |-
   Required, not a convenience. Registration normally prompts for consent on
   first use of each (event, command) pair and records the answer in

@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6M8TCT2Q3VFBRNC9B7XE2T
 file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
 kind: gotcha
+title: agent copy filters playwright Permission denied, not real errors
 body: |-
   The copy cannot simply be `cp -r ... || exit 1`: hermes-agent >= v2026.7.x
   ships root-only playwright .deps files, so a non-root copy always produces

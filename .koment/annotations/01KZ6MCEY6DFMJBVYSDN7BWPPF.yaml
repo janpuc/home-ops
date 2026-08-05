@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6MCEY6DFMJBVYSDN7BWPPF
 file: kubernetes/apps/ai/hermes/app/configmap.yaml
 kind: why
+title: pre_tool_call hook names the python interpreter explicitly
 body: |-
   Shell hooks live in agent/shell_hooks.py. A pre_tool_call hook refuses a
   tool call by printing {"decision": "block", "reason": "..."} on stdout.

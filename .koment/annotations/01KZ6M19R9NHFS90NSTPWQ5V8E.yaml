@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6M19R9NHFS90NSTPWQ5V8E
 file: kubernetes/apps/ai/memini/app/helmrelease.yaml
 kind: why
+title: rerank pool and doc cap sized to fit inside MEMINI_RERANK_TIMEOUT
 body: |-
   Sized from measurements on this iGPU: roughly 130 ms/doc at 350 chars and
   335 ms/doc at 1024. Latency is linear in POOL x doc length, so a pool of 20

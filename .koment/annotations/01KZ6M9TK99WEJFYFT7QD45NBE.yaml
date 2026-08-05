@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6M9TK99WEJFYFT7QD45NBE
 file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
 kind: why
+title: hermes-matrix-access Secret holds private Matrix room IDs
 body: |-
   Read whole rather than key-by-key so the private room IDs stay out of this
   manifest. Supplies MATRIX_HOMESERVER, MATRIX_ACCESS_TOKEN and the

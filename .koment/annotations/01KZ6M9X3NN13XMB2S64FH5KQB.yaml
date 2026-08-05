@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6M9X3NN13XMB2S64FH5KQB
 file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
 kind: why
+title: miroir, kopiur and cert-manager RBAC let hermes see what failed
 body: |-
   Storage and backup read access, granted in response to a concrete failure.
   Without the miroir and kopiur groups the agent is blind to exactly the layer

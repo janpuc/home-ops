@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6M38ETP0MPE6RJ0CXAC64C
 file: kubernetes/apps/ai/hermes-matrix/app/configmap.yaml
 kind: why
+title: patch-matrix.py backports Matrix channel prompts upstream lacks
 body: |-
   A backport, and it should not outlive its cause. Upstream hermes wires
   per-channel prompts into MessageEvent for Telegram and Slack but never for

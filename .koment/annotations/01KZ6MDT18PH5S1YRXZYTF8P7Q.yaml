@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6MDT18PH5S1YRXZYTF8P7Q
 file: kubernetes/apps/ai/hermes/app/configmap.yaml
 kind: why
+title: kubectl MCP include list trims families this cluster does not run
 body: |-
   This include list is a token-budget decision, not a capability one: 275
   tools upstream (~44.9k tokens) down to 95 (~16.8k). What was dropped is

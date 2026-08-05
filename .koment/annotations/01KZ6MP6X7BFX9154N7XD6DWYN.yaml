@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6MP6X7BFX9154N7XD6DWYN
 file: kubernetes/apps/kube-system/cilium/app/networking.yaml
 kind: why
+title: kube-apiserver LB can use Local safely; not like Envoy
 body: |-
   Local is safe here and deliberately differs from the Envoy gateway service,
   which must use Cluster. kube-apiserver is a static pod on every

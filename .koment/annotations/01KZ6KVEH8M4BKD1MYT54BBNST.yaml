@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6KVEH8M4BKD1MYT54BBNST
 file: kubernetes/apps/media/kavita/ks.yaml
 kind: why
+title: Kavita must wait on pocket-id before its own startup
 body: |-
   Kavita authenticates via OIDC against PocketID, so it depends on
   pocket-id-instance being up rather than on anything it consumes at build

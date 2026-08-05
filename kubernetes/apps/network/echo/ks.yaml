@@ -6,8 +6,8 @@ metadata:
   name: echo
 spec:
   # components:
-    # - ../../../../components/zeroscaler-http # TODO
-    # - ../../../../components/zeroscaler-internal # TODO
+  # - ../../../../components/zeroscaler-http # TODO
+  # - ../../../../components/zeroscaler-internal # TODO
   interval: 1h
   path: ./kubernetes/apps/network/echo/app
   prune: true

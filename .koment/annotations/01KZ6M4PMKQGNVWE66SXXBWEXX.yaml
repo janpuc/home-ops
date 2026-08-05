@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6M4PMKQGNVWE66SXXBWEXX
 file: kubernetes/apps/ai/hermes-matrix/app/helmrelease.yaml
 kind: gotcha
+title: patch-matrix image patches matrix.py into the bot base image
 body: |-
   THIS DEPLOYMENT RUNS A PATCHED gateway/platforms/matrix.py. The upstream
   image is hermes v0.15.2 (2026.5.29.2) and never wires per-channel prompts

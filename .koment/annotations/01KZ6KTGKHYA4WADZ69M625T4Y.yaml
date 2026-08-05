@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6KTGKHYA4WADZ69M625T4Y
 file: .yayamlls.yaml
 kind: why
+title: yayamlls only needs flate to render Flux references inline
 body: |-
   The Flux renderer is the only thing worth configuring here. yayamlls already
   enables Kubernetes apiVersion+kind schema auto-detect and the schemastore

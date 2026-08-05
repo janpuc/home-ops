@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6M4RKKTKB3AHZSAC98HKAE
 file: kubernetes/apps/ai/hermes-matrix/app/helmrelease.yaml
 kind: why
+title: config.yaml is copied onto the PVC for HERMES_HOME consumption
 body: |-
   The per-room personas are rendered with the private room IDs by the
   hermes-matrix-config ExternalSecret, and have to be copied onto the PVC

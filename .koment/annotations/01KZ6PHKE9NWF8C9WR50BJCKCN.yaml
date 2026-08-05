@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6PHKE9NWF8C9WR50BJCKCN
 file: kubernetes/apps/selfhosted/koment/app/httproute.yaml
 kind: gotcha
+title: browser route resolves but denies; needs OIDC or a bearer token
 body: |-
   A browser hitting this host will be refused until something in front asserts
   an authenticated identity. koment serve requires auth on every source,

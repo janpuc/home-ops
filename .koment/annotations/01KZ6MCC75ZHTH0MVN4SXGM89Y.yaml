@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6MCC75ZHTH0MVN4SXGM89Y
 file: kubernetes/apps/ai/hermes/app/configmap.yaml
 kind: invariant
+title: terminal deny list is the only thing protecting cron jobs
 body: |-
   This list is the guardrail that makes cron_mode: approve safe, and it is the
   only thing standing between a scheduled job and an unrecoverable cluster.

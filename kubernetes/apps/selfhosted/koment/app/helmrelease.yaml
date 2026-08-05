@@ -35,11 +35,6 @@ spec:
       humanWrites: false
       trustedProxies:
         - 10.42.0.0/16
-    service:
-      type: ClusterIP
-      port: 8080
-    ingress:
-      enabled: false
     metrics:
       enabled: true
       serviceMonitor:

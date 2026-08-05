@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6KZPRF6Z9HV07399G5T5H3
 file: kubernetes/apps/ai/llmkube/models/bge-embedding-m3.yaml
 kind: invariant
+title: embedder alias stays bge-m3 to avoid a forced re-embed
 body: |-
   DO NOT rename this alias to match the resource name. memini records the
   value of MEMINI_EMBED_MODEL in its store and refuses to boot if it ever

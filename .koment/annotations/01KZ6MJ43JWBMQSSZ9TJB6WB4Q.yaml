@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6MJ43JWBMQSSZ9TJB6WB4Q
 file: kubernetes/apps/ai/hermes/app/configmap.yaml
 kind: why
+title: weekly-digest-run stays silent so #digest isn't noisy
 body: |-
   The cron entrypoint. It prints nothing on success — stdout is redirected
   to /dev/null — so the job stays silent unless delivery actually fails.

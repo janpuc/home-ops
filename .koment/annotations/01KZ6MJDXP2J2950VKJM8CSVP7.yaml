@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6MJDXP2J2950VKJM8CSVP7
 file: kubernetes/apps/ai/hermes/app/configmap.yaml
 kind: gotcha
+title: guard parses env prefixes and git's own -C/-c globals first
 body: |-
   Both of these loops exist to stop trivial evasion of the guard. The first
   strips env-var prefixes and a sudo wrapper, so `FOO=bar git push` and `sudo

@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6MPB1AF591E2WVX59076SW
 file: kubernetes/components/kopiur/backup/snapshotschedule.yaml
 kind: why
+title: kopiur schedule uses H */2 so PVCs don't stampede the NAS
 body: |-
   H is a hashed minute, not a literal — every app including this component
   gets a stable but different offset within the hour, so a few dozen PVCs do

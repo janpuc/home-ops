@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6MJ10RTWJHBP3306PRVV7K
 file: kubernetes/apps/ai/hermes/app/configmap.yaml
 kind: why
+title: GH_TOKEN mapped from HOMELAB_GH_TOKEN so a rebuilt PVC still works
 body: |-
   gh reads GH_TOKEN or GITHUB_TOKEN, but the pod only exposes HOMELAB_GH_TOKEN
   (named that way to keep it out of gh's implicit reach elsewhere). Mapping it

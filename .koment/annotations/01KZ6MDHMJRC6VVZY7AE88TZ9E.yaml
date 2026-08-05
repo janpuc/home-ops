@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6MDHMJRC6VVZY7AE88TZ9E
 file: kubernetes/apps/ai/hermes/app/configmap.yaml
 kind: why
+title: quick preset can afford per_iteration fanout with two advisors
 body: |-
   `quick` is deliberately left on the default per_iteration fanout, unlike
   `council` above. With only two advisors, refreshing their advice on every

@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6MEGK2PSA8H51S6SMPSHDH
 file: kubernetes/apps/ai/hermes/app/configmap.yaml
 kind: why
+title: HA MCP include list keeps only read and the skill-needed tools
 body: |-
   Home Assistant was the biggest offender by bytes: 78 tools at roughly 72.2k
   tokens, driven by the config_set_* and manage_* schemas — ha_manage_addon

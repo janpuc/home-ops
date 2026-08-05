@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6MAN1QP1MRSW3T1JHS2GFF
 file: kubernetes/apps/ai/hermes/app/externalsecret.yaml
 kind: why
+title: hermes-matrix-access gives the main agent its own Matrix creds
 body: |-
   Matrix posting credentials for the MAIN agent, which previously had none of
   its own. Anything the agent produced outside a live chat turn — cron

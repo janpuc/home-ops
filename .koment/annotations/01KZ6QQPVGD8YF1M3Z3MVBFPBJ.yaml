@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6QQPVGD8YF1M3Z3MVBFPBJ
 file: .lefthook.toml
 kind: why
+title: koment checks run last so anchors see post-format line numbers
 body: |-
   Placed last so every `format-*` step has finished and amended the index
   before these read the worktree. `koment check` resolves annotation anchors

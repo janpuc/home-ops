@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6M12JQYB6SNVTPSYNDXD6N
 file: kubernetes/apps/ai/memini/app/helmrelease.yaml
 kind: gotcha
+title: dedup LLM merge overwrites the survivor, not the tombstones
 body: |-
   LLM merge folds each near-duplicate cluster into one comprehensive memory
   rather than arbitrarily keeping one member's text. It needs the LLM, which

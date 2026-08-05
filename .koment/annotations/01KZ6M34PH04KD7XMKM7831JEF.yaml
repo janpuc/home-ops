@@ -3,6 +3,7 @@ version: 1
 id: 01KZ6M34PH04KD7XMKM7831JEF
 file: kubernetes/apps/ai/hermes-matrix/app/configmap.yaml
 kind: why
+title: allowed_rooms is a whitelist the bot joins to actively
 body: |-
   A whitelist, not a convenience list: the bot ignores every room not named
   here, including the "Matrix.org (Official Account)" room it was auto-joined

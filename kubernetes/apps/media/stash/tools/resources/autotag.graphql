@@ -1,8 +1,5 @@
 mutation {
-  metadataAutoTag(input: {
-    paths: ["/media/Stash"],
-    performers: ["*"],
-    studios: ["*"],
-    tags: ["*"]
-  })
+  metadataAutoTag(
+    input: { paths: ["/media/Stash"], performers: ["*"], studios: ["*"], tags: ["*"] }
+  )
 }
