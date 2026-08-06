@@ -1,36 +1,41 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6MFTH9QB7EGXX060EMKEVA
-file: kubernetes/apps/ai/hermes/app/configmap.yaml
-kind: invariant
-title: matrix-post error path never echoes the bearer token
-body: |-
-  Never surface the access token in an error path. The HTTP response body is
-  safe to show and is genuinely useful for diagnosis, so it is included; the
-  generic handler below deliberately reports only the exception type, because
-  an arbitrary exception's str() can carry the request headers and therefore
-  the bearer token.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: |2-
-                die("HTTP %s posting to %s: %s" % (e.code, alias, e.read()[:300].decode("utf-8", "replace")))
-            except Exception as e:
-                die("%s posting to %s" % (type(e).__name__, alias))
-  before: |2-
-                with urllib.request.urlopen(req, timeout=30) as r:
-                    print(json.loads(r.read().decode()).get("event_id", ""))
-            except urllib.error.HTTPError as e:
-  after: |2-
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6MFTH9QB7EGXX060EMKEVA
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/hermes/app/configmap.yaml
+  type: invariant
+  title: matrix-post error path never echoes the bearer token
+  body: |-
+    Never surface the access token in an error path. The HTTP response body is
+    safe to show and is genuinely useful for diagnosis, so it is included; the
+    generic handler below deliberately reports only the exception type, because
+    an arbitrary exception's str() can carry the request headers and therefore
+    the bearer token.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+                  die("HTTP %s posting to %s: %s" % (e.code, alias, e.read()[:300].decode("utf-8", "replace")))
+              except Exception as e:
+                  die("%s posting to %s" % (type(e).__name__, alias))
+    before: |2-
+                  with urllib.request.urlopen(req, timeout=30) as r:
+                      print(json.loads(r.read().decode()).get("event_id", ""))
+              except urllib.error.HTTPError as e:
+    after: |2-
 
 
-        main()
-  last_seen_line: 463
-git:
-  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
-  path: kubernetes/apps/ai/hermes/app/configmap.yaml
-  line: 463
-author:
-  name: claude-code
-  kind: agent
-  source: session
+          main()
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+    path: kubernetes/apps/ai/hermes/app/configmap.yaml
+    line: 463
+status:
+  lastSeenLine: 463

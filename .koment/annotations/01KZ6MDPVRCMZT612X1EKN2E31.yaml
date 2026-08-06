@@ -1,49 +1,54 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6MDPVRCMZT612X1EKN2E31
-file: kubernetes/apps/ai/hermes/app/configmap.yaml
-kind: why
-title: split MCP entries per server to stop registering all 418 tools
-body: |-
-  One Hermes entry per upstream MCP server, rather than a single aggregated
-  "homelab" entry pointing at http://litellm.ai:4000/mcp. Two reasons:
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6MDPVRCMZT612X1EKN2E31
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/hermes/app/configmap.yaml
+  type: why
+  title: split MCP entries per server to stop registering all 418 tools
+  body: |-
+    One Hermes entry per upstream MCP server, rather than a single aggregated
+    "homelab" entry pointing at http://litellm.ai:4000/mcp. Two reasons:
 
-  1. The aggregate registered all 418 tools unfiltered — mcp_tool.py
-  _register_server_tools treats "neither include nor exclude set" as
-  register-everything — costing roughly 154k tokens of schema JSON on EVERY
-  request. Note that `hermes prompt-size` does NOT reveal this: it runs
-  offline and only counts the 35 built-in tools, so the cost was invisible
-  from the obvious diagnostic. 2. Split entries become separate `mcp-<name>`
-  toolsets, which can later be scoped per platform via platform_toolsets.
+    1. The aggregate registered all 418 tools unfiltered — mcp_tool.py
+    _register_server_tools treats "neither include nor exclude set" as
+    register-everything — costing roughly 154k tokens of schema JSON on EVERY
+    request. Note that `hermes prompt-size` does NOT reveal this: it runs
+    offline and only counts the 35 built-in tools, so the cost was invisible
+    from the obvious diagnostic. 2. Split entries become separate `mcp-<name>`
+    toolsets, which can later be scoped per platform via platform_toolsets.
 
-  The URL form matters: LiteLLM routes a single server at /mcp/<name>/ and the
-  TRAILING SLASH is required — /mcp/<name>/mcp returns 0 tools with no
-  error.
+    The URL form matters: LiteLLM routes a single server at /mcp/<name>/ and the
+    TRAILING SLASH is required — /mcp/<name>/mcp returns 0 tools with no
+    error.
 
-  Splitting also renamed every tool: mcp__homelab__kubectl_get_pods became
-  mcp__kubectl__kubectl_get_pods. Skills under /opt/data/skills were rewritten
-  to match, so reverting this shape breaks them.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: |2-
-        mcp_servers:
-          kubectl:
-            url: http://litellm.ai:4000/mcp/kubectl/
-  before: |2-
-          platforms:
-            matrix:
-              tool_progress: "off"
-  after: |2-
-            headers:
-              Authorization: "Bearer $${LITELLM_API_KEY}"
-            tools:
-  last_seen_line: 235
-git:
-  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
-  path: kubernetes/apps/ai/hermes/app/configmap.yaml
-  line: 235
-author:
-  name: claude-code
-  kind: agent
-  source: session
+    Splitting also renamed every tool: mcp__homelab__kubectl_get_pods became
+    mcp__kubectl__kubectl_get_pods. Skills under /opt/data/skills were rewritten
+    to match, so reverting this shape breaks them.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+          mcp_servers:
+            kubectl:
+              url: http://litellm.ai:4000/mcp/kubectl/
+    before: |2-
+            platforms:
+              matrix:
+                tool_progress: "off"
+    after: |2-
+              headers:
+                Authorization: "Bearer $${LITELLM_API_KEY}"
+              tools:
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+    path: kubernetes/apps/ai/hermes/app/configmap.yaml
+    line: 235
+status:
+  lastSeenLine: 235

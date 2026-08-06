@@ -1,37 +1,42 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6NBCAYM0DXR1TYMJ2TG4R3
-file: .github/workflows/koment-pages.yaml
-kind: gotcha
-title: koment version input must move with the mise config pin
-body: |-
-  The koment version is pinned in TWO places and they must be bumped together:
-  this `version` input and `"github:janpuc/koment"` in .mise/config.toml.
-  Renovate's mise manager tracks the config.toml pin and its action manager
-  tracks the SHA above, but nothing tracks this input value — there is no
-  customManager configured for workflow inputs in .renovaterc.json5.
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6NBCAYM0DXR1TYMJ2TG4R3
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: .github/workflows/koment-pages.yaml
+  type: gotcha
+  title: koment version input must move with the mise config pin
+  body: |-
+    The koment version is pinned in TWO places and they must be bumped together:
+    this `version` input and `"github:janpuc/koment"` in .mise/config.toml.
+    Renovate's mise manager tracks the config.toml pin and its action manager
+    tracks the SHA above, but nothing tracks this input value — there is no
+    customManager configured for workflow inputs in .renovaterc.json5.
 
-  Letting them drift means CI runs `koment check` on a different build than
-  the one developers run locally, so a check can pass on a laptop and fail
-  here for reasons nobody can reproduce. If the two ever disagree,
-  .mise/config.toml is the source of truth.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: |2-
-            uses: janpuc/koment@eee7b5cfc0776c68816d7fdaa8af9d7a0e0da2e6 # v0.4.0
-            with:
-              version: 0.4.0
-  before: |2-
-              persist-credentials: false
+    Letting them drift means CI runs `koment check` on a different build than
+    the one developers run locally, so a check can pass on a laptop and fail
+    here for reasons nobody can reproduce. If the two ever disagree,
+    .mise/config.toml is the source of truth.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+              uses: janpuc/koment@eee7b5cfc0776c68816d7fdaa8af9d7a0e0da2e6 # v0.4.0
+              with:
+                version: 0.4.0
+    before: |2-
+                persist-credentials: false
 
-          - name: Setup Koment
-  after: |2-
+            - name: Setup Koment
+    after: |2-
 
-          - name: Check Annotations
-            run: |
-  last_seen_line: 29
-author:
-  name: claude-code
-  kind: agent
-  source: session
+            - name: Check Annotations
+              run: |
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+status:
+  lastSeenLine: 29

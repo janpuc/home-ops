@@ -1,39 +1,44 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6M93K42GR5T80M77EEXSYT
-file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
-kind: why
-title: install-tools adds bash-language-server and shellcheck to PATH
-body: |-
-  This block and the three after it install the language servers and linters
-  that `hermes lsp` needs. `hermes lsp status` used to warn
-  "bash-language-server is installed but shellcheck is missing - diagnostics
-  will be empty", with only pyright registered; everything here lands under
-  /opt/data/.local/bin, which is already on PATH.
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6M93K42GR5T80M77EEXSYT
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
+  type: why
+  title: install-tools adds bash-language-server and shellcheck to PATH
+  body: |-
+    This block and the three after it install the language servers and linters
+    that `hermes lsp` needs. `hermes lsp status` used to warn
+    "bash-language-server is installed but shellcheck is missing - diagnostics
+    will be empty", with only pyright registered; everything here lands under
+    /opt/data/.local/bin, which is already on PATH.
 
-  ShellCheck is a static binary with no runtime deps, so it is fetched
-  directly rather than through a package manager.
+    ShellCheck is a static binary with no runtime deps, so it is fetched
+    directly rather than through a package manager.
 
-  Watch out when writing anything in this script that starts a line with
-  "shellcheck": that form parses as a lint directive and errors out with
-  SC1073.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: "                if [ ! -f /opt/data/.local/bin/shellcheck ]; then"
-  before: |2
-                      rm -rf memini-src
-                    fi
-  after: |2-
-                      cd /tmp
-                      curl -fsSL https://github.com/koalaman/shellcheck/releases/download/v0.10.0/shellcheck-v0.10.0.linux.x86_64.tar.xz -o sc.tar.xz
-                      tar xJf sc.tar.xz
-  last_seen_line: 124
-git:
-  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
-  path: kubernetes/apps/ai/hermes/app/helmrelease.yaml
-  line: 124
-author:
-  name: claude-code
-  kind: agent
-  source: session
+    Watch out when writing anything in this script that starts a line with
+    "shellcheck": that form parses as a lint directive and errors out with
+    SC1073.
+  anchor:
+    scope: excerpt
+    excerpt: "                if [ ! -f /opt/data/.local/bin/shellcheck ]; then"
+    before: |2
+                        rm -rf memini-src
+                      fi
+    after: |2-
+                        cd /tmp
+                        curl -fsSL https://github.com/koalaman/shellcheck/releases/download/v0.10.0/shellcheck-v0.10.0.linux.x86_64.tar.xz -o sc.tar.xz
+                        tar xJf sc.tar.xz
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+    path: kubernetes/apps/ai/hermes/app/helmrelease.yaml
+    line: 124
+status:
+  lastSeenLine: 124

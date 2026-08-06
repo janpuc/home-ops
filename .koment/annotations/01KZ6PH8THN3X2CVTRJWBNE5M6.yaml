@@ -1,30 +1,35 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6PH8THN3X2CVTRJWBNE5M6
-file: kubernetes/apps/selfhosted/koment/app/helmrelease.yaml
-kind: why
-title: fullnameOverride stops the chart naming the Service koment-koment
-body: |-
-  Without this the chart names everything `koment-koment` (release name +
-  chart name), and hermes' mcp_servers URL in
-  kubernetes/apps/ai/hermes/app/configmap.yaml points at
-  http://koment.selfhosted.svc.cluster.local:8080/mcp. Removing the override
-  renames the Service and silently breaks that lookup — hermes just loses
-  the koment toolset with no obvious error.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: "    fullnameOverride: koment"
-  before: |2-
-        remediation:
-          retries: 3
-      values:
-  after: |2-
-        repositories:
-          - id: home-ops
-            name: home-ops
-  last_seen_line: 20
-author:
-  name: claude-code
-  kind: agent
-  source: session
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6PH8THN3X2CVTRJWBNE5M6
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/selfhosted/koment/app/helmrelease.yaml
+  type: why
+  title: fullnameOverride stops the chart naming the Service koment-koment
+  body: |-
+    Without this the chart names everything `koment-koment` (release name +
+    chart name), and hermes' mcp_servers URL in
+    kubernetes/apps/ai/hermes/app/configmap.yaml points at
+    http://koment.selfhosted.svc.cluster.local:8080/mcp. Removing the override
+    renames the Service and silently breaks that lookup — hermes just loses
+    the koment toolset with no obvious error.
+  anchor:
+    scope: excerpt
+    excerpt: "    fullnameOverride: koment"
+    before: |2-
+          remediation:
+            retries: 3
+        values:
+    after: |2-
+          repositories:
+            - id: home-ops
+              name: home-ops
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+status:
+  lastSeenLine: 20

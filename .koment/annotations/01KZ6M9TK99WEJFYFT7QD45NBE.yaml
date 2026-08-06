@@ -1,33 +1,38 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6M9TK99WEJFYFT7QD45NBE
-file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
-kind: why
-title: hermes-matrix-access Secret holds private Matrix room IDs
-body: |-
-  Read whole rather than key-by-key so the private room IDs stay out of this
-  manifest. Supplies MATRIX_HOMESERVER, MATRIX_ACCESS_TOKEN and the
-  MATRIX_ROOM_* aliases that matrix-post resolves against.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: |2-
-                  - secretRef:
-                      name: hermes-matrix-access
-  before: |2-
-                envFrom:
-                  - secretRef:
-                      name: "{{ .Release.Name }}-oidc-credentials"
-  after: |2-
-                resources:
-                  requests:
-                    cpu: 500m
-  last_seen_line: 255
-git:
-  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
-  path: kubernetes/apps/ai/hermes/app/helmrelease.yaml
-  line: 255
-author:
-  name: claude-code
-  kind: agent
-  source: session
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6M9TK99WEJFYFT7QD45NBE
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
+  type: why
+  title: hermes-matrix-access Secret holds private Matrix room IDs
+  body: |-
+    Read whole rather than key-by-key so the private room IDs stay out of this
+    manifest. Supplies MATRIX_HOMESERVER, MATRIX_ACCESS_TOKEN and the
+    MATRIX_ROOM_* aliases that matrix-post resolves against.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+                    - secretRef:
+                        name: hermes-matrix-access
+    before: |2-
+                  envFrom:
+                    - secretRef:
+                        name: "{{ .Release.Name }}-oidc-credentials"
+    after: |2-
+                  resources:
+                    requests:
+                      cpu: 500m
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+    path: kubernetes/apps/ai/hermes/app/helmrelease.yaml
+    line: 255
+status:
+  lastSeenLine: 255

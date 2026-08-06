@@ -1,35 +1,40 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6MPB1AF591E2WVX59076SW
-file: kubernetes/components/kopiur/backup/snapshotschedule.yaml
-kind: why
-title: kopiur schedule uses H */2 so PVCs don't stampede the NAS
-body: |-
-  H is a hashed minute, not a literal — every app including this component
-  gets a stable but different offset within the hour, so a few dozen PVCs do
-  not all snapshot to the same NAS repository on the hour and stampede it.
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6MPB1AF591E2WVX59076SW
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/components/kopiur/backup/snapshotschedule.yaml
+  type: why
+  title: kopiur schedule uses H */2 so PVCs don't stampede the NAS
+  body: |-
+    H is a hashed minute, not a literal — every app including this component
+    gets a stable but different offset within the hour, so a few dozen PVCs do
+    not all snapshot to the same NAS repository on the hour and stampede it.
 
-  The 2-hour cadence is depended on elsewhere: the weekly digest in
-  kubernetes/apps/ai/hermes/app/configmap.yaml flags a policy as stale after
-  24h without a successful snapshot, a threshold derived from this interval.
-  Lengthening the cadence past a day would make that check fire on healthy
-  backups.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: |2-
-      schedule:
-        cron: H */2 * * *
-  before: |-
-    spec:
-      policyRef:
-        name: ${APP}
-  last_seen_line: 10
-git:
-  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
-  path: kubernetes/components/kopiur/backup/snapshotschedule.yaml
-  line: 10
-author:
-  name: claude-code
-  kind: agent
-  source: session
+    The 2-hour cadence is depended on elsewhere: the weekly digest in
+    kubernetes/apps/ai/hermes/app/configmap.yaml flags a policy as stale after
+    24h without a successful snapshot, a threshold derived from this interval.
+    Lengthening the cadence past a day would make that check fire on healthy
+    backups.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        schedule:
+          cron: H */2 * * *
+    before: |-
+      spec:
+        policyRef:
+          name: ${APP}
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+    path: kubernetes/components/kopiur/backup/snapshotschedule.yaml
+    line: 10
+status:
+  lastSeenLine: 10

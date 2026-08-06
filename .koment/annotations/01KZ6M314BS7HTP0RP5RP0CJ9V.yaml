@@ -1,46 +1,51 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6M314BS7HTP0RP5RP0CJ9V
-file: kubernetes/apps/ai/hermes-matrix/app/configmap.yaml
-kind: why
-title: per-room Matrix personas with private IDs filled in by Secret
-body: |-
-  Per-room personas. The proxy resolves each entry against the real Matrix
-  room ID and forwards the result to the main agent as a system message, so
-  every room behaves differently while sharing one bot account and one
-  gateway. Rooms are separate Hermes sessions for free — the Matrix adapter
-  derives a session per room — so context does not bleed between them.
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6M314BS7HTP0RP5RP0CJ9V
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/hermes-matrix/app/configmap.yaml
+  type: why
+  title: per-room Matrix personas with private IDs filled in by Secret
+  body: |-
+    Per-room personas. The proxy resolves each entry against the real Matrix
+    room ID and forwards the result to the main agent as a system message, so
+    every room behaves differently while sharing one bot account and one
+    gateway. Rooms are separate Hermes sessions for free — the Matrix adapter
+    derives a session per room — so context does not bleed between them.
 
-  Room IDs are deliberately absent. The {{ }} placeholders are rendered by the
-  hermes-matrix ExternalSecret (templateFrom pointing at this key) from the
-  1Password `hermes` item, which is what keeps this file safe to publish; the
-  rendered result lands in the hermes-matrix Secret as config.yaml.
+    Room IDs are deliberately absent. The {{ }} placeholders are rendered by the
+    hermes-matrix ExternalSecret (templateFrom pointing at this key) from the
+    1Password `hermes` item, which is what keeps this file safe to publish; the
+    rendered result lands in the hermes-matrix Secret as config.yaml.
 
-  Per-room prompts only work at all because of the patched matrix.py built by
-  patch-matrix.py further down this file. Remove that patch and every room
-  silently collapses to one shared persona.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: |2-
-      config.yaml: |-
-        platforms:
-          matrix:
-            extra:
-  before: |-
-    metadata:
-      name: hermes-matrix-configmap
-    data:
-  after: |2-
-              allowed_rooms: "{{ .MATRIX_ROOM_CLUSTER }},{{ .MATRIX_ROOM_ASSISTANT }},{{ .MATRIX_ROOM_HOME }},{{ .MATRIX_ROOM_NOTIFY }},{{ .MATRIX_ROOM_ALERTS }},{{ .MATRIX_ROOM_DIGEST }},{{ .MATRIX_ROOM_INBOX }},{{ .MATRIX_ROOM_DM }}"
-              channel_prompts:
-                "{{ .MATRIX_ROOM_CLUSTER }}": |-
-  last_seen_line: 7
-git:
-  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
-  path: kubernetes/apps/ai/hermes-matrix/app/configmap.yaml
-  line: 7
-author:
-  name: claude-code
-  kind: agent
-  source: session
+    Per-room prompts only work at all because of the patched matrix.py built by
+    patch-matrix.py further down this file. Remove that patch and every room
+    silently collapses to one shared persona.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        config.yaml: |-
+          platforms:
+            matrix:
+              extra:
+    before: |-
+      metadata:
+        name: hermes-matrix-configmap
+      data:
+    after: |2-
+                allowed_rooms: "{{ .MATRIX_ROOM_CLUSTER }},{{ .MATRIX_ROOM_ASSISTANT }},{{ .MATRIX_ROOM_HOME }},{{ .MATRIX_ROOM_NOTIFY }},{{ .MATRIX_ROOM_ALERTS }},{{ .MATRIX_ROOM_DIGEST }},{{ .MATRIX_ROOM_INBOX }},{{ .MATRIX_ROOM_DM }}"
+                channel_prompts:
+                  "{{ .MATRIX_ROOM_CLUSTER }}": |-
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+    path: kubernetes/apps/ai/hermes-matrix/app/configmap.yaml
+    line: 7
+status:
+  lastSeenLine: 7

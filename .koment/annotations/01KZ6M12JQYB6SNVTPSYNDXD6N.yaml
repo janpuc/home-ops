@@ -1,42 +1,47 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6M12JQYB6SNVTPSYNDXD6N
-file: kubernetes/apps/ai/memini/app/helmrelease.yaml
-kind: gotcha
-title: dedup LLM merge overwrites the survivor, not the tombstones
-body: |-
-  LLM merge folds each near-duplicate cluster into one comprehensive memory
-  rather than arbitrarily keeping one member's text. It needs the LLM, which
-  only started working on 2026-07-29.
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6M12JQYB6SNVTPSYNDXD6N
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/memini/app/helmrelease.yaml
+  type: gotcha
+  title: dedup LLM merge overwrites the survivor, not the tombstones
+  body: |-
+    LLM merge folds each near-duplicate cluster into one comprehensive memory
+    rather than arbitrarily keeping one member's text. It needs the LLM, which
+    only started working on 2026-07-29.
 
-  Understand the asymmetry before touching MEMINI_DEDUP_SIMILARITY. Tombstoned
-  duplicates stay recoverable — SetSuperseded marks them and TOMBSTONE_TTL
-  keeps them 30 days. The SURVIVOR's content does not: it is overwritten via
-  Upsert with no in-store history, so only a PVC restore brings the original
-  back. A false-positive cluster is therefore far more expensive with merge on
-  than it was with merge off, and 0.80 is the aggressive end of what is safe
-  at this setting.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: |2-
-                  MEMINI_DEDUP_SIMILARITY: "0.80"
-                  MEMINI_DEDUP_TIERS: semantic,procedural
-                  MEMINI_DEDUP_LLM_MERGE: "true"
-  before: |2-
-                  MEMINI_BACKEND: sqlite
-                  MEMINI_DEFAULT_NAMESPACE: default
-                  MEMINI_CLIENT_DEFAULTS: '{"inject_briefing_pinned":10,"inject_briefing_max_tok":3000,"recall_limit":5,"inject_recall_max_tok":400}'
-  after: |2-
-                  MEMINI_SHORT_TERM_CAP: "300"
-                  MEMINI_DEMOTE_AFTER: 1440h
-                  MEMINI_EMBED_BASE_URL: http://bge-embedding-m3.ai.svc.cluster.local:8080/v1
-  last_seen_line: 37
-git:
-  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
-  path: kubernetes/apps/ai/memini/app/helmrelease.yaml
-  line: 37
-author:
-  name: claude-code
-  kind: agent
-  source: session
+    Understand the asymmetry before touching MEMINI_DEDUP_SIMILARITY. Tombstoned
+    duplicates stay recoverable — SetSuperseded marks them and TOMBSTONE_TTL
+    keeps them 30 days. The SURVIVOR's content does not: it is overwritten via
+    Upsert with no in-store history, so only a PVC restore brings the original
+    back. A false-positive cluster is therefore far more expensive with merge on
+    than it was with merge off, and 0.80 is the aggressive end of what is safe
+    at this setting.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+                    MEMINI_DEDUP_SIMILARITY: "0.80"
+                    MEMINI_DEDUP_TIERS: semantic,procedural
+                    MEMINI_DEDUP_LLM_MERGE: "true"
+    before: |2-
+                    MEMINI_BACKEND: sqlite
+                    MEMINI_DEFAULT_NAMESPACE: default
+                    MEMINI_CLIENT_DEFAULTS: '{"inject_briefing_pinned":10,"inject_briefing_max_tok":3000,"recall_limit":5,"inject_recall_max_tok":400}'
+    after: |2-
+                    MEMINI_SHORT_TERM_CAP: "300"
+                    MEMINI_DEMOTE_AFTER: 1440h
+                    MEMINI_EMBED_BASE_URL: http://bge-embedding-m3.ai.svc.cluster.local:8080/v1
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+    path: kubernetes/apps/ai/memini/app/helmrelease.yaml
+    line: 37
+status:
+  lastSeenLine: 37

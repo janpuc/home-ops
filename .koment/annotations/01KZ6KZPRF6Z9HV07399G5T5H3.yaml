@@ -1,37 +1,42 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6KZPRF6Z9HV07399G5T5H3
-file: kubernetes/apps/ai/llmkube/models/bge-embedding-m3.yaml
-kind: invariant
-title: embedder alias stays bge-m3 to avoid a forced re-embed
-body: |-
-  DO NOT rename this alias to match the resource name. memini records the
-  value of MEMINI_EMBED_MODEL in its store and refuses to boot if it ever
-  disagrees (cmd/memini/root.go reconcileEmbedModel). The check is a plain
-  string compare, so changing the alias would force a full re-embed of every
-  memory even though the weights are identical. The k8s resource was
-  deliberately renamed to bge-embedding-m3 while the served model identity
-  stays bge-m3 — the divergence is the point, not an oversight.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: |2-
-        - --alias
-        - bge-m3
-  before: |2-
-        - "0"
-        - --sleep-idle-seconds
-        - "300"
-  after: |2-
-        - --metrics
-      endpoint:
-        port: 8080
-  last_seen_line: 49
-git:
-  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
-  path: kubernetes/apps/ai/llmkube/models/bge-embedding-m3.yaml
-  line: 49
-author:
-  name: claude-code
-  kind: agent
-  source: session
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6KZPRF6Z9HV07399G5T5H3
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/llmkube/models/bge-embedding-m3.yaml
+  type: invariant
+  title: embedder alias stays bge-m3 to avoid a forced re-embed
+  body: |-
+    DO NOT rename this alias to match the resource name. memini records the
+    value of MEMINI_EMBED_MODEL in its store and refuses to boot if it ever
+    disagrees (cmd/memini/root.go reconcileEmbedModel). The check is a plain
+    string compare, so changing the alias would force a full re-embed of every
+    memory even though the weights are identical. The k8s resource was
+    deliberately renamed to bge-embedding-m3 while the served model identity
+    stays bge-m3 — the divergence is the point, not an oversight.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+          - --alias
+          - bge-m3
+    before: |2-
+          - "0"
+          - --sleep-idle-seconds
+          - "300"
+    after: |2-
+          - --metrics
+        endpoint:
+          port: 8080
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+    path: kubernetes/apps/ai/llmkube/models/bge-embedding-m3.yaml
+    line: 49
+status:
+  lastSeenLine: 49

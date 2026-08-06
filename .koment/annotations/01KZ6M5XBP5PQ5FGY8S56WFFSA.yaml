@@ -1,39 +1,44 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6M5XBP5PQ5FGY8S56WFFSA
-file: kubernetes/apps/ai/hermes-matrix/app/externalsecret.yaml
-kind: why
-title: hermes-matrix-config exists because config.yaml isn't a valid env var
-body: |-
-  A second Secret purely so the rendered config.yaml never reaches the app
-  container via envFrom. "config.yaml" is not a valid env var identifier, so
-  it would be skipped with a warning event on every single start if it shared
-  the hermes-matrix Secret.
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6M5XBP5PQ5FGY8S56WFFSA
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/hermes-matrix/app/externalsecret.yaml
+  type: why
+  title: hermes-matrix-config exists because config.yaml isn't a valid env var
+  body: |-
+    A second Secret purely so the rendered config.yaml never reaches the app
+    container via envFrom. "config.yaml" is not a valid env var identifier, so
+    it would be skipped with a warning event on every single start if it shared
+    the hermes-matrix Secret.
 
-  Its content is assembled here rather than committed: templateFrom pulls the
-  persona template out of hermes-matrix-configmap and fills the MATRIX_ROOM_*
-  placeholders from the `hermes-rooms` item, so nothing room-identifying ever
-  lands in git.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: |-
-    metadata:
-      name: hermes-matrix-config
-  before: |-
-    ---
-    apiVersion: external-secrets.io/v1
-    kind: ExternalSecret
-  after: |-
-    spec:
-      refreshInterval: 5m
-      secretStoreRef:
-  last_seen_line: 34
-git:
-  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
-  path: kubernetes/apps/ai/hermes-matrix/app/externalsecret.yaml
-  line: 34
-author:
-  name: claude-code
-  kind: agent
-  source: session
+    Its content is assembled here rather than committed: templateFrom pulls the
+    persona template out of hermes-matrix-configmap and fills the MATRIX_ROOM_*
+    placeholders from the `hermes-rooms` item, so nothing room-identifying ever
+    lands in git.
+  anchor:
+    scope: excerpt
+    excerpt: |-
+      metadata:
+        name: hermes-matrix-config
+    before: |-
+      ---
+      apiVersion: external-secrets.io/v1
+      kind: ExternalSecret
+    after: |-
+      spec:
+        refreshInterval: 5m
+        secretStoreRef:
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+    path: kubernetes/apps/ai/hermes-matrix/app/externalsecret.yaml
+    line: 34
+status:
+  lastSeenLine: 34

@@ -1,55 +1,60 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6VYBS25S2JJZ9T42RD4HSY
-file: kubernetes/apps/selfhosted/koment/app/httproute.yaml
-kind: why
-title: bearer rule precedes fall-through or Hermes auth breaks silently
-body: |-
-  Two rules in declaration order. Rule 1 catches authenticated traffic by
-  matching on the Authorization header and forwards it untouched so Hermes's
-  bearer token reaches koment serve unmodified. Rule 2 covers everything else
-  (anonymous browser reads) and injects X-Forwarded-User / X-Forwarded-Email
-  so the trusted-proxy branch in internal/auth/auth.go accepts them as the
-  `anonymous` principal.
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6VYBS25S2JJZ9T42RD4HSY
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/selfhosted/koment/app/httproute.yaml
+  type: why
+  title: bearer rule precedes fall-through or Hermes auth breaks silently
+  body: |-
+    Two rules in declaration order. Rule 1 catches authenticated traffic by
+    matching on the Authorization header and forwards it untouched so Hermes's
+    bearer token reaches koment serve unmodified. Rule 2 covers everything else
+    (anonymous browser reads) and injects X-Forwarded-User / X-Forwarded-Email
+    so the trusted-proxy branch in internal/auth/auth.go accepts them as the
+    `anonymous` principal.
 
-  The order is load-bearing. Authenticate() in internal/auth/auth.go checks
-  X-Forwarded-User before Authorization, so a single rule that always injects
-  X-Forwarded-User would short-circuit the bearer path and break Hermes.
-  Comments check is Go-only and would not flag this drift; the anchor is.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: |2-
-      rules:
-        - matches:
-            - headers:
-                - name: authorization
-                  type: RegularExpression
-                  value: "^Bearer\\s.+$"
-          backendRefs:
-            - name: koment
-              port: 8080
-        - filters:
-            - type: RequestHeaderModifier
-              requestHeaderModifier:
-                add:
-                  - name: X-Forwarded-User
-                    value: anonymous
-                  - name: X-Forwarded-Email
-                    value: anonymous@janpuc.com
-          backendRefs:
-            - name: koment
-              port: 8080
-  before: |2-
-      parentRefs:
-        - name: envoy-internal
-          namespace: network
-  last_seen_line: 13
-git:
-  commit: 8bba92514ae4ef4c9bef9e572f5c7cd4480938cc
-  path: kubernetes/apps/selfhosted/koment/app/httproute.yaml
-  line: 13
-author:
-  name: claude-code
-  kind: agent
-  source: session
+    The order is load-bearing. Authenticate() in internal/auth/auth.go checks
+    X-Forwarded-User before Authorization, so a single rule that always injects
+    X-Forwarded-User would short-circuit the bearer path and break Hermes.
+    Comments check is Go-only and would not flag this drift; the anchor is.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        rules:
+          - matches:
+              - headers:
+                  - name: authorization
+                    type: RegularExpression
+                    value: "^Bearer\\s.+$"
+            backendRefs:
+              - name: koment
+                port: 8080
+          - filters:
+              - type: RequestHeaderModifier
+                requestHeaderModifier:
+                  add:
+                    - name: X-Forwarded-User
+                      value: anonymous
+                    - name: X-Forwarded-Email
+                      value: anonymous@janpuc.com
+            backendRefs:
+              - name: koment
+                port: 8080
+    before: |2-
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 8bba92514ae4ef4c9bef9e572f5c7cd4480938cc
+    path: kubernetes/apps/selfhosted/koment/app/httproute.yaml
+    line: 13
+status:
+  lastSeenLine: 13

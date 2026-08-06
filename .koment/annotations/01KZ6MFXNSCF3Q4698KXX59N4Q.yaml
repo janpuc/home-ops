@@ -1,38 +1,43 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6MFXNSCF3Q4698KXX59N4Q
-file: kubernetes/apps/ai/hermes/app/configmap.yaml
-kind: why
-title: weekly-digest.py is deterministic on purpose, not an agent turn
-body: |-
-  Weekly homelab rollup, emitted as HTML on stdout and delivered by the
-  weekly-digest-run wrapper. It is deterministic on purpose: a factual rollup
-  is cheaper and more reliable as a script than as an agent turn, and the
-  #digest room persona is there to handle follow-up questions about it.
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6MFXNSCF3Q4698KXX59N4Q
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/hermes/app/configmap.yaml
+  type: why
+  title: weekly-digest.py is deterministic on purpose, not an agent turn
+  body: |-
+    Weekly homelab rollup, emitted as HTML on stdout and delivered by the
+    weekly-digest-run wrapper. It is deterministic on purpose: a factual rollup
+    is cheaper and more reliable as a script than as an agent turn, and the
+    #digest room persona is there to handle follow-up questions about it.
 
-  Every section degrades to a one-line note rather than raising, so a missing
-  RBAC grant or an uninstalled CRD costs one section instead of the whole
-  digest.
+    Every section degrades to a one-line note rather than raising, so a missing
+    RBAC grant or an uninstalled CRD costs one section instead of the whole
+    digest.
 
-  Like matrix-post.py, this deliberately contains no "${...}" sequences —
-  Flux postBuild substitution runs over this ConfigMap.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: "  weekly-digest.py: |-"
-  before: |2
+    Like matrix-post.py, this deliberately contains no "${...}" sequences —
+    Flux postBuild substitution runs over this ConfigMap.
+  anchor:
+    scope: excerpt
+    excerpt: "  weekly-digest.py: |-"
+    before: |2
 
-        main()
-  after: |2-
-        """Emit the homelab weekly digest as HTML on stdout.
+          main()
+    after: |2-
+          """Emit the homelab weekly digest as HTML on stdout.
 
-        Deterministic and cheap on purpose: this is a factual rollup, so it runs as a
-  last_seen_line: 470
-git:
-  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
-  path: kubernetes/apps/ai/hermes/app/configmap.yaml
-  line: 470
-author:
-  name: claude-code
-  kind: agent
-  source: session
+          Deterministic and cheap on purpose: this is a factual rollup, so it runs as a
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+    path: kubernetes/apps/ai/hermes/app/configmap.yaml
+    line: 470
+status:
+  lastSeenLine: 470

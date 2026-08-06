@@ -1,36 +1,41 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6NB6JDB01R1T9NHGCGTSMH
-file: .github/workflows/koment-pages.yaml
-kind: why
-title: pages write and id-token write live only on the deploy job
-body: |-
-  These two are the minimum GitHub Pages deployment needs and they live on the
-  deploy job alone, never at workflow level: pages: write publishes the
-  artifact, and id-token: write mints the OIDC token actions/deploy-pages
-  exchanges for it. The build job stays on the read-only default, so nothing
-  that renders untrusted repository content ever holds a publish token.
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6NB6JDB01R1T9NHGCGTSMH
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: .github/workflows/koment-pages.yaml
+  type: why
+  title: pages write and id-token write live only on the deploy job
+  body: |-
+    These two are the minimum GitHub Pages deployment needs and they live on the
+    deploy job alone, never at workflow level: pages: write publishes the
+    artifact, and id-token: write mints the OIDC token actions/deploy-pages
+    exchanges for it. The build job stays on the read-only default, so nothing
+    that renders untrusted repository content ever holds a publish token.
 
-  zizmor's `undocumented-permissions` audit asks for an inline comment here.
-  Do not add one — it only fires under --persona=pedantic or auditor, and
-  the repo's default zizmor run reports the workflow clean. This annotation is
-  that documentation.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: |2-
-          pages: write
-          id-token: write
-  before: |2-
-        runs-on: ubuntu-latest
-        permissions:
-          contents: read
-  after: |2-
-        environment:
-          name: github-pages
-          url: ${{ steps.deployment.outputs.page_url }}
-  last_seen_line: 68
-author:
-  name: claude-code
-  kind: agent
-  source: session
+    zizmor's `undocumented-permissions` audit asks for an inline comment here.
+    Do not add one — it only fires under --persona=pedantic or auditor, and
+    the repo's default zizmor run reports the workflow clean. This annotation is
+    that documentation.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+            pages: write
+            id-token: write
+    before: |2-
+          runs-on: ubuntu-latest
+          permissions:
+            contents: read
+    after: |2-
+          environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+status:
+  lastSeenLine: 68

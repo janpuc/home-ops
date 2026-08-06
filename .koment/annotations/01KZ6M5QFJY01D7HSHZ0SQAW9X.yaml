@@ -1,34 +1,39 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6M5QFJY01D7HSHZ0SQAW9X
-file: kubernetes/apps/ai/hermes-matrix/app/externalsecret.yaml
-kind: why
-title: MATRIX_HOME_ROOM points at Notify so muted rooms don't lose output
-body: |-
-  The home room is pointed at Notify rather than at a conversational room so
-  scheduled output and reminders all land in one place. That is what lets the
-  Cluster/Assistant/Home rooms be muted without losing anything the agent was
-  asked to say later.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: |2-
-            MATRIX_HOME_ROOM: "{{ .MATRIX_ROOM_NOTIFY }}"
-            MATRIX_HOME_ROOM_NAME: "Hermes · Notify"
-  before: |2-
-            MATRIX_USER_ID: "{{ .MATRIX_USER_ID }}"
-            MATRIX_ACCESS_TOKEN: "{{ .MATRIX_ACCESS_TOKEN }}"
-            MATRIX_ALLOWED_USERS: "{{ .MATRIX_ALLOWED_USERS }}"
-  after: |2-
-            GATEWAY_PROXY_KEY: "{{ .API_SERVER_KEY }}"
-      dataFrom:
-        - extract:
-  last_seen_line: 21
-git:
-  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
-  path: kubernetes/apps/ai/hermes-matrix/app/externalsecret.yaml
-  line: 21
-author:
-  name: claude-code
-  kind: agent
-  source: session
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6M5QFJY01D7HSHZ0SQAW9X
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/hermes-matrix/app/externalsecret.yaml
+  type: why
+  title: MATRIX_HOME_ROOM points at Notify so muted rooms don't lose output
+  body: |-
+    The home room is pointed at Notify rather than at a conversational room so
+    scheduled output and reminders all land in one place. That is what lets the
+    Cluster/Assistant/Home rooms be muted without losing anything the agent was
+    asked to say later.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+              MATRIX_HOME_ROOM: "{{ .MATRIX_ROOM_NOTIFY }}"
+              MATRIX_HOME_ROOM_NAME: "Hermes · Notify"
+    before: |2-
+              MATRIX_USER_ID: "{{ .MATRIX_USER_ID }}"
+              MATRIX_ACCESS_TOKEN: "{{ .MATRIX_ACCESS_TOKEN }}"
+              MATRIX_ALLOWED_USERS: "{{ .MATRIX_ALLOWED_USERS }}"
+    after: |2-
+              GATEWAY_PROXY_KEY: "{{ .API_SERVER_KEY }}"
+        dataFrom:
+          - extract:
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+    path: kubernetes/apps/ai/hermes-matrix/app/externalsecret.yaml
+    line: 21
+status:
+  lastSeenLine: 21

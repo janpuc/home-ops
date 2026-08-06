@@ -1,35 +1,40 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6KVEH8M4BKD1MYT54BBNST
-file: kubernetes/apps/media/kavita/ks.yaml
-kind: why
-title: Kavita must wait on pocket-id before its own startup
-body: |-
-  Kavita authenticates via OIDC against PocketID, so it depends on
-  pocket-id-instance being up rather than on anything it consumes at build
-  time. Dropping this dependsOn does not break reconciliation — it breaks
-  login after a cold cluster start, when Kavita comes up before its identity
-  provider.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: |2-
-        - name: pocket-id-instance
-          namespace: security
-  before: |2-
-        - ../../../../components/zeroscaler
-        - ../../../../components/kopiur/backup
-      dependsOn:
-  after: |2-
-        - name: miroir-config
-          namespace: miroir-system
-      interval: 1h
-  last_seen_line: 12
-git:
-  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
-  path: kubernetes/apps/media/kavita/ks.yaml
-  line: 12
-author:
-  name: claude-code
-  kind: agent
-  source: session
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6KVEH8M4BKD1MYT54BBNST
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/media/kavita/ks.yaml
+  type: why
+  title: Kavita must wait on pocket-id before its own startup
+  body: |-
+    Kavita authenticates via OIDC against PocketID, so it depends on
+    pocket-id-instance being up rather than on anything it consumes at build
+    time. Dropping this dependsOn does not break reconciliation — it breaks
+    login after a cold cluster start, when Kavita comes up before its identity
+    provider.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+          - name: pocket-id-instance
+            namespace: security
+    before: |2-
+          - ../../../../components/zeroscaler
+          - ../../../../components/kopiur/backup
+        dependsOn:
+    after: |2-
+          - name: miroir-config
+            namespace: miroir-system
+        interval: 1h
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+    path: kubernetes/apps/media/kavita/ks.yaml
+    line: 12
+status:
+  lastSeenLine: 12

@@ -1,40 +1,45 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6MCMZT45K2WX8TS2JCK4EX
-file: kubernetes/apps/ai/hermes/app/configmap.yaml
-kind: why
-title: aggregator stays on a different provider from the four advisors
-body: |-
-  The council's four reference models are four distinct pretraining lineages
-  — Moonshot, Zhipu, DeepSeek, Qwen — chosen so the members fail
-  differently rather than for individual quality; all four are served by
-  opencode-go.
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6MCMZT45K2WX8TS2JCK4EX
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/hermes/app/configmap.yaml
+  type: why
+  title: aggregator stays on a different provider from the four advisors
+  body: |-
+    The council's four reference models are four distinct pretraining lineages
+    — Moonshot, Zhipu, DeepSeek, Qwen — chosen so the members fail
+    differently rather than for individual quality; all four are served by
+    opencode-go.
 
-  The aggregator is deliberately a fifth family on a DIFFERENT provider. That
-  keeps aggregation working through an opencode-go outage and stops it being
-  biased toward any one reference. Consolidating it onto opencode-go would
-  quietly remove both properties.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: |2-
-              aggregator:
-                provider: custom:litellm
-                model: minimax/MiniMax-M3
-  before: |2-
-                  model: opencode-go/deepseek-v4-pro
-                - provider: custom:litellm
-                  model: opencode-go/qwen3.7-max
-  after: |2-
-              reference_temperature: 0.6
-              aggregator_temperature: 0.4
-              fanout: user_turn
-  last_seen_line: 202
-git:
-  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
-  path: kubernetes/apps/ai/hermes/app/configmap.yaml
-  line: 202
-author:
-  name: claude-code
-  kind: agent
-  source: session
+    The aggregator is deliberately a fifth family on a DIFFERENT provider. That
+    keeps aggregation working through an opencode-go outage and stops it being
+    biased toward any one reference. Consolidating it onto opencode-go would
+    quietly remove both properties.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+                aggregator:
+                  provider: custom:litellm
+                  model: minimax/MiniMax-M3
+    before: |2-
+                    model: opencode-go/deepseek-v4-pro
+                  - provider: custom:litellm
+                    model: opencode-go/qwen3.7-max
+    after: |2-
+                reference_temperature: 0.6
+                aggregator_temperature: 0.4
+                fanout: user_turn
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+    path: kubernetes/apps/ai/hermes/app/configmap.yaml
+    line: 202
+status:
+  lastSeenLine: 202

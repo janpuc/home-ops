@@ -1,34 +1,39 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6M4J2FQ2AYS47YEZE09N2Y
-file: kubernetes/apps/ai/hermes-matrix/app/helmrelease.yaml
-kind: invariant
-title: replicas 1 with Recreate keeps Matrix crypto store single-writer
-body: |-
-  Both halves are load-bearing and neither is a default worth "tidying up".
-  Two Matrix clients sharing one account and one crypto store clash over
-  device identity, so a second replica — or a RollingUpdate that briefly
-  runs two pods — breaks encryption for the bot rather than scaling it.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: |2-
-            replicas: 1
-            strategy: Recreate
-  before: |2-
-          hermes-matrix:
-            annotations:
-              reloader.stakater.com/auto: "true"
-  after: |2-
-            type: deployment
-            initContainers:
-              patch-matrix:
-  last_seen_line: 26
-git:
-  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
-  path: kubernetes/apps/ai/hermes-matrix/app/helmrelease.yaml
-  line: 26
-author:
-  name: claude-code
-  kind: agent
-  source: session
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6M4J2FQ2AYS47YEZE09N2Y
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/hermes-matrix/app/helmrelease.yaml
+  type: invariant
+  title: replicas 1 with Recreate keeps Matrix crypto store single-writer
+  body: |-
+    Both halves are load-bearing and neither is a default worth "tidying up".
+    Two Matrix clients sharing one account and one crypto store clash over
+    device identity, so a second replica — or a RollingUpdate that briefly
+    runs two pods — breaks encryption for the bot rather than scaling it.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+              replicas: 1
+              strategy: Recreate
+    before: |2-
+            hermes-matrix:
+              annotations:
+                reloader.stakater.com/auto: "true"
+    after: |2-
+              type: deployment
+              initContainers:
+                patch-matrix:
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+    path: kubernetes/apps/ai/hermes-matrix/app/helmrelease.yaml
+    line: 26
+status:
+  lastSeenLine: 26

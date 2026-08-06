@@ -1,35 +1,40 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6MJ10RTWJHBP3306PRVV7K
-file: kubernetes/apps/ai/hermes/app/configmap.yaml
-kind: why
-title: GH_TOKEN mapped from HOMELAB_GH_TOKEN so a rebuilt PVC still works
-body: |-
-  gh reads GH_TOKEN or GITHUB_TOKEN, but the pod only exposes HOMELAB_GH_TOKEN
-  (named that way to keep it out of gh's implicit reach elsewhere). Mapping it
-  across here is deliberate — the alternative is depending on `gh auth
-  login` state persisted on the PVC, which a rebuilt volume would silently
-  lose.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: |2-
-            if not env.get("GH_TOKEN") and env.get("HOMELAB_GH_TOKEN"):
-                env["GH_TOKEN"] = env["HOMELAB_GH_TOKEN"]
-  before: |2-
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6MJ10RTWJHBP3306PRVV7K
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/hermes/app/configmap.yaml
+  type: why
+  title: GH_TOKEN mapped from HOMELAB_GH_TOKEN so a rebuilt PVC still works
+  body: |-
+    gh reads GH_TOKEN or GITHUB_TOKEN, but the pod only exposes HOMELAB_GH_TOKEN
+    (named that way to keep it out of gh's implicit reach elsewhere). Mapping it
+    across here is deliberate — the alternative is depending on `gh auth
+    login` state persisted on the PVC, which a rebuilt volume would silently
+    lose.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+              if not env.get("GH_TOKEN") and env.get("HOMELAB_GH_TOKEN"):
+                  env["GH_TOKEN"] = env["HOMELAB_GH_TOKEN"]
+    before: |2-
 
-        def renovate():
-            env = dict(os.environ)
-  after: |2-
-            try:
-                p = subprocess.run(
-                    ["gh", "pr", "list", "--repo", "janpuc/home-ops",
-  last_seen_line: 687
-git:
-  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
-  path: kubernetes/apps/ai/hermes/app/configmap.yaml
-  line: 687
-author:
-  name: claude-code
-  kind: agent
-  source: session
+          def renovate():
+              env = dict(os.environ)
+    after: |2-
+              try:
+                  p = subprocess.run(
+                      ["gh", "pr", "list", "--repo", "janpuc/home-ops",
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+    path: kubernetes/apps/ai/hermes/app/configmap.yaml
+    line: 687
+status:
+  lastSeenLine: 687

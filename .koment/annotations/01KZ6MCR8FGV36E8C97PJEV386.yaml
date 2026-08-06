@@ -1,47 +1,52 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6MCR8FGV36E8C97PJEV386
-file: kubernetes/apps/ai/hermes/app/configmap.yaml
-kind: why
-title: council preset fans out per user turn, not per tool iteration
-body: |-
-  fanout: user_turn runs the advisors ONCE per user turn, after which
-  MiniMax-M3 works the task alone. The default, per_iteration, re-polls all
-  four advisors after every tool result — a 25-iteration kubectl/terminal
-  task would cost 100 advisor calls instead of 4.
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6MCR8FGV36E8C97PJEV386
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/hermes/app/configmap.yaml
+  type: why
+  title: council preset fans out per user turn, not per tool iteration
+  body: |-
+    fanout: user_turn runs the advisors ONCE per user turn, after which
+    MiniMax-M3 works the task alone. The default, per_iteration, re-polls all
+    four advisors after every tool result — a 25-iteration kubectl/terminal
+    task would cost 100 advisor calls instead of 4.
 
-  reference_max_tokens: 600 is there because advisor generation dominates MoA
-  turn latency (roughly 0.88 correlation with output tokens) and the
-  aggregator only needs the gist of each judgement, not a full answer.
+    reference_max_tokens: 600 is there because advisor generation dominates MoA
+    turn latency (roughly 0.88 correlation with output tokens) and the
+    aggregator only needs the gist of each judgement, not a full answer.
 
-  max_tokens is kept for forward compatibility only: as of v2026.7.7 the
-  preset's max_tokens does NOT cap the aggregator — moa_loop passes the
-  caller's value straight through, so the acting model uses its real maximum.
-  Do not rely on this number to bound cost.
+    max_tokens is kept for forward compatibility only: as of v2026.7.7 the
+    preset's max_tokens does NOT cap the aggregator — moa_loop passes the
+    caller's value straight through, so the acting model uses its real maximum.
+    Do not rely on this number to bound cost.
 
-  The `quick` preset below is the same idea at three calls instead of five,
-  for when a council is overkill.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: |2-
-              fanout: user_turn
-              reference_max_tokens: 600
-              max_tokens: 16384
-  before: |2-
-                model: minimax/MiniMax-M3
-              reference_temperature: 0.6
-              aggregator_temperature: 0.4
-  after: |2-
-            quick:
-              enabled: true
-              reference_models:
-  last_seen_line: 207
-git:
-  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
-  path: kubernetes/apps/ai/hermes/app/configmap.yaml
-  line: 207
-author:
-  name: claude-code
-  kind: agent
-  source: session
+    The `quick` preset below is the same idea at three calls instead of five,
+    for when a council is overkill.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+                fanout: user_turn
+                reference_max_tokens: 600
+                max_tokens: 16384
+    before: |2-
+                  model: minimax/MiniMax-M3
+                reference_temperature: 0.6
+                aggregator_temperature: 0.4
+    after: |2-
+              quick:
+                enabled: true
+                reference_models:
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+    path: kubernetes/apps/ai/hermes/app/configmap.yaml
+    line: 207
+status:
+  lastSeenLine: 207

@@ -1,38 +1,43 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6M9X3NN13XMB2S64FH5KQB
-file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
-kind: why
-title: miroir, kopiur and cert-manager RBAC let hermes see what failed
-body: |-
-  Storage and backup read access, granted in response to a concrete failure.
-  Without the miroir and kopiur groups the agent is blind to exactly the layer
-  that caused the 2026-07-31 snapshot-freeze incident — it could not have
-  triaged that alert storm even if asked. Strictly get/list/watch; nothing
-  here mutates storage.
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6M9X3NN13XMB2S64FH5KQB
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
+  type: why
+  title: miroir, kopiur and cert-manager RBAC let hermes see what failed
+  body: |-
+    Storage and backup read access, granted in response to a concrete failure.
+    Without the miroir and kopiur groups the agent is blind to exactly the layer
+    that caused the 2026-07-31 snapshot-freeze incident — it could not have
+    triaged that alert storm even if asked. Strictly get/list/watch; nothing
+    here mutates storage.
 
-  The cert-manager group below feeds certificate expiry into the weekly
-  digest, and metrics.k8s.io backs `kubectl top` for capacity trends.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: |2-
-                - apiGroups:
-                    - "miroir.home-operations.com"
-  before: |2-
-                    - "get"
-                    - "list"
-                    - "watch"
-  after: |2-
-                  resources:
-                    - miroirvolumes
-                    - miroirnodes
-  last_seen_line: 506
-git:
-  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
-  path: kubernetes/apps/ai/hermes/app/helmrelease.yaml
-  line: 506
-author:
-  name: claude-code
-  kind: agent
-  source: session
+    The cert-manager group below feeds certificate expiry into the weekly
+    digest, and metrics.k8s.io backs `kubectl top` for capacity trends.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+                  - apiGroups:
+                      - "miroir.home-operations.com"
+    before: |2-
+                      - "get"
+                      - "list"
+                      - "watch"
+    after: |2-
+                    resources:
+                      - miroirvolumes
+                      - miroirnodes
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+    path: kubernetes/apps/ai/hermes/app/helmrelease.yaml
+    line: 506
+status:
+  lastSeenLine: 506

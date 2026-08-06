@@ -1,37 +1,42 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6MCEY6DFMJBVYSDN7BWPPF
-file: kubernetes/apps/ai/hermes/app/configmap.yaml
-kind: why
-title: pre_tool_call hook names the python interpreter explicitly
-body: |-
-  Shell hooks live in agent/shell_hooks.py. A pre_tool_call hook refuses a
-  tool call by printing {"decision": "block", "reason": "..."} on stdout.
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6MCEY6DFMJBVYSDN7BWPPF
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/hermes/app/configmap.yaml
+  type: why
+  title: pre_tool_call hook names the python interpreter explicitly
+  body: |-
+    Shell hooks live in agent/shell_hooks.py. A pre_tool_call hook refuses a
+    tool call by printing {"decision": "block", "reason": "..."} on stdout.
 
-  The interpreter is named explicitly because commands run through shlex.split
-  with shell=False — a shebang plus exec bit would not be honoured. That is
-  also why the init container chmods the script 644 rather than 755.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: |2-
-        hooks:
-          pre_tool_call:
-            - command: /usr/bin/python3 /opt/data/hook-scripts/home-ops-guard.py
-  before: |2-
-            - "*wipefs*"
-            - "*curl*|*sh*"
-            - "*wget*|*sh*"
-  after: |2-
-              matcher: terminal
-              timeout: 10
-        hooks_auto_accept: true
-  last_seen_line: 162
-git:
-  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
-  path: kubernetes/apps/ai/hermes/app/configmap.yaml
-  line: 162
-author:
-  name: claude-code
-  kind: agent
-  source: session
+    The interpreter is named explicitly because commands run through shlex.split
+    with shell=False — a shebang plus exec bit would not be honoured. That is
+    also why the init container chmods the script 644 rather than 755.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+          hooks:
+            pre_tool_call:
+              - command: /usr/bin/python3 /opt/data/hook-scripts/home-ops-guard.py
+    before: |2-
+              - "*wipefs*"
+              - "*curl*|*sh*"
+              - "*wget*|*sh*"
+    after: |2-
+                matcher: terminal
+                timeout: 10
+          hooks_auto_accept: true
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+    path: kubernetes/apps/ai/hermes/app/configmap.yaml
+    line: 162
+status:
+  lastSeenLine: 162

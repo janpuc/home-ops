@@ -1,20 +1,22 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/policy.schema.json
-version: 1
-comments:
-  mode: strict
-  intrinsic:
-    - toolchain-directive
-    - generated-marker
-    - upstream-link
-    - deprecated
-    - public-api
-  generated_paths:
-    - kubeconfig
-    - talosconfig
-  vendored_paths:
-    - .venv/**
-agents:
-  adapters:
-    - agents
-    - claude
-    - copilot
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/policy.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Policy
+spec:
+  comments:
+    mode: strict
+    intrinsic:
+      - toolchain-directive
+      - generated-marker
+      - upstream-link
+      - deprecated
+      - public-api
+    generatedPaths:
+      - kubeconfig
+      - talosconfig
+    vendoredPaths:
+      - .venv/**
+  agents:
+    adapters:
+      - agents
+      - claude
+      - copilot

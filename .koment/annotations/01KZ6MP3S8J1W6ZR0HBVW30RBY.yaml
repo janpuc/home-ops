@@ -1,49 +1,54 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6MP3S8J1W6ZR0HBVW30RBY
-file: kubernetes/apps/network/envoy-gateway/app/envoy.yaml
-kind: gotcha
-title: Envoy gateway uses Cluster to dodge pod-less-node L2 blackhole
-body: |-
-  Do not "fix" this to Local. Local is the tidier-looking choice — it
-  preserves the client source IP and avoids an extra hop — and setting it
-  here has repeatedly blacked out both gateway VIPs.
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6MP3S8J1W6ZR0HBVW30RBY
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/network/envoy-gateway/app/envoy.yaml
+  type: gotcha
+  title: Envoy gateway uses Cluster to dodge pod-less-node L2 blackhole
+  body: |-
+    Do not "fix" this to Local. Local is the tidier-looking choice — it
+    preserves the client source IP and avoids an extra hop — and setting it
+    here has repeatedly blacked out both gateway VIPs.
 
-  The cause is the interaction with Cilium L2 announcement. This cluster has 3
-  nodes and envoyDeployment runs replicas: 2, so one node never has an Envoy
-  pod. Cilium hands the L2 lease for a LoadBalancer IP to an arbitrary node;
-  under externalTrafficPolicy: Local a node with no local endpoint blackholes
-  the traffic instead of forwarding it, so whenever the lease lands on the
-  pod-less node the VIP goes dark until the lease moves. Nothing reports
-  unhealthy — the Service, the pods and the Gateway all stay Ready.
+    The cause is the interaction with Cilium L2 announcement. This cluster has 3
+    nodes and envoyDeployment runs replicas: 2, so one node never has an Envoy
+    pod. Cilium hands the L2 lease for a LoadBalancer IP to an arbitrary node;
+    under externalTrafficPolicy: Local a node with no local endpoint blackholes
+    the traffic instead of forwarding it, so whenever the lease lands on the
+    pod-less node the VIP goes dark until the lease moves. Nothing reports
+    unhealthy — the Service, the pods and the Gateway all stay Ready.
 
-  Cluster costs one extra hop and SNATs the source IP, which is why the
-  ClientTrafficPolicy below derives the real client address from
-  X-Forwarded-For with trustedCIDRs 10.42.0.0/16. If you ever do move to
-  Local, that XFF configuration has to be revisited too.
+    Cluster costs one extra hop and SNATs the source IP, which is why the
+    ClientTrafficPolicy below derives the real client address from
+    X-Forwarded-For with trustedCIDRs 10.42.0.0/16. If you ever do move to
+    Local, that XFF configuration has to be revisited too.
 
-  Raising replicas to match the node count would also close the hole, but it
-  is not currently how this is solved.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: |2-
-          envoyService:
-            externalTrafficPolicy: Cluster
-  before: |2-
-                          memory: 32Mi
-                        limits:
-                          memory: 128Mi
-  after: |2-
-      shutdown:
-        drainTimeout: 180s
-      telemetry:
-  last_seen_line: 37
-git:
-  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
-  path: kubernetes/apps/network/envoy-gateway/app/envoy.yaml
-  line: 37
-author:
-  name: claude-code
-  kind: agent
-  source: session
+    Raising replicas to match the node count would also close the hole, but it
+    is not currently how this is solved.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+            envoyService:
+              externalTrafficPolicy: Cluster
+    before: |2-
+                            memory: 32Mi
+                          limits:
+                            memory: 128Mi
+    after: |2-
+        shutdown:
+          drainTimeout: 180s
+        telemetry:
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+    path: kubernetes/apps/network/envoy-gateway/app/envoy.yaml
+    line: 37
+status:
+  lastSeenLine: 37

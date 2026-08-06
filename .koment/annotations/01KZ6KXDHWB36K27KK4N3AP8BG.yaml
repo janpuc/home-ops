@@ -1,35 +1,40 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6KXDHWB36K27KK4N3AP8BG
-file: kubernetes/apps/downloads/qbittorrent/app/helmrelease.yaml
-kind: gotcha
-title: gluetun entrypoint strips wireguard rules to coexist with Cilium
-body: |-
-  gluetun's entrypoint is wrapped only to delete its own wireguard policy
-  routes before starting. Those rules collide with Cilium's routing and the
-  pod loses connectivity with them in place — see
-  https://github.com/qdm12/gluetun/issues/2521#issuecomment-3935931910. Both
-  deletes are best-effort (2>/dev/null) because they are absent on a first
-  start, and the final exec must stay so gluetun keeps PID 1 and its signal
-  handling.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: '              - "ip rule del table 51820 2>/dev/null; ip -6 rule del table 51820 2>/dev/null; exec /gluetun-entrypoint"'
-  before: |2-
-                command:
-                  - /bin/sh
-                  - -c
-  after: |2-
-                env:
-                  DNS_UPSTREAM_RESOLVER_TYPE: plain
-                  FIREWALL_INPUT_PORTS: "80,9999"
-  last_seen_line: 64
-git:
-  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
-  path: kubernetes/apps/downloads/qbittorrent/app/helmrelease.yaml
-  line: 64
-author:
-  name: claude-code
-  kind: agent
-  source: session
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6KXDHWB36K27KK4N3AP8BG
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/downloads/qbittorrent/app/helmrelease.yaml
+  type: gotcha
+  title: gluetun entrypoint strips wireguard rules to coexist with Cilium
+  body: |-
+    gluetun's entrypoint is wrapped only to delete its own wireguard policy
+    routes before starting. Those rules collide with Cilium's routing and the
+    pod loses connectivity with them in place — see
+    https://github.com/qdm12/gluetun/issues/2521#issuecomment-3935931910. Both
+    deletes are best-effort (2>/dev/null) because they are absent on a first
+    start, and the final exec must stay so gluetun keeps PID 1 and its signal
+    handling.
+  anchor:
+    scope: excerpt
+    excerpt: '              - "ip rule del table 51820 2>/dev/null; ip -6 rule del table 51820 2>/dev/null; exec /gluetun-entrypoint"'
+    before: |2-
+                  command:
+                    - /bin/sh
+                    - -c
+    after: |2-
+                  env:
+                    DNS_UPSTREAM_RESOLVER_TYPE: plain
+                    FIREWALL_INPUT_PORTS: "80,9999"
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+    path: kubernetes/apps/downloads/qbittorrent/app/helmrelease.yaml
+    line: 64
+status:
+  lastSeenLine: 64

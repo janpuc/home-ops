@@ -1,34 +1,39 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6M8WK17V5KVTKZFFY3HKSP
-file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
-kind: why
-title: home-ops-guard.py is 644 because shlex names the interpreter
-body: |-
-  The pre_tool_call shell hook. 644 rather than 755 is deliberate and correct:
-  config.yaml invokes it as "/usr/bin/python3 .../home-ops-guard.py" through
-  shlex.split with shell=False, so the interpreter is named explicitly and no
-  exec bit is needed — but the file must be readable by the agent's uid.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: |2-
-                    cp /run/config/home-ops-guard.py /opt/data/hook-scripts/home-ops-guard.py
-                    chmod 644 /opt/data/hook-scripts/home-ops-guard.py
-  before: |2-
-                    cp /run/config/config.yaml /opt/data/config.yaml
-                    chmod 600 /opt/data/config.yaml
-                    mkdir -p /opt/data/hook-scripts
-  after: |2-
-                    mkdir -p /opt/data/.local/bin
-                    cp /run/config/matrix-post.py /opt/data/.local/bin/matrix-post
-                    chmod 755 /opt/data/.local/bin/matrix-post
-  last_seen_line: 63
-git:
-  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
-  path: kubernetes/apps/ai/hermes/app/helmrelease.yaml
-  line: 63
-author:
-  name: claude-code
-  kind: agent
-  source: session
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6M8WK17V5KVTKZFFY3HKSP
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
+  type: why
+  title: home-ops-guard.py is 644 because shlex names the interpreter
+  body: |-
+    The pre_tool_call shell hook. 644 rather than 755 is deliberate and correct:
+    config.yaml invokes it as "/usr/bin/python3 .../home-ops-guard.py" through
+    shlex.split with shell=False, so the interpreter is named explicitly and no
+    exec bit is needed — but the file must be readable by the agent's uid.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+                      cp /run/config/home-ops-guard.py /opt/data/hook-scripts/home-ops-guard.py
+                      chmod 644 /opt/data/hook-scripts/home-ops-guard.py
+    before: |2-
+                      cp /run/config/config.yaml /opt/data/config.yaml
+                      chmod 600 /opt/data/config.yaml
+                      mkdir -p /opt/data/hook-scripts
+    after: |2-
+                      mkdir -p /opt/data/.local/bin
+                      cp /run/config/matrix-post.py /opt/data/.local/bin/matrix-post
+                      chmod 755 /opt/data/.local/bin/matrix-post
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+    path: kubernetes/apps/ai/hermes/app/helmrelease.yaml
+    line: 63
+status:
+  lastSeenLine: 63

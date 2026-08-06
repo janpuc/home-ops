@@ -1,34 +1,39 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6M8YWK11JGVN6GS5GQ1YGE
-file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
-kind: why
-title: matrix-post init container creates .local/bin before install-tools
-body: |-
-  matrix-post delivers into a named Matrix room from cron jobs and skills.
-  /opt/data/.local/bin is already on PATH, and this init container runs before
-  install-tools, so it has to create the directory itself rather than assume
-  it exists.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: |2-
-                    mkdir -p /opt/data/.local/bin
-                    cp /run/config/matrix-post.py /opt/data/.local/bin/matrix-post
-  before: |2-
-                    mkdir -p /opt/data/hook-scripts
-                    cp /run/config/home-ops-guard.py /opt/data/hook-scripts/home-ops-guard.py
-                    chmod 644 /opt/data/hook-scripts/home-ops-guard.py
-  after: |2-
-                    chmod 755 /opt/data/.local/bin/matrix-post
-                    cp /run/config/weekly-digest.py /opt/data/.local/bin/weekly-digest
-                    chmod 755 /opt/data/.local/bin/weekly-digest
-  last_seen_line: 65
-git:
-  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
-  path: kubernetes/apps/ai/hermes/app/helmrelease.yaml
-  line: 65
-author:
-  name: claude-code
-  kind: agent
-  source: session
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6M8YWK11JGVN6GS5GQ1YGE
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
+  type: why
+  title: matrix-post init container creates .local/bin before install-tools
+  body: |-
+    matrix-post delivers into a named Matrix room from cron jobs and skills.
+    /opt/data/.local/bin is already on PATH, and this init container runs before
+    install-tools, so it has to create the directory itself rather than assume
+    it exists.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+                      mkdir -p /opt/data/.local/bin
+                      cp /run/config/matrix-post.py /opt/data/.local/bin/matrix-post
+    before: |2-
+                      mkdir -p /opt/data/hook-scripts
+                      cp /run/config/home-ops-guard.py /opt/data/hook-scripts/home-ops-guard.py
+                      chmod 644 /opt/data/hook-scripts/home-ops-guard.py
+    after: |2-
+                      chmod 755 /opt/data/.local/bin/matrix-post
+                      cp /run/config/weekly-digest.py /opt/data/.local/bin/weekly-digest
+                      chmod 755 /opt/data/.local/bin/weekly-digest
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+    path: kubernetes/apps/ai/hermes/app/helmrelease.yaml
+    line: 65
+status:
+  lastSeenLine: 65

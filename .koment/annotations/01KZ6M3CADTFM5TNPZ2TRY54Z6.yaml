@@ -1,39 +1,44 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6M3CADTFM5TNPZ2TRY54Z6
-file: kubernetes/apps/ai/hermes-matrix/app/configmap.yaml
-kind: invariant
-title: patch-matrix.py fails closed when anchor count drifts
-body: |-
-  The patch fails closed on purpose. Requiring exactly one match per anchor
-  means a base-image bump that reshapes either MessageEvent construction
-  aborts the init container, and the pod never starts. The alternative —
-  patching best-effort — would leave a running bot that quietly serves one
-  shared persona to every room, which is far harder to notice than a pod that
-  will not come up.
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6M3CADTFM5TNPZ2TRY54Z6
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/hermes-matrix/app/configmap.yaml
+  type: invariant
+  title: patch-matrix.py fails closed when anchor count drifts
+  body: |-
+    The patch fails closed on purpose. Requiring exactly one match per anchor
+    means a base-image bump that reshapes either MessageEvent construction
+    aborts the init container, and the pod never starts. The alternative —
+    patching best-effort — would leave a running bot that quietly serves one
+    shared persona to every room, which is far harder to notice than a pod that
+    will not come up.
 
-  Both anchored methods take room_id: str as a parameter, which is what makes
-  the injected _rcp(self.config.extra, room_id) call valid at both sites.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: |2-
-            count = out.count(anchor)
-            if count != 1:
-  before: |2-
+    Both anchored methods take room_id: str as a parameter, which is what makes
+    the injected _rcp(self.config.extra, room_id) call valid at both sites.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+              count = out.count(anchor)
+              if count != 1:
+    before: |2-
 
-        out = src
-        for label, anchor in ANCHORS:
-  after: |2-
-                sys.stderr.write(
-                    "FATAL: anchor for %s matched %d times (expected exactly 1).\n"
-                    "The base image changed; re-derive the patch before deploying.\n"
-  last_seen_line: 154
-git:
-  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
-  path: kubernetes/apps/ai/hermes-matrix/app/configmap.yaml
-  line: 154
-author:
-  name: claude-code
-  kind: agent
-  source: session
+          out = src
+          for label, anchor in ANCHORS:
+    after: |2-
+                  sys.stderr.write(
+                      "FATAL: anchor for %s matched %d times (expected exactly 1).\n"
+                      "The base image changed; re-derive the patch before deploying.\n"
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+    path: kubernetes/apps/ai/hermes-matrix/app/configmap.yaml
+    line: 154
+status:
+  lastSeenLine: 154

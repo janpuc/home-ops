@@ -1,40 +1,45 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6M9RD7TVTBQ8YCGG8CKN7K
-file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
-kind: why
-title: hermes writes at homelab root, reads personal/jan as ancestor
-body: |-
-  Hermes writes at the ROOT of the namespace tree — renamed from the flat
-  "hermes" on 2026-07-30. It is a general assistant rather than a per-project
-  agent, so its durable facts belong where every project below can inherit
-  them. Its session churn stays put regardless: the ancestor cascade reads
-  durable tiers ONLY, so working and episodic writes here never leak into
-  homelab/* reads.
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6M9RD7TVTBQ8YCGG8CKN7K
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
+  type: why
+  title: hermes writes at homelab root, reads personal/jan as ancestor
+  body: |-
+    Hermes writes at the ROOT of the namespace tree — renamed from the flat
+    "hermes" on 2026-07-30. It is a general assistant rather than a per-project
+    agent, so its durable facts belong where every project below can inherit
+    them. Its session churn stays put regardless: the ancestor cascade reads
+    durable tiers ONLY, so working and episodic writes here never leak into
+    homelab/* reads.
 
-  MEMINI_HOME is the personal namespace, merged read-only into every recall.
-  The morning brief depends on it — Janek's profile, voice preferences and
-  news framing live there, not in homelab.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: |2-
-                  MEMINI_NAMESPACE: homelab
-                  MEMINI_HOME: personal/jan
-  before: |2-
-                        name: hermes-config
-                        key: LITELLM_API_KEY
-                  MEMINI_BASE_URL: http://memini.ai.svc.cluster.local:8080
-  after: |2-
-                  MEMINI_API_KEY:
-                    valueFrom:
-                      secretKeyRef:
-  last_seen_line: 225
-git:
-  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
-  path: kubernetes/apps/ai/hermes/app/helmrelease.yaml
-  line: 225
-author:
-  name: claude-code
-  kind: agent
-  source: session
+    MEMINI_HOME is the personal namespace, merged read-only into every recall.
+    The morning brief depends on it — Janek's profile, voice preferences and
+    news framing live there, not in homelab.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+                    MEMINI_NAMESPACE: homelab
+                    MEMINI_HOME: personal/jan
+    before: |2-
+                          name: hermes-config
+                          key: LITELLM_API_KEY
+                    MEMINI_BASE_URL: http://memini.ai.svc.cluster.local:8080
+    after: |2-
+                    MEMINI_API_KEY:
+                      valueFrom:
+                        secretKeyRef:
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+    path: kubernetes/apps/ai/hermes/app/helmrelease.yaml
+    line: 225
+status:
+  lastSeenLine: 225

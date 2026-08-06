@@ -1,33 +1,38 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6MFQGM41PGMG9P23TSX3FC
-file: kubernetes/apps/ai/hermes/app/configmap.yaml
-kind: why
-title: body stays plain text so non-HTML Matrix clients render cleanly
-body: |-
-  The plain `body` field is left as-is and doubles as the plain-text fallback
-  for clients that do not render HTML — only formatted_body carries the
-  markup. Overwriting body with the HTML would make those clients show tags.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: |2-
-                content["format"] = "org.matrix.custom.html"
-                content["formatted_body"] = body
-  before: |2-
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6MFQGM41PGMG9P23TSX3FC
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/hermes/app/configmap.yaml
+  type: why
+  title: body stays plain text so non-HTML Matrix clients render cleanly
+  body: |-
+    The plain `body` field is left as-is and doubles as the plain-text fallback
+    for clients that do not render HTML — only formatted_body carries the
+    markup. Overwriting body with the HTML would make those clients show tags.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+                  content["format"] = "org.matrix.custom.html"
+                  content["formatted_body"] = body
+    before: |2-
 
-            content = {"msgtype": msgtype, "body": body}
-            if as_html:
-  after: |2-
+              content = {"msgtype": msgtype, "body": body}
+              if as_html:
+    after: |2-
 
-            txn = "hermes-%d" % int(time.time() * 1000)
-            url = "%s/_matrix/client/v3/rooms/%s/send/m.room.message/%s" % (hs, room, txn)
-  last_seen_line: 449
-git:
-  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
-  path: kubernetes/apps/ai/hermes/app/configmap.yaml
-  line: 449
-author:
-  name: claude-code
-  kind: agent
-  source: session
+              txn = "hermes-%d" % int(time.time() * 1000)
+              url = "%s/_matrix/client/v3/rooms/%s/send/m.room.message/%s" % (hs, room, txn)
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+    path: kubernetes/apps/ai/hermes/app/configmap.yaml
+    line: 449
+status:
+  lastSeenLine: 449

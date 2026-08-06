@@ -1,40 +1,45 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6M4ZHH2NRV5RHA6VVJ8SBP
-file: kubernetes/apps/ai/hermes-matrix/app/helmrelease.yaml
-kind: why
-title: patched volume mounts app-only so the init reads pristine upstream
-body: |-
-  Holds the patched matrix.py that the init container produces. It is mounted
-  over the site-packages copy for the app container ONLY — the init
-  container needs the pristine upstream file at that path to read from, so
-  mounting it for both would make the patch read its own output.
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6M4ZHH2NRV5RHA6VVJ8SBP
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/hermes-matrix/app/helmrelease.yaml
+  type: why
+  title: patched volume mounts app-only so the init reads pristine upstream
+  body: |-
+    Holds the patched matrix.py that the init container produces. It is mounted
+    over the site-packages copy for the app container ONLY — the init
+    container needs the pristine upstream file at that path to read from, so
+    mounting it for both would make the patch read its own output.
 
-  The other three volumes split by secrecy: `config` is the ConfigMap, which
-  carries the patch script and the persona template with {{ }} placeholders
-  and no real room IDs, so it stays in git; `config-secret` is the
-  ExternalSecret-rendered config.yaml with the private room IDs substituted
-  in.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: |2-
-          patched:
-            type: emptyDir
-  before: |2-
-                  - path: /data
-                app:
-                  - path: /data
-  after: |2-
-            advancedMounts:
-              hermes-matrix:
-                patch-matrix:
-  last_seen_line: 81
-git:
-  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
-  path: kubernetes/apps/ai/hermes-matrix/app/helmrelease.yaml
-  line: 81
-author:
-  name: claude-code
-  kind: agent
-  source: session
+    The other three volumes split by secrecy: `config` is the ConfigMap, which
+    carries the patch script and the persona template with {{ }} placeholders
+    and no real room IDs, so it stays in git; `config-secret` is the
+    ExternalSecret-rendered config.yaml with the private room IDs substituted
+    in.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+            patched:
+              type: emptyDir
+    before: |2-
+                    - path: /data
+                  app:
+                    - path: /data
+    after: |2-
+              advancedMounts:
+                hermes-matrix:
+                  patch-matrix:
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+    path: kubernetes/apps/ai/hermes-matrix/app/helmrelease.yaml
+    line: 81
+status:
+  lastSeenLine: 81

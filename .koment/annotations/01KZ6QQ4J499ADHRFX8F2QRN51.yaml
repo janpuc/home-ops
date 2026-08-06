@@ -1,34 +1,39 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6QQ4J499ADHRFX8F2QRN51
-file: .lefthook.toml
-kind: why
-title: lefthook common commands inlined locally to escape parallel=true
-body: |-
-  Mirrored from home-operations/.github/lefthook.common.toml. The upstream
-  sync was broken deliberately on 2026-08-04 because lefthook merges remotes
-  after the local config and refuses to let the local file override the
-  remote's `parallel = true`. Inlining the common commands locally is the only
-  way to control command ordering without giving up the rest of the
-  format-*/lint suite. Re-syncing from upstream would re-introduce the race;
-  review the upstream config before re-merging.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: |-
-    [pre-commit]
-    parallel = false
-    skip = ["merge", "rebase"]
-  after: |2-
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6QQ4J499ADHRFX8F2QRN51
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: .lefthook.toml
+  type: why
+  title: lefthook common commands inlined locally to escape parallel=true
+  body: |-
+    Mirrored from home-operations/.github/lefthook.common.toml. The upstream
+    sync was broken deliberately on 2026-08-04 because lefthook merges remotes
+    after the local config and refuses to let the local file override the
+    remote's `parallel = true`. Inlining the common commands locally is the only
+    way to control command ordering without giving up the rest of the
+    format-*/lint suite. Re-syncing from upstream would re-introduce the race;
+    review the upstream config before re-merging.
+  anchor:
+    scope: excerpt
+    excerpt: |-
+      [pre-commit]
+      parallel = false
+      skip = ["merge", "rebase"]
+    after: |2-
 
-    [pre-commit.commands.format-go]
-    glob = ["*.go"]
-  last_seen_line: 1
-git:
-  commit: 1fdb7a6db043a9dc382ed8623ba9de62d8e8dc0f
-  path: .lefthook.toml
-  line: 1
-author:
-  name: claude-code
-  kind: agent
-  source: session
+      [pre-commit.commands.format-go]
+      glob = ["*.go"]
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 1fdb7a6db043a9dc382ed8623ba9de62d8e8dc0f
+    path: .lefthook.toml
+    line: 1
+status:
+  lastSeenLine: 1

@@ -1,34 +1,39 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6MDHMJRC6VVZY7AE88TZ9E
-file: kubernetes/apps/ai/hermes/app/configmap.yaml
-kind: why
-title: quick preset can afford per_iteration fanout with two advisors
-body: |-
-  `quick` is deliberately left on the default per_iteration fanout, unlike
-  `council` above. With only two advisors, refreshing their advice on every
-  iteration stays cheap — the cost blow-up that forced council onto
-  user_turn does not apply here.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: |2-
-              reference_max_tokens: 400
-              max_tokens: 8192
-  before: |2-
-                model: opencode-go/glm-5.2
-              reference_temperature: 0.7
-              aggregator_temperature: 0.3
-  after: |2-
-        platforms:
-          matrix:
-            enabled: false
-  last_seen_line: 222
-git:
-  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
-  path: kubernetes/apps/ai/hermes/app/configmap.yaml
-  line: 222
-author:
-  name: claude-code
-  kind: agent
-  source: session
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6MDHMJRC6VVZY7AE88TZ9E
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/hermes/app/configmap.yaml
+  type: why
+  title: quick preset can afford per_iteration fanout with two advisors
+  body: |-
+    `quick` is deliberately left on the default per_iteration fanout, unlike
+    `council` above. With only two advisors, refreshing their advice on every
+    iteration stays cheap — the cost blow-up that forced council onto
+    user_turn does not apply here.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+                reference_max_tokens: 400
+                max_tokens: 8192
+    before: |2-
+                  model: opencode-go/glm-5.2
+                reference_temperature: 0.7
+                aggregator_temperature: 0.3
+    after: |2-
+          platforms:
+            matrix:
+              enabled: false
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+    path: kubernetes/apps/ai/hermes/app/configmap.yaml
+    line: 222
+status:
+  lastSeenLine: 222

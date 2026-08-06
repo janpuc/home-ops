@@ -1,30 +1,35 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/janpuc/koment/main/schema/annotation.schema.json
-version: 1
-id: 01KZ6M980E4C8M0KX1BD7JXSDQ
-file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
-kind: why
-title: GOBIN puts gopls straight on PATH instead of GOPATH/bin
-body: |-
-  GOBIN, not GOPATH/bin, so gopls installs straight onto PATH instead of
-  landing in /opt/data/go/bin where nothing would find it.
-created: "2026-08-04"
-anchor:
-  scope: excerpt
-  excerpt: '                  GOBIN=/opt/data/.local/bin \'
-  before: |2-
-                    fi
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZ6M980E4C8M0KX1BD7JXSDQ
+  created: "2026-08-04T00:00:00Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
+  type: why
+  title: GOBIN puts gopls straight on PATH instead of GOPATH/bin
+  body: |-
+    GOBIN, not GOPATH/bin, so gopls installs straight onto PATH instead of
+    landing in /opt/data/go/bin where nothing would find it.
+  anchor:
+    scope: excerpt
+    excerpt: '                  GOBIN=/opt/data/.local/bin \'
+    before: |2-
+                      fi
 
-                    if [ ! -f /opt/data/.local/bin/gopls ]; then
-  after: |2-
-                      GOPATH=/opt/data/go \
-                      GOCACHE=/opt/data/.cache/go-build \
-                      /opt/data/.local/go/bin/go install golang.org/x/tools/gopls@v0.17.1
-  last_seen_line: 143
-git:
-  commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
-  path: kubernetes/apps/ai/hermes/app/helmrelease.yaml
-  line: 143
-author:
-  name: claude-code
-  kind: agent
-  source: session
+                      if [ ! -f /opt/data/.local/bin/gopls ]; then
+    after: |2-
+                        GOPATH=/opt/data/go \
+                        GOCACHE=/opt/data/.cache/go-build \
+                        /opt/data/.local/go/bin/go install golang.org/x/tools/gopls@v0.17.1
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d66c205d93c0bde7fcbc5bacceeaed825f9ad72f
+    path: kubernetes/apps/ai/hermes/app/helmrelease.yaml
+    line: 143
+status:
+  lastSeenLine: 143
