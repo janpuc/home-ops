@@ -11,7 +11,7 @@ spec:
   title: koment version input must move with the mise config pin
   body: |-
     The koment version is pinned in TWO places and they must be bumped together:
-    this `version` input and `"github:janpuc/koment"` in .mise/config.toml.
+    this `version` input and `"github:koment-dev/koment"` in .mise/config.toml.
     Renovate's mise manager tracks the config.toml pin and its action manager
     tracks the SHA above, but nothing tracks this input value — there is no
     customManager configured for workflow inputs in .renovaterc.json5.
@@ -23,13 +23,13 @@ spec:
   anchor:
     scope: excerpt
     excerpt: |2-
-              uses: janpuc/koment@eee7b5cfc0776c68816d7fdaa8af9d7a0e0da2e6 # v0.4.0
-              with:
-                version: 0.4.0
-    before: |2-
-                persist-credentials: false
-
             - name: Setup Koment
+              uses: koment-dev/koment@ffd1070fd22b52fb42ed51dc5572ee8d08204e41 # v2.0.1
+              with:
+                version: 2.0.1
+    before: |2
+              with:
+                persist-credentials: false
     after: |2-
 
             - name: Check Annotations
@@ -39,4 +39,7 @@ spec:
     kind: agent
     source: session
 status:
-  lastSeenLine: 29
+  lastSeenLine: 28
+  resolution: ok
+  resolvedAt: "2026-08-06T10:50:42Z"
+  resolvedCommit: 0d62298c8abd458094f7a20bf0568419574e7747

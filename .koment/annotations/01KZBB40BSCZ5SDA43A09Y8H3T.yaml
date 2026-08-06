@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZBB40BSCZ5SDA43A09Y8H3T
+  created: "2026-08-06T10:50:17Z"
+spec:
+  target:
+    file: .github/workflows/koment-pages.yaml
+  type: why
+  title: action owner is koment-dev, not janpuc; SHA and input must match
+  body: |-
+    Pin the owner `koment-dev/koment`, not `janpuc/koment`. The latter was
+    archived when the project moved organisations in v2.0.0 (`koment-dev/koment`
+    #71) and pinning it now causes the workflow to fail with a "repository not
+    found" error before any step runs. The SHA is the v2.0.1 commit object
+    (`ffd1070…`), and the `version` input must match it exactly — the action
+    downloads the release tarball at that tag and SHA-pins are checked
+    independently, so drift between the two fails the install step's checksum.
+    The trap to watch: when bumping, update both this SHA, the `# vX.Y.Z`
+    marker, the `version:` input, **and** `.mise/config.toml` — four places,
+    no manager tracks the input.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+            - name: Setup Koment
+              uses: koment-dev/koment@ffd1070fd22b52fb42ed51dc5572ee8d08204e41 # v2.0.1
+              with:
+                version: 2.0.1
+    before: |2
+              with:
+                persist-credentials: false
+    after: |2-
+
+            - name: Check Annotations
+              run: |
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 0d62298c8abd458094f7a20bf0568419574e7747
+    path: .github/workflows/koment-pages.yaml
+    line: 28
+status:
+  lastSeenLine: 28
+  resolution: ok
+  resolvedAt: "2026-08-06T10:50:17Z"
+  resolvedCommit: 0d62298c8abd458094f7a20bf0568419574e7747
