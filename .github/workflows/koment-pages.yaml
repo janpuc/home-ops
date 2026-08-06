@@ -26,7 +26,7 @@ jobs:
           persist-credentials: false
 
       - name: Setup Koment
-        uses: janpuc/koment@eee7b5cfc0776c68816d7fdaa8af9d7a0e0da2e6 # v0.4.0
+        uses: janpuc/koment@ba466fe73fb914b67adedb7d1e08b96c5bd67c9a # v1.1.0
         with:
           version: 0.4.0
 
