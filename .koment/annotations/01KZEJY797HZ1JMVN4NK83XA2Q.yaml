@@ -1,0 +1,75 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZEJY797HZ1JMVN4NK83XA2Q
+  created: "2026-08-07T17:04:40Z"
+spec:
+  target:
+    file: kubernetes/apps/observability/kube-prometheus-stack/app/alertmanagerconfig.yaml
+  type: why
+  title: "FluxFluxInstanceArtifactfailed: temporary IPv6 noise suppression"
+  body: |-
+    Silence the `FluxFluxInstanceArtifactfailed` alert because it's pure
+    notification noise, not a real failure. The alert fires when the
+    flux-operator tries to pull
+    `ghcr.io/controlplaneio-fluxcd/flux-operator-manifests:v0.57.0` from
+    `pkg-containers.githubusercontent.com` over IPv6 first, fails with `dial tcp
+    [2606:50c0:8003::154]:443: connect: network is unreachable`, and recovers
+    automatically on the IPv4 fallback in 2-4 seconds. Alertmanager sees the
+    fire+resolve cycle as a real blip and pushes a Pushover notification for
+    every blip. Cluster has been working fine through hundreds of these.
+
+    **Why:** this is a stopgap, not a permanent fix. **How to apply:** to remove
+    the suppression, fix the underlying IPv6 unreachable condition for
+    `pkg-containers.githubusercontent.com` (and any other AAAA-only host) by
+    doing ONE of:
+
+    1. Set `GODEBUG=preferipv4=1` on the flux-operator container env in
+    `kubernetes/apps/flux-system/flux-operator/app/helmrelease.yaml`. This is
+    the cleanest fix because it's per-binary and survives node network
+    reconfigs. 2. Add `ip6tables -I OUTPUT -d 2606:50c0:8003::/48 -j DROP` on
+    each Talos node (machine config). Wider blast radius — affects every
+    binary, not just flux-operator. 3. Deploy NodeLocal DNSCache with
+    `preferIPv4: true` and route cluster DNS through it. Most invasive.
+
+    Option 1 is recommended — smallest change, scoped to flux-operator. Option
+    3 also fixes any other Go binary that hits AAAA-only hosts (kopiur, miroir,
+    etc.).
+
+    **Trigger to revisit:** when migrating flux-operator off
+    `controlplaneio-fluxcd` to a registry that resolves only on IPv4 (or when
+    all three nodes get IPv6 connectivity from the LAN). Confirm the blip is
+    actually gone by tailing `kubectl logs -n flux-system flux-operator` for
+    `network is unreachable` before removing the route. Keep this annotation
+    alive until then so the next reader knows why a "real" alert is being
+    silently dropped.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+            - receiver: blackhole
+              matchers:
+                - name: alertname
+                  value: FluxFluxInstanceArtifactfailed
+                  matchType: =
+    before: |2-
+                - name: alertname
+                  value: InfoInhibitor
+                  matchType: =
+    after: |2-
+            - receiver: pushover
+              matchers:
+                - name: severity
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 10eccdd082b9d0f6fa8c8d0e98e7cce6045f031c
+    path: kubernetes/apps/observability/kube-prometheus-stack/app/alertmanagerconfig.yaml
+    line: 22
+status:
+  lastSeenLine: 22
+  resolution: ok
+  resolvedAt: "2026-08-07T17:04:40Z"
+  resolvedCommit: 10eccdd082b9d0f6fa8c8d0e98e7cce6045f031c
