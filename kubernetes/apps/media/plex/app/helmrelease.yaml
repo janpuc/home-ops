@@ -105,7 +105,7 @@ spec:
         existingClaim: "{{ .Release.Name }}"
       media:
         type: nfs
-        server: expanse.internal
+        server: bigmouth.internal
         path: /mnt/Vault/Media
         globalMounts:
           - path: /media
