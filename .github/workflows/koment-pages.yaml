@@ -26,9 +26,9 @@ jobs:
           persist-credentials: false
 
       - name: Setup Koment
-        uses: koment-dev/koment@ffd1070fd22b52fb42ed51dc5572ee8d08204e41 # v2.0.1
+        uses: koment-dev/koment@f3b11be6187f9922ce35a22562fe2ef4d0592361 # v2.2.0
         with:
-          version: 2.0.1
+          version: 2.2.0
 
       - name: Check Annotations
         run: |
