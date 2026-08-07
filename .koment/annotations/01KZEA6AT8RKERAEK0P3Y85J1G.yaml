@@ -1,0 +1,60 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZEA6AT8RKERAEK0P3Y85J1G
+  created: "2026-08-07T14:31:48Z"
+spec:
+  target:
+    file: kubernetes/apps/media/bazarr/app/helmrelease.yaml
+  type: why
+  body: |-
+    Bumped from `384Mi` (limit) / `256Mi` (request) after Bazarr hit `OOMKilled`
+    12 times in ~4 hours on 2026-08-07 (pod `bazarr-7b7f876968-mqgld`, container
+    restarted every ~5 minutes while CrashLoopBackOff). Root cause was a
+    first-boot subtitle scan over the Sonarr library (55 series, ~3500 episode
+    files after the 2026-08-02 PIT restore), which pushes Bazarr past 384Mi
+    during the initial pass. 1Gi is well under what the cluster can spare
+    (per-node memory used was 51/55/67% at the time), and 512Mi request keeps
+    the scheduler's reservation honest without starving other media workloads.
+
+    **Why:** Bazarr's memory profile is spiky by design — the steady state is
+    ~150–250Mi, but a full library scan, a metadata refresh, or the first scan
+    after a Sonarr restore can OOM under 512Mi. The 384Mi ceiling was carried
+    over from when the Sonarr library was empty, and the failure only surfaced
+    once Sonarr was repopulated. **How to apply:** if Bazarr starts OOMKilling
+    again with 1Gi, check the Sonarr/Radarr library size first — the trigger
+    is usually a bulk scan, not a steady-state leak. If it is a leak (growing
+    RSS over days), capture a heap dump before bumping further; the upstream
+    default for `ghcr.io/home-operations/bazarr` at the current chart revision
+    is 1Gi already, so any value above that needs explicit justification.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+                  resources:
+                    requests:
+                      cpu: 10m
+                      memory: 512Mi
+                    limits:
+                      memory: 1Gi
+    before: |2-
+                      spec:
+                        failureThreshold: 30
+                        periodSeconds: 10
+    after: |2-
+                  securityContext:
+                    allowPrivilegeEscalation: false
+                    readOnlyRootFilesystem: true
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 01c5fa8b256263c0952321af30de81334a03a602
+    path: kubernetes/apps/media/bazarr/app/helmrelease.yaml
+    line: 46
+status:
+  lastSeenLine: 46
+  resolution: ok
+  resolvedAt: "2026-08-07T14:31:48Z"
+  resolvedCommit: 01c5fa8b256263c0952321af30de81334a03a602
