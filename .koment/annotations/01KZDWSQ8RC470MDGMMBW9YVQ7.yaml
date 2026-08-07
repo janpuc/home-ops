@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZDWSQ8RC470MDGMMBW9YVQ7
+  created: "2026-08-07T10:37:44Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/litellm-operator/app/helmrelease.yaml
+  type: why
+  title: 256Mi mem limit — was OOMing at 128Mi
+  body: |-
+    The operator OOM-killed under a 128Mi limit; 256Mi is the minimum that
+    survives reconcile + webhook pressure in this cluster. Do not lower without
+    checking the operator's RSS at steady state.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+            limits:
+              memory: 256Mi
+    before: |2-
+            requests:
+              cpu: 10m
+              memory: 64Mi
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 7fefafe064fe0d49b33ed42210fe92e1a7e7ab9f
+    path: kubernetes/apps/ai/litellm-operator/app/helmrelease.yaml
+    line: 24
+status:
+  lastSeenLine: 24
+  resolution: ok
+  resolvedAt: "2026-08-07T10:37:44Z"
+  resolvedCommit: 7fefafe064fe0d49b33ed42210fe92e1a7e7ab9f
