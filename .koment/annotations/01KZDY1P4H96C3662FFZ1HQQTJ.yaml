@@ -1,0 +1,55 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZDY1P4H96C3662FFZ1HQQTJ
+  created: "2026-08-07T10:59:33Z"
+spec:
+  target:
+    file: kubernetes/apps/media/plex/app/ocirepository.yaml
+  type: gotcha
+  title: metadata.name still says jellyfin
+  body: |-
+    This OCIRepository file was copied verbatim from the jellyfin app and the
+    `metadata.name` (and chart `ref.tag`) was not yet renamed. The matching
+    `HelmRelease` in `helmrelease.yaml` references `chartRef.name: plex`, so
+    Flux will fail to bind the chart and reconciliation will not converge until
+    this is renamed to `name: plex`.
+
+    **Why:** file-level copy-paste from a sibling media app is the obvious move
+    but the name collision is silent at Git time — Flux only complains on
+    reconcile. **How to apply:** before merging, change `metadata.name:
+    jellyfin` → `metadata.name: plex`. Consider also pinning `ref.tag` to the
+    latest `app-template` version explicitly used elsewhere in
+    `kubernetes/apps/media/*/app/ocirepository.yaml` so Renovate updates stay
+    uniform.
+  anchor:
+    scope: excerpt
+    excerpt: |-
+      metadata:
+        name: jellyfin
+      spec:
+        interval: 15m
+        layerSelector:
+          mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+          operation: copy
+        ref:
+          tag: 5.0.1
+        url: oci://ghcr.io/bjw-s-labs/helm/app-template
+    before: |-
+      # yaml-language-server: $schema=https://k8s-schemas.home-operations.com/source.toolkit.fluxcd.io/ocirepository_v1.json
+      apiVersion: source.toolkit.fluxcd.io/v1
+      kind: OCIRepository
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 243f83b580e458bc54e03196c64a5cff3124d713
+    path: kubernetes/apps/media/plex/app/ocirepository.yaml
+    line: 5
+status:
+  lastSeenLine: 5
+  resolution: ok
+  resolvedAt: "2026-08-07T10:59:33Z"
+  resolvedCommit: 243f83b580e458bc54e03196c64a5cff3124d713

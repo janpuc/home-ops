@@ -1,0 +1,52 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZDY1P3HXDFJER8JRCQC9AD9
+  created: "2026-08-07T10:59:33Z"
+spec:
+  target:
+    file: kubernetes/apps/media/plex/app/helmrelease.yaml
+  type: why
+  title: plex-gpu claim via shared gpu component
+  body: |-
+    Plex's hardware video transcoding uses the AMD GPU exposed by the
+    `gpu.amd.com` DRA driver. The `gpu` component under
+    `kubernetes/components/gpu` ships a `ResourceClaimTemplate` named
+    `${APP}-gpu` (rendered here as `plex-gpu`); the helmrelease consumes it
+    through `defaultPodOptions.resourceClaims` and the per-container
+    `resources.claims` reference.
+
+    **Why:** the `${APP}` substitution in the component is templated by Flux
+    postBuild, so the naming convention must match — renaming the ks breaks
+    the binding silently. **How to apply:** do not change
+    `resourceClaimTemplateName` to anything other than `${APP}-gpu`; rename the
+    ks (not the file) if you need to retarget the claim.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+          defaultPodOptions:
+            resourceClaims:
+              - name: gpu
+                resourceClaimTemplateName: plex-gpu
+    before: |2-
+                      cpu: 100m
+                    limits:
+                      memory: 2560Mi
+    after: |2-
+            securityContext:
+              runAsNonRoot: true
+              runAsUser: 1000
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 243f83b580e458bc54e03196c64a5cff3124d713
+    path: kubernetes/apps/media/plex/app/helmrelease.yaml
+    line: 58
+status:
+  lastSeenLine: 58
+  resolution: ok
+  resolvedAt: "2026-08-07T10:59:33Z"
+  resolvedCommit: 243f83b580e458bc54e03196c64a5cff3124d713

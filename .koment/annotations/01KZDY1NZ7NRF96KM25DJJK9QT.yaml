@@ -1,0 +1,60 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZDY1NZ7NRF96KM25DJJK9QT
+  created: "2026-08-07T10:59:33Z"
+spec:
+  target:
+    file: kubernetes/apps/media/plex/app/helmrelease.yaml
+  type: why
+  title: Strip Range header on /library/streams
+  body: |-
+    Plex media streams only deliver partial-content byte ranges when the client
+    asks for them via the `Range` HTTP header. Through Envoy Gateway the
+    upstream Range handling differs from Plex's expectation and external SRT
+    subtitles silently fail to load as a result. Stripping the header on the
+    `/library/streams` path forces Plex to send the full body, which makes
+    subtitles render. Source thread:
+    https://forums.plex.tv/t/external-srt-subtitles-are-not-working-w-reverse-proxy/886540
+
+    **Why:** non-obvious Envoy-vs-Plex interaction; the URL prefix was
+    discovered by trial. **How to apply:** keep this filter scoped to
+    `/library/streams` only — applying it cluster-wide breaks seeking on every
+    other route.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+                - backendRefs:
+                    - identifier: app
+                      port: *port
+                  filters:
+                    - type: RequestHeaderModifier
+                      requestHeaderModifier:
+                        remove:
+                          - Range
+                  matches:
+                    - path:
+                        type: PathPrefix
+                        value: /library/streams
+    before: |2-
+                - name: envoy-external
+                  namespace: network
+              rules:
+    after: |2-
+                - backendRefs:
+                    - identifier: app
+                      port: *port
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 243f83b580e458bc54e03196c64a5cff3124d713
+    path: kubernetes/apps/media/plex/app/helmrelease.yaml
+    line: 88
+status:
+  lastSeenLine: 88
+  resolution: ok
+  resolvedAt: "2026-08-07T10:59:33Z"
+  resolvedCommit: 243f83b580e458bc54e03196c64a5cff3124d713

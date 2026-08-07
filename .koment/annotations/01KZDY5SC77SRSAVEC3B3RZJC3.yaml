@@ -1,0 +1,48 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZDY5SC77SRSAVEC3B3RZJC3
+  created: "2026-08-07T11:01:48Z"
+spec:
+  target:
+    file: kubernetes/apps/media/plex/app/helmrelease.yaml
+  type: why
+  title: PLEX_NO_AUTH_NETWORKS matches LB-IPAM LAN
+  body: |-
+    `PLEX_NO_AUTH_NETWORKS` is the home LAN CIDR Plex uses to skip the auth
+    prompt for known-local clients. The CIDR must match the LAN side of
+    `lbipam.cilium.io/ips: 192.168.69.60` (the cilium LB-IPAM reservation for
+    this service). When the home network was previously `192.168.10.0/24` this
+    entry pointed at a non-existent subnet and Plex treated every LAN client as
+    remote (auth wall, Relay fallback). Renamed to `192.168.69.0/24` so it
+    agrees with the LB IPAM reservation.
+
+    **Why:** silent breakage — Plex doesn't error on a no-auth CIDR that
+    doesn't match the local network, it just keeps prompting for auth. **How to
+    apply:** keep the LB-IPAM IP and the no-auth CIDR in sync. If either moves,
+    both must move together.
+  anchor:
+    scope: excerpt
+    excerpt: "              PLEX_NO_AUTH_NETWORKS: 192.168.69.0/24"
+    before: |2-
+                    tag: 1.43.3.10861@sha256:ca8878f4eaeae1177cc63189c37cad8e008179dfdf4172136ab418684bba6b14
+                  env:
+                    PLEX_ADVERTISE_URL: https://plex.janpuc.com:443,http://192.168.69.60:32400,http://plex.media.svc.cluster.local:32400
+    after: |2-
+                  probes:
+                    liveness:
+                      enabled: true
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 243f83b580e458bc54e03196c64a5cff3124d713
+    path: kubernetes/apps/media/plex/app/helmrelease.yaml
+    line: 24
+status:
+  lastSeenLine: 24
+  resolution: ok
+  resolvedAt: "2026-08-07T11:01:48Z"
+  resolvedCommit: 243f83b580e458bc54e03196c64a5cff3124d713

@@ -1,0 +1,58 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZDY1P5JQ4TXFTFAXPXEVT3N
+  created: "2026-08-07T10:59:33Z"
+spec:
+  target:
+    file: kubernetes/apps/media/plex/ks.yaml
+  type: why
+  title: "wai: GPU + zeroscaler + kopiur backup"
+  body: |-
+    Plex is the only media app that needs all three of these components
+    together: GPU for HW transcoding, zeroscaler because it's a personal-use
+    server with predictable off-hours, and kopiur/backup for the `/config` claim
+    that holds the libraries DB and metadata. Sonarr/Radarr don't need GPU;
+    kavita doesn't need GPU either. Both `dependsOn` entries gate on infra being
+    ready (DRA driver must exist before the ResourceClaim is admitted;
+    miroir-config must exist before kopiur can snapshot).
+
+    **Why:** dropping any of these three components breaks a different feature;
+    bundling them as the default Plex kustomization is intentional. **How to
+    apply:** if adding another media app that wants GPU + backup, follow this ks
+    as the template; the `KOPIUR_CAPACITY: 50Gi` in postBuild matches Plex's
+    metadata DB size and should be retuned per app.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        components:
+          - ../../../../components/gpu
+          - ../../../../components/zeroscaler
+          - ../../../../components/kopiur/backup
+        dependsOn:
+          - name: k8s-gpu-dra-driver
+            namespace: kube-system
+          - name: miroir-config
+            namespace: miroir-system
+    before: |-
+      metadata:
+        name: plex
+      spec:
+    after: |2-
+        interval: 1h
+        path: ./kubernetes/apps/media/plex/app
+        postBuild:
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 243f83b580e458bc54e03196c64a5cff3124d713
+    path: kubernetes/apps/media/plex/ks.yaml
+    line: 8
+status:
+  lastSeenLine: 8
+  resolution: ok
+  resolvedAt: "2026-08-07T10:59:33Z"
+  resolvedCommit: 243f83b580e458bc54e03196c64a5cff3124d713

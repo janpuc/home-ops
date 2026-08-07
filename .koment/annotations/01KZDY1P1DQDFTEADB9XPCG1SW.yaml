@@ -1,0 +1,50 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZDY1P1DQDFTEADB9XPCG1SW
+  created: "2026-08-07T10:59:33Z"
+spec:
+  target:
+    file: kubernetes/apps/media/plex/app/helmrelease.yaml
+  type: why
+  title: PLEX_ADVERTISE_URL three-way list
+  body: |-
+    Plex clients discover servers over the network by trying each
+    `PLEX_ADVERTISE_URL`. Listing all three (public HTTPS via Envoy, the
+    LB-IPAM-reserved LAN IP, and the in-cluster ClusterIP service) lets the same
+    Plex claim be reached from outside the home (LAN roaming + mobile + VPN)
+    without needing Plex Relay, while still letting in-cluster jobs
+    (Bazarr/Sonarr/Radarr sidecars) resolve a stable service name.
+
+    **Why:** picking only one breaks either remote clients or in-cluster tooling
+    — discovered after LAN-only clients went dark when the public URL was
+    removed. **How to apply:** if the cilium LB IPAM reservation
+    (`lbipam.cilium.io/ips: 192.168.69.60`) changes, update the LAN entry too;
+    clients will silently prefer the wrong endpoint otherwise.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+                    PLEX_ADVERTISE_URL: https://plex.janpuc.com:443,http://192.168.69.60:32400,http://plex.media.svc.cluster.local:32400
+                    PLEX_NO_AUTH_NETWORKS: 192.168.69.0/24
+    before: |2-
+                    repository: ghcr.io/home-operations/plex-next
+                    tag: 1.43.3.10861@sha256:ca8878f4eaeae1177cc63189c37cad8e008179dfdf4172136ab418684bba6b14
+                  env:
+    after: |2-
+                  probes:
+                    liveness:
+                      enabled: true
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 243f83b580e458bc54e03196c64a5cff3124d713
+    path: kubernetes/apps/media/plex/app/helmrelease.yaml
+    line: 23
+status:
+  lastSeenLine: 23
+  resolution: ok
+  resolvedAt: "2026-08-07T10:59:33Z"
+  resolvedCommit: 243f83b580e458bc54e03196c64a5cff3124d713

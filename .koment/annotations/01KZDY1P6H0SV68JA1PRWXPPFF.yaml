@@ -1,0 +1,50 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZDY1P6H0SV68JA1PRWXPPFF
+  created: "2026-08-07T10:59:33Z"
+spec:
+  target:
+    file: kubernetes/apps/media/plex/ks.yaml
+  type: why
+  title: "KOPIUR_CAPACITY: 50Gi for Plex"
+  body: |-
+    Plex's `/config` holds watched-state, library metadata, the SQLite DB, and a
+    sizable transcode temporary tree — far larger than the 5Gi used by Sonarr
+    or 20Gi used by Jellyfin/Kavita. 50Gi is the round number that survived a
+    real kopiur restore after the openebs → miroir migration when 20Gi filled
+    within a week.
+
+    **Why:** kopiur restore fails terminally when capacity is too small; sizing
+    was chosen post-incident, not from docs. **How to apply:** if Plex starts
+    failing kopiur Restores with "no space", bump this in 10Gi increments —
+    kopiur does not auto-grow.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        postBuild:
+          substitute:
+            APP: plex
+            KOPIUR_CAPACITY: 50Gi
+    before: |2-
+            namespace: miroir-system
+        interval: 1h
+        path: ./kubernetes/apps/media/plex/app
+    after: |2-
+        prune: true
+        sourceRef:
+          kind: GitRepository
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 243f83b580e458bc54e03196c64a5cff3124d713
+    path: kubernetes/apps/media/plex/ks.yaml
+    line: 19
+status:
+  lastSeenLine: 19
+  resolution: ok
+  resolvedAt: "2026-08-07T10:59:33Z"
+  resolvedCommit: 243f83b580e458bc54e03196c64a5cff3124d713
