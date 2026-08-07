@@ -1,0 +1,59 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZE00FHQSDJ0DVK4BJPYJ9X7
+  created: "2026-08-07T11:33:51Z"
+spec:
+  target:
+    file: kubernetes/apps/media/plex/app/helmrelease.yaml
+  type: why
+  body: |-
+    With Cilium L2 IPAM owning the VIP and `externalTrafficPolicy: Local`, the
+    lease can land on a node that does not host the Plex pod, in which case that
+    node returns TCP RST and the LAN sees "Connection refused" even though the
+    service and pod report healthy. The L2 lease does not consider backend
+    locality, so the only pod-less node can win the election (2 replicas on 3
+    nodes in the analogous Envoy Gateway case, 1 of 1 here). `Cluster` lets
+    Cilium forward to whichever node holds the pod; client source IP is still
+    preserved because this cluster runs Cilium in DSR mode (`bpf-lb-mode: dsr`
+    on the cilium-config ConfigMap), so the original-cip argument for `Local`
+    does not apply.
+
+    **Why:** exact symptom observed 2026-08-07 — ARP resolved the VIP to
+    k8s-2's MAC while the Plex pod was on k8s-1, nc to 32400 returned RST,
+    in-pod curl returned 302. Root cause and fix are the same as the Envoy
+    Gateway VIP outage recorded in the `envoy-gateway-l2-etp-local-issue`
+    memory; the earlier annotation on this line gave the opposite advice and is
+    superseded by this one.
+
+    **How to apply:** keep `Cluster` as long as the cluster runs Cilium in DSR.
+    If LB mode is ever switched away from DSR (e.g. SNAT), this needs to go back
+    to `Local` AND the L2 reachability problem solved some other way (separate
+    VIP advertisement, TopologyHints, etc.) — otherwise LAN traffic blackholes
+    again. Supersedes the 2026-08-07 annotation that was anchored to the `Local`
+    line.
+  anchor:
+    scope: excerpt
+    excerpt: "        externalTrafficPolicy: Cluster"
+    before: |2-
+              type: LoadBalancer
+              annotations:
+                lbipam.cilium.io/ips: 192.168.69.60
+    after: |2-
+              ports:
+                http:
+                  port: *port
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 92eca4d90368462a08a67ccb534526b1dd3fe2ce
+    path: kubernetes/apps/media/plex/app/helmrelease.yaml
+    line: 73
+status:
+  lastSeenLine: 73
+  resolution: ok
+  resolvedAt: "2026-08-07T11:33:51Z"
+  resolvedCommit: 92eca4d90368462a08a67ccb534526b1dd3fe2ce
