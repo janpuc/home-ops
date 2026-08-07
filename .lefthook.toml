@@ -29,7 +29,7 @@ stage_fixed = true
 
 [pre-commit.commands.format-markdown]
 glob = ["*.md", "*.markdown", "*.mdx"]
-exclude = ["AGENTS.md", ".github/copilot-instructions.md"]
+exclude = ["AGENTS.md", "CONTRIBUTING.md", ".github/copilot-instructions.md"]
 run = "oxfmt {staged_files}"
 stage_fixed = true
 
