@@ -1,0 +1,60 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZGC750A131024A6C26BZ3GG
+  created: "2026-08-08T09:45:41Z"
+spec:
+  target:
+    file: kubernetes/apps/observability/silence-operator/silences/silences.yaml
+  type: why
+  title: "FluxOCIRepositoryOciartifactpullfailed: same IPv6 noise"
+  body: |-
+    Silence `FluxOCIRepositoryOciartifactpullfailed` for the same reason as
+    `FluxFluxInstanceArtifactfailed` above: every OCIRepository reconcile
+    against `ghcr.io/...` first resolves an AAAA record for
+    `pkg-containers.githubusercontent.com`, tries IPv6, fails with `network is
+    unreachable`, and recovers on the IPv4 fallback. Alertmanager sees the
+    fire+resolve cycle and pushes notifications per blip.
+
+    The alert is generated from
+    `controller_runtime_reconcile_total{reason="OCIArtifactPullFailed",kind="OCIRepository"}`
+    on source-controller. Flux uses a `<Kind><Reason>` naming convention, so
+    `OCIArtifactPullFailed` on `OCIRepository` becomes
+    `FluxOCIRepositoryOciartifactpullfailed` in Prometheus.
+
+    **Why:** sibling of `FluxFluxInstanceArtifactfailed` — both surface the
+    same upstream IPv6-first pull behavior. Suppressing only one would leave
+    notifications firing from the other. **How to apply:** when the IPv6
+    underlying reachability is fixed (see the `FluxFluxInstanceArtifactfailed`
+    annotation for options, all of which apply here too), remove this silence in
+    the same change. **Trigger to revisit:** confirm `OCIArtifactPullFailed`
+    reconcile errors are gone by checking
+    `controller_runtime_reconcile_total{reason="OCIArtifactPullFailed"}` is
+    flat-zero for 24h before removing.
+
+    References: Flux monitoring docs at https://fluxcd.io/flux/monitoring/,
+    fluxcd/flux2 issue #4711 for the `OCIArtifactPullFailed` reconcile reason on
+    sub-path registries.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+          - name: alertname
+            value: FluxOCIRepositoryOciartifactpullfailed
+    before: |2-
+        name: flux-oci-repository-ociartifact-pull-failed
+      spec:
+        matchers:
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 08029bcd6d16c3e900b1341a1a6b07603534a020
+    path: kubernetes/apps/observability/silence-operator/silences/silences.yaml
+    line: 63
+status:
+  lastSeenLine: 63
+  resolution: ok
+  resolvedAt: "2026-08-08T09:45:41Z"
+  resolvedCommit: 08029bcd6d16c3e900b1341a1a6b07603534a020

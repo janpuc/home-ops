@@ -6,7 +6,7 @@ metadata:
   created: "2026-08-07T17:04:40Z"
 spec:
   target:
-    file: kubernetes/apps/observability/kube-prometheus-stack/app/alertmanagerconfig.yaml
+    file: kubernetes/apps/observability/silence-operator/silences/silences.yaml
   type: why
   title: "FluxFluxInstanceArtifactfailed: temporary IPv6 noise suppression"
   body: |-
@@ -19,6 +19,11 @@ spec:
     automatically on the IPv4 fallback in 2-4 seconds. Alertmanager sees the
     fire+resolve cycle as a real blip and pushes a Pushover notification for
     every blip. Cluster has been working fine through hundreds of these.
+
+    This was moved from `alertmanagerconfig.yaml` to silence-operator on
+    2026-08-08 so it sits with the other suppressions and is independently
+    auditable. The `FluxOCIRepositoryOciartifactpullfailed` silence below
+    shares the same IPv6-pull root cause — see that annotation.
 
     **Why:** this is a stopgap, not a permanent fix. **How to apply:** to remove
     the suppression, fix the underlying IPv6 unreachable condition for
@@ -41,35 +46,32 @@ spec:
     `controlplaneio-fluxcd` to a registry that resolves only on IPv4 (or when
     all three nodes get IPv6 connectivity from the LAN). Confirm the blip is
     actually gone by tailing `kubectl logs -n flux-system flux-operator` for
-    `network is unreachable` before removing the route. Keep this annotation
+    `network is unreachable` before removing the silence. Keep this annotation
     alive until then so the next reader knows why a "real" alert is being
     silently dropped.
   anchor:
     scope: excerpt
     excerpt: |2-
-            - receiver: blackhole
-              matchers:
-                - name: alertname
-                  value: FluxFluxInstanceArtifactfailed
-                  matchType: =
+          - name: alertname
+            value: FluxFluxInstanceArtifactfailed
     before: |2-
-                - name: alertname
-                  value: InfoInhibitor
-                  matchType: =
-    after: |2-
-            - receiver: pushover
-              matchers:
-                - name: severity
+        name: flux-instance-artifact-failed
+      spec:
+        matchers:
+    after: |-
+      ---
+      # yaml-language-server: $schema=https://k8s-schemas.home-operations.com/observability.giantswarm.io/silence_v1alpha2.json
+      apiVersion: observability.giantswarm.io/v1alpha2
   author:
     name: claude-code
     kind: agent
     source: session
   git:
     commit: 10eccdd082b9d0f6fa8c8d0e98e7cce6045f031c
-    path: kubernetes/apps/observability/kube-prometheus-stack/app/alertmanagerconfig.yaml
-    line: 22
+    path: kubernetes/apps/observability/silence-operator/silences/silences.yaml
+    line: 48
 status:
-  lastSeenLine: 22
+  lastSeenLine: 53
   resolution: ok
-  resolvedAt: "2026-08-07T17:04:40Z"
-  resolvedCommit: 10eccdd082b9d0f6fa8c8d0e98e7cce6045f031c
+  resolvedAt: "2026-08-08T09:48:25Z"
+  resolvedCommit: 08029bcd6d16c3e900b1341a1a6b07603534a020
