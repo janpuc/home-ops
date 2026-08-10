@@ -14,5 +14,6 @@ resources:
   - ./qbittorrent/ks.yaml
   - ./qui/ks.yaml
   - ./sabnzbd/ks.yaml
+  - ./slskd/ks.yaml
   - ./thelounge/ks.yaml
   - ./unpackerr/ks.yaml
