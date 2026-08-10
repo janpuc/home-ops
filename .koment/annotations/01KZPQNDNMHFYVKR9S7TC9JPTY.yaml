@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZPQNDNMHFYVKR9S7TC9JPTY
+  created: "2026-08-10T21:01:10Z"
+spec:
+  target:
+    file: kubernetes/apps/downloads/slskd/app/externalsecret.yaml
+  type: invariant
+  title: Do not re-add the shared gluetun item; each VPN pod needs its own key
+  body: |-
+    This deliberately does NOT extract from the shared `gluetun` 1Password item
+    the way qbittorrent does. The slskd item carries its own GLUETUN_* fields,
+    including a WireGuard private key generated separately in the ProtonVPN
+    dashboard.
+
+    Both apps pulled the same key until 2026-08-10. WireGuard identifies a peer
+    by public key and keeps one endpoint per peer, so two gluetun pods
+    handshaking with the same key made Proton rewrite the peer endpoint to
+    whichever handshook last. Return traffic landed on the wrong pod and both
+    flapped: the forwarded port churned every ~80-90s in both (`ERROR [port
+    forwarding] external port changed`), slskd's Soulseek connection reset on
+    the same cadence, and gluetun healthchecks failed with `lookup github.com on
+    127.0.0.1:53: server misbehaving`. qbittorrent had run 19h with zero VPN
+    restarts, then took 8 within 15 minutes of slskd starting; both went quiet
+    the moment slskd got its own key.
+
+    Adding a second `extract` here to deduplicate the GLUETUN_* fields
+    reintroduces the collision. Any future VPN-attached app needs its own
+    dashboard-generated key too.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        dataFrom:
+          - extract:
+              key: slskd
+    before: |2-
+              VPN_SERVICE_PROVIDER: "{{ .GLUETUN_VPN_SERVICE_PROVIDER }}"
+              WIREGUARD_PRIVATE_KEY: "{{ .GLUETUN_WIREGUARD_PRIVATE_KEY }}"
+              SERVER_COUNTRIES: "{{ .GLUETUN_SERVER_COUNTRIES }}"
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 3a09a5b1aa74aa9257863aa301c65f2d99d59ccb
+    path: kubernetes/apps/downloads/slskd/app/externalsecret.yaml
+    line: 21
+status:
+  lastSeenLine: 21
+  resolution: ok
+  resolvedAt: "2026-08-10T21:01:10Z"
+  resolvedCommit: 3a09a5b1aa74aa9257863aa301c65f2d99d59ccb
