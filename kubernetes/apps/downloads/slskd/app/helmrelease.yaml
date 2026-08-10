@@ -147,6 +147,7 @@ spec:
                   max_delay: 60000
             shares:
               directories:
+                - /media/Music
                 - /media/Downloads/soulseek/shared
               filters:
                 - \.ini$

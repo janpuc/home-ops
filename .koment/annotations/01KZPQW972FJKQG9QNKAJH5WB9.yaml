@@ -1,0 +1,56 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZPQW972FJKQG9QNKAJH5WB9
+  created: "2026-08-10T21:04:55Z"
+spec:
+  target:
+    file: kubernetes/apps/downloads/slskd/app/helmrelease.yaml
+  type: why
+  title: The library is shared by path, not by symlink
+  body: |-
+    /media/Music is the Lidarr library on the same NFS export this pod already
+    mounts, so it is listed directly rather than symlinked into the shared
+    directory. slskd masks share locations: with no alias, a share is presented
+    to remote peers under the name of its last path segment, so /media/Music
+    appears as "Music" and the local layout is not disclosed. An alias in square
+    brackets is only needed when the path itself is sensitive.
+
+    Sharing matters beyond etiquette. slskd ran with an empty share for its
+    first evening (`Scan found 0 files`) and a large share of peers auto-refuse
+    browse and download requests from accounts that share nothing, which showed
+    up as soularr's `users/<name>/directory` calls returning 500 and transfers
+    being cancelled mid-read.
+
+    Shares are upload-only — slskd never writes into them, and remote file
+    management is off by default — so pointing this at the library carries no
+    risk of a peer altering it.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+                  shares:
+                    directories:
+                      - /media/Music
+                      - /media/Downloads/soulseek/shared
+    before: |2-
+                        attempts: 3
+                        delay: 5000
+                        max_delay: 60000
+    after: |2-
+                    filters:
+                      - \.ini$
+                      - Thumbs.db$
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 874b3189e4c141c3cb04b1f0fd1b2d7b897e7f28
+    path: kubernetes/apps/downloads/slskd/app/helmrelease.yaml
+    line: 148
+status:
+  lastSeenLine: 148
+  resolution: ok
+  resolvedAt: "2026-08-10T21:04:55Z"
+  resolvedCommit: 874b3189e4c141c3cb04b1f0fd1b2d7b897e7f28
