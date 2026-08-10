@@ -216,9 +216,11 @@ spec:
               - path: /config/update-port.sh
                 subPath: update-port.sh
       media:
-        existingClaim: media
+        type: nfs
+        server: bigmouth.internal
+        path: /mnt/Vault/Media
         globalMounts:
-          - path: /mnt/Vault/Media
+          - path: /media
       tmp:
         type: emptyDir
       coredns:
