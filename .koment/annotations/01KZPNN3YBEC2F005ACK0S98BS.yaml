@@ -1,0 +1,56 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZPNN3YBEC2F005ACK0S98BS
+  created: "2026-08-10T20:26:03Z"
+spec:
+  target:
+    file: kubernetes/apps/downloads/slskd/app/helmrelease.yaml
+  type: invariant
+  title: gluetun must stay root; never set runAsUser in defaultPodOptions
+  body: |-
+    gluetun builds the tunnel with iptables and cannot do it as a non-root uid.
+    NET_ADMIN alone is not enough: the very first thing it does is take
+    /run/xtables.lock, and as uid 1000 all three backends fail with "can't open
+    lock file /run/xtables.lock: Permission denied" and "Could not fetch rule
+    set generation id (you must be root)", after which it logs "Shutdown
+    successful" and the sidecar crash-loops before the app container ever
+    starts.
+
+    This is spelled out on the container rather than left to the image default
+    because defaultPodOptions.securityContext reaches every container in the
+    pod. Setting runAsUser/runAsGroup/runAsNonRoot there to give the app
+    container an identity silently re-uids gluetun too and breaks the tunnel.
+    Pod level carries fsGroup only; each container states its own uid — 0
+    here, 1000 for app.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+                  securityContext:
+                    runAsNonRoot: false
+                    runAsUser: 0
+                    runAsGroup: 0
+                    capabilities: { add: ["NET_ADMIN"] }
+                    allowPrivilegeEscalation: false
+    before: |2-
+                          path: /check
+                          port: 9999
+                        initialDelaySeconds: 10
+    after: |2-
+              containers:
+                app:
+                  image:
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 9fd6dd5294dab1daa5e385e10014e840b26f2a14
+    path: kubernetes/apps/downloads/slskd/app/helmrelease.yaml
+    line: 59
+status:
+  lastSeenLine: 59
+  resolution: ok
+  resolvedAt: "2026-08-10T20:26:03Z"
+  resolvedCommit: 9fd6dd5294dab1daa5e385e10014e840b26f2a14
