@@ -28,7 +28,7 @@ spec:
               PORT_FORWARD_ONLY: "on"
               VPN_PORT_FORWARDING: "on"
               VPN_TYPE: wireguard
-              VPN_PORT_FORWARDING_UP_COMMAND: /config/update-port.sh
+              VPN_PORT_FORWARDING_UP_COMMAND: '/config/update-port.sh {{ "{{PORT}}" }}'
             envFrom:
               - secretRef:
                   name: "{{ .Release.Name }}-secret"
@@ -153,7 +153,7 @@ spec:
             #!/bin/sh
             set -eu
 
-            : "$${PORT:?PORT environment variable is required}"
+            PORT="$${1:?forwarded port must be passed as the first argument}"
 
             IN="/config/slskd.yaml"
             OUT="/tmp/slskd.yaml"

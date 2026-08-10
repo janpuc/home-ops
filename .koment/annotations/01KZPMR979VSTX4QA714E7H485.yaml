@@ -1,0 +1,53 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZPMR979VSTX4QA714E7H485
+  created: "2026-08-10T20:10:18Z"
+spec:
+  target:
+    file: kubernetes/apps/downloads/slskd/app/helmrelease.yaml
+  type: gotcha
+  title: The forwarded port arrives as an argument, not an env var
+  body: |-
+    gluetun does not export a PORT environment variable to this command. In
+    v3.41.3 (internal/portforward/service/command.go) it string-replaces
+    {{PORT}}, {{PORTS}} and {{VPN_INTERFACE}} in the template, splits the result
+    with command.Split, and runs it through exec.CommandContext — no shell,
+    and cmd.Env is never populated. An earlier revision here called the script
+    bare and had it read $PORT; that aborted on the first line every time, and
+    because start.go only logs "running up command: ..." without failing the
+    tunnel, the sole symptom was slskd silently keeping the static listenPort
+    from the ConfigMap.
+
+    The double wrapping of {{PORT}} is not decoration. app-template runs Helm
+    tpl over every container env value
+    (charts/common/templates/lib/container/fields/_env.tpl on 5.0.1), so a bare
+    {{PORT}} fails the render with `function "PORT" not defined`. Writing {{
+    "{{PORT}}" }} makes tpl emit the literal placeholder for gluetun to
+    substitute later. Verified by rendering this file's values against
+    app-template 5.0.1.
+  anchor:
+    scope: excerpt
+    excerpt: '              VPN_PORT_FORWARDING_UP_COMMAND: ''/config/update-port.sh {{ "{{PORT}}" }}'''
+    before: |2-
+                    PORT_FORWARD_ONLY: "on"
+                    VPN_PORT_FORWARDING: "on"
+                    VPN_TYPE: wireguard
+    after: |2-
+                  envFrom:
+                    - secretRef:
+                        name: "{{ .Release.Name }}-secret"
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 004d203f6178bc524224fe9a076b489875646fa9
+    path: kubernetes/apps/downloads/slskd/app/helmrelease.yaml
+    line: 31
+status:
+  lastSeenLine: 31
+  resolution: ok
+  resolvedAt: "2026-08-10T20:10:18Z"
+  resolvedCommit: 004d203f6178bc524224fe9a076b489875646fa9

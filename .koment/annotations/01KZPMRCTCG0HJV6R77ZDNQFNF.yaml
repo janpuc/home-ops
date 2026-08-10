@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZPMRCTCG0HJV6R77ZDNQFNF
+  created: "2026-08-10T20:10:21Z"
+spec:
+  target:
+    file: kubernetes/apps/downloads/slskd/app/helmrelease.yaml
+  type: why
+  title: $$1 is doubled because Flux postBuild envsubst eats $1
+  body: |-
+    The port is read positionally because gluetun passes it as argv, not in the
+    environment — see the annotation on VPN_PORT_FORWARDING_UP_COMMAND.
+
+    The $$ is the same escaping every other variable in this script needs:
+    ks.yaml sets postBuild.substitute, so kustomize-controller runs envsubst
+    over the built manifest. drone/envsubst parses digits as part of a variable
+    name, so an unescaped $1 would resolve to the empty string and the script
+    would reject every port as a missing argument. Assigning to PORT here keeps
+    the rest of the script, which already refers to $$PORT throughout,
+    unchanged.
+  anchor:
+    scope: excerpt
+    excerpt: '            PORT="$${1:?forwarded port must be passed as the first argument}"'
+    before: |2
+                  #!/bin/sh
+                  set -eu
+    after: |2-
+
+                  IN="/config/slskd.yaml"
+                  OUT="/tmp/slskd.yaml"
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 004d203f6178bc524224fe9a076b489875646fa9
+    path: kubernetes/apps/downloads/slskd/app/helmrelease.yaml
+    line: 156
+status:
+  lastSeenLine: 156
+  resolution: ok
+  resolvedAt: "2026-08-10T20:10:21Z"
+  resolvedCommit: 004d203f6178bc524224fe9a076b489875646fa9
