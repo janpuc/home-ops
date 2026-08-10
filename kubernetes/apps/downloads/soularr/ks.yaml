@@ -7,7 +7,6 @@ metadata:
 spec:
   components:
     - ../../../../components/zeroscaler
-    - ../../../../components/kopiur/backup
   dependsOn:
     - name: miroir-config
       namespace: miroir-system
