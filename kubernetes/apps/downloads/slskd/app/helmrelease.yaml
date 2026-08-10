@@ -164,7 +164,7 @@ spec:
             		exit 2
             		;;
             esac
-            if [ "$$PORT" -lt 1 ] || [ "$PORT" -gt 65535 ]; then
+            if [ "$$PORT" -lt 1 ] || [ "$$PORT" -gt 65535 ]; then
             	echo "ERROR: PORT must be in range 1..65535, got: $$PORT" >&2
             	exit 2
             fi
