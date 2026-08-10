@@ -192,6 +192,8 @@ spec:
 
             echo "Updated listenPort to $$PORT in $$OUT"
     persistence:
+      config:
+        existingClaim: "{{ .Release.Name }}"
       config-file:
         type: configMap
         identifier: config
