@@ -8,7 +8,6 @@ spec:
   components:
     - ../../../../components/zeroscaler
     - ../../../../components/kopiur/backup
-    # - ../../../../components/zeroscaler-http # TODO: Add internal cron?
   dependsOn:
     - name: miroir-config
       namespace: miroir-system

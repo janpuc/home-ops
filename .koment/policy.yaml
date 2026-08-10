@@ -10,11 +10,22 @@ spec:
       - upstream-link
       - deprecated
       - public-api
+    allowedAnnotations:
+      - "^v\\d+(\\.\\d+)*"
+      - "zizmor: ignore\\["
+      - "^!"
+      - "^(Bootstrap|Kube|Talos) Recipes$"
     generatedPaths:
       - kubeconfig
       - talosconfig
     vendoredPaths:
       - .venv/**
+      - .github/labels.yaml
+      - bootstrap/helmfile/apps.yaml
+      - bootstrap/helmfile/crds.yaml
+      - kubernetes/apps/media/sonarr/app/resources/refresh-series.sh
+      - kubernetes/apps/selfhosted/searxng/app/resources/limiter.toml
+      - kubernetes/flux/cluster/ks.yaml
   agents:
     adapters:
       - agents

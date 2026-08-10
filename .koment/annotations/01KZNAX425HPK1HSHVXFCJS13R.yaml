@@ -1,0 +1,70 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZNAX425HPK1HSHVXFCJS13R
+  created: "2026-08-10T07:58:56Z"
+spec:
+  target:
+    file: .renovaterc.json5
+  type: why
+  title: apps/* presets are opt-in from 6.0.0; each line has a live consumer
+  body: |-
+    Up to 5.0.0 these shipped inside the base preset (as
+    `managers/talosFactory.json5`, `versioning/searxng.json5`,
+    `versioning/llamacpp.json5`) and needed no mention here. 6.0.0 moved them to
+    `apps/` and dropped them from `default.json`, so from that release on they
+    are opt-in. Bumping the base tag without adding these lines does not error
+    — the custom datasource and the versioning regexes just quietly disappear.
+
+    Each line is here because something in this repo breaks without it:
+
+    - `talosFactory` defines the `custom.talos-factory` datasource. Two places
+    depend on it: `talos/cluster.yaml.j2` (the
+    `factory.talos.dev/metal-installer` image, matched by file pattern) and
+    `kubernetes/apps/system-upgrade/tuppr/upgrades/talosupgrade.yaml` (matched
+    by its `# renovate: datasource=custom.talos-factory` annotation). Without
+    the preset the annotation names a datasource that does not exist. -
+    `searxng` supplies the
+    `regex:^(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)-[a-f0-9]+$` versioning
+    for `ghcr.io/searxng/searxng`, pinned in
+    `kubernetes/apps/selfhosted/searxng/app/helmrelease.yaml`. The tag shape is
+    calver plus a per-release commit sha; Renovate's default compatibility logic
+    treats the sha as a compatibility stream and blocks every update. -
+    `llamacpp` supplies `regex:^server-(?<compatibility>[a-z]+)-b(?<patch>\d+)$`
+    for `ghcr.io/ggml-org/llama.cpp`, used by both llmkube model manifests
+    (`bge-embedding-m3.yaml`, `bge-reranker-v2-m3.yaml`) on the
+    `server-vulkan-b*` stream. Capturing the variant as `compatibility` is what
+    keeps Renovate from proposing a cuda or intel build over the vulkan one.
+
+    `apps/cnpg.json5`, `apps/grafanaDashboards.json5` and `apps/phanpy.json5`
+    are deliberately absent: no CloudNativePG cluster, no
+    `grafanadashboard.yaml`, no phanpy here. Add the matching line at the same
+    tag if any of those arrive.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+          "github>home-operations/renovate-presets//apps/llamacpp.json5#7.0.0",
+          "github>home-operations/renovate-presets//apps/searxng.json5#7.0.0",
+          "github>home-operations/renovate-presets//apps/talosFactory.json5#7.0.0",
+    before: |2-
+        $schema: "https://docs.renovatebot.com/renovate-schema.json",
+        extends: [
+          "github>home-operations/renovate-presets#7.0.0",
+    after: |2-
+          ":timezone(Europe/Warsaw)",
+        ],
+        lockFileMaintenance: {
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1
+    path: .renovaterc.json5
+    line: 5
+status:
+  lastSeenLine: 5
+  resolution: ok
+  resolvedAt: "2026-08-10T07:58:56Z"
+  resolvedCommit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1

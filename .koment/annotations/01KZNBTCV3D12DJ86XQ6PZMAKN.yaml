@@ -1,0 +1,48 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZNBTCV3D12DJ86XQ6PZMAKN
+  created: "2026-08-10T08:14:55Z"
+spec:
+  target:
+    file: talos/controlplane.yaml.j2
+  type: gotcha
+  title: "A ca: block merges as a unit — crt and key must appear together"
+  body: |-
+    Both `crt` and `key` are listed even where only one of them differs from the
+    generated config, and the same shape repeats for `cluster.ca` below.
+
+    Talos merges a machine-config patch one mapping at a time: supplying a `ca:`
+    block replaces the whole block rather than merging into it field by field.
+    Listing only `key:` therefore drops `crt:` from the result, and the node
+    comes up with a CA it cannot present. The pairing is the invariant — if
+    you add another CA here (`aggregatorCA`, `etcd.ca`, `serviceAccount`), give
+    it both halves too.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        ca:
+          crt: op://Kubernetes/talos/MACHINE_CA_CRT
+          key: op://Kubernetes/talos/MACHINE_CA_KEY
+    before: |-
+      ---
+      machine:
+        type: controlplane
+    after: |2-
+        features:
+          kubernetesTalosAPIAccess:
+            enabled: true
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1
+    path: talos/controlplane.yaml.j2
+    line: 4
+status:
+  lastSeenLine: 4
+  resolution: ok
+  resolvedAt: "2026-08-10T08:14:55Z"
+  resolvedCommit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1

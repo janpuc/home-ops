@@ -48,7 +48,7 @@ spec:
     kubeEtcd:
       service:
         selector:
-          component: kube-apiserver # etcd runs on control plane nodes
+          component: kube-apiserver
     kubeProxy:
       enabled: false
     prometheus:

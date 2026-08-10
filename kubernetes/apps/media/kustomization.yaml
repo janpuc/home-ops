@@ -13,7 +13,6 @@ resources:
   - ./bazarr/ks.yaml
   - ./browserr/ks.yaml
   - ./chaski/ks.yaml
-  # - ./jellyfin/ks.yaml
   - ./kavita/ks.yaml
   - ./manga-maid/ks.yaml
   - ./plex/ks.yaml

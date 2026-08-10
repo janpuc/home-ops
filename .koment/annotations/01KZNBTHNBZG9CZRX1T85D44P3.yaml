@@ -1,0 +1,46 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZNBTHNBZG9CZRX1T85D44P3
+  created: "2026-08-10T08:15:00Z"
+spec:
+  target:
+    file: talos/cluster.yaml.j2
+  type: gotcha
+  title: forwardKubeDNSToHost depends on Cilium socketLB
+  body: |-
+    This only works because Cilium is running with socketLB enabled. Talos host
+    DNS forwards to the in-cluster kube-dns ClusterIP, and nothing on the host
+    path translates that virtual IP on its own — socketLB is what intercepts
+    the connect() at the socket layer and redirects it to a real CoreDNS
+    backend.
+
+    Disabling socketLB in the Cilium HelmRelease (or replacing Cilium with a CNI
+    that has no equivalent) while leaving this true breaks host-level DNS
+    resolution on every node, which presents as a broad, confusing outage rather
+    than a DNS misconfiguration.
+  anchor:
+    scope: excerpt
+    excerpt: "  forwardKubeDNSToHost: true"
+    before: |-
+      kind: ResolverConfig
+      hostDNS:
+        enabled: true
+    after: |2-
+        resolveMemberNames: true
+      ---
+      apiVersion: v1alpha1
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1
+    path: talos/cluster.yaml.j2
+    line: 23
+status:
+  lastSeenLine: 23
+  resolution: ok
+  resolvedAt: "2026-08-10T08:15:00Z"
+  resolvedCommit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1

@@ -1,0 +1,58 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZNBN08ZKDBSHQKGW2B1E3GQ
+  created: "2026-08-10T08:11:59Z"
+spec:
+  target:
+    file: kubernetes/apps/network/certificates/ks.yaml
+  type: why
+  title: Only the export half is reconciled; import was removed on purpose
+  body: |-
+    This file reconciles `certificates-export` and nothing else. A second
+    `certificates-import` Kustomization pointing at
+    `./kubernetes/apps/network/certificates/import` used to live here, and was
+    switched on and off repeatedly — `chore: disable cert for now`, `chore:
+    enable cert`, `chore: disable cert import`, `chore: enable cert import` —
+    before 1c97e1a2 ("chore: remove cert import, i dont like it") settled it. It
+    was left behind as a commented-out block and removed here.
+
+    Two leftovers from that decision are deliberate, not oversights:
+
+    - `kubernetes/apps/network/certificates/import/` still exists on disk
+    (`externalsecret.yaml`, `kustomization.yaml`) but nothing references it. It
+    is dormant, not wired up. Delete the directory or re-add the Kustomization
+    — do not assume it is live because the files are there. -
+    `kubernetes/apps/network/envoy-gateway/ks.yaml` depends on
+    `certificates-export` alone. Its `dependsOn` carried a commented `- name:
+    certificates-import` entry, removed at the same time. Re-adding a dependency
+    on a Kustomization that is not applied would wedge envoy-gateway in a
+    permanent `dependency not ready` state.
+
+    `wait: false` on the export Kustomization is also intentional and predates
+    this change.
+  anchor:
+    scope: excerpt
+    excerpt: "  name: certificates-export"
+    before: |-
+      apiVersion: kustomize.toolkit.fluxcd.io/v1
+      kind: Kustomization
+      metadata:
+    after: |-
+      spec:
+        interval: 1h
+        path: ./kubernetes/apps/network/certificates/export
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1
+    path: kubernetes/apps/network/certificates/ks.yaml
+    line: 6
+status:
+  lastSeenLine: 6
+  resolution: ok
+  resolvedAt: "2026-08-10T08:11:59Z"
+  resolvedCommit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1

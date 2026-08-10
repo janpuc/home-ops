@@ -62,7 +62,6 @@ apps:
         just log fatal "Failed to sync helmfile" "stage" "{{ recipe_name() }}"
     fi
 
-# Wait until nodes register as Ready=False. They only become Ready=True once the CNI is healthy.
 [private]
 ready:
     just log info "Running stage..." "stage" "{{ recipe_name() }}"

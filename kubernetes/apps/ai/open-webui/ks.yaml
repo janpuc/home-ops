@@ -11,7 +11,6 @@ spec:
   components:
     - ../../../../components/dragonfly
     - ../../../../components/kopiur/backup
-    # - ../../../../components/zeroscaler-http # TODO
   dependsOn:
     - name: kopiur
       namespace: kopiur-system

@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZNAXH41FZJST6WPHSDBVAT0
+  created: "2026-08-10T07:59:09Z"
+spec:
+  target:
+    file: .renovaterc.json5
+  type: why
+  title: Deliberate divergences from onedr0p/home-ops
+  body: |-
+    This file tracks `onedr0p/home-ops`'s `.renovaterc.json5` closely — same
+    lockFileMaintenance block, same auto-merge / grouping / labeling rule set,
+    same verbatim section comments. Four differences are intentional, so a
+    future "align with upstream" pass should not re-add them:
+
+    - **No `hostRules` for `ocharted.turbo.ac`.** That is onedr0p's private OCI
+    registry, authenticated via `RENOVATE_SECRETS` in their Renovate workflow.
+    Nothing here pulls from it. Copying the block would also require the
+    `OCHARTED_USERNAME` / `OCHARTED_PASSWORD` 1Password items their workflow
+    loads, which do not exist in this vault. - **No Rook-Ceph group and no "Hold
+    Rook-Ceph at v1.19.x" rule.** Rook-Ceph was replaced by miroir on
+    2026-07-28; there is not one rook-ceph manifest left. Both rules were inert
+    here and referenced storage that no longer exists. - **No "Auto-merge
+    Grafana dashboards" rule.** It matches `custom.grafana-dashboards`, a
+    datasource that only exists when `apps/grafanaDashboards.json5` is extended,
+    and there are no `grafanadashboard.yaml` files here. Re-add it together with
+    the preset, not on its own. - **`:timezone(Europe/Warsaw)`** rather than
+    `America/New_York`. This governs when the `before 3am` / `before 6am on
+    Monday` schedules fire.
+
+    The 1Password CLI rule is the one addition upstream has that this repo
+    genuinely needs: `.mise/config.toml` pins `1password-cli`, and the
+    dependency dashboard was reporting `Failed to look up github-tags package
+    1password/cli: no-result` until it was disabled.
+  anchor:
+    scope: file
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1
+    path: .renovaterc.json5
+status:
+  resolution: ok
+  resolvedAt: "2026-08-10T07:59:10Z"
+  resolvedCommit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1

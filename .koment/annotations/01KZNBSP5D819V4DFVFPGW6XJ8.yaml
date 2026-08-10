@@ -1,0 +1,48 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZNBSP5D819V4DFVFPGW6XJ8
+  created: "2026-08-10T08:14:32Z"
+spec:
+  target:
+    file: kubernetes/apps/observability/kromgo/app/helmrelease.yaml
+  type: why
+  title: The -1 subtracts Alertmanager's always-firing Watchdog alert
+  body: |-
+    The `- 1` compensates for the Watchdog alert, which kube-prometheus-stack
+    ships enabled and which fires permanently by design — it is the deadman's
+    switch that proves the alerting pipeline is alive. Without the subtraction
+    this tile would read "1 alert" on a completely healthy cluster and never
+    show zero.
+
+    It is a constant rather than a label filter because kromgo takes a single
+    instant query string and has nowhere to put an exclusion. If a second
+    always-firing alert is ever added, this number has to move with it, and a
+    stale constant will silently under-report. Prefer
+    `alertmanager_alerts{state="active",alertname!="Watchdog"}` if kromgo ever
+    gains support for it.
+  anchor:
+    scope: excerpt
+    excerpt: '          query: alertmanager_alerts{state="active"} - 1'
+    before: |2-
+
+              - title: Alerts
+                id: cluster_alert_count
+    after: |2-
+                colorExpr: 'colorScale(result, [1.0], ["green", "red"])'
+          httpRoute:
+            enabled: true
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1
+    path: kubernetes/apps/observability/kromgo/app/helmrelease.yaml
+    line: 77
+status:
+  lastSeenLine: 77
+  resolution: ok
+  resolvedAt: "2026-08-10T08:14:32Z"
+  resolvedCommit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1

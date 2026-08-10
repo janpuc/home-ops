@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZNBT81F9KS4VTDKTCWMV6N8
+  created: "2026-08-10T08:14:50Z"
+spec:
+  target:
+    file: bootstrap/mod.just
+  type: why
+  title: "Waits for Ready=False: Ready=True needs a CNI that isn't installed yet"
+  body: |-
+    Waiting for `Ready=False` is not a typo. At this point in bootstrap no CNI
+    is installed, and a node cannot reach `Ready=True` until one is. What this
+    gate actually waits for is nodes REGISTERING with the apiserver at all — a
+    registered node with no CNI reports `Ready=False`, and that is the signal
+    that it is safe to proceed to the CNI install.
+
+    The `Ready=True` check on the preceding line is the fast path for a re-run
+    against an already-bootstrapped cluster, where the CNI is present and nodes
+    are genuinely ready; only when that fails does the loop fall back to waiting
+    for registration.
+
+    Changing this to `Ready=True` would hang bootstrap forever on a fresh
+    cluster.
+  anchor:
+    scope: excerpt
+    excerpt: "        until kubectl wait nodes --for=condition=Ready=False --all --timeout=10s &>/dev/null; do"
+    before: |-
+      ready:
+          just log info "Running stage..." "stage" "{{ recipe_name() }}"
+          if ! kubectl wait nodes --for=condition=Ready=True --all --timeout=10s &>/dev/null; then
+    after: |2-
+                  just log info "Nodes not available, waiting for nodes to be available. Retrying in 5 seconds..." "stage" "{{ recipe_name() }}"
+                  sleep 5
+              done
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1
+    path: bootstrap/mod.just
+    line: 69
+status:
+  lastSeenLine: 69
+  resolution: ok
+  resolvedAt: "2026-08-10T08:14:50Z"
+  resolvedCommit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1

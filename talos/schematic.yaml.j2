@@ -1,11 +1,11 @@
 ---
 customization:
   extraKernelArgs:
-    - amd_iommu=on # PCI Passthrough
-    - iommu=pt # PCI Passthrough
+    - amd_iommu=on
+    - iommu=pt
     - amdgpu.gttsize=2048
   systemExtensions:
     officialExtensions:
-      - siderolabs/amd-ucode # AMD iGPU
-      - siderolabs/amdgpu # AMD iGPU
-      - siderolabs/drbd # Miroir DRBD9 Replication
+      - siderolabs/amd-ucode
+      - siderolabs/amdgpu
+      - siderolabs/drbd

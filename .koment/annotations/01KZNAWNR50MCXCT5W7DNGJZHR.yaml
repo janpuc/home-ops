@@ -1,0 +1,61 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZNAWNR50MCXCT5W7DNGJZHR
+  created: "2026-08-10T07:58:41Z"
+spec:
+  target:
+    file: .renovaterc.json5
+  type: gotcha
+  title: Pinning renovate-presets below 6.0.0 is broken by construction
+  body: |-
+    This tag must stay at 6.0.0 or newer. Every tag up to and including 5.0.0 is
+    permanently broken, and the pin here is what protects against it.
+
+    Up to 5.0.0 the presets repo's `default.json` was a fan-out that extended
+    nested paths —
+    `github>home-operations/renovate-presets//config/baseConfig.json5` and
+    sixteen siblings. Those nested refs carry no `#tag`, so Renovate resolves
+    them against the presets repo's DEFAULT BRANCH, not against the tag you
+    pinned. 6.0.0 deleted `config/`, `managers/`, `overrides/`, `policies/` and
+    `versioning/`, folding them into a single flat `default.json`. That deletion
+    retroactively broke every older tag: pinning `#5.0.0` still fetches a
+    `default.json` that points at directories which no longer exist on main.
+
+    The failure is silent from the repo's side and total. Renovate opens an
+    "Action Required: Fix Renovate Configuration" issue reading `Cannot find
+    preset's package
+    (github>home-operations/renovate-presets//config/baseConfig.json5)` and
+    stops opening PRs entirely — the scheduled workflow keeps reporting green,
+    because a config-resolution failure is not a job failure. It happened here
+    on 2026-08-07: commit 43a6876f bumped 4.0.0 to 5.0.0 and PRs stopped 40
+    minutes later, with the hourly Renovate run still succeeding for three days.
+
+    7.0.0's `default.json` extends only first-party Renovate presets
+    (`config:recommended`, `docker:enableMajor`, ...), so it has no cross-repo
+    nested refs and cannot rot the same way.
+  anchor:
+    scope: excerpt
+    excerpt: '    "github>home-operations/renovate-presets#7.0.0",'
+    before: |-
+      {
+        $schema: "https://docs.renovatebot.com/renovate-schema.json",
+        extends: [
+    after: |2-
+          "github>home-operations/renovate-presets//apps/llamacpp.json5#7.0.0",
+          "github>home-operations/renovate-presets//apps/searxng.json5#7.0.0",
+          "github>home-operations/renovate-presets//apps/talosFactory.json5#7.0.0",
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1
+    path: .renovaterc.json5
+    line: 4
+status:
+  lastSeenLine: 4
+  resolution: ok
+  resolvedAt: "2026-08-10T07:58:41Z"
+  resolvedCommit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1

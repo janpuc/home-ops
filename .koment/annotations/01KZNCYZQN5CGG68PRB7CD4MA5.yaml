@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZNCYZQN5CGG68PRB7CD4MA5
+  created: "2026-08-10T08:34:54Z"
+spec:
+  target:
+    file: kubernetes/apps/media/sonarr/app/resources/tag-resolution.sh
+  type: why
+  body: onedr0p/home-ops upstream
+  anchor:
+    scope: excerpt
+    excerpt: "# Remove all managed resolution: tags, then add active ones"
+    before: |2
+          title=$(jq -r '.title' <<< "${series_json}")
+          echo "Processing ${title} (${sid})..."
+    after: |2-
+          local updated current_tags new_tags
+          updated=$(jq --argjson remove "${managed_tag_ids_json}" --argjson add "${add_json}" \
+              '.tags = ([.tags[] | select(IN($remove[]) | not)] + $add | unique)' <<< "${series_json}")
+  author:
+    name: janpuc
+    email: janpuc@proton.me
+    kind: human
+    source: git-config
+  policy:
+    exception: inline-comment
+    acknowledged: true
+status:
+  lastSeenLine: 86
+  resolution: ok
+  resolvedAt: "2026-08-10T08:34:54Z"
+  resolvedCommit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1

@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZNCTFK55RVZ9SKZ8M5T307W
+  created: "2026-08-10T08:32:27Z"
+spec:
+  target:
+    file: kubernetes/apps/media/sonarr/app/resources/refresh-series.sh
+  type: why
+  body: onedr0p/home-ops upstream
+  anchor:
+    scope: excerpt
+    excerpt: "# Incoming environment variables"
+    before: |
+      #!/usr/bin/env bash
+      set -euo pipefail
+    after: |
+      EVENT_TYPE="${sonarr_eventtype:-}"
+      SERIES_ID="${sonarr_series_id:-}"
+  author:
+    name: janpuc
+    email: janpuc@proton.me
+    kind: human
+    source: git-config
+  git:
+    commit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1
+    path: kubernetes/apps/media/sonarr/app/resources/refresh-series.sh
+    line: 4
+  policy:
+    exception: inline-comment
+    acknowledged: true
+status:
+  lastSeenLine: 4
+  resolution: ok
+  resolvedAt: "2026-08-10T08:32:27Z"
+  resolvedCommit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1

@@ -1,6 +1,12 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
-  extends: ["github>home-operations/renovate-presets#5.0.0", ":timezone(Europe/Warsaw)"],
+  extends: [
+    "github>home-operations/renovate-presets#7.0.0",
+    "github>home-operations/renovate-presets//apps/llamacpp.json5#7.0.0",
+    "github>home-operations/renovate-presets//apps/searxng.json5#7.0.0",
+    "github>home-operations/renovate-presets//apps/talosFactory.json5#7.0.0",
+    ":timezone(Europe/Warsaw)",
+  ],
   lockFileMaintenance: {
     enabled: true,
     schedule: ["before 3am on the first day of the month"],
@@ -8,7 +14,6 @@
     additionalBranchPrefix: "{{manager}}-",
   },
   packageRules: [
-    // Auto-merge rules
     {
       description: "Auto-merge trusted OCI digests",
       matchDatasources: ["docker"],
@@ -48,14 +53,6 @@
       ignoreTests: true,
     },
     {
-      description: "Auto-merge Grafana dashboards",
-      matchDatasources: ["custom.grafana-dashboards"],
-      matchUpdateTypes: ["major"],
-      automerge: true,
-      automergeType: "branch",
-      ignoreTests: true,
-    },
-    {
       description: "Auto-merge Renovate Presents",
       matchManagers: ["renovate-config"],
       matchUpdateTypes: ["minor", "patch"],
@@ -63,7 +60,6 @@
       automergeType: "branch",
       ignoreTests: true,
     },
-    // Grouping rules
     {
       description: "Actions Runner Controller Group",
       groupName: "actions-runner-controller",
@@ -107,18 +103,6 @@
       groupSlug: "mise-tools",
     },
     {
-      description: "Rook-Ceph Group",
-      groupName: "rook-ceph",
-      matchDatasources: ["docker"],
-      matchPackageNames: ["/rook-ceph/", "/rook-ceph-cluster/"],
-      group: {
-        commitMessageTopic: "{{{groupName}}} group",
-      },
-      minimumGroupSize: 2,
-    },
-    {
-      // After the mise tools catch-all so talos wins its own group; unites the
-      // mise pin, the factory installer image, and the tuppr upgrade version
       description: "Talos Group",
       groupName: "talos",
       matchPackageNames: ["siderolabs/talos"],
@@ -127,7 +111,12 @@
       },
       minimumGroupSize: 2,
     },
-    // Labeling rules
+    {
+      description: "1Password CLI is not resolvable on GitHub, bump manually",
+      matchManagers: ["mise"],
+      matchDepNames: ["1password-cli"],
+      enabled: false,
+    },
     {
       matchUpdateTypes: ["major"],
       addLabels: ["type/major"],

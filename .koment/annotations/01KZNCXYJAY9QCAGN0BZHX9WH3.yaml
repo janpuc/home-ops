@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZNCXYJAY9QCAGN0BZHX9WH3
+  created: "2026-08-10T08:34:20Z"
+spec:
+  target:
+    file: kubernetes/apps/media/sonarr/app/resources/tag-resolution.sh
+  type: why
+  body: onedr0p/home-ops upstream
+  anchor:
+    scope: excerpt
+    excerpt: "# Ensure a tag exists; sets REPLY to the tag ID (avoids subshell)"
+    before: |
+      }
+      refresh_managed_ids
+    after: |-
+      ensure_tag() {
+          local label="$1"
+          REPLY=$(jq -r --arg l "${label}" '.[] | select(.label == $l) | .id' <<< "${tags}")
+  author:
+    name: janpuc
+    email: janpuc@proton.me
+    kind: human
+    source: git-config
+  policy:
+    exception: inline-comment
+    acknowledged: true
+status:
+  lastSeenLine: 39
+  resolution: ok
+  resolvedAt: "2026-08-10T08:34:20Z"
+  resolvedCommit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1

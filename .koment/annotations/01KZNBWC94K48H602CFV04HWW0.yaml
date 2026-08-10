@@ -1,0 +1,63 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZNBWC94K48H602CFV04HWW0
+  created: "2026-08-10T08:16:00Z"
+spec:
+  target:
+    file: kubernetes/apps/flux-system/flux-instance/app/helmrelease.yaml
+  type: why
+  title: What each controller patch tunes, in list order
+  body: |-
+    Nine patches, each targeting a specific controller. They were labelled
+    inline; the labels are recorded here instead. In order:
+
+    1. **Concurrency** (`--concurrent=10`, `--requeue-dependency=5s`) on
+    kustomize-, helm- and source-controller. Raises parallel reconciles and
+    shortens the retry interval for a Kustomization blocked on `dependsOn`. 2.
+    **Memory limit 1Gi** on the same three controllers, via a strategic-merge
+    patch against the `all` Deployment name. 3. **In-memory kustomize builds**
+    on kustomize-controller: `--concurrent=20` plus swapping the `temp` volume
+    to `emptyDir.medium: Memory`. Note this raises concurrency again for that
+    one controller, overriding patch 1. 4. **Helm repository caching** on
+    source-controller (10 entries, 60m TTL, 5m purge). 5.
+    **`CacheSecretsAndConfigMaps`** feature gate on source-controller. 6.
+    **`OOMWatch`** on helm-controller at a 95% threshold, polled every 500ms —
+    Flux restarts the controller before the kernel OOM-kills it mid-release. 7.
+    **`DisableChartDigestTracking`** on helm-controller. 8.
+    **`--watch-configs-label-selector=owner!=helm`** on helm- and
+    kustomize-controller, so ConfigMaps and Secrets referenced by a HelmRelease
+    or Kustomization trigger reconciliation, while excluding Helm's own
+    release-state Secrets. 9. **`CancelHealthCheckOnNewRevision`** on
+    kustomize-controller.
+
+    Patches 1 and 3 both set `--concurrent` for kustomize-controller and the
+    later one wins; if you change concurrency, change it in the right place or
+    the edit will look like it did nothing.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+            kustomize:
+              patches:
+    before: |2-
+              ref: refs/heads/main
+              path: kubernetes/flux/cluster
+              interval: 1h
+    after: |2-
+                - patch: |-
+                    - op: add
+                      path: /spec/template/spec/containers/0/args/-
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1
+    path: kubernetes/apps/flux-system/flux-instance/app/helmrelease.yaml
+    line: 29
+status:
+  lastSeenLine: 29
+  resolution: ok
+  resolvedAt: "2026-08-10T08:16:00Z"
+  resolvedCommit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1

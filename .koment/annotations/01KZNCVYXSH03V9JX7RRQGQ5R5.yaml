@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZNCVYXSH03V9JX7RRQGQ5R5
+  created: "2026-08-10T08:33:15Z"
+spec:
+  target:
+    file: kubernetes/apps/media/sonarr/app/resources/refresh-series.sh
+  type: why
+  body: onedr0p/home-ops upstream
+  anchor:
+    scope: excerpt
+    excerpt: "# Check for episodes with TBA/TBD titles"
+    before: |2
+              "$@"
+      }
+    after: |
+      episodes=$(api_call "${SONARR_API_URL}/episode?seriesId=${SERIES_ID}" | \
+          jq '[.[] | select((.title // "" | ascii_downcase | test("(tba|tbd)")) and .airDateUtc < (now + 86400 | strftime("%Y-%m-%dT%H:%M:%SZ")))] | length')
+  author:
+    name: janpuc
+    email: janpuc@proton.me
+    kind: human
+    source: git-config
+  git:
+    commit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1
+    path: kubernetes/apps/media/sonarr/app/resources/refresh-series.sh
+    line: 26
+  policy:
+    exception: inline-comment
+    acknowledged: true
+status:
+  lastSeenLine: 26
+  resolution: ok
+  resolvedAt: "2026-08-10T08:33:15Z"
+  resolvedCommit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1

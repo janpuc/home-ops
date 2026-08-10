@@ -10,8 +10,6 @@ spec:
       app.kubernetes.io/name: searxng
   components:
     - ../../../../components/dragonfly
-    # - ../../../../components/zeroscaler-http # TODO
-    # - ../../../../components/zeroscaler-internal # TODO
   dependsOn:
     - name: dragonfly-operator
       namespace: database

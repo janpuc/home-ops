@@ -1,0 +1,57 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZNBWS553T73PPRYH0EN9B2B
+  created: "2026-08-10T08:16:13Z"
+spec:
+  target:
+    file: .renovaterc.json5
+  type: why
+  title: Talos group sits after the mise catch-all so it wins its own group
+  body: |-
+    Order matters here. Renovate applies packageRules top to bottom with later
+    matches overriding earlier ones, so this rule has to come AFTER the "Mise
+    Tools Group" catch-all — that rule matches `matchManagers: ["mise"]` and
+    would otherwise sweep the Talos pin into the generic `mise-tools` group.
+
+    The group unites the two places this cluster pins a Talos version, so they
+    can never drift apart:
+
+    - `talos/cluster.yaml.j2` — the `factory.talos.dev/metal-installer` image,
+    picked up by the `apps/talosFactory.json5` custom manager's file pattern. -
+    `kubernetes/apps/system-upgrade/tuppr/upgrades/talosupgrade.yaml` — the
+    tuppr `spec.talos.version`, picked up from its `# renovate:` annotation.
+
+    Known wrinkle: `minimumGroupSize: 2` is currently not satisfied — the
+    dependency dashboard lists the talos update under "Group Size Not Met", so
+    the PR has to be created by ticking its checkbox there rather than appearing
+    on its own. This matches onedr0p's configuration; lowering it to 1 would
+    diverge.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+            description: "Talos Group",
+            groupName: "talos",
+            matchPackageNames: ["siderolabs/talos"],
+    before: |2-
+            groupSlug: "mise-tools",
+          },
+          {
+    after: |2-
+            group: {
+              commitMessageTopic: "{{{groupName}}} group",
+            },
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1
+    path: .renovaterc.json5
+    line: 106
+status:
+  lastSeenLine: 106
+  resolution: ok
+  resolvedAt: "2026-08-10T08:16:14Z"
+  resolvedCommit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1

@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZNCX6ASHK8AWQMXG0G85SM0
+  created: "2026-08-10T08:33:56Z"
+spec:
+  target:
+    file: kubernetes/apps/media/sonarr/app/resources/tag-resolution.sh
+  type: why
+  body: onedr0p/home-ops upstream
+  anchor:
+    scope: excerpt
+    excerpt: "# Prefix for all tags managed by this script"
+    before: |
+      # Setup base API URL
+      readonly SONARR_API_URL="http://localhost:${SONARR__SERVER__PORT}/api/v3"
+    after: |-
+      readonly TAG_PREFIX="resolution:"
+
+      # Wrapper for API calls
+  author:
+    name: janpuc
+    email: janpuc@proton.me
+    kind: human
+    source: git-config
+  policy:
+    exception: inline-comment
+    acknowledged: true
+status:
+  lastSeenLine: 18
+  resolution: ok
+  resolvedAt: "2026-08-10T08:33:56Z"
+  resolvedCommit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1

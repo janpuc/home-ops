@@ -37,6 +37,19 @@ Partial compliance is a bug.
   with `acknowledge_inline_comment: true` and a human-readable body.
   The acknowledgement is auditable.
 
+## Anchoring an annotation
+
+- `excerpt` is the anchor. It must match the file byte for byte,
+  including indentation, and it has NO line limit. If an excerpt is
+  rejected as matching several places, extend the excerpt itself with
+  adjacent lines until it is unique.
+- `before` and `after` are context hints only, capped at three
+  lines each. They do NOT disambiguate a repeated excerpt, so widening
+  them is never the fix for an ambiguous anchor.
+- If an excerpt is reported missing but you believe it is present, the
+  difference is whitespace: indentation, a trailing space, or CRLF
+  endings. koment says so when it can detect it.
+
 ## Before you stop
 
 - You MUST run `koment check`, `koment comments check` and
@@ -55,10 +68,15 @@ it. Never use it here. There is no comment worth keeping that an annotation
 cannot hold better, and reaching for it means you have found rationale — record
 that with `koment_add` and delete the comment.
 
-**`koment_convert_comment` does not work here.** koment's comment detection is
-Go-only, and this repository is Kubernetes YAML, Just recipes and shell. Asking
-it to convert a YAML comment fails with `no comment detector for <file>`. There
-is no automatic migration and no batch mode.
+**`koment_convert_comment` works as of koment 3.0.0.** It used to fail with
+`no comment detector for <file>` because detection was Go-only. 3.0.0 added
+detectors for YAML, TOML, shell, Just and JSON5, and convert now handles them:
+it records the annotation *and* strips the comment from source in one step.
+
+It still takes one comment at a time — `--excerpt` is required and there is no
+batch mode — and it anchors to the comment's own location, which is rarely
+where you want the annotation. Prefer the manual order below whenever the
+rationale belongs on the code rather than on the line the comment sat above.
 
 Move a comment into koment by hand, in this order:
 
@@ -79,8 +97,26 @@ Move a comment into koment by hand, in this order:
 **There are no releases here.** This repository is continuously reconciled by
 Flux; nothing is versioned or published, and there is no `docs/releasing.md`.
 
-**`koment comments check` finds nothing**, because it only walks `*.go`. It will
-exit zero and prove nothing. `koment check` is the one that matters.
+**`koment comments check` is enforcing.** Before koment 3.0.0 it only walked
+`*.go`, exited zero here and proved nothing. It now walks this repository's
+actual file types and fails the commit on any comment the policy does not
+allow, so it matters as much as `koment check`.
+
+What keeps it passing is `.koment/policy.yaml`, not luck. Two fields carry the
+carve-outs the section below describes:
+
+- `spec.comments.allowedAnnotations` — Go regexps matched against the comment
+  body with the leading `#` or `//` stripped. The entries cover Renovate's
+  `# vX.Y.Z` pins beside action SHAs, `# zizmor: ignore[...]`, shebangs, and
+  the `# <Name> Recipes` docs `just --list` renders. Deleting the Renovate
+  pins instead of allowing them would break
+  `helpers:pinGitHubActionDigestsToSemver`.
+- `spec.comments.vendoredPaths` — whole files copied from upstream and kept
+  byte-identical, which skip the check entirely. Add a path here only after
+  confirming the file really is a verbatim copy.
+
+Neither field is an escape hatch for your own prose. If a comment you wrote
+does not match an existing pattern, that is the check working.
 
 ## Comments in this repository
 

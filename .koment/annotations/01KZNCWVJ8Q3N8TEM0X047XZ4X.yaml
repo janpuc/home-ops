@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZNCWVJ8Q3N8TEM0X047XZ4X
+  created: "2026-08-10T08:33:45Z"
+spec:
+  target:
+    file: kubernetes/apps/media/sonarr/app/resources/tag-resolution.sh
+  type: why
+  body: onedr0p/home-ops upstream
+  anchor:
+    scope: excerpt
+    excerpt: "# Required environment variables"
+    before: |
+      # Only proceed for "Download", "EpisodeFileDelete" events, or no event (manual bulk run)
+      [[ -z "${EVENT_TYPE}" || "${EVENT_TYPE}" == "Download" || "${EVENT_TYPE}" == "EpisodeFileDelete" ]] || exit 0
+    after: |
+      : "${SONARR__AUTH__APIKEY:?API key required}"
+      : "${SONARR__SERVER__PORT:?Server port required}"
+  author:
+    name: janpuc
+    email: janpuc@proton.me
+    kind: human
+    source: git-config
+  policy:
+    exception: inline-comment
+    acknowledged: true
+status:
+  lastSeenLine: 11
+  resolution: ok
+  resolvedAt: "2026-08-10T08:33:45Z"
+  resolvedCommit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1

@@ -1,0 +1,51 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZNBSV1KGE4YSKNW8JS4KVMF
+  created: "2026-08-10T08:14:37Z"
+spec:
+  target:
+    file: kubernetes/apps/observability/kube-prometheus-stack/app/helmrelease.yaml
+  type: gotcha
+  title: kubeEtcd is scraped through the kube-apiserver selector on Talos
+  body: |-
+    Selecting `component: kube-apiserver` to find etcd looks wrong and is
+    deliberate. On Talos, etcd runs as a static pod on the control plane nodes
+    and carries no `component: etcd` label for the chart's generated Service to
+    match. The kube-apiserver pods sit on exactly the same set of nodes, so
+    their selector resolves to the right endpoints and the etcd metrics port is
+    reachable there.
+
+    The consequence to know about: this Service tracks control plane membership,
+    not etcd itself. If etcd were ever moved off the control plane nodes, or a
+    kube-apiserver pod were scheduled somewhere without etcd, the target list
+    would be wrong while still looking healthy.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+          kubeEtcd:
+            service:
+              selector:
+                component: kube-apiserver
+    before: |2-
+                    resources:
+                      requests:
+                        storage: 1Gi
+    after: |2-
+          kubeProxy:
+            enabled: false
+          prometheus:
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1
+    path: kubernetes/apps/observability/kube-prometheus-stack/app/helmrelease.yaml
+    line: 48
+status:
+  lastSeenLine: 48
+  resolution: ok
+  resolvedAt: "2026-08-10T08:14:37Z"
+  resolvedCommit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1

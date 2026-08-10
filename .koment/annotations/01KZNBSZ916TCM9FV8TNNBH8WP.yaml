@@ -1,0 +1,46 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZNBSZ916TCM9FV8TNNBH8WP
+  created: "2026-08-10T08:14:41Z"
+spec:
+  target:
+    file: kubernetes/apps/network/cloudflare-tunnel/app/helmrelease.yaml
+  type: gotcha
+  title: TUNNEL_POST_QUANTUM requires the quic transport
+  body: |-
+    These two settings are a pair. Post-quantum key agreement is implemented
+    only on cloudflared's QUIC transport; it has no effect over HTTP/2. If
+    `TUNNEL_TRANSPORT_PROTOCOL` is ever switched to `http2` — a common
+    workaround when UDP/7844 is blocked on the network path —
+    `TUNNEL_POST_QUANTUM` must be set to false at the same time, or cloudflared
+    refuses to start rather than quietly downgrading.
+
+    Change one, change the other.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+                    TUNNEL_POST_QUANTUM: true
+                    TUNNEL_TRANSPORT_PROTOCOL: quic
+    before: |2-
+                  env:
+                    NO_AUTOUPDATE: true
+                    TUNNEL_METRICS: 0.0.0.0:8080
+    after: |2-
+                  envFrom:
+                    - secretRef:
+                        name: "{{ .Release.Name }}-secret"
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1
+    path: kubernetes/apps/network/cloudflare-tunnel/app/helmrelease.yaml
+    line: 27
+status:
+  lastSeenLine: 27
+  resolution: ok
+  resolvedAt: "2026-08-10T08:14:42Z"
+  resolvedCommit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1

@@ -1,0 +1,53 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZNBWJHW0WKFZWP84BA3Q9T5
+  created: "2026-08-10T08:16:07Z"
+spec:
+  target:
+    file: kubernetes/apps/system-upgrade/tuppr/upgrades/talosupgrade.yaml
+  type: why
+  title: Health gate is MiroirVolume; the volsync check went with rook-ceph
+  body: |-
+    This gate is what stops tuppr from draining and power-cycling a node while
+    replicated storage is still catching up. Every MiroirVolume must report
+    `status.phase == 'Ready'` before the next node is touched — with DRBD9
+    replication behind miroir, rebooting into a degraded volume risks taking the
+    last good replica offline.
+
+    A second health check on `volsync.backube/v1alpha1 ReplicationSource`
+    (`Synchronizing` condition false) sat here commented out. It dates from the
+    rook-ceph era; volsync was retired along with rook-ceph when miroir took
+    over storage on 2026-07-28, and the CRD is not installed. Re-adding it
+    against an absent CRD would make tuppr's health evaluation fail and stall
+    every upgrade.
+
+    `kubernetesupgrade.yaml` carries the identical gate for the same reason;
+    keep the two in step.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        healthChecks:
+          - apiVersion: miroir.home-operations.com/v1alpha1
+            kind: MiroirVolume
+    before: |2-
+          version: v1.14.0-beta.0
+        policy:
+          rebootMode: powercycle
+    after: |2-
+            expr: |-
+              status.phase == 'Ready'
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1
+    path: kubernetes/apps/system-upgrade/tuppr/upgrades/talosupgrade.yaml
+    line: 13
+status:
+  lastSeenLine: 13
+  resolution: ok
+  resolvedAt: "2026-08-10T08:16:07Z"
+  resolvedCommit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1

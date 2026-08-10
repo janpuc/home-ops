@@ -1,0 +1,36 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZNCZ5G0W0K1WPD84RKG1MF5
+  created: "2026-08-10T08:35:00Z"
+spec:
+  target:
+    file: kubernetes/apps/media/sonarr/app/resources/tag-resolution.sh
+  type: why
+  body: onedr0p/home-ops upstream
+  anchor:
+    scope: excerpt
+    excerpt: |-
+      # If called with a specific series (on import), tag just that series.
+      # Otherwise, fetch all series once and process sequentially.
+    before: |2
+              "${SONARR_API_URL}/series/${sid}" >/dev/null
+      }
+    after: |-
+      if [[ -n "${SERIES_ID}" ]]; then
+          tag_series "${SERIES_ID}"
+      else
+  author:
+    name: janpuc
+    email: janpuc@proton.me
+    kind: human
+    source: git-config
+  policy:
+    exception: inline-comment
+    acknowledged: true
+status:
+  lastSeenLine: 106
+  resolution: ok
+  resolvedAt: "2026-08-10T08:35:00Z"
+  resolvedCommit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1

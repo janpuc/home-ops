@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZNCYMC74T5KKBFPJMF96C34
+  created: "2026-08-10T08:34:43Z"
+spec:
+  target:
+    file: kubernetes/apps/media/sonarr/app/resources/tag-resolution.sh
+  type: why
+  body: onedr0p/home-ops upstream
+  anchor:
+    scope: excerpt
+    excerpt: "# Ensure tags exist and collect their IDs"
+    before: |2
+                  | jq -r '[.[].quality.quality.resolution] | unique | .[] | select(. > 0) | "\(.)p"'
+          )
+    after: |2-
+          active_tag_ids=()
+          for res in "${resolutions[@]+"${resolutions[@]}"}"; do
+              ensure_tag "${TAG_PREFIX}${res}"
+  author:
+    name: janpuc
+    email: janpuc@proton.me
+    kind: human
+    source: git-config
+  policy:
+    exception: inline-comment
+    acknowledged: true
+status:
+  lastSeenLine: 63
+  resolution: ok
+  resolvedAt: "2026-08-10T08:34:43Z"
+  resolvedCommit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1

@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZNCVBZF1DK8EZYYR1NR66B5
+  created: "2026-08-10T08:32:56Z"
+spec:
+  target:
+    file: kubernetes/apps/media/sonarr/app/resources/refresh-series.sh
+  type: why
+  body: onedr0p/home-ops upstream
+  anchor:
+    scope: excerpt
+    excerpt: "# Setup base API URL"
+    before: |
+      : "${SONARR__AUTH__APIKEY:?API key required}"
+      : "${SONARR__SERVER__PORT:?Server port required}"
+    after: |-
+      readonly SONARR_API_URL="http://localhost:${SONARR__SERVER__PORT}/api/v3"
+
+      # Wrapper for API calls
+  author:
+    name: janpuc
+    email: janpuc@proton.me
+    kind: human
+    source: git-config
+  git:
+    commit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1
+    path: kubernetes/apps/media/sonarr/app/resources/refresh-series.sh
+    line: 15
+  policy:
+    exception: inline-comment
+    acknowledged: true
+status:
+  lastSeenLine: 15
+  resolution: ok
+  resolvedAt: "2026-08-10T08:32:56Z"
+  resolvedCommit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1

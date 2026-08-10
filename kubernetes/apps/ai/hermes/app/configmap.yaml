@@ -389,9 +389,9 @@ data:
     """Post a message into a named Hermes Matrix room.
 
     Usage:
-        matrix-post <room-alias> [text ...]      # text, or stdin if omitted
-        matrix-post digest --html < body.html    # send pre-rendered HTML
-        matrix-post notify --text "..."          # m.text instead of m.notice
+        matrix-post <room-alias> [text ...]      (text, or stdin if omitted)
+        matrix-post digest --html < body.html    (send pre-rendered HTML)
+        matrix-post notify --text "..."          (m.text instead of m.notice)
 
     Room alias resolves to the MATRIX_ROOM_<ALIAS> environment variable.
     Exits non-zero with a readable message on any failure so a cron job that

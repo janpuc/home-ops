@@ -1,0 +1,61 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZNBTRNP93WTP0VWHB6Y326B
+  created: "2026-08-10T08:15:07Z"
+spec:
+  target:
+    file: talos/schematic.yaml.j2
+  type: why
+  title: What each kernel arg and extension in this schematic is for
+  body: |-
+    Every entry in this schematic exists for one consumer; nothing here is a
+    default. Removing a line silently removes a capability, because the Image
+    Factory just builds a smaller image and the cluster comes up fine until the
+    workload that needed it fails.
+
+    Kernel args:
+
+    - `amd_iommu=on`, `iommu=pt` — PCI passthrough. `pt` (passthrough mode)
+    leaves host-owned devices on the identity mapping so only the passed-through
+    device pays the IOMMU translation cost. - `amdgpu.gttsize=2048` — see the
+    separate annotation on that line; it is sized against the llmkube inference
+    workloads.
+
+    System extensions:
+
+    - `siderolabs/amd-ucode` — AMD CPU microcode updates, loaded at boot. -
+    `siderolabs/amdgpu` — the AMD iGPU kernel driver, required by the llmkube
+    models that run the `server-vulkan` llama.cpp builds. - `siderolabs/drbd`
+    — the DRBD9 kernel module that miroir replication is built on. Miroir is
+    the cluster's storage layer since rook-ceph was removed, so dropping this
+    extension takes out every MiroirVolume.
+
+    Changing this file changes the schematic ID, which means a new installer
+    image and a node roll — it is not a hot-reloadable setting.
+  anchor:
+    scope: excerpt
+    excerpt: |-
+      customization:
+        extraKernelArgs:
+          - amd_iommu=on
+          - iommu=pt
+    before: "---"
+    after: |2-
+          - amdgpu.gttsize=2048
+        systemExtensions:
+          officialExtensions:
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1
+    path: talos/schematic.yaml.j2
+    line: 2
+status:
+  lastSeenLine: 2
+  resolution: ok
+  resolvedAt: "2026-08-10T08:15:08Z"
+  resolvedCommit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1
