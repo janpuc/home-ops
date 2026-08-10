@@ -54,7 +54,7 @@ spec:
           config.ini: |
             [Lidarr]
             api_key = $${LIDARR_API_KEY}
-            host_url = http://lidarr.downloads.svc.cluster.local
+            host_url = http://lidarr.media.svc.cluster.local
             download_dir = /media/Downloads/soulseek/complete
             disable_sync = False
 
