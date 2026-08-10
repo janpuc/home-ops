@@ -165,44 +165,44 @@ spec:
             #!/bin/sh
             set -eu
 
-            : "${PORT:?PORT environment variable is required}"
+            : "$${PORT:?PORT environment variable is required}"
 
             IN="/config/slskd.yaml"
             OUT="/tmp/slskd.yaml"
 
-            case "$PORT" in
+            case "$$PORT" in
             	''|*[!0-9]*)
-            		echo "ERROR: PORT must be an integer, got: $PORT" >&2
+            		echo "ERROR: PORT must be an integer, got: $$PORT" >&2
             		exit 2
             		;;
             esac
-            if [ "$PORT" -lt 1 ] || [ "$PORT" -gt 65535 ]; then
-            	echo "ERROR: PORT must be in range 1..65535, got: $PORT" >&2
+            if [ "$$PORT" -lt 1 ] || [ "$PORT" -gt 65535 ]; then
+            	echo "ERROR: PORT must be in range 1..65535, got: $$PORT" >&2
             	exit 2
             fi
 
-            if [ ! -r "$IN" ]; then
-            	echo "ERROR: input config not readable: $IN" >&2
+            if [ ! -r "$$IN" ]; then
+            	echo "ERROR: input config not readable: $$IN" >&2
             	exit 1
             fi
 
-            tmp="$(mktemp "${OUT}.XXXXXX")"
-            cleanup() { rm -f "$tmp"; }
+            tmp="$$(mktemp "$${OUT}.XXXXXX")"
+            cleanup() { rm -f "$$tmp"; }
             trap cleanup EXIT INT TERM
 
-            sed -E "s/^([[:space:]]*listenPort:).*/\1 ${PORT}/" "$IN" > "$tmp"
+            sed -E "s/^([[:space:]]*listenPort:).*/\1 $${PORT}/" "$$IN" > "$$tmp"
 
-            if ! grep -Eq '^[[:space:]]*listenPort:[[:space:]]*[0-9]+' "$tmp"; then
-            	echo "ERROR: listenPort: key not found or not updated in $IN" >&2
+            if ! grep -Eq '^[[:space:]]*listenPort:[[:space:]]*[0-9]+' "$$tmp"; then
+            	echo "ERROR: listenPort: key not found or not updated in $$IN" >&2
             	exit 3
             fi
 
-            mv -f "$tmp" "$OUT"
+            mv -f "$$tmp" "$$OUT"
             trap - EXIT INT TERM
 
-            chown 2000:2000 "$OUT"
+            chown 2000:2000 "$$OUT"
 
-            echo "Updated listenPort to $PORT in $OUT"
+            echo "Updated listenPort to $$PORT in $$OUT"
     persistence:
       config-file:
         type: configMap
