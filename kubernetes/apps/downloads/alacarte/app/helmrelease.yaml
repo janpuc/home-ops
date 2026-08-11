@@ -20,11 +20,6 @@ spec:
             image:
               repository: ghcr.io/janpuc/alacarte-wrapper
               tag: v2026.8.12@sha256:42074598eed8e5c387c49560308ea5d7085ce5aa692f8f5167cd4cdb01f2ab37
-            command:
-              - /app/wrapper
-            args:
-              - -H
-              - 0.0.0.0
             restartPolicy: OnFailure
             env:
               LD_PRELOAD: /app/libwrapper_strtok_fix.so
