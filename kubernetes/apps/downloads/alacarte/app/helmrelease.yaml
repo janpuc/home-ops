@@ -25,6 +25,7 @@ spec:
             args:
               - -H
               - 0.0.0.0
+            restartPolicy: OnFailure
             env:
               LD_PRELOAD: /app/libwrapper_strtok_fix.so
             resources:
