@@ -125,17 +125,17 @@ spec:
               - identifier: alacarte
                 port: 7373
     persistence:
-      config:
+      data:
         existingClaim: "{{ .Release.Name }}"
-      wrapper-data:
-        type: emptyDir
-        sizeLimit: 64Mi
         advancedMounts:
           alacarte:
+            web:
+              - path: /config
+              - path: /wrapper-data
+                subPath: wrapper
             wrapper:
               - path: /app/rootfs/data
-            web:
-              - path: /wrapper-data
+                subPath: wrapper
       dev-null:
         type: hostPath
         hostPath: /dev/null
