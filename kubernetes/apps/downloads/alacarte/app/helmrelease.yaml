@@ -81,7 +81,7 @@ spec:
           web:
             image:
               repository: ghcr.io/janpuc/alacarte-web
-              tag: main@sha256:9ba1ad0582c769040f96432820f985a32e10df09900f61df98f056998f0f4b67
+              tag: main@sha256:a687809b26b87eb6f0019251e171073feee4173a0fdc46c16702d930ee285f73
             env:
               PORT: &port 7373
               AMDL_WRAPPER_HOST: localhost
