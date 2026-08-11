@@ -1,0 +1,186 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: alacarte
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: alacarte
+  interval: 1h
+  values:
+    controllers:
+      alacarte:
+        type: deployment
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          wrapper:
+            image:
+              repository: ghcr.io/janpuc/alacarte-wrapper
+              tag: v2026.8.11@sha256:d49b8aef5d86a5bc8a1efe76056c0f2bba77896b09876bf6edce68f5c33fe997
+            command:
+              - /app/wrapper
+            args:
+              - -H
+              - 0.0.0.0
+            env:
+              LD_PRELOAD: /app/libwrapper_strtok_fix.so
+            resources:
+              requests:
+                cpu: 50m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
+            securityContext:
+              runAsNonRoot: false
+              runAsUser: 0
+              runAsGroup: 0
+              allowPrivilegeEscalation: true
+              readOnlyRootFilesystem: false
+              capabilities:
+                add:
+                  - SYS_ADMIN
+                  - MKNOD
+                  - SYS_CHROOT
+                  - DAC_OVERRIDE
+                  - FOWNER
+                  - SETUID
+                  - SETGID
+          web:
+            image:
+              repository: ghcr.io/janpuc/alacarte-web
+              tag: v2026.8.11@sha256:b7c95aa32751ab75003986de511c849e1ab5cd5d2035717e1fe44b4aeae344e2
+            env:
+              PORT: &port "7373"
+              AMDL_WRAPPER_HOST: localhost
+              AMDL_WRAPPER_DECRYPT_PORT: &decryptPort "10020"
+              AMDL_WRAPPER_M3U8_PORT: &m3u8Port "20020"
+              AMDL_WRAPPER_ACCOUNT_PORT: &accountPort "30020"
+              AMDL_MUSIC_PATH: /media/Downloads/manual/music/
+              AMDL_CONFIG_DIR: /config
+              AUTH_DISABLED: "true"
+              TRUST_PROXY: loopback
+            envFrom:
+              - secretRef:
+                  name: "{{ .Release.Name }}-secret"
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/health
+                    port: *port
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness: *probes
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/health
+                    port: *port
+                  periodSeconds: 5
+                  failureThreshold: 30
+            resources:
+              requests:
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                memory: 2Gi
+            securityContext:
+              runAsNonRoot: true
+              runAsUser: 1000
+              runAsGroup: 1000
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+      nodeSelector:
+        kubernetes/arch: amd64
+    service:
+      alacarte:
+        controller: alacarte
+        primary: true
+        ports:
+          web:
+            port: *port
+    route:
+      alacarte:
+        hostnames:
+          - alacarte.janpuc.com
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - identifier: alacarte
+                port: *port
+    persistence:
+      config:
+        existingClaim: "{{ .Release.Name }}"
+      wrapper-data:
+        type: emptyDir
+        sizeLimit: 64Mi
+        advancedMounts:
+          alacarte:
+            wrapper:
+              - path: /app/rootfs/data
+            web:
+              - path: /wrapper-data
+      dev-null:
+        type: hostPath
+        hostPath: /dev/null
+        hostPathType: CharDevice
+        advancedMounts:
+          alacarte:
+            wrapper:
+              - path: /app/rootfs/dev/null
+                readOnly: true
+      dev-urandom:
+        type: hostPath
+        hostPath: /dev/urandom
+        hostPathType: CharDevice
+        advancedMounts:
+          alacarte:
+            wrapper:
+              - path: /app/rootfs/dev/urandom
+                readOnly: true
+      dev-random:
+        type: hostPath
+        hostPath: /dev/random
+        hostPathType: CharDevice
+        advancedMounts:
+          alacarte:
+            wrapper:
+              - path: /app/rootfs/dev/random
+                readOnly: true
+      dev-zero:
+        type: hostPath
+        hostPath: /dev/zero
+        hostPathType: CharDevice
+        advancedMounts:
+          alacarte:
+            wrapper:
+              - path: /app/rootfs/dev/zero
+                readOnly: true
+      media:
+        type: nfs
+        server: bigmouth.internal
+        path: /mnt/Vault/Media
+        globalMounts:
+          - path: /media
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
