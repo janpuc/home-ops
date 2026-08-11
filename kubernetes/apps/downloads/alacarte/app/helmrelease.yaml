@@ -106,8 +106,6 @@ spec:
       securityContext:
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
-      nodeSelector:
-        kubernetes/arch: amd64
     service:
       alacarte:
         controller: alacarte
