@@ -19,7 +19,7 @@ spec:
           wrapper:
             image:
               repository: ghcr.io/janpuc/alacarte-wrapper
-              tag: main@sha256:71a15e6f775331c98d64656e134104c1d0d756dff9e5bd595e3bcfee709487e6
+              tag: main@sha256:d74d7abd103d26971f9cc2b4e559a6e9fb4475ad9bc12851be804b1a102d08d8
             restartPolicy: OnFailure
             probes:
               liveness:
@@ -57,7 +57,6 @@ spec:
                   failureThreshold: 30
             env:
               LD_PRELOAD: /app/libwrapper_strtok_fix.so
-              WRAPPER_DEBUG: "true"
             resources:
               requests:
                 cpu: 50m
@@ -82,7 +81,7 @@ spec:
           web:
             image:
               repository: ghcr.io/janpuc/alacarte-web
-              tag: main@sha256:647893d03e5e68ffe4c786ad76823f6687c62609282b9d83eeeac4e0b987a0ba
+              tag: main@sha256:1055b551cfa89cd24c5ac30a4d3e04fc35a6b6b3a2fe2284122a4dcd93e8440f
             env:
               PORT: &port 7373
               AMDL_WRAPPER_HOST: localhost
@@ -93,7 +92,6 @@ spec:
               AMDL_CONFIG_DIR: /config
               AUTH_DISABLED: "true"
               TRUST_PROXY: loopback
-              WRAPPER_LOGIN_DEBUG: "true"
             envFrom:
               - secretRef:
                   name: "{{ .Release.Name }}-secret"
