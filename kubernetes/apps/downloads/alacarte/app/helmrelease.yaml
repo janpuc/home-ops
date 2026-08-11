@@ -57,7 +57,6 @@ spec:
                   failureThreshold: 30
             env:
               LD_PRELOAD: /app/libwrapper_strtok_fix.so
-              WRAPPER_DEBUG: "true"
             resources:
               requests:
                 cpu: 50m
