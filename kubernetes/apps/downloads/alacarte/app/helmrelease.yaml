@@ -20,7 +20,7 @@ spec:
           wrapper:
             image:
               repository: ghcr.io/janpuc/alacarte-wrapper
-              tag: v2026.8.14@sha256:749c24378acf0e5d2bc0eb7e8c2addaf14d76050a9076a1e4709d12c17dd244d
+              tag: v2026.8.15@sha256:a8642b210463f3dd94cefb7f1ecaecf699b35d440e1802ddeb306172d6f65013
             restartPolicy: OnFailure
             probes:
               liveness:
@@ -82,7 +82,7 @@ spec:
           web:
             image:
               repository: ghcr.io/janpuc/alacarte-web
-              tag: v2026.8.14@sha256:b0a0bac2b8bc2d6f5b05d5262da46dfb9bbec2199944c094a6377cf2f8c6cb39
+              tag: v2026.8.15@sha256:6a19b615d76d0fb0a4986bfc905cc71f24405f3a0eb6b557ce6f0d1c29019787
             env:
               PORT: &port 7373
               AMDL_WRAPPER_HOST: localhost
