@@ -9,6 +9,7 @@ spec:
     kind: OCIRepository
     name: alacarte
   interval: 1h
+  wait: false
   values:
     controllers:
       alacarte:
