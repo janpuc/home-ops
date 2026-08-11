@@ -111,10 +111,9 @@ spec:
     service:
       alacarte:
         controller: alacarte
-        primary: true
         ports:
           web:
-            port: *port
+            port: 7373
     route:
       alacarte:
         hostnames:
@@ -125,7 +124,7 @@ spec:
         rules:
           - backendRefs:
               - identifier: alacarte
-                port: *port
+                port: 7373
     persistence:
       config:
         existingClaim: "{{ .Release.Name }}"
