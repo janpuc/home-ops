@@ -53,7 +53,7 @@ spec:
               repository: ghcr.io/janpuc/alacarte-web
               tag: v2026.8.11@sha256:b7c95aa32751ab75003986de511c849e1ab5cd5d2035717e1fe44b4aeae344e2
             env:
-              PORT: &port "7373"
+              PORT: &port 7373
               AMDL_WRAPPER_HOST: localhost
               AMDL_WRAPPER_DECRYPT_PORT: &decryptPort "10020"
               AMDL_WRAPPER_M3U8_PORT: &m3u8Port "20020"
