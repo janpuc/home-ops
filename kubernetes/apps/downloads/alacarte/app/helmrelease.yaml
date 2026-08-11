@@ -21,6 +21,40 @@ spec:
               repository: ghcr.io/janpuc/alacarte-wrapper
               tag: v2026.8.12@sha256:42074598eed8e5c387c49560308ea5d7085ce5aa692f8f5167cd4cdb01f2ab37
             restartPolicy: OnFailure
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: 11020
+                  initialDelaySeconds: 5
+                  periodSeconds: 30
+                  timeoutSeconds: 3
+                  failureThreshold: 3
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /readyz
+                    port: 11020
+                  initialDelaySeconds: 5
+                  periodSeconds: 10
+                  timeoutSeconds: 3
+                  failureThreshold: 3
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: 11020
+                  initialDelaySeconds: 2
+                  periodSeconds: 5
+                  timeoutSeconds: 3
+                  failureThreshold: 30
             env:
               LD_PRELOAD: /app/libwrapper_strtok_fix.so
             resources:
