@@ -19,7 +19,7 @@ spec:
           wrapper:
             image:
               repository: ghcr.io/janpuc/alacarte-wrapper
-              tag: main@sha256:091beb9934d96b8b78703dea6cd9c1686c5b63c6e11270ebc2aa46506434ce96
+              tag: main@sha256:4f9c6845489da9592511a124bb260c7baa19f03f7e29f2170d871b3a84fb6138
             restartPolicy: OnFailure
             probes:
               liveness:
