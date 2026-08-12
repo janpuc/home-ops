@@ -9,7 +9,26 @@ spec:
     file: kubernetes/apps/miroir-system/miroir/config/storageclass.yaml
   type: why
   body: |-
-    Three replicas so that no volume needs converting from diskless later.
+    Two replicas, and do not raise this to three — three was tried on
+    2026-08-12 and deadlocked snapshot backups within the hour.
+
+    Every kopiur snapshot stages a throwaway clone PVC on this class. At three
+    diskful replicas that clone must full-sync the entire volume to two peers
+    at once, which builds a sync dependency chain instead of a single pair.
+    DRBD then pauses one leg of it:
+
+        k8s-0: repl( SyncSource -> PausedSyncS )
+               resync-susp( no -> connection dependency,disk inconsistent )
+        k8s-0: Resync suspended
+
+    k8s-0 was syncing from k8s-1; k8s-1 went Inconsistent to sync from k8s-2,
+    which suspended the leg k8s-0 depended on. The clone
+    `sabnzbd-20260812125200-src` sat Inconsistent on two of three nodes for
+    over an hour with no progress, its mover stuck in Init, and sabnzbd had no
+    working backup for that whole window. miroir was right to refuse to stage
+    an Inconsistent replica — the refusal is what surfaced it.
+
+    The reason three was reached for is documented below and was mistaken.
 
     With `replicas: "2"` one of the three nodes holds no local copy, and
     `autoDiskfulAfter: 10m` in the HelmRelease then converts it and runs a full
@@ -41,7 +60,7 @@ spec:
     scope: excerpt
     excerpt: |2-
         miroir.home-operations.com/pool: fast
-        miroir.home-operations.com/replicas: "3"
+        miroir.home-operations.com/replicas: "2"
     before: |-
       volumeBindingMode: WaitForFirstConsumer
       allowVolumeExpansion: true
