@@ -1,0 +1,55 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZTQZPJS3MAYZY6VV9XF9CGW
+  created: "2026-08-12T10:23:44Z"
+spec:
+  target:
+    file: kubernetes/apps/miroir-system/miroir/ks.yaml
+  type: why
+  body: |-
+    `force: true` is here because StorageClass parameters are immutable.
+
+    This Kustomization owns storageclass.yaml, and Kubernetes rejects any edit
+    to `parameters` on an existing StorageClass:
+
+    The StorageClass "miroir-fast" is invalid: parameters: ... field is
+    immutable
+
+    Without `force`, changing `miroir.home-operations.com/replicas` from "2" to
+    "3" leaves the Kustomization permanently ReconciliationFailed while the live
+    StorageClass silently keeps the old value — the dangerous outcome, because
+    the repo then claims a replica count the cluster is not using. `force` lets
+    Flux delete and recreate the object so the change actually lands.
+
+    Recreating a StorageClass does not disturb existing volumes: PVs record
+    their provisioner and parameters at creation time and never re-read the
+    class, so only subsequently provisioned PVCs see the new value.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        dependsOn:
+          - name: miroir
+        force: true
+    before: |-
+      metadata:
+        name: miroir-config
+      spec:
+    after: |2-
+        interval: 1h
+        path: ./kubernetes/apps/miroir-system/miroir/config
+        prune: true
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 495817a96502e339d7e53a65d8f9d45dcf2e282f
+    path: kubernetes/apps/miroir-system/miroir/ks.yaml
+    line: 27
+status:
+  lastSeenLine: 27
+  resolution: ok
+  resolvedAt: "2026-08-12T10:23:44Z"
+  resolvedCommit: 495817a96502e339d7e53a65d8f9d45dcf2e282f

@@ -24,7 +24,7 @@ volumeBindingMode: WaitForFirstConsumer
 allowVolumeExpansion: true
 parameters:
   miroir.home-operations.com/pool: fast
-  miroir.home-operations.com/replicas: "2"
+  miroir.home-operations.com/replicas: "3"
   miroir.home-operations.com/quorum: freeze
   csi.storage.k8s.io/fstype: ext4
 ---
@@ -51,6 +51,6 @@ volumeBindingMode: WaitForFirstConsumer
 allowVolumeExpansion: true
 parameters:
   miroir.home-operations.com/pool: slow
-  miroir.home-operations.com/replicas: "2"
+  miroir.home-operations.com/replicas: "3"
   miroir.home-operations.com/quorum: freeze
   csi.storage.k8s.io/fstype: ext4
