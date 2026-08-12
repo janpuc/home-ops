@@ -1,0 +1,64 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZTT1C2XE5JMTFZKGCSSXF8K
+  created: "2026-08-12T10:59:36Z"
+spec:
+  target:
+    file: kubernetes/components/kopiur/backup/snapshotpolicy.yaml
+  type: why
+  body: |-
+    Weekly and monthly tiers exist because hourly+daily alone cannot survive a
+    data loss that is noticed late.
+
+    GFS retention keeps the LAST snapshot of each period. A PVC wiped in the
+    evening is therefore represented in that day's daily slot by the POST-wipe
+    snapshot, while the good pre-wipe one lives only in the hourly window. With
+    `keepHourly: 24` at a roughly two-hourly cadence that window is about 48
+    hours. Miss it and every remaining copy is the wiped one, and because
+    `defaultDeletionPolicy` is `Delete` the underlying kopia data goes with it.
+
+    That is not hypothetical: it is how sonarr ended up with a single surviving
+    snapshot, and on 2026-08-11 the sabnzbd and autobrr wipes were found with
+    roughly a day and a half of margin left.
+
+    `keepWeekly: 4` and `keepMonthly: 6` mean a loss discovered a week or a
+    month later still has a restore point that predates it. The cost is small
+    — kopia deduplicates, and the repository held 1010 snapshots in 34.3 GiB
+    when this was added, so the extra tiers mostly retain blobs that already
+    exist.
+
+    This reduces the blast radius; it does not remove the need to act fast. On
+    any suspected loss, pin the good snapshot immediately with `spec.pin: true`
+    plus `deletionPolicy: Retain` — retention ignores pinned snapshots. The
+    KopiurBackupSizeCollapsed alert carries that command in its description.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        retention:
+          keepDaily: 7
+          keepHourly: 24
+          keepMonthly: 6
+          keepWeekly: 4
+    before: |2-
+        repository:
+          kind: ClusterRepository
+          name: nas
+    after: |2-
+        sources:
+          - pvc:
+              name: ${APP}
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: e937c0bef2ee1d1aa2a5418527c04d2906bfab7c
+    path: kubernetes/components/kopiur/backup/snapshotpolicy.yaml
+    line: 15
+status:
+  lastSeenLine: 15
+  resolution: ok
+  resolvedAt: "2026-08-12T10:59:36Z"
+  resolvedCommit: e937c0bef2ee1d1aa2a5418527c04d2906bfab7c

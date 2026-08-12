@@ -1,0 +1,62 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01KZTT1RE29906WY5EYP424G86
+  created: "2026-08-12T10:59:49Z"
+spec:
+  target:
+    file: kubernetes/apps/kopiur-system/kopiur/app/prometheusrule.yaml
+  type: why
+  body: |-
+    The 10 MiB floor and the 0.5 ratio are both backtested, not guessed.
+
+    This alert watches the backup for a size cliff rather than watching the
+    storage layer for a fault, because it is cause-agnostic: it catches the
+    miroir mkfs bug, an app deleting its own database, a bad restore, and
+    anything else that empties a PVC. The storage-layer alternative was tried
+    and rejected — `miroir_volume_suspended` tracks DRBD `susp-io`, not the
+    filesystem freeze that precedes the wipe, and it stayed flat through the
+    entire 2026-08-11 incident.
+
+    Backtested against every policy over the full Prometheus retention window
+    (2026-08-09 18:00 onward), the expression fires on exactly the three real
+    data-loss events in that period and nothing else:
+
+    downloads/autobrr 2026-08-11 22:30 downloads/sabnzbd 2026-08-11 23:00
+    media/radarr 2026-08-10 03:00
+
+    The `> 10485760` floor is what removes the noise. Without it, policies whose
+    whole dataset is a fraction of a megabyte — openspoolman at 0.023 MiB,
+    browserr at 0.176 MiB — trip the ratio on ordinary churn. It also excluded
+    a single-sample artifact at the very edge of retention.
+
+    `max by (namespace, policy)` is not decoration: the metric carries `pod`,
+    `instance` and `endpoint` labels, so without aggregating them away a
+    controller restart or a second replica would raise duplicate alerts for one
+    PVC.
+
+    Detection latency is one snapshot cycle, roughly an hour. The 2026-08-11
+    wipe went unnoticed for about fourteen.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+                    max by (namespace, policy) (max_over_time(kopiur_policy_last_backup_size_bytes[7d]))
+                    > 10485760
+    before: |2-
+                  )
+                  and
+                  (
+    after: |2-
+                  )
+                for: 15m
+                labels:
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+status:
+  lastSeenLine: 22
+  resolution: ok
+  resolvedAt: "2026-08-12T10:59:49Z"
+  resolvedCommit: e937c0bef2ee1d1aa2a5418527c04d2906bfab7c

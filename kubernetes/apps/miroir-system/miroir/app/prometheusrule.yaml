@@ -1,35 +1,23 @@
+---
 # yaml-language-server: $schema=https://prometheus-operator.dev/doc/api/v1/#monitoring.coreos.com/v1.PrometheusRule
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: miroir-system-autodiskful-watch
+  name: miroir-pool-watch
 spec:
   groups:
-    - name: miroir-system.autodiskful
+    - name: miroir-system.pool
       interval: 30s
       rules:
-        - alert: MiroirAutoDiskfulPoolFilling
+        - alert: MiroirPoolFilling
           expr: miroir_pool_allocated_bytes / miroir_pool_capacity_bytes > 0.6
           for: 30m
           labels:
             severity: warning
           annotations:
-            summary: "Mirror pool past 60% allocated on {{ $labels.node }} ({{ $labels.pool }})"
+            summary: "Miroir pool past 60% allocated on {{ $labels.node }} ({{ $labels.pool }})"
             description: >-
-              Pool allocation crossed 60 % while the auto-diskful ramp from
-              `autoDiskfulAfter: 10m` is in flight. Watch for the chart's
-              MiroirPoolUsageHigh (80%, 15m) to fire next. Current
-              usage: {{ $value | humanizePercentage }}.
-        - alert: MiroirAutoDiskfulAllVolumesConverted
-          expr: count(miroir_volume_diskless_primary == 1) == 0
-          for: 15m
-          labels:
-            severity: info
-          annotations:
-            summary: All Mirror volumes are now diskful on consumer nodes
-            description: >-
-              None of the MiroirVolumes currently has a diskless primary
-              leg. The auto-diskful ramp either completed (expected after
-              enabling `autoDiskfulAfter`) or there were no consumer-
-              side legs to convert. CHECK pool allocation before deleting
-              the rule.
+              Every volume is provisioned with three diskful replicas, so each
+              node carries a full copy and the thin pool grows on all three at
+              once. Watch for the chart's MiroirPoolUsageHigh (80%, 15m) to fire
+              next. Current usage: {{ $value | humanizePercentage }}.

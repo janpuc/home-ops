@@ -1,0 +1,62 @@
+---
+# yaml-language-server: $schema=https://prometheus-operator.dev/doc/api/v1/#monitoring.coreos.com/v1.PrometheusRule
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: kopiur-backup-integrity
+spec:
+  groups:
+    - name: kopiur-system.backup-integrity
+      interval: 1m
+      rules:
+        - alert: KopiurBackupSizeCollapsed
+          expr: >-
+            (
+              max by (namespace, policy) (kopiur_policy_last_backup_size_bytes)
+              /
+              max by (namespace, policy) (max_over_time(kopiur_policy_last_backup_size_bytes[7d]))
+              < 0.5
+            )
+            and
+            (
+              max by (namespace, policy) (max_over_time(kopiur_policy_last_backup_size_bytes[7d]))
+              > 10485760
+            )
+          for: 15m
+          labels:
+            severity: critical
+          annotations:
+            summary: >-
+              Backup for {{ $labels.namespace }}/{{ $labels.policy }} collapsed to
+              {{ $value | humanizePercentage }} of its 7-day peak
+            description: >-
+              The newest kopiur snapshot is less than half the size of the largest
+              in the past week, which means the source PVC lost data rather than
+              the backup failing. ACT NOW, BEFORE INVESTIGATING: retention is
+              keepHourly 24 / keepDaily 7, and the daily slot keeps the LAST
+              snapshot of each day, so an evening data loss leaves only the
+              post-loss copy once the hourly window rolls past. Pin the newest
+              good snapshot first with
+              `kubectl patch kopiasnap -n <ns> <snap> --type=merge -p
+              '{"spec":{"pin":true,"deletionPolicy":"Retain"}}'`, and pin one
+              older fallback as well. Then find the cliff with
+              `kubectl get kopiasnap -A -o json | jq -r '.items[] |
+              [.metadata.creationTimestamp, .metadata.name,
+              (.status.stats.sizeBytes//0)] | @tsv'`.
+        - alert: KopiurBackupStale
+          expr: >-
+            (time() - max by (namespace, policy) (kopiur_policy_last_backup_success_timestamp_seconds))
+            > 21600
+          for: 30m
+          labels:
+            severity: warning
+          annotations:
+            summary: >-
+              No successful kopiur backup for {{ $labels.namespace }}/{{ $labels.policy }}
+              in {{ $value | humanizeDuration }}
+            description: >-
+              Schedules run roughly every two hours, so six hours without a
+              success means the policy is wedged, not idle. A stalled policy is
+              silent until the day it is needed, and it removes the only recovery
+              path from a PVC wipe. Check the Snapshot CRs for StagingTimedOut
+              and the miroir agents for frozen DRBD devices.

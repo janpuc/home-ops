@@ -9,42 +9,34 @@ spec:
     file: kubernetes/apps/miroir-system/miroir/config/storageclass.yaml
   type: why
   body: |-
-    Three replicas, not two, because two is what caused the 2026-08-11 data
-    loss.
+    Three replicas so that no volume needs converting from diskless later.
 
-    On 2026-08-11 at 22:05:52 and 22:05:55 UTC the sabnzbd and autobrr volumes
-    were reformatted in place under live, bound PVCs. Proof: `lost+found` mtime
-    on both volumes equals those timestamps (mke2fs writes it at filesystem
-    creation) while their PVs dated from 2026-07-28. kopiur snapshot sizes
-    bracket it exactly — sabnzbd 29.29 MiB at 20:52 then 0.04 MiB at 22:52;
-    autobrr 17.69 MiB at 20:21 then 0.36 MiB at 22:21.
+    With `replicas: "2"` one of the three nodes holds no local copy, and
+    `autoDiskfulAfter: 10m` in the HelmRelease then converts it and runs a full
+    resync. That conversion had fired on essentially the whole cluster — 33 of
+    37 fast-pool volumes were already at 3 replicas, each still carrying
+    `fullSync: true` — so the declared replica count was a fiction and resyncs
+    were near-permanent background churn. Provisioning all three diskful up
+    front makes the spec match reality and removes the churn.
 
-    Mechanism: the CSI node plugin stages volumes with the Kubernetes
-    `mount_linux.FormatAndMount` helper, which runs `mkfs.ext4 -F` whenever
-    `blkid` reports no filesystem on the device. It does this on `/dev/drbd*`
-    devices, not just fresh LVs. A DRBD replica that is Diskless, Inconsistent
-    or mid-resync reads back as empty, so a stage that races a resync formats a
-    volume that is already full of data — and DRBD then replicates the mkfs to
-    every peer, which is why no copy survived and recovery had to come from
-    kopiur.
+    It costs nothing: the volumes were already at 3 replicas via that same
+    auto-conversion, and the fast thin pool was 14.5% allocated (36.7 GB of
+    253.9 GB) when measured.
 
-    With `replicas: "2"` one node holds no local copy, so `autoDiskfulAfter:
-    10m` in the HelmRelease converts it and triggers a full resync. That
-    conversion ran on essentially every volume in the cluster (33 of 37 in the
-    fast pool had been converted to 3 replicas, each still carrying `fullSync:
-    true`), so the resync window was permanently open somewhere. Provisioning
-    all three replicas diskful up front removes the conversion, and with it the
-    window.
+    IMPORTANT — this setting does NOT prevent the 2026-08-11 data loss, and an
+    earlier version of this annotation wrongly claimed it did. The root cause
+    was established later that day from VictoriaLogs and Prometheus: a
+    filesystem freeze taken by the snapshot path leaked, and a routine
+    KEDA scale-to-zero relocated the pod onto another node while the device was
+    still frozen. `NodeStageVolume` there ran `blkid`, which cannot probe a
+    frozen device and exits 2 — a code Kubernetes' `GetDiskFormat` treats as
+    "unformatted" — so `mount_linux.FormatAndMount` ran `mkfs.ext4 -F` on a
+    populated volume and DRBD replicated the wipe to every peer. Replica count
+    is irrelevant to that sequence.
 
-    This costs nothing in practice: the volumes were already sitting at 3
-    replicas via that same auto-conversion, and the fast thin pool was 14.5%
-    allocated (36.7 GB of 253.9 GB) when this was measured.
-
-    Residual risk this does NOT close: `autoEvictAfter: 1h` still rebuilds a
-    replica after a node is unreachable, which is another full resync, and the
-    underlying format-on-unreadable-device behaviour is upstream in miroir
-    (0.11.22 was the latest release at the time and contains no guard, despite
-    the operator already tracking `MiroirVolume.status.formatted`).
+    The real fix is upstream in miroir: never format a device that failed to
+    probe, and consult `MiroirVolume.status.formatted` before formatting. See
+    the evidence pack referenced from the storage memory notes.
   anchor:
     scope: excerpt
     excerpt: |2-
