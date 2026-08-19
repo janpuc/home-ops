@@ -1,0 +1,67 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0CGXWXVEF80EHBFF6Y1PHET
+  created: "2026-08-19T08:06:45Z"
+spec:
+  target:
+    file: kubernetes/apps/security/pocket-id-operator/instance/pocketidinstance.yaml
+  type: gotcha
+  title: pinned to v2.13.0 — the operator hard-halts on v2.14.0
+  body: |-
+    Held at v2.13.0 deliberately. Reverted from v2.14.0 on 2026-08-19 (PR #1211,
+    merge 41c112f4) because pocket-id-operator 0.13.1 refuses to manage it:
+
+    ERROR Pocket-id version is unsupported by this operator; halting.
+    detectedVersion: 2.14.0 firstUnsupportedVersion: v2.14.0
+    latestTestedVersion: v2.13.0
+
+    The operator crash-loops by design — `haltIfUnsupportedVersion` in
+    `internal/controller/instance/controller.go`. It is a guard, not a bug.
+
+    **This image version is coupled to the operator version.** Do not raise it
+    past whatever the deployed pocket-id-operator declares as
+    `latestTestedVersion`. Check that first:
+
+    kubectl -n security logs deploy/pocket-id-operator | grep
+    latestTestedVersion
+
+    **Why it slipped through.** Renovate raises the app image (this file) and
+    the operator chart (../app/ocirepository.yaml) as two independent PRs. #1211
+    and #1188 were each individually green — CI verifies the image pulls, and
+    konflate renders each PR in isolation — so a compatibility constraint that
+    only exists *between* two PRs is invisible to both checks. Merging them in
+    the same batch is what broke it.
+
+    **Blast radius when it happens:** pocket-id itself keeps serving (Deployment
+    stays Ready, SSO/OIDC continues to work). What stops is the management plane
+    — the operator cannot reconcile PocketIDInstance, so LDAP mapping, SMTP,
+    route and user-management changes declared here silently never apply.
+
+    Raise this again only together with an operator release that lists 2.14.x as
+    tested.
+  anchor:
+    scope: excerpt
+    excerpt: "  image: ghcr.io/pocket-id/pocket-id:v2.13.0-distroless@sha256:ccb590169770feb5b23ba16d49386514a2c26a77e95bb687b442ae09f17c15da"
+    before: |-
+      metadata:
+        name: &app pocket-id
+      spec:
+    after: |2-
+        timezone: Europe/Warsaw
+        appUrl: "https://id.janpuc.com"
+        databaseUrl:
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: a12c36b5751e5af12dc5a3ef3579d2e9c36673c1
+    path: kubernetes/apps/security/pocket-id-operator/instance/pocketidinstance.yaml
+    line: 7
+status:
+  lastSeenLine: 7
+  resolution: ok
+  resolvedAt: "2026-08-19T08:06:45Z"
+  resolvedCommit: a12c36b5751e5af12dc5a3ef3579d2e9c36673c1
