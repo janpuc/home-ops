@@ -8,52 +8,52 @@ spec:
   target:
     file: kubernetes/apps/security/pocket-id-operator/instance/pocketidinstance.yaml
   type: gotcha
-  title: v2.14.0 is a one-way door — the operator halts, but downgrading is worse
+  title: v2.14.0 is a one-way door — never downgrade; the operator is parked
   body: |-
-    Two independent constraints meet on this line, and they point opposite
-    ways. Both were learned the hard way on 2026-08-19.
+    Two constraints meet on this line and they point opposite ways. Both were
+    learned the hard way on 2026-08-19.
 
-    **The operator refuses to manage v2.14.0.** pocket-id-operator 0.13.1
-    declares `firstUnsupportedVersion: v2.14.0` / `latestTestedVersion: v2.13.0`
-    and halts:
-
-    ERROR Pocket-id version is unsupported by this operator; halting.
-
-    That is `haltIfUnsupportedVersion` in
-    `internal/controller/instance/controller.go` — a deliberate guard, not a
-    crash bug. The operator CrashLoopBackOffs until it is upgraded.
-
-    **But you cannot go back.** v2.14.0 runs a database migration on first
-    start, and v2.13.0 refuses to open the migrated schema:
+    **You cannot go back.** v2.14.0 runs a database migration on first start,
+    and v2.13.0 then refuses to open the migrated schema:
 
     ERR failed to initialize database: failed to run migrations: database
-    version (20260814120000) is newer than application version
-    (20260802120000), downgrades are not allowed
-    (set ALLOW_DOWNGRADE=true to enable)
+    version (20260814120000) is newer than application version (20260802120000),
+    downgrades are not allowed (set ALLOW_DOWNGRADE=true to enable)
 
-    Reverting this line to v2.13.0 was tried (commit ab299ef4) and took SSO
-    down completely — strictly worse than the operator being halted. It was
-    rolled forward again within minutes.
+    Pinning this line back to v2.13.0 was tried (commit ab299ef4) and took SSO
+    down completely — strictly worse than the problem it was meant to fix. It
+    was rolled forward again within minutes.
 
-    Do NOT set `ALLOW_DOWNGRADE=true` to force it. That runs older code
-    against a newer schema in the identity store; a failed login is
-    recoverable, a corrupted user/credential table is not.
+    Do NOT set `ALLOW_DOWNGRADE=true` to force it. That runs older code against
+    a newer schema in the identity store; a failed login is recoverable, a
+    corrupted user/credential table is not.
 
-    **Therefore: leave this at v2.14.0 or higher.** The halted operator is the
-    lesser failure — pocket-id keeps serving SSO/OIDC normally, and only
-    PocketIDInstance reconciliation is paused, so LDAP mapping, SMTP, route
-    and user-management edits in this file silently do not apply until the
-    operator is fixed. The only real fix is an operator release supporting
-    2.14.x.
+    **The operator cannot manage v2.14.0 yet.** Operator 0.13.1 declares
+    `firstUnsupportedPocketIDVersion = "v2.14.0"` and halts via
+    `haltIfUnsupportedVersion`. The operator is consequently parked at
+    `replicas: 0` in ../app/helmrelease.yaml — that annotation carries the
+    un-park condition and explains why a main-built image is not a shortcut.
 
-    **Why it slipped through both checks.** Renovate raises the app image
-    (this file) and the operator chart (../app/ocirepository.yaml) as two
-    independent PRs — #1211 and #1188. Each was individually green: CI only
-    verifies the image pulls, and konflate renders each PR in isolation. A
-    compatibility constraint that exists solely *between* two PRs is invisible
-    to both. Before bumping either, check the pair:
+    **So leave this at v2.14.0 or higher.** pocket-id keeps serving SSO/OIDC
+    normally from its own Deployment. What is paused is reconciliation, so LDAP
+    mapping, SMTP, route and user-management edits in this file silently do not
+    apply until the operator is un-parked. Do not tune this file expecting an
+    effect.
 
-    kubectl -n security logs deploy/pocket-id-operator | grep latestTestedVersion
+    **Why it slipped through both checks.** Renovate raises the app image (this
+    file) and the operator chart (../app/ocirepository.yaml) as two independent
+    PRs — #1211 and #1188. Each was individually green: CI only verifies the
+    image pulls, and konflate renders each PR in isolation. A compatibility
+    constraint existing solely *between* two PRs is invisible to both.
+
+    **Correction to the earlier version of this note.** It said to raise this
+    image only alongside an operator release listing 2.14.x as tested, and
+    framed the halt as a standing compatibility guard. That was wrong in a way
+    that matters: the guard was upstream's deliberately temporary block,
+    carrying a `TODO: revert after v2.14 is released`, and it had already been
+    lifted on main in commit e7bc8ae9 the day before this was written. The real
+    blocker is the unmerged OIDC client-secret support in PR #566, not the
+    version constant.
   anchor:
     scope: excerpt
     excerpt: "  image: ghcr.io/pocket-id/pocket-id:v2.14.0-distroless@sha256:e0f83a42a78d0759b6d2d8c7380ef0fa8a4c95dfa01ad88740a073ae9cc4ba94"
