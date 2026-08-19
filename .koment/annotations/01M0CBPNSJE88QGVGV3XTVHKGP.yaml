@@ -1,0 +1,74 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0CBPNSJE88QGVGV3XTVHKGP
+  created: "2026-08-19T06:35:25Z"
+spec:
+  target:
+    file: talos/controlplane.yaml.j2
+  type: why
+  title: apiserver sized from measured working set, not defaults
+  body: |-
+    Raised 2026-08-19 from `requests: 512Mi` / `limits: 2Gi`, which were sized
+    before this cluster carried its current object count and had become
+    dangerous on both halves.
+
+    **The limit.** Measured over 7 days, kube-apiserver's working set peaked at
+    2026 MiB against the 2048 MiB limit — 98-99% on all three nodes. It had
+    not yet been OOM-killed (zero restarts) purely by luck. The curve is flat,
+    not growing: sampled every 4h over 40h it oscillated 1776-1887 MiB, so this
+    is a steady-state working set, not a leak. 3Gi leaves real headroom above
+    the observed ceiling.
+
+    **The request.** 512Mi against a 1.9 GiB actual working set was a scheduling
+    bug, not just an under-estimate: the scheduler budgeted 512Mi per
+    control-plane node for a process using nearly four times that, and packed
+    pods accordingly. All three nodes here are control-plane, so the error
+    applied cluster-wide. 1536Mi tracks the measured steady state.
+
+    Deliberately *not* set to the ~2.2 GiB that p95 x 1.15 suggests. Requests
+    are reserved capacity: 3 x 2.2 GiB would tie up 6.6 GiB of a 42.8 GiB
+    allocatable pool for headroom that is only reached during spikes the limit
+    already covers.
+
+    **Why the working set is this large at all.** Roughly half is Go heap the GC
+    has not returned — live heap measured 700-1145 MiB while `next_gc` sat at
+    1278-1430 MiB. The rest tracks cached object count, dominated by
+    `snapshots.kopiur.home-operations.com` (1338 objects), then events (683),
+    secrets (495, mostly Helm release history) and replicasets (313, of which
+    219 are dead). Cutting those counts lowers the working set at the source;
+    this change only stops the ceiling being hit meanwhile.
+
+    Applying this needs a Talos machine-config apply and a rolling apiserver
+    restart — it does not reconcile through Flux.
+  anchor:
+    scope: excerpt
+    excerpt: |-
+      resources:
+        requests:
+          cpu: 200m
+          memory: 1536Mi
+        limits:
+          memory: 3Gi
+    before: |2-
+        enable-aggregator-routing: "true"
+        feature-gates: HPAScaleToZero=true
+      image: registry.k8s.io/kube-apiserver:v1.36.3
+    after: |-
+      ---
+      apiVersion: v1alpha1
+      kind: KubeAuditPolicyConfig
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: fbe67ffbf3979f07d5d9e0d67012a6d59ca05497
+    path: talos/controlplane.yaml.j2
+    line: 46
+status:
+  lastSeenLine: 46
+  resolution: ok
+  resolvedAt: "2026-08-19T06:35:25Z"
+  resolvedCommit: fbe67ffbf3979f07d5d9e0d67012a6d59ca05497

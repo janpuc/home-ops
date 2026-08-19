@@ -1,0 +1,58 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0CBPZ4YKJG08Q3TQPPRSECH
+  created: "2026-08-19T06:35:35Z"
+spec:
+  target:
+    file: kubernetes/apps/kube-system/cilium/app/helmrelease.yaml
+  type: why
+  title: agent limit raised off a measured 92% ceiling
+  body: |-
+    Raised 2026-08-19 from `limits: 448Mi` / `requests: 320Mi`. Over 7 days the
+    three agents peaked at 414, 392 and 383 MiB — 85-92% of the old limit,
+    with p95 at 344-380 MiB. Nothing had OOM-killed yet, but the margin was a
+    few tens of megabytes on a DaemonSet whose death takes networking down on
+    that node rather than one application.
+
+    The operator above was raised in the same pass for the same reason: it
+    peaked at 222 MiB against a 224 MiB limit — 99%, the tightest ratio in the
+    cluster.
+
+    Do not tune these back down by comparing against average usage. Cilium's
+    agent footprint scales with endpoint, identity and policy-map count, so it
+    grows as the cluster grows and the peak is what matters. Re-measure with
+    `max_over_time(container_memory_working_set_bytes{container="cilium-agent"}[7d])`
+    before changing them.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+          resources:
+            limits:
+              memory: 768Mi
+            requests:
+              cpu: 150m
+              memory: 512Mi
+          rollOutCiliumPods: true
+    before: |2-
+            serviceMonitor:
+              enabled: true
+              trustCRDsExist: true
+    after: |2-
+          routingMode: native
+          securityContext:
+            capabilities:
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: fbe67ffbf3979f07d5d9e0d67012a6d59ca05497
+    path: kubernetes/apps/kube-system/cilium/app/helmrelease.yaml
+    line: 73
+status:
+  lastSeenLine: 73
+  resolution: ok
+  resolvedAt: "2026-08-19T06:35:35Z"
+  resolvedCommit: fbe67ffbf3979f07d5d9e0d67012a6d59ca05497

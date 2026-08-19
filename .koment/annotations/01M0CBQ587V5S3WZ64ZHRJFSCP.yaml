@@ -1,0 +1,57 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0CBQ587V5S3WZ64ZHRJFSCP
+  created: "2026-08-19T06:35:41Z"
+spec:
+  target:
+    file: kubernetes/apps/downloads/soularr/app/helmrelease.yaml
+  type: why
+  title: 256Mi limit OOM-killed every sync run
+  body: |-
+    Raised 2026-08-19 from `limits: 256Mi` / `requests: 64Mi` after repeated OOM
+    kills — two on 2026-08-19 alone (05:00 and 06:19), visible in the k8s-0
+    kernel log as `Memory cgroup out of memory: Killed process (python)` with
+    `anon-rss:236228kB`.
+
+    The old limit was not merely tight, it was exactly the working set: measured
+    over 7 days, p95 was 255 MiB and max was 256 MiB against a 256 MiB limit. A
+    sync run that touched slightly more than usual was killed; one that did not
+    survived. Idle usage is ~78 MiB, which is why the 64Mi request looked
+    defensible and hid the problem.
+
+    Sizing follows the shape of the workload, not its average: soularr is idle
+    most of the time and allocates in a burst while reconciling Lidarr against
+    slskd. The request covers the burst so the scheduler reserves for it; the
+    limit sits above it with room.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+                  resources:
+                    limits:
+                      memory: 512Mi
+                    requests:
+                      cpu: 10m
+                      memory: 256Mi
+    before: |2-
+                      spec:
+                        failureThreshold: 30
+                        periodSeconds: 5
+    after: |2-
+                  securityContext:
+                    allowPrivilegeEscalation: false
+                    capabilities:
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: fbe67ffbf3979f07d5d9e0d67012a6d59ca05497
+    path: kubernetes/apps/downloads/soularr/app/helmrelease.yaml
+    line: 39
+status:
+  lastSeenLine: 39
+  resolution: ok
+  resolvedAt: "2026-08-19T06:35:41Z"
+  resolvedCommit: fbe67ffbf3979f07d5d9e0d67012a6d59ca05497
