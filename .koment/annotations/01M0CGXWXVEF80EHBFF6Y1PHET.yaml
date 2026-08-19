@@ -8,42 +8,55 @@ spec:
   target:
     file: kubernetes/apps/security/pocket-id-operator/instance/pocketidinstance.yaml
   type: gotcha
-  title: pinned to v2.13.0 — the operator hard-halts on v2.14.0
+  title: v2.14.0 is a one-way door — the operator halts, but downgrading is worse
   body: |-
-    Held at v2.13.0 deliberately. Reverted from v2.14.0 on 2026-08-19 (PR #1211,
-    merge 41c112f4) because pocket-id-operator 0.13.1 refuses to manage it:
+    Two independent constraints meet on this line, and they point opposite
+    ways. Both were learned the hard way on 2026-08-19.
+
+    **The operator refuses to manage v2.14.0.** pocket-id-operator 0.13.1
+    declares `firstUnsupportedVersion: v2.14.0` / `latestTestedVersion: v2.13.0`
+    and halts:
 
     ERROR Pocket-id version is unsupported by this operator; halting.
-    detectedVersion: 2.14.0 firstUnsupportedVersion: v2.14.0
-    latestTestedVersion: v2.13.0
 
-    The operator crash-loops by design — `haltIfUnsupportedVersion` in
-    `internal/controller/instance/controller.go`. It is a guard, not a bug.
+    That is `haltIfUnsupportedVersion` in
+    `internal/controller/instance/controller.go` — a deliberate guard, not a
+    crash bug. The operator CrashLoopBackOffs until it is upgraded.
 
-    **This image version is coupled to the operator version.** Do not raise it
-    past whatever the deployed pocket-id-operator declares as
-    `latestTestedVersion`. Check that first:
+    **But you cannot go back.** v2.14.0 runs a database migration on first
+    start, and v2.13.0 refuses to open the migrated schema:
 
-    kubectl -n security logs deploy/pocket-id-operator | grep
-    latestTestedVersion
+    ERR failed to initialize database: failed to run migrations: database
+    version (20260814120000) is newer than application version
+    (20260802120000), downgrades are not allowed
+    (set ALLOW_DOWNGRADE=true to enable)
 
-    **Why it slipped through.** Renovate raises the app image (this file) and
-    the operator chart (../app/ocirepository.yaml) as two independent PRs. #1211
-    and #1188 were each individually green — CI verifies the image pulls, and
-    konflate renders each PR in isolation — so a compatibility constraint that
-    only exists *between* two PRs is invisible to both checks. Merging them in
-    the same batch is what broke it.
+    Reverting this line to v2.13.0 was tried (commit ab299ef4) and took SSO
+    down completely — strictly worse than the operator being halted. It was
+    rolled forward again within minutes.
 
-    **Blast radius when it happens:** pocket-id itself keeps serving (Deployment
-    stays Ready, SSO/OIDC continues to work). What stops is the management plane
-    — the operator cannot reconcile PocketIDInstance, so LDAP mapping, SMTP,
-    route and user-management changes declared here silently never apply.
+    Do NOT set `ALLOW_DOWNGRADE=true` to force it. That runs older code
+    against a newer schema in the identity store; a failed login is
+    recoverable, a corrupted user/credential table is not.
 
-    Raise this again only together with an operator release that lists 2.14.x as
-    tested.
+    **Therefore: leave this at v2.14.0 or higher.** The halted operator is the
+    lesser failure — pocket-id keeps serving SSO/OIDC normally, and only
+    PocketIDInstance reconciliation is paused, so LDAP mapping, SMTP, route
+    and user-management edits in this file silently do not apply until the
+    operator is fixed. The only real fix is an operator release supporting
+    2.14.x.
+
+    **Why it slipped through both checks.** Renovate raises the app image
+    (this file) and the operator chart (../app/ocirepository.yaml) as two
+    independent PRs — #1211 and #1188. Each was individually green: CI only
+    verifies the image pulls, and konflate renders each PR in isolation. A
+    compatibility constraint that exists solely *between* two PRs is invisible
+    to both. Before bumping either, check the pair:
+
+    kubectl -n security logs deploy/pocket-id-operator | grep latestTestedVersion
   anchor:
     scope: excerpt
-    excerpt: "  image: ghcr.io/pocket-id/pocket-id:v2.13.0-distroless@sha256:ccb590169770feb5b23ba16d49386514a2c26a77e95bb687b442ae09f17c15da"
+    excerpt: "  image: ghcr.io/pocket-id/pocket-id:v2.14.0-distroless@sha256:e0f83a42a78d0759b6d2d8c7380ef0fa8a4c95dfa01ad88740a073ae9cc4ba94"
     before: |-
       metadata:
         name: &app pocket-id
@@ -63,5 +76,5 @@ spec:
 status:
   lastSeenLine: 7
   resolution: ok
-  resolvedAt: "2026-08-19T08:06:45Z"
-  resolvedCommit: a12c36b5751e5af12dc5a3ef3579d2e9c36673c1
+  resolvedAt: "2026-08-19T08:13:48Z"
+  resolvedCommit: ab299ef44faf01bf09412a7a0b4840b162358c68
