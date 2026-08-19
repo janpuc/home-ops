@@ -35,7 +35,7 @@ spec:
         uBatchSize: 1024
     before: |2-
         runtime: llamacpp
-        image: ghcr.io/ggml-org/llama.cpp:server-vulkan-b10335@sha256:36fc10912782f77d9b10b21b0bec43f76d33932a8db4c17bcc3e472e04c0063b
+        image: ghcr.io/ggml-org/llama.cpp:server-vulkan-b10499@sha256:3c80d8a78860eebdb4603bd61dd0fc68d39f6685cf93b52ac05323bf35dbb492
         replicas: 1
     after: |2-
         resources:
