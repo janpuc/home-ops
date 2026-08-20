@@ -13,7 +13,6 @@ spec:
     instance:
       enabled: false
     operator:
-      replicas: 0
       resources:
         requests:
           cpu: 10m
