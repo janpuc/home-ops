@@ -12,7 +12,7 @@ spec:
     key: GITHUB_PERSONAL_ACCESS_TOKEN
   workload:
     # renovate: datasource=docker depName=ghcr.io/github/github-mcp-server
-    image: ghcr.io/github/github-mcp-server:v1.9.0
+    image: ghcr.io/github/github-mcp-server:v1.10.1
     port: 8082
     args: ["http"]
     env:
