@@ -1,0 +1,41 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0HGSQ2GBSCAXQAC6MHKF9CR
+  created: "2026-08-21T06:40:40Z"
+spec:
+  target:
+    file: .zed/settings.json
+  type: gotcha
+  title: Zed has no per-project equivalent of .vscode/extensions.json
+  body: |-
+    The nearest setting, `auto_install_extensions`, is read through
+    ExtensionSettings::get_global, so Zed only ever sees the value from
+    ~/.config/zed/settings.json. Putting it here is silently ignored — do not
+    add it and assume a fresh clone picks the extensions up.
+
+    The set that matches .vscode/extensions.json is oxc, json5, just, env and
+    material-icon-theme, plus helm for the *.gotmpl under bootstrap/helmfile.
+    YAML needs nothing: Zed bundles yaml-language-server. mise has no Zed
+    extension at all, so the .mise/config.toml tool versions and env only reach
+    Zed when it is launched from a shell where mise has already activated.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        "wrap_guides": [100],
+        "show_wrap_guides": true,
+    before: "{"
+    after: |2-
+        "sticky_scroll": {
+          "enabled": false
+        },
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+status:
+  lastSeenLine: 2
+  resolution: ok
+  resolvedAt: "2026-08-21T06:40:40Z"
+  resolvedCommit: 79849bebf5f85239a3b69373e33955f6e6a87840

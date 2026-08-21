@@ -1,0 +1,48 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0HGSCM04ZGQMJ6KTY2K7W6Z
+  created: "2026-08-21T06:40:29Z"
+spec:
+  target:
+    file: .zed/settings.json
+  type: why
+  title: Zed gets redhat's yaml-language-server, not the yayamlls this repo wants
+  body: |-
+    .yayamlls.yaml configures home-operations/yayamlls, which auto-detects
+    Kubernetes schemas from apiVersion+kind and renders Flux references inline.
+    Nothing in Zed's extension registry ships it, and it is not in
+    .mise/config.toml either, so Zed falls back to the yaml-language-server it
+    bundles — the same server behind redhat.vscode-yaml.
+
+    That server has no apiVersion+kind detection, hence the explicit
+    `kubernetes` mapping, copied verbatim from .vscode/settings.json so both
+    editors validate the same tree. `kubernetes` is a reserved key the server
+    resolves against its built-in schema bundle, not a path.
+
+    Drop this block if yayamlls ever gets a Zed extension; the two would
+    otherwise both attach and double up the diagnostics.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+                "schemas": {
+                  "kubernetes": "./kubernetes/**/*.yaml"
+                }
+    before: |2-
+                "schemaStore": {
+                  "enable": true
+                },
+    after: |2-
+              }
+            }
+          }
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+status:
+  lastSeenLine: 51
+  resolution: ok
+  resolvedAt: "2026-08-21T06:40:29Z"
+  resolvedCommit: 79849bebf5f85239a3b69373e33955f6e6a87840

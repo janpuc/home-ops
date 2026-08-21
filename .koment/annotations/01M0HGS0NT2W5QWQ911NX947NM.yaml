@@ -1,0 +1,52 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0HGS0NT2W5QWQ911NX947NM
+  created: "2026-08-21T06:40:17Z"
+spec:
+  target:
+    file: .zed/settings.json
+  type: why
+  title: Zed's formatter is pinned to oxfmt so it matches the pre-commit hook
+  body: |-
+    Zed's default formatter for these languages is Prettier, which disagrees
+    with oxfmt on almost every file in this repository. .lefthook.toml runs
+    `oxfmt` on *.json, *.json5, *.jsonc, *.md and *.yaml at pre-commit, so
+    leaving Zed on its default would mean every save fights the commit hook.
+
+    The server id is `oxfmt`, the table key in the Oxc extension's
+    extension.toml, not the display name "Oxfmt Language Server".
+
+    Gotcha: that extension resolves its binary from node_modules or npm-installs
+    its own copy. It never looks at $PATH, so it does not use the oxfmt pinned
+    to 0.64.0 in .mise/config.toml. Both read .oxfmtrc.json, but a version skew
+    between the two is possible and would show up as save-then-commit churn.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        "languages": {
+          "JSON": {
+            "formatter": {
+              "language_server": {
+                "name": "oxfmt"
+              }
+            }
+          },
+    before: |2-
+        "sticky_scroll": {
+          "enabled": false
+        },
+    after: |2-
+          "JSON5": {
+            "formatter": {
+              "language_server": {
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+status:
+  lastSeenLine: 7
+  resolution: ok
+  resolvedAt: "2026-08-21T06:40:17Z"
+  resolvedCommit: 79849bebf5f85239a3b69373e33955f6e6a87840
