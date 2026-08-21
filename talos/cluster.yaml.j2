@@ -47,7 +47,7 @@ clusterSecret: op://Kubernetes/talos/CLUSTER_SECRET
 apiVersion: v1alpha1
 kind: UnattendedInstallConfig
 installer:
-  image: factory.talos.dev/metal-installer/{{ schematic }}:v1.14.0-beta.0
+  image: factory.talos.dev/metal-installer/{{ schematic }}:v1.14.0-rc.1
 provisioning:
   diskSelector:
     match: disk.model == 'SSDPR-CX400-256-'
