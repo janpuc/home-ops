@@ -24,6 +24,12 @@ data:
       install -m 755 "/tmp/gh_${GH_CLI_VERSION}_linux_amd64/bin/gh" "$BIN/gh"
       rm -rf "/tmp/gh_${GH_CLI_VERSION}_linux_amd64"
     fi
+    if ! [ "$(cat "$BIN/.koment-version" 2>/dev/null)" = "$KOMENT_CLI_VERSION" ]; then
+      curl -fsSL "https://github.com/koment-dev/koment/releases/download/v${KOMENT_CLI_VERSION}/koment_${KOMENT_CLI_VERSION}_linux_amd64.tar.gz" | tar -xz -C /tmp koment
+      install -m 755 /tmp/koment "$BIN/koment"
+      rm -f /tmp/koment
+      printf %s "$KOMENT_CLI_VERSION" > "$BIN/.koment-version"
+    fi
     git config --global user.name >/dev/null 2>&1 || git config --global user.name "janpuc"
     git config --global user.email >/dev/null 2>&1 || git config --global user.email "janpuc@proton.me"
     git config --global credential.helper >/dev/null 2>&1 || git config --global credential.helper "!$BIN/gh auth git-credential"
@@ -31,6 +37,12 @@ data:
       git config --global gpg.format ssh
       git config --global user.signingkey /etc/claude-code/signing/id_ed25519
       git config --global commit.gpgsign true
+    fi
+    if ! [ -d "$HOME/.claude/plugins/marketplaces/memini" ]; then
+      "$BIN/claude" plugin marketplace add eleboucher/memini || echo "[bootstrap] memini marketplace add failed (non-fatal)"
+    fi
+    if ! grep -qs "memini@memini" "$HOME/.claude/plugins/installed_plugins.json"; then
+      "$BIN/claude" plugin install memini@memini || echo "[bootstrap] memini plugin install failed (non-fatal)"
     fi
     "$BIN/claude" --version
   run-native.sh: |-
