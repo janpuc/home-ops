@@ -1,0 +1,52 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0NPWV0FRE39G54JQHCX0H4G
+  created: "2026-08-22T21:44:12Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/agents/claude/sandbox.yaml
+  type: gotcha
+  title: Signing key provenance and rotation
+  body: |-
+    The `claude-code` 1Password item (vault Kubernetes,
+    SSH_SIGNING_KEY/SSH_SIGNING_PUB fields) was created 2026-08-22 through the
+    in-cluster Connect API — the Connect token has write access, so rotation
+    can go the same way: generate a new ed25519 pair, PUT the item fields via
+    Connect (or the 1Password app), and register the new public key as a
+    *signing* key on github.com/settings/keys (the old one was added as id
+    1129343 via `gh api /user/ssh_signing_keys`, which needs the
+    admin:ssh_signing_key scope — the cluster GH_TOKEN does NOT have it, only
+    Janek's local gh login does). defaultMode 288 is 0440: secret files are
+    root-owned, and the agent (uid 1000) reads via fsGroup; 0400 would lock it
+    to root only. ssh-keygen -Y sign does not enforce the strict permission
+    check the ssh client applies to identity files, so group-readable is fine.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+              - name: signing
+                secret:
+                  secretName: claude-code-signing
+                  defaultMode: 288
+    before: |2-
+              - name: bootstrap
+                configMap:
+                  name: claude-code-bootstrap
+    after: |2-
+        volumeClaimTemplates:
+          - metadata:
+              name: home
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: eb3030fc6e425d646123d4378d03625e6675c2d4
+    path: kubernetes/apps/ai/agents/claude/sandbox.yaml
+    line: 83
+status:
+  lastSeenLine: 83
+  resolution: ok
+  resolvedAt: "2026-08-22T21:44:12Z"
+  resolvedCommit: eb3030fc6e425d646123d4378d03625e6675c2d4

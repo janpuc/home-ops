@@ -73,10 +73,17 @@ spec:
             - name: bootstrap
               mountPath: /opt/claude-code
               readOnly: true
+            - name: signing
+              mountPath: /etc/claude-code/signing
+              readOnly: true
       volumes:
         - name: bootstrap
           configMap:
             name: claude-code-bootstrap
+        - name: signing
+          secret:
+            secretName: claude-code-signing
+            defaultMode: 288
   volumeClaimTemplates:
     - metadata:
         name: home

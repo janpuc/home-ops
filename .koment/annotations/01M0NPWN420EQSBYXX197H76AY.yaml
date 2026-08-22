@@ -1,0 +1,44 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0NPWN420EQSBYXX197H76AY
+  created: "2026-08-22T21:44:06Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/agents/claude/externalsecret.yaml
+  type: why
+  title: "Two secrets: env token from the hermes item, key file from claude-code"
+  body: |-
+    GH_TOKEN lives in the `hermes` 1Password item (a classic PAT with repo
+    scope, shared with the hermes agent) — no point duplicating a secret that
+    rotates together with hermes. The signing key is different: it is
+    agent-owned, so it gets its own `claude-code` item. Two ExternalSecrets
+    because the consumption differs — GH_TOKEN is envFrom'd
+    (claude-code-secret), while the signing key must be a file mount
+    (claude-code-signing): a multiline private key in envFrom would produce an
+    invalid env var name and be silently dropped. Inference auth is neither —
+    it is the claude.ai OAuth login persisted on the pod's home PVC.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        dataFrom:
+          - extract:
+              key: claude-code
+    before: |2-
+          template:
+            data:
+              id_ed25519: "{{ .SSH_SIGNING_KEY }}"
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: eb3030fc6e425d646123d4378d03625e6675c2d4
+    path: kubernetes/apps/ai/agents/claude/externalsecret.yaml
+    line: 37
+status:
+  lastSeenLine: 37
+  resolution: ok
+  resolvedAt: "2026-08-22T21:44:06Z"
+  resolvedCommit: eb3030fc6e425d646123d4378d03625e6675c2d4
