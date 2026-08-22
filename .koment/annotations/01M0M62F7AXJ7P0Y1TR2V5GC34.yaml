@@ -1,0 +1,48 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0M62F7AXJ7P0Y1TR2V5GC34
+  created: "2026-08-22T07:30:56Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/litellm/app/models/opencode-go-deepseek-v4-flash.yaml
+  type: gotcha
+  title: "Region-blocked since 2026-08-22: 403 RegionError without China opt-in"
+  body: |-
+    deepseek-v4-flash and deepseek-v4-pro return 403 RegionError through every
+    path ("the latest version of this model is only available hosted in China
+    and requires explicit opt in") — opencode moved v4 serving to China-hosted
+    endpoints behind an account-level opt-in. Verified 2026-08-22 both direct
+    against opencode.ai and through the deployed proxy.
+
+    Every load-bearing reference (Hermes auxiliaries, delegation, MoA seats,
+    SUMMARY_LLM_MODEL, fallback chains) was repointed to
+    deepseek-v4-flash-vision-exp or hy3 after benchmarking. This file and the
+    v4-pro one are kept so the models reappear automatically if the opt-in is
+    ever flipped on the opencode dashboard — but do not route anything through
+    them until a live probe succeeds.
+  anchor:
+    scope: excerpt
+    excerpt: "  modelName: opencode-go/deepseek-v4-flash"
+    before: |-
+      metadata:
+        name: opencode-go-deepseek-v4-flash
+      spec:
+    after: |2-
+        params:
+          model: openai/deepseek-v4-flash
+          apiBase: https://opencode.ai/zen/go/v1
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: b146d9d4a27b96671f6571b49eec660e1feca4bf
+    path: kubernetes/apps/ai/litellm/app/models/opencode-go-deepseek-v4-flash.yaml
+    line: 7
+status:
+  lastSeenLine: 7
+  resolution: ok
+  resolvedAt: "2026-08-22T07:30:56Z"
+  resolvedCommit: b146d9d4a27b96671f6571b49eec660e1feca4bf

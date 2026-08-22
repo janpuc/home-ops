@@ -17,10 +17,11 @@ spec:
     because they are strictly dominated by their successors and each entry costs
     a fallback line, a Hermes models entry, and open-webui menu noise.
 
-    muse-spark-1.2-contributor is omitted for a different reason: OpenCode
-    documents it as geographically restricted, and it is unverified whether it
-    serves from Poland. Add it only after a successful curl against the Go
-    endpoint.
+    muse-spark-1.2-contributor is omitted for a different reason: probing it
+    on 2026-08-22 returned 403 DataPolicyError — the "contributor" pricing is
+    paid for with your prompts (explicit opt-in to data collection for model
+    training). That conflicts with the redact-PII posture in the Hermes
+    config, so do not opt in casually.
 
     Specs for new entries (context, output, modalities) come from
     models.dev/api.json under the opencode-go provider, not from the OpenCode

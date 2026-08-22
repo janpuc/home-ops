@@ -1,0 +1,56 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0M62NCR46Q1A6QVGMN0PZ9M
+  created: "2026-08-22T07:31:02Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/hermes/app/configmap.yaml
+  type: why
+  title: "Aux models: hy3 for volume, flash-vision-exp for judgment — benchmarked"
+  body: |-
+    The auxiliary assignments follow a 2026-08-22 benchmark of all 23 models
+    (latency, exact-match reasoning, strict JSON, tool-calls, format compliance,
+    17k-token needle), run after deepseek-v4-flash — the previous model for
+    all of these — went 403 RegionError on opencode.
+
+    The split is deliberate: high-volume low-stakes tasks (session_search,
+    title_generation, profile_describer, triage_specifier) run on hy3, which
+    passed every compliance task at ~1/10th the cost of anything comparable;
+    judgment-heavy tasks (goal_judge, kanban_decomposer, curator) and delegation
+    run on deepseek-v4-flash-vision-exp, which scored 9/9 including verified
+    tool-calling. approval, compression, web_extract and vision stay on
+    minimax/MiniMax-M3, which won the benchmark outright (TTFT 1.3s, 113 tok/s,
+    needle in 1.7s) — approval in particular has a 60s timeout that M3 clears
+    with a 1.7s median.
+
+    Do not put hy3 on a vision path: it is text-only but answers image questions
+    confidently instead of erroring.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+            session_search:
+              provider: custom:litellm
+              model: opencode-go/hy3
+    before: |2-
+            web_extract:
+              provider: custom:litellm
+              model: minimax/MiniMax-M3
+    after: |2-
+            vision:
+              provider: custom:litellm
+              model: minimax/MiniMax-M3
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: b146d9d4a27b96671f6571b49eec660e1feca4bf
+    path: kubernetes/apps/ai/hermes/app/configmap.yaml
+    line: 117
+status:
+  lastSeenLine: 117
+  resolution: ok
+  resolvedAt: "2026-08-22T07:31:02Z"
+  resolvedCommit: b146d9d4a27b96671f6571b49eec660e1feca4bf

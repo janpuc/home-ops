@@ -28,9 +28,8 @@ spec:
       - opencode-go/qwen3.7-max: ["minimax/MiniMax-M3"]
       - opencode-go/qwen3.6-plus: ["minimax/MiniMax-M3"]
       - opencode-go/deepseek-v4-flash: ["opencode-go/glm-5.2", "minimax/MiniMax-M3"]
-      - opencode-go/deepseek-v4-flash-vision-exp:
-          ["opencode-go/deepseek-v4-flash", "minimax/MiniMax-M3"]
-      - opencode-go/deepseek-v4-pro: ["opencode-go/deepseek-v4-flash", "minimax/MiniMax-M3"]
+      - opencode-go/deepseek-v4-flash-vision-exp: ["minimax/MiniMax-M3"]
+      - opencode-go/deepseek-v4-pro: ["minimax/MiniMax-M3"]
       - opencode-go/grok-4.5: ["minimax/MiniMax-M3"]
       - opencode-go/qwen3.7-plus: ["minimax/MiniMax-M3"]
       - opencode-go/qwen3.8-max: ["opencode-go/qwen3.7-max", "minimax/MiniMax-M3"]

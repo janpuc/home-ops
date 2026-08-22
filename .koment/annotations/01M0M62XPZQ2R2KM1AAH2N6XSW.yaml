@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0M62XPZQ2R2KM1AAH2N6XSW
+  created: "2026-08-22T07:31:11Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/hermes/app/configmap.yaml
+  type: why
+  title: "kimi-k2.6, not k3: the council seat is latency-bound, same lineage"
+  body: |-
+    The Moonshot council seat runs kimi-k2.6 rather than the newer kimi-k3 on
+    purpose. In the 2026-08-22 benchmark k3 took ~29s to first token even on a
+    trivial prompt (it always reasons deeply), threw a transient 500, and missed
+    the tool-call task; k2.6 answered everything cleanly at 2.1s TTFT. Council
+    advisors are capped at 600 tokens and fan out once per user turn, so the
+    seat is latency-bound, not depth-bound — the aggregator only needs the
+    gist. Swapping k3 back in makes every council turn wait half a minute for
+    its slowest member. k3 stays available for explicit use via the `k3` alias.
+
+    The `glm` alias two blocks up pins glm-5.2 for the same reason: 5.3
+    benchmarked at 30 tok/s vs 74 for 5.2 (needle 13.8s vs 4.5s) with no
+    measured accuracy gain, so the interactive alias keeps the fast one and 5.3
+    is reachable by full name.
+  anchor:
+    scope: excerpt
+    excerpt: "              model: opencode-go/kimi-k2.6"
+    before: |2-
+                enabled: true
+                reference_models:
+                  - provider: custom:litellm
+    after: |2-
+                  - provider: custom:litellm
+                    model: opencode-go/glm-5.2
+                  - provider: custom:litellm
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: b146d9d4a27b96671f6571b49eec660e1feca4bf
+    path: kubernetes/apps/ai/hermes/app/configmap.yaml
+    line: 219
+status:
+  lastSeenLine: 219
+  resolution: ok
+  resolvedAt: "2026-08-22T07:31:11Z"
+  resolvedCommit: b146d9d4a27b96671f6571b49eec660e1feca4bf
