@@ -1,0 +1,41 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0NJJF9C21TKEA4S9N07QSER
+  created: "2026-08-22T20:28:38Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/claude-code/app/configmap.yaml
+  type: gotcha
+  title: Bootstrap must stay idempotent and version-gated
+  body: |-
+    The init container runs this on every pod start against the persistent home
+    volume. The `claude --version` gate makes the download run only when the
+    pinned CLAUDE_CODE_VERSION (renovate-managed env in sandbox.yaml) differs
+    from what is on the PVC — without it every restart pays a ~340 MB
+    download. The `.partial` + `mv` dance keeps a crashed download from leaving
+    a half-written binary that the version gate would then try to execute. The
+    t3 install is gated on the binary's existence, not a version, because t3 is
+    `@latest` by design (the project is pre-1.0 and moves fast); reinstalling it
+    means deleting /home/agent/.npm-global/bin/t3.
+  anchor:
+    scope: excerpt
+    excerpt: '    installed="$("$BIN/claude" --version 2>/dev/null | cut -d" " -f1 || true)"'
+    before: |2-
+          set -eu
+          BIN="$HOME/.local/bin"
+          mkdir -p "$BIN" "$HOME/.npm-global"
+    after: |2-
+          if [ "$installed" != "$CLAUDE_CODE_VERSION" ]; then
+            curl -fsSL "https://downloads.claude.ai/claude-code-releases/${CLAUDE_CODE_VERSION}/linux-x64/claude" -o "$BIN/claude.partial"
+            chmod 755 "$BIN/claude.partial"
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+status:
+  lastSeenLine: 12
+  resolution: ok
+  resolvedAt: "2026-08-22T20:28:38Z"
+  resolvedCommit: 7976a3e9446be8460b2ddffd44510e8e583f456d

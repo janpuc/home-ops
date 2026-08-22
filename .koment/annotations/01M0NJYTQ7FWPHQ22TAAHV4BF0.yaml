@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0NJYTQ7FWPHQ22TAAHV4BF0
+  created: "2026-08-22T20:35:22Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/claude-code/app/configmap.yaml
+  type: gotcha
+  title: settings.json is seeded once and only for the litellm profile
+  body: |-
+    The seed is gated on the file's absence so a user edit inside the pod is
+    never clobbered by a restart; to re-seed, delete the file and restart. The
+    heredoc terminator is quoted ('SETTINGS') on purpose: $LITELLM_API_KEY must
+    land literally in apiKeyHelper and resolve from the pod env each time Claude
+    Code invokes the helper, not be baked in at bootstrap time. The native
+    profile gets no settings.json at all — its auth is the claude.ai OAuth
+    login on the PVC, and forcing ANTHROPIC_BASE_URL there would break Remote
+    Control.
+  anchor:
+    scope: excerpt
+    excerpt: '    if [ "${AGENT_PROFILE:-native}" = "litellm" ] && ! [ -f "$HOME/.claude/settings.json" ]; then'
+    before: |2-
+          git config --global user.name >/dev/null 2>&1 || git config --global user.name "janpuc"
+          git config --global user.email >/dev/null 2>&1 || git config --global user.email "janpuc@proton.me"
+          git config --global credential.helper >/dev/null 2>&1 || "$BIN/gh" auth setup-git
+    after: |2-
+            mkdir -p "$HOME/.claude"
+            cat > "$HOME/.claude/settings.json" <<'SETTINGS'
+          {
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+status:
+  lastSeenLine: 30
+  resolution: ok
+  resolvedAt: "2026-08-22T20:35:23Z"
+  resolvedCommit: 7976a3e9446be8460b2ddffd44510e8e583f456d

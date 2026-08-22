@@ -1,0 +1,48 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0NJYPKXKESFG75TABGRXPM0
+  created: "2026-08-22T20:35:18Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/claude-code/app/sandbox-litellm.yaml
+  type: why
+  title: "LiteLLM agent: exec-driven only, no Remote Control possible here"
+  body: |-
+    Agent 2 of 2: identical workbench but inference goes through LiteLLM's
+    anthropic-native MiniMax routes. AGENT_PROFILE=litellm makes bootstrap seed
+    /home/agent/.claude/settings.json (ANTHROPIC_BASE_URL +
+    minimax/MiniMax-M3-anthropic + apiKeyHelper echoing $LITELLM_API_KEY at call
+    time — no secret on disk). Only the `-anthropic` minimax model groups work
+    on /v1/messages: the opencode-go upstreams speak Responses-API and LiteLLM
+    v1.97.0 converts them to empty Anthropic envelopes (verified 2026-08-22).
+    The main command stays `sleep infinity` deliberately: Remote Control
+    requires an eligible claude.ai login, and signing the Max account in here
+    would fight the forced BASE_URL — this agent is driven by `kubectl exec`,
+    t3, or Hermes instead. Shares the claude-code-secret ExternalSecret and
+    bootstrap ConfigMap with the native sandbox; each Sandbox gets its own
+    home/workspace PVC pair, so the two agents never share state.
+  anchor:
+    scope: excerpt
+    excerpt: |-
+      metadata:
+        name: claude-code-litellm
+      spec:
+    before: |-
+      ---
+      apiVersion: agents.x-k8s.io/v1beta1
+      kind: Sandbox
+    after: |2-
+        service: true
+        podTemplate:
+          metadata:
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+status:
+  lastSeenLine: 4
+  resolution: ok
+  resolvedAt: "2026-08-22T20:35:18Z"
+  resolvedCommit: 7976a3e9446be8460b2ddffd44510e8e583f456d

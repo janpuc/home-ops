@@ -1,0 +1,98 @@
+---
+apiVersion: agents.x-k8s.io/v1beta1
+kind: Sandbox
+metadata:
+  name: claude-code
+spec:
+  service: true
+  podTemplate:
+    metadata:
+      labels:
+        app.kubernetes.io/name: claude-code
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: bootstrap
+          image: docker.io/library/node:22-bookworm
+          command: ["/bin/sh", "/opt/claude-code/bootstrap.sh"]
+          env:
+            - name: HOME
+              value: /home/agent
+            - name: AGENT_PROFILE
+              value: native
+            - name: CLAUDE_CODE_VERSION
+              # renovate: datasource=github-releases depName=anthropics/claude-code extractVersion=^v(?<version>.+)$
+              value: "2.1.240"
+            - name: GH_CLI_VERSION
+              # renovate: datasource=github-releases depName=cli/cli extractVersion=^v(?<version>.+)$
+              value: "2.98.0"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 1Gi
+          volumeMounts:
+            - name: home
+              mountPath: /home/agent
+            - name: bootstrap
+              mountPath: /opt/claude-code
+              readOnly: true
+      containers:
+        - name: workbench
+          image: docker.io/library/node:22-bookworm
+          command: ["/bin/sh", "/opt/claude-code/run-native.sh"]
+          workingDir: /workspace
+          env:
+            - name: HOME
+              value: /home/agent
+            - name: NPM_CONFIG_PREFIX
+              value: /home/agent/.npm-global
+            - name: PATH
+              value: /home/agent/.local/bin:/home/agent/.npm-global/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+          envFrom:
+            - secretRef:
+                name: claude-code-secret
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              memory: 4Gi
+          volumeMounts:
+            - name: home
+              mountPath: /home/agent
+            - name: workspace
+              mountPath: /workspace
+            - name: bootstrap
+              mountPath: /opt/claude-code
+              readOnly: true
+      volumes:
+        - name: bootstrap
+          configMap:
+            name: claude-code-bootstrap
+  volumeClaimTemplates:
+    - metadata:
+        name: home
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
+    - metadata:
+        name: workspace
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 20Gi

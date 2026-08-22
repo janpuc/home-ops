@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0NJJHY0EFF2T7AAWZ0DYD0G
+  created: "2026-08-22T20:28:40Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/claude-code/app/externalsecret.yaml
+  type: why
+  title: GH_TOKEN rides in the hermes 1Password item
+  body: |-
+    The two dataFrom extracts mirror hermes-config: GH_TOKEN lives in the
+    `hermes` 1Password item and LITELLM_MASTER_KEY in `litellm`; there is no
+    separate claude-code item to extract, and creating one would just duplicate
+    secrets that rotate together with hermes.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        dataFrom:
+          - extract:
+              key: litellm
+          - extract:
+              key: hermes
+    before: |2-
+            data:
+              GH_TOKEN: "{{ .GH_TOKEN }}"
+              LITELLM_API_KEY: "{{ .LITELLM_MASTER_KEY }}"
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+status:
+  lastSeenLine: 19
+  resolution: ok
+  resolvedAt: "2026-08-22T20:28:40Z"
+  resolvedCommit: 7976a3e9446be8460b2ddffd44510e8e583f456d

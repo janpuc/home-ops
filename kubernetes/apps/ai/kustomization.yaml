@@ -10,6 +10,8 @@ components:
 
 resources:
   - ./namespace.yaml
+  - ./agent-sandbox/ks.yaml
+  - ./claude-code/ks.yaml
   - ./hermes/ks.yaml
   - ./hermes-matrix/ks.yaml
   - ./litellm/ks.yaml

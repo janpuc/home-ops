@@ -1,0 +1,55 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: claude-code-bootstrap
+data:
+  bootstrap.sh: |-
+    #!/bin/sh
+    set -eu
+    BIN="$HOME/.local/bin"
+    mkdir -p "$BIN" "$HOME/.npm-global"
+    installed="$("$BIN/claude" --version 2>/dev/null | cut -d" " -f1 || true)"
+    if [ "$installed" != "$CLAUDE_CODE_VERSION" ]; then
+      curl -fsSL "https://downloads.claude.ai/claude-code-releases/${CLAUDE_CODE_VERSION}/linux-x64/claude" -o "$BIN/claude.partial"
+      chmod 755 "$BIN/claude.partial"
+      mv "$BIN/claude.partial" "$BIN/claude"
+    fi
+    if ! [ -x "$HOME/.npm-global/bin/t3" ]; then
+      npm install --global --prefix "$HOME/.npm-global" t3@latest
+    fi
+    ghinstalled="$("$BIN/gh" --version 2>/dev/null | head -1 | cut -d" " -f3 || true)"
+    if [ "$ghinstalled" != "$GH_CLI_VERSION" ]; then
+      curl -fsSL "https://github.com/cli/cli/releases/download/v${GH_CLI_VERSION}/gh_${GH_CLI_VERSION}_linux_amd64.tar.gz" | tar -xz -C /tmp
+      install -m 755 "/tmp/gh_${GH_CLI_VERSION}_linux_amd64/bin/gh" "$BIN/gh"
+      rm -rf "/tmp/gh_${GH_CLI_VERSION}_linux_amd64"
+    fi
+    git config --global user.name >/dev/null 2>&1 || git config --global user.name "janpuc"
+    git config --global user.email >/dev/null 2>&1 || git config --global user.email "janpuc@proton.me"
+    git config --global credential.helper >/dev/null 2>&1 || "$BIN/gh" auth setup-git
+    if [ "${AGENT_PROFILE:-native}" = "litellm" ] && ! [ -f "$HOME/.claude/settings.json" ]; then
+      mkdir -p "$HOME/.claude"
+      cat > "$HOME/.claude/settings.json" <<'SETTINGS'
+    {
+      "env": {
+        "ANTHROPIC_BASE_URL": "http://litellm.ai:4000",
+        "ANTHROPIC_MODEL": "minimax/MiniMax-M3-anthropic",
+        "ANTHROPIC_SMALL_FAST_MODEL": "minimax/MiniMax-M2-7-anthropic",
+        "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+        "DISABLE_TELEMETRY": "1"
+      },
+      "apiKeyHelper": "/bin/sh -c \"echo $LITELLM_API_KEY\""
+    }
+    SETTINGS
+    fi
+    "$BIN/claude" --version
+  run-native.sh: |-
+    #!/bin/sh
+    set -u
+    PATH="$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"
+    export PATH
+    cd /workspace
+    while true; do
+      claude remote-control || true
+      sleep 30
+    done

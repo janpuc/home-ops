@@ -1,0 +1,53 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0NJJ2WRDDZVBQ1SQRQEBJR3
+  created: "2026-08-22T20:28:25Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/agent-sandbox/app/helmrelease.yaml
+  type: why
+  title: Chart comes from a GitRepository because upstream publishes no OCI chart
+  body: |-
+    kubernetes-sigs/agent-sandbox (chosen 2026-08-22 as the native operator for
+    in-cluster coding agents, over kagent — which builds LLM tool-agents, not
+    CLI workbenches — and over chrisbattarbee/claude-code-helm, stale since
+    2026-02 with 5 stars) distributes only raw release manifests plus an in-repo
+    Helm chart at path `helm/`; nothing is pushed to a registry. Hence the
+    GitRepository source pinned to the release tag instead of the OCIRepository
+    pattern every other app here uses. `namespace.create: false` + `name: ai`
+    because Flux installs the release into ai (beside litellm-operator and
+    llmkube) rather than the chart's default agent-sandbox-system.
+    `controller.extensions: true` enables the
+    SandboxTemplate/SandboxClaim/SandboxWarmPool CRDs so templates and warm
+    pools are available without a second rollout. The chart's `image.tag` must
+    be bumped in lockstep with the GitRepository `ref.tag` — Renovate's flux
+    manager bumps the GitRepository tag, but the image.tag value is a plain
+    string it does not see.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        chart:
+          spec:
+            chart: helm
+            sourceRef:
+              kind: GitRepository
+              name: agent-sandbox
+    before: |-
+      metadata:
+        name: agent-sandbox
+      spec:
+    after: |2-
+        install:
+          crds: CreateReplace
+        upgrade:
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+status:
+  lastSeenLine: 8
+  resolution: ok
+  resolvedAt: "2026-08-22T20:28:25Z"
+  resolvedCommit: 7976a3e9446be8460b2ddffd44510e8e583f456d

@@ -1,0 +1,56 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0NJZ2GP7TDW0J7C080ZTSRA
+  created: "2026-08-22T20:35:30Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/claude-code/app/sandbox.yaml
+  type: why
+  title: "Native agent: Remote Control loop, not official self-hosted runners"
+  body: |-
+    This is agent 1 of 2 (2026-08-22): native Anthropic models on Janek's Max
+    subscription. The official Claude Code self-hosted environment runners were
+    evaluated and rejected on two hard blockers: they are Team/Enterprise-only
+    public beta (org Owner must enable them in claude.ai admin settings), and
+    runner sessions authenticate with Anthropic-issued session tokens so
+    inference cannot route through an LLM gateway — which would also have made
+    the LiteLLM twin (sandbox-litellm.yaml) impossible. The Max-compatible
+    equivalent is Remote Control (all plans): the main command loops `claude
+    remote-control` (server mode), so after a one-time `kubectl exec` + `/login`
+    the pod serves sessions drivable from claude.ai/code and the Claude mobile
+    app. Before that first login the loop just logs a failed attempt every 30s
+    — expected, not a crash. OAuth credentials persist in /home/agent/.claude
+    on the PVC, so the loop self-heals across pod restarts. The image is stock
+    node:22-bookworm (this repo builds no custom images); the init container
+    seeds claude, t3, and gh onto the home PVC, and the full non-slim image is
+    load-bearing because t3's node-pty dependency compiles from source. GH_TOKEN
+    (classic PAT, repo scope, verified to cover every repo janpuc can access)
+    plus `gh auth setup-git` in bootstrap lets the agent clone any of Janek's
+    repos over HTTPS. volumeClaimTemplates are immutable — resizing means
+    delete and recreate the Sandbox (PVCs survive).
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+            containers:
+              - name: workbench
+                image: docker.io/library/node:22-bookworm
+                command: ["/bin/sh", "/opt/claude-code/run-native.sh"]
+    before: |2-
+                  - name: bootstrap
+                    mountPath: /opt/claude-code
+                    readOnly: true
+    after: |2-
+                workingDir: /workspace
+                env:
+                  - name: HOME
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+status:
+  lastSeenLine: 49
+  resolution: ok
+  resolvedAt: "2026-08-22T20:35:31Z"
+  resolvedCommit: 7976a3e9446be8460b2ddffd44510e8e583f456d
