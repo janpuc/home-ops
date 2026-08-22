@@ -1,0 +1,44 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0M49AZQAT2BWR7H44QFNQN3
+  created: "2026-08-22T06:59:44Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/litellm/app/models/opencode-go-ox-alpha-free.yaml
+  type: gotcha
+  title: Stealth free preview — expect this model to disappear or be renamed
+  body: |-
+    ox-alpha-free is the "0xAlpha" stealth model that appeared on OpenCode Zen
+    and OpenRouter on 2026-08-21 as a limited-time free preview: unknown
+    provider, zero-retention claimed, 1M context / 131k output, text+image+video
+    input. When the preview ends the id will likely vanish or change (OpenRouter
+    serves it as stealth/ox-alpha).
+
+    That is why nothing load-bearing points at it: no Hermes auxiliary task, no
+    fallback chain, no MoA seat — only the `alpha` chat alias in the Hermes
+    configmap and its own context-window fallback to minimax/MiniMax-M3. If
+    requests start failing with model-not-found, delete this file, its
+    kustomization entry, the proxy fallback line, and the Hermes models/alias
+    entries rather than debugging litellm.
+  anchor:
+    scope: excerpt
+    excerpt: "  modelName: opencode-go/ox-alpha-free"
+    before: |-
+      metadata:
+        name: opencode-go-ox-alpha-free
+      spec:
+    after: |2-
+        params:
+          model: openai/ox-alpha-free
+          apiBase: https://opencode.ai/zen/go/v1
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+status:
+  lastSeenLine: 7
+  resolution: ok
+  resolvedAt: "2026-08-22T06:59:44Z"
+  resolvedCommit: 2ff2e27552d58bcc4ba02eacebb54414d33a0ffc

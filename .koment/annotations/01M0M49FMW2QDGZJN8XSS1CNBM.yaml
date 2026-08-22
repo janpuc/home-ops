@@ -1,0 +1,51 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0M49FMW2QDGZJN8XSS1CNBM
+  created: "2026-08-22T06:59:49Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/litellm/app/models/kustomization.yaml
+  type: why
+  title: Only the current generation of each Go-plan family is tracked here
+  body: |-
+    The Go plan (https://opencode.ai/zen/go/v1/models) serves ~29 model ids, but
+    this list deliberately carries only the newest generation of each family.
+    Older generations still served upstream — glm-5.1/glm-5, kimi-k2.5,
+    qwen3.5-plus, minimax-m2.5, mimo-v2-pro/omni, hy3-preview — are omitted
+    because they are strictly dominated by their successors and each entry costs
+    a fallback line, a Hermes models entry, and open-webui menu noise.
+
+    muse-spark-1.2-contributor is omitted for a different reason: OpenCode
+    documents it as geographically restricted, and it is unverified whether it
+    serves from Poland. Add it only after a successful curl against the Go
+    endpoint.
+
+    Specs for new entries (context, output, modalities) come from
+    models.dev/api.json under the opencode-go provider, not from the OpenCode
+    docs pages, which omit limits.
+  anchor:
+    scope: excerpt
+    excerpt: "resources:"
+    before: |-
+      # yaml-language-server: $schema=https://json.schemastore.org/kustomization
+      apiVersion: kustomize.config.k8s.io/v1beta1
+      kind: Kustomization
+    after: |2-
+        - minimax-m2-7-anthropic.yaml
+        - minimax-m2-7.yaml
+        - minimax-m3-anthropic.yaml
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 2ff2e27552d58bcc4ba02eacebb54414d33a0ffc
+    path: kubernetes/apps/ai/litellm/app/models/kustomization.yaml
+    line: 5
+status:
+  lastSeenLine: 5
+  resolution: ok
+  resolvedAt: "2026-08-22T06:59:49Z"
+  resolvedCommit: 2ff2e27552d58bcc4ba02eacebb54414d33a0ffc

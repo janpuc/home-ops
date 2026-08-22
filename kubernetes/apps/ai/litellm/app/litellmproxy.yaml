@@ -18,6 +18,9 @@ spec:
     timeout: 600
     context_window_fallbacks:
       - opencode-go/glm-5.2: ["minimax/MiniMax-M3"]
+      - opencode-go/glm-5.3: ["opencode-go/glm-5.2", "minimax/MiniMax-M3"]
+      - opencode-go/gpt-5.6-luna: ["minimax/MiniMax-M3"]
+      - opencode-go/hy3: ["minimax/MiniMax-M3"]
       - opencode-go/kimi-k2.6: ["minimax/MiniMax-M3"]
       - opencode-go/kimi-k2.7-code: ["minimax/MiniMax-M3"]
       - opencode-go/kimi-k3: ["minimax/MiniMax-M3"]
@@ -25,9 +28,13 @@ spec:
       - opencode-go/qwen3.7-max: ["minimax/MiniMax-M3"]
       - opencode-go/qwen3.6-plus: ["minimax/MiniMax-M3"]
       - opencode-go/deepseek-v4-flash: ["opencode-go/glm-5.2", "minimax/MiniMax-M3"]
+      - opencode-go/deepseek-v4-flash-vision-exp:
+          ["opencode-go/deepseek-v4-flash", "minimax/MiniMax-M3"]
       - opencode-go/deepseek-v4-pro: ["opencode-go/deepseek-v4-flash", "minimax/MiniMax-M3"]
       - opencode-go/grok-4.5: ["minimax/MiniMax-M3"]
       - opencode-go/qwen3.7-plus: ["minimax/MiniMax-M3"]
+      - opencode-go/qwen3.8-max: ["opencode-go/qwen3.7-max", "minimax/MiniMax-M3"]
+      - opencode-go/ox-alpha-free: ["minimax/MiniMax-M3"]
       - opencode-go/mimo-v2.5-pro: ["opencode-go/mimo-v2.5", "minimax/MiniMax-M3"]
       - opencode-go/minimax-m2.7: ["minimax/MiniMax-M3"]
       - opencode-go/minimax-m3: ["minimax/MiniMax-M3"]

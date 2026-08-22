@@ -15,7 +15,11 @@ data:
             context_length: 1000000
           opencode-go/glm-5.2:
             context_length: 1000000
+          opencode-go/glm-5.3:
+            context_length: 1000000
           opencode-go/deepseek-v4-flash:
+            context_length: 1000000
+          opencode-go/deepseek-v4-flash-vision-exp:
             context_length: 1000000
           opencode-go/mimo-v2.5:
             context_length: 1000000
@@ -31,12 +35,20 @@ data:
             context_length: 1000000
           opencode-go/qwen3.7-plus:
             context_length: 1000000
+          opencode-go/qwen3.8-max:
+            context_length: 1000000
           opencode-go/mimo-v2.5-pro:
             context_length: 1048576
           opencode-go/grok-4.5:
             context_length: 500000
           opencode-go/minimax-m2.7:
             context_length: 204800
+          opencode-go/gpt-5.6-luna:
+            context_length: 1050000
+          opencode-go/hy3:
+            context_length: 256000
+          opencode-go/ox-alpha-free:
+            context_length: 1000000
     model:
       default: minimax/MiniMax-M3
       provider: custom:litellm
@@ -49,7 +61,19 @@ data:
         model: minimax/MiniMax-M3
         provider: custom:litellm
       glm:
-        model: opencode-go/glm-5.2
+        model: opencode-go/glm-5.3
+        provider: custom:litellm
+      alpha:
+        model: opencode-go/ox-alpha-free
+        provider: custom:litellm
+      luna:
+        model: opencode-go/gpt-5.6-luna
+        provider: custom:litellm
+      hy:
+        model: opencode-go/hy3
+        provider: custom:litellm
+      flash-vision:
+        model: opencode-go/deepseek-v4-flash-vision-exp
         provider: custom:litellm
       flash:
         model: opencode-go/deepseek-v4-flash
@@ -70,7 +94,7 @@ data:
         model: opencode-go/grok-4.5
         provider: custom:litellm
       qwen-max:
-        model: opencode-go/qwen3.7-max
+        model: opencode-go/qwen3.8-max
         provider: custom:litellm
     fallback_providers:
       - provider: custom:litellm
