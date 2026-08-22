@@ -2,11 +2,11 @@
 apiVersion: koment.dev/v1alpha
 kind: Annotation
 metadata:
-  id: 01M0NJJF9C21TKEA4S9N07QSER
-  created: "2026-08-22T20:28:38Z"
+  id: 01M0NPC3SGMMGTD1GR6RC9WA19
+  created: "2026-08-22T21:35:03Z"
 spec:
   target:
-    file: kubernetes/apps/ai/claude-code/app/configmap.yaml
+    file: kubernetes/apps/ai/agents/claude/configmap.yaml
   type: gotcha
   title: Bootstrap must stay idempotent and version-gated
   body: |-
@@ -14,11 +14,14 @@ spec:
     volume. The `claude --version` gate makes the download run only when the
     pinned CLAUDE_CODE_VERSION (renovate-managed env in sandbox.yaml) differs
     from what is on the PVC — without it every restart pays a ~340 MB
-    download. The `.partial` + `mv` dance keeps a crashed download from leaving
-    a half-written binary that the version gate would then try to execute. The
-    t3 install is gated on the binary's existence, not a version, because t3 is
-    `@latest` by design (the project is pre-1.0 and moves fast); reinstalling it
-    means deleting /home/agent/.npm-global/bin/t3.
+    download; the gh install is gated the same way. The `.partial` + `mv` dance
+    keeps a crashed download from leaving a half-written binary that the version
+    gate would then try to execute. The t3 install is gated on the binary's
+    existence, not a version, because t3 is `@latest` by design (the project is
+    pre-1.0 and moves fast); reinstalling it means deleting
+    /home/agent/.npm-global/bin/t3. The git identity and credential-helper lines
+    are set-if-unset so anything Janek configures inside the pod survives
+    restarts.
   anchor:
     scope: excerpt
     excerpt: '    installed="$("$BIN/claude" --version 2>/dev/null | cut -d" " -f1 || true)"'
@@ -37,5 +40,5 @@ spec:
 status:
   lastSeenLine: 12
   resolution: ok
-  resolvedAt: "2026-08-22T20:28:38Z"
-  resolvedCommit: 7976a3e9446be8460b2ddffd44510e8e583f456d
+  resolvedAt: "2026-08-22T21:35:04Z"
+  resolvedCommit: 0f095813ad26dc6d5e8ccc3efa6d115b3deff107

@@ -2,11 +2,11 @@
 apiVersion: koment.dev/v1alpha
 kind: Annotation
 metadata:
-  id: 01M0NJJ2WRDDZVBQ1SQRQEBJR3
-  created: "2026-08-22T20:28:25Z"
+  id: 01M0NPBR2GJ52X30W08JPX1K77
+  created: "2026-08-22T21:34:51Z"
 spec:
   target:
-    file: kubernetes/apps/ai/agent-sandbox/app/helmrelease.yaml
+    file: kubernetes/apps/ai/agents/operator/helmrelease.yaml
   type: why
   title: Chart comes from a GitRepository because upstream publishes no OCI chart
   body: |-
@@ -49,5 +49,5 @@ spec:
 status:
   lastSeenLine: 8
   resolution: ok
-  resolvedAt: "2026-08-22T20:28:25Z"
-  resolvedCommit: 7976a3e9446be8460b2ddffd44510e8e583f456d
+  resolvedAt: "2026-08-22T21:34:52Z"
+  resolvedCommit: 0f095813ad26dc6d5e8ccc3efa6d115b3deff107

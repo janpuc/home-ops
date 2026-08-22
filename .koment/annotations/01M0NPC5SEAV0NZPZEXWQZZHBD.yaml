@@ -1,0 +1,36 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0NPC5SEAV0NZPZEXWQZZHBD
+  created: "2026-08-22T21:35:06Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/agents/claude/externalsecret.yaml
+  type: why
+  title: GH_TOKEN rides in the hermes 1Password item
+  body: |-
+    GH_TOKEN lives in the `hermes` 1Password item (a classic PAT with repo
+    scope, shared with the hermes agent); there is no separate claude-code item,
+    and creating one would just duplicate a secret that rotates together with
+    hermes. This is the only secret the agent needs — inference auth is the
+    claude.ai OAuth login persisted on the pod's home PVC, not an API key.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        dataFrom:
+          - extract:
+              key: hermes
+    before: |2-
+          template:
+            data:
+              GH_TOKEN: "{{ .GH_TOKEN }}"
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+status:
+  lastSeenLine: 18
+  resolution: ok
+  resolvedAt: "2026-08-22T21:35:06Z"
+  resolvedCommit: 0f095813ad26dc6d5e8ccc3efa6d115b3deff107

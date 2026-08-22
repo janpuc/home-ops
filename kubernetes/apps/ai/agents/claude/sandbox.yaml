@@ -26,8 +26,6 @@ spec:
           env:
             - name: HOME
               value: /home/agent
-            - name: AGENT_PROFILE
-              value: native
             - name: CLAUDE_CODE_VERSION
               # renovate: datasource=github-releases depName=anthropics/claude-code extractVersion=^v(?<version>.+)$
               value: "2.1.240"
