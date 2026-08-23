@@ -26,7 +26,7 @@ jobs:
           persist-credentials: false
 
       - name: Setup Koment
-        uses: koment-dev/koment@346618777451733b8e174145faaa5d4b895e0dbf # v3.1.2
+        uses: koment-dev/koment@d74e468847ef136e738e101f5bd0738cb4bf9800 # v3.1.3
         with:
           version: 3.0.0
 
