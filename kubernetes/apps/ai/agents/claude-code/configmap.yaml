@@ -240,8 +240,15 @@ data:
         } | claude -p --verbose --output-format stream-json --model "$model" --settings /nas/roles/guardian-permissions.json > "$jsonl" 2> "$err"
         rc=$?
         cat "$jsonl"
-        python3 /opt/claude-code/guardian-finish.py "$task" "$jsonl" "$err" "$rc" "$start" > "$QUEUE/done/${task%.md}.result.md" || true
-        mv "$QUEUE/claimed/coordinator/$task" "$QUEUE/done/$task" 2>/dev/null || true
+        python3 /opt/claude-code/guardian-finish.py "$task" "$jsonl" "$err" "$rc" "$start" > "$QUEUE/done/${task%.md}.result.md"
+        finishrc=$?
+        if [ "$finishrc" = "42" ]; then
+          rm -f "$QUEUE/done/${task%.md}.result.md"
+          mv "$QUEUE/claimed/coordinator/$task" "$QUEUE/backlog/$task" 2>/dev/null || true
+          sleep 1800
+        else
+          mv "$QUEUE/claimed/coordinator/$task" "$QUEUE/done/$task" 2>/dev/null || true
+        fi
       fi
       sleep 30
     done
@@ -273,6 +280,7 @@ data:
     cost = 0.0
     tokens_in = 0
     tokens_out = 0
+    rate_limited = False
     try:
         with open(jsonl) as f:
             for line in f:
@@ -280,6 +288,8 @@ data:
                     d = json.loads(line)
                 except ValueError:
                     continue
+                if d.get("type") == "rate_limit_event":
+                    rate_limited = True
                 if d.get("type") == "result":
                     result_text = d.get("result") or ""
                     cost = float(d.get("total_cost_usd") or 0)
@@ -290,6 +300,8 @@ data:
         pass
 
     failed = rc != 0 or not result_text.strip()
+    if "session limit" in result_text.lower():
+        failed = True
 
     try:
         with open(METRICS) as f:
@@ -297,7 +309,7 @@ data:
     except (OSError, ValueError):
         m = {}
     m["runs_total"] = m.get("runs_total", 0) + 1
-    m["failures_total"] = m.get("failures_total", 0) + (1 if failed else 0)
+    m["failures_total"] = m.get("failures_total", 0) + (1 if failed and not rate_limited else 0)
     m["tokens_input_total"] = m.get("tokens_input_total", 0) + tokens_in
     m["tokens_output_total"] = m.get("tokens_output_total", 0) + tokens_out
     m["cost_usd_total"] = round(m.get("cost_usd_total", 0.0) + cost, 6)
@@ -308,6 +320,9 @@ data:
         json.dump(m, f)
     os.rename(tmp, METRICS)
 
+    if failed and rate_limited:
+        print(f"RATE LIMITED for {task}; requeued for retry after backoff")
+        sys.exit(42)
     if failed:
         print(f"GUARDIAN RUN FAILED (exit {rc}) for {task}")
         print(f"Transcript: {jsonl}")
