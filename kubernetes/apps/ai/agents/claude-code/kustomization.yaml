@@ -7,3 +7,4 @@ resources:
   - ./configmap.yaml
   - ./rbac.yaml
   - ./sandbox.yaml
+  - ./sandbox-worker.yaml

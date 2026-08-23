@@ -1,0 +1,56 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0PJWE512ZPEZNGM7HBK519R
+  created: "2026-08-23T05:53:19Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/agents/claude-code/sandbox.yaml
+  type: why
+  title: "Coordinator: Remote Control loop, NAS workspace, code-server eyes"
+  body: |-
+    The coordinator of the agents system (design agreed 2026-08-23): the only
+    Sandbox with the Max login, Remote Control, the signing key, and debug RBAC.
+    It plans, delegates to workers (sandbox-worker.yaml, MiniMax via LiteLLM),
+    verifies their branches, and signs what ships. Official self-hosted runners
+    stay rejected (Team/Enterprise-only, and no LLM gateway inference). The main
+    command loops `claude remote-control`; before the one-time /login it logs a
+    failed attempt every 30s — expected. /nas is the shared RWX floor
+    (bigmouth NFS /mnt/Vault/AI) because every miroir class is RWO: bare repo
+    mirrors, per-agent git worktrees, the task queue, and role instruction files
+    all live there, shared with workers and the codeserver container — which
+    is the visibility surface (auth none is deliberate: cluster-internal only
+    until a Pocket-ID-fronted HTTPRoute is added; do NOT expose it without one).
+    GOTCHA corrected from an earlier wrong claim: the Sandbox owns its PVCs via
+    ownerReferences, so deleting the Sandbox (including via ks rename/prune)
+    CASCADE-DELETES home and workspace PVCs — the claude.ai login dies with
+    them and needs redoing. Treat Sandbox deletion as state loss, not a restart.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+            containers:
+              - name: workbench
+                image: docker.io/library/node:22-bookworm
+                command: ["/bin/sh", "/opt/claude-code/run-native.sh"]
+    before: |2-
+                  - name: bootstrap
+                    mountPath: /opt/claude-code
+                    readOnly: true
+    after: |2-
+                workingDir: /workspace
+                env:
+                  - name: HOME
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: c34e46258582fe605347cbeb56d163b09f811fe8
+    path: kubernetes/apps/ai/agents/claude-code/sandbox.yaml
+    line: 57
+status:
+  lastSeenLine: 57
+  resolution: ok
+  resolvedAt: "2026-08-23T05:53:19Z"
+  resolvedCommit: c34e46258582fe605347cbeb56d163b09f811fe8

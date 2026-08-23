@@ -1,0 +1,50 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0PJW52AD9P6PA4HC0V2W0FC
+  created: "2026-08-23T05:53:09Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/agents/operator/kustomization.yaml
+  type: why
+  title: Vendored manifests folded into ai, CRDs stripped out
+  body: |-
+    kubernetes-sigs/agent-sandbox publishes no OCI chart (no home-operations
+    proxy either, checked 2026-08-23), so this vendors upstream's release
+    manifest byte-identical (vendoredPaths in .koment/policy.yaml). The patch
+    stack enforces two repo rules learned the hard way: namespaces come only
+    from apps/<ns>/namespace.yaml (the Namespace delete + `namespace: ai`
+    transformer + the `--webhook-namespace=ai` arg, a compiled-in default the
+    Helm chart passed but the raw manifest does not), and CRDs are owned by the
+    agents-crds ks (the delete-all-CustomResourceDefinition patch strips the
+    copies bundled in this file — without it two Kustomizations would fight
+    over SSA ownership of the same CRDs). Upgrading = re-download the release
+    file verbatim AND bump the four URL tags in ../crds in the same commit.
+  anchor:
+    scope: excerpt
+    excerpt: |-
+      namespace: ai
+      resources:
+        - ./sandbox-with-extensions.yaml
+    before: |-
+      # yaml-language-server: $schema=https://json.schemastore.org/kustomization
+      apiVersion: kustomize.config.k8s.io/v1beta1
+      kind: Kustomization
+    after: |-
+      patches:
+        - patch: |-
+            $patch: delete
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: c34e46258582fe605347cbeb56d163b09f811fe8
+    path: kubernetes/apps/ai/agents/operator/kustomization.yaml
+    line: 5
+status:
+  lastSeenLine: 5
+  resolution: ok
+  resolvedAt: "2026-08-23T05:53:09Z"
+  resolvedCommit: c34e46258582fe605347cbeb56d163b09f811fe8

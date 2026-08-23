@@ -50,6 +50,21 @@ data:
       git config --global user.signingkey /etc/claude-code/signing/id_ed25519
       git config --global commit.gpgsign true
     fi
+    if [ "${AGENT_PROFILE:-coordinator}" = "worker" ] && ! [ -f "$HOME/.claude/settings.json" ]; then
+      mkdir -p "$HOME/.claude"
+      cat > "$HOME/.claude/settings.json" <<'SETTINGS'
+    {
+      "env": {
+        "ANTHROPIC_BASE_URL": "http://litellm.ai:4000",
+        "ANTHROPIC_MODEL": "minimax/MiniMax-M3-anthropic",
+        "ANTHROPIC_SMALL_FAST_MODEL": "minimax/MiniMax-M2-7-anthropic",
+        "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+        "DISABLE_TELEMETRY": "1"
+      },
+      "apiKeyHelper": "/bin/sh -c \"echo $LITELLM_API_KEY\""
+    }
+    SETTINGS
+    fi
     if ! [ -d "$HOME/.claude/plugins/marketplaces/memini" ]; then
       "$BIN/claude" plugin marketplace add eleboucher/memini || echo "[bootstrap] memini marketplace add failed (non-fatal)"
     fi

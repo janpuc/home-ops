@@ -2,16 +2,15 @@
 apiVersion: agents.x-k8s.io/v1beta1
 kind: Sandbox
 metadata:
-  name: claude-code
+  name: claude-code-worker
 spec:
   service: true
   podTemplate:
     metadata:
       labels:
-        app.kubernetes.io/name: claude-code
+        app.kubernetes.io/name: claude-code-worker
     spec:
-      serviceAccountName: claude-code
-      automountServiceAccountToken: true
+      automountServiceAccountToken: false
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
@@ -27,6 +26,8 @@ spec:
           env:
             - name: HOME
               value: /home/agent
+            - name: AGENT_PROFILE
+              value: worker
             - name: CLAUDE_CODE_VERSION
               # renovate: datasource=github-releases depName=anthropics/claude-code extractVersion=^v(?<version>.+)$
               value: "2.1.240"
@@ -57,11 +58,13 @@ spec:
       containers:
         - name: workbench
           image: docker.io/library/node:22-bookworm
-          command: ["/bin/sh", "/opt/claude-code/run-native.sh"]
-          workingDir: /workspace
+          command: ["sleep", "infinity"]
+          workingDir: /nas
           env:
             - name: HOME
               value: /home/agent
+            - name: AGENT_ROLE
+              value: pr-review
             - name: NPM_CONFIG_PREFIX
               value: /home/agent/.npm-global
             - name: MEMINI_BASE_URL
@@ -82,53 +85,12 @@ spec:
           volumeMounts:
             - name: home
               mountPath: /home/agent
-            - name: workspace
-              mountPath: /workspace
-            - name: nas
-              mountPath: /nas
-            - name: bootstrap
-              mountPath: /opt/claude-code
-              readOnly: true
-            - name: signing
-              mountPath: /etc/claude-code/signing
-              readOnly: true
-        - name: codeserver
-          # renovate: datasource=docker depName=ghcr.io/coder/code-server
-          image: ghcr.io/coder/code-server:4.133.0
-          args:
-            - --auth
-            - none
-            - --bind-addr
-            - 0.0.0.0:8443
-            - --disable-telemetry
-            - /nas
-          env:
-            - name: HOME
-              value: /home/agent
-          ports:
-            - name: http
-              containerPort: 8443
-          resources:
-            requests:
-              cpu: 50m
-              memory: 256Mi
-            limits:
-              memory: 1Gi
-          volumeMounts:
-            - name: home
-              mountPath: /home/agent
-            - name: workspace
-              mountPath: /workspace
             - name: nas
               mountPath: /nas
       volumes:
         - name: bootstrap
           configMap:
             name: claude-code-bootstrap
-        - name: signing
-          secret:
-            secretName: claude-code-signing
-            defaultMode: 288
         - name: nas
           nfs:
             server: bigmouth.internal
@@ -142,11 +104,3 @@ spec:
         resources:
           requests:
             storage: 10Gi
-    - metadata:
-        name: workspace
-      spec:
-        accessModes:
-          - ReadWriteOnce
-        resources:
-          requests:
-            storage: 20Gi

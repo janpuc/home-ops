@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0PJWMY2ZC96QR15Y4ZGX6RZ
+  created: "2026-08-23T05:53:25Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/agents/claude-code/sandbox-worker.yaml
+  type: why
+  title: "Workers: MiniMax grind, no RBAC, no signing, role-tagged"
+  body: |-
+    Worker Sandbox of the agents system: AGENT_PROFILE=worker makes bootstrap
+    seed settings.json routing inference to LiteLLM's minimax `-anthropic` model
+    groups (the only groups that work on /v1/messages — opencode-go upstreams
+    speak Responses-API and LiteLLM v1.97.0 converts them to empty envelopes).
+    Deliberate asymmetries with the coordinator: no ServiceAccount and no token
+    automount (workers run model-directed code against cheap models and must not
+    touch the cluster), no signing-key mount (worker commits land unsigned on
+    agents/* branches; the coordinator reviews and signs what ships), no Remote
+    Control (requires a claude.ai login a gateway-routed profile cannot have —
+    this is why the litellm variant was cut as a peer and reborn as a worker),
+    sleep-infinity until the queue loop lands (P3). AGENT_ROLE tags the worker's
+    specialization (per Janek 2026-08-23: distinct roles like PR review); the
+    role maps to an instruction file on /nas/roles/ so behavior is edited as
+    data in code-server, not by rolling manifests. Scale-out = copy this file
+    with a new name and role.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+                  - name: AGENT_ROLE
+                    value: pr-review
+    before: |2-
+                env:
+                  - name: HOME
+                    value: /home/agent
+    after: |2-
+                  - name: NPM_CONFIG_PREFIX
+                    value: /home/agent/.npm-global
+                  - name: MEMINI_BASE_URL
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+status:
+  lastSeenLine: 66
+  resolution: ok
+  resolvedAt: "2026-08-23T05:53:26Z"
+  resolvedCommit: c34e46258582fe605347cbeb56d163b09f811fe8
