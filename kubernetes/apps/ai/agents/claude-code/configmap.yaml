@@ -42,6 +42,13 @@ data:
       rm -f /tmp/flux
       printf %s "$FLUX_CLI_VERSION" > "$BIN/.flux-version"
     fi
+    if ! [ "$(cat "$HOME/.local/.go-version" 2>/dev/null)" = "$GO_VERSION" ]; then
+      curl -fsSL "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" -o /tmp/go.tgz
+      rm -rf "$HOME/.local/go"
+      tar -xz -C "$HOME/.local" -f /tmp/go.tgz
+      rm -f /tmp/go.tgz
+      printf %s "$GO_VERSION" > "$HOME/.local/.go-version"
+    fi
     git config --global user.name >/dev/null 2>&1 || git config --global user.name "janpuc"
     git config --global user.email >/dev/null 2>&1 || git config --global user.email "janpuc@proton.me"
     git config --global credential.helper >/dev/null 2>&1 || git config --global credential.helper "!$BIN/gh auth git-credential"
@@ -132,11 +139,49 @@ data:
           "Bash(kubectl api-resources:*)",
           "Bash(kubectl explain:*)",
           "Bash(flux stats:*)",
-          "Bash(flux version:*)"
+          "Bash(flux version:*)",
+          "Bash(git:*)",
+          "Bash(go build:*)",
+          "Bash(go test:*)",
+          "Bash(go vet:*)",
+          "Bash(go mod:*)",
+          "Bash(gofmt:*)",
+          "Bash(gh repo clone:*)",
+          "Bash(gh pr create:*)",
+          "Bash(gh pr view:*)",
+          "Bash(gh pr list:*)"
         ]
       }
     }
     PERMS
+      fi
+      if ! [ -f /nas/roles/miroir-dev.md ]; then
+        cat > /nas/roles/miroir-dev.md <<'ROLE'
+    Role: miroir-dev
+
+    You develop on Janek's miroir fork: github.com/janpuc/miroir. This
+    cluster runs that fork (chart oci://ghcr.io/janpuc/charts/miroir), so
+    every fix you land ships here through his pipeline.
+
+    Workflow:
+    1. Clone or fetch the fork under /nas/repos/miroir; create a worktree
+       under /nas/worktrees/coordinator/<branch> and work there.
+    2. Branch names: fix/<short-topic>. Never commit to main, never push
+       main. Commits are signed automatically by your git config.
+    3. Reproduce understanding before changing code: read the relevant
+       reconciler paths, cite file:line evidence in your notes.
+    4. go build ./... and go test ./... must pass before you push. Go is
+       at $HOME/.local/go/bin.
+    5. Push the branch to the fork and open a DRAFT pull request against
+       the fork's main with gh pr create --draft --repo janpuc/miroir.
+       The PR body: evidence first (timestamps, log excerpts, resource
+       states), then the fix rationale. Janek reviews and merges.
+    6. Cluster interaction is read-only diagnosis. Never kubectl apply,
+       never touch miroir-system beyond reads. Deployment is Janek's
+       pipeline, not yours.
+    7. End the result with: branch name, PR URL, test output tail, and
+       what remains for the human.
+    ROLE
       fi
       if ! [ -f /nas/roles/pr-review.md ]; then
         cat > /nas/roles/pr-review.md <<'ROLE'
@@ -169,7 +214,6 @@ data:
     PATH="$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"
     export PATH
     QUEUE=/nas/queue
-    ROLE=/nas/roles/cluster-guardian.md
     LOGS=/nas/logs/guardian
     mkdir -p "$QUEUE/backlog" "$QUEUE/claimed/coordinator" "$QUEUE/done" "$LOGS"
     cd /workspace
@@ -183,6 +227,9 @@ data:
         start=$(date +%s)
         model=$(sed -n "s/^model: //p" "$QUEUE/claimed/coordinator/$task" | head -1)
         [ -z "$model" ] && model=opus
+        rolename=$(sed -n "s/^role: //p" "$QUEUE/claimed/coordinator/$task" | head -1)
+        ROLE="/nas/roles/${rolename:-cluster-guardian}.md"
+        [ -f "$ROLE" ] || ROLE=/nas/roles/cluster-guardian.md
         {
           cat "$ROLE" 2>/dev/null
           printf "\n\nTask:\n\n"

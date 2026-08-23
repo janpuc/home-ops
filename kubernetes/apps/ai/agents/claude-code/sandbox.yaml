@@ -42,6 +42,9 @@ spec:
             - name: FLUX_CLI_VERSION
               # renovate: datasource=github-releases depName=fluxcd/flux2 extractVersion=^v(?<version>.+)$
               value: "2.9.4"
+            - name: GO_VERSION
+              # renovate: datasource=golang-version depName=golang
+              value: "1.27.0"
           resources:
             requests:
               cpu: 50m
@@ -71,7 +74,7 @@ spec:
             - name: MEMINI_NAMESPACE_PREFIX
               value: homelab
             - name: PATH
-              value: /home/agent/.local/bin:/home/agent/.npm-global/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+              value: /home/agent/.local/bin:/home/agent/.local/go/bin:/home/agent/.npm-global/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
           envFrom:
             - secretRef:
                 name: claude-code-secret
