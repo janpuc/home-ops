@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0PN9YS385WAQ9FSVRSY2CTV
+  created: "2026-08-23T06:35:39Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/agents/claude-code/configmap.yaml
+  type: why
+  title: "Guardian o11y: transcripts on NAS + stdout, metrics via intake"
+  body: |-
+    Janek's max-observability directive (2026-08-23). Every guardian run writes
+    its full stream-json transcript (prompts, thinking, tool calls, result,
+    cost) to /nas/logs/guardian/ and then cats it to container stdout so the
+    victoria-logs collector ships it — one artifact, two sinks, browsable in
+    code-server and queryable in VictoriaLogs. The transcript is written to the
+    file FIRST and catted after, not tee'd, because a pipeline would report
+    tee's exit code instead of claude's and silent failures were exactly the bug
+    this design replaced (an empty .result.md with the error swallowed by `||
+    true`). guardian-finish.py folds each run's cost/token/duration into
+    metrics.json, and the alert-intake HTTP server doubles as the Prometheus
+    endpoint (/metrics: queue-depth gauges walked from the dirs plus the
+    guardian counters) because it is the one long-lived process that already
+    owns a port. Claude Code's own OTEL metrics are exported prometheus-style on
+    :9464, but only from the Remote Control process (exported in run-native.sh,
+    not container env): concurrent `claude -p` guardian runs would race to bind
+    the same port. Failed runs (nonzero exit or empty result) count in
+    agents_guardian_failures_total and their result note carries the stderr tail
+    — no more empty files.
+  anchor:
+    scope: excerpt
+    excerpt: '        } | claude -p --verbose --output-format stream-json > "$jsonl" 2> "$err"'
+    before: |2-
+                cat "$ROLE" 2>/dev/null
+                printf "\n\nTask:\n\n"
+                cat "$QUEUE/claimed/coordinator/$task"
+    after: |2-
+              rc=$?
+              cat "$jsonl"
+              python3 /opt/claude-code/guardian-finish.py "$task" "$jsonl" "$err" "$rc" "$start" > "$QUEUE/done/${task%.md}.result.md" || true
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: fc83c1b1a69b09ca8ca805eb16f8c2279ee42297
+    path: kubernetes/apps/ai/agents/claude-code/configmap.yaml
+    line: 150
+status:
+  lastSeenLine: 150
+  resolution: ok
+  resolvedAt: "2026-08-23T06:35:39Z"
+  resolvedCommit: fc83c1b1a69b09ca8ca805eb16f8c2279ee42297

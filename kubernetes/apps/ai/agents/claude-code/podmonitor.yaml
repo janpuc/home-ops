@@ -1,0 +1,17 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/monitoring.coreos.com/podmonitor_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: claude-code
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: claude-code
+  podMetricsEndpoints:
+    - port: alerts
+      path: /metrics
+      interval: 30s
+    - port: otel
+      path: /metrics
+      interval: 30s

@@ -8,3 +8,7 @@ resources:
   - ./rbac.yaml
   - ./sandbox.yaml
   - ./sandbox-worker.yaml
+  - ./httproute.yaml
+  - ./podmonitor.yaml
+  - ./grafanadashboard.yaml
+  - ./dashboard

@@ -75,6 +75,9 @@ spec:
           envFrom:
             - secretRef:
                 name: claude-code-secret
+          ports:
+            - name: otel
+              containerPort: 9464
           resources:
             requests:
               cpu: 100m
