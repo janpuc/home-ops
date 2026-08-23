@@ -30,7 +30,7 @@ spec:
     — no more empty files.
   anchor:
     scope: excerpt
-    excerpt: '        } | claude -p --verbose --output-format stream-json > "$jsonl" 2> "$err"'
+    excerpt: '        } | claude -p --verbose --output-format stream-json --settings /nas/roles/guardian-permissions.json > "$jsonl" 2> "$err"'
     before: |2-
                 cat "$ROLE" 2>/dev/null
                 printf "\n\nTask:\n\n"
@@ -48,7 +48,7 @@ spec:
     path: kubernetes/apps/ai/agents/claude-code/configmap.yaml
     line: 150
 status:
-  lastSeenLine: 150
+  lastSeenLine: 173
   resolution: ok
-  resolvedAt: "2026-08-23T06:35:39Z"
-  resolvedCommit: fc83c1b1a69b09ca8ca805eb16f8c2279ee42297
+  resolvedAt: "2026-08-23T06:43:17Z"
+  resolvedCommit: 49b1a0a9a2ab85f79ce05ee380b4801dd3168013

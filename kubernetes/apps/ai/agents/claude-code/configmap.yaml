@@ -100,6 +100,29 @@ data:
        the human.
     ROLE
       fi
+      if ! [ -f /nas/roles/guardian-permissions.json ]; then
+        cat > /nas/roles/guardian-permissions.json <<'PERMS'
+    {
+      "permissions": {
+        "allow": [
+          "Bash(kubectl get:*)",
+          "Bash(kubectl describe:*)",
+          "Bash(kubectl logs:*)",
+          "Bash(kubectl top:*)",
+          "Bash(kubectl events:*)",
+          "Bash(kubectl auth can-i:*)",
+          "Bash(kubectl annotate:*)",
+          "Bash(kubectl delete pod:*)",
+          "Bash(kubectl rollout:*)",
+          "Bash(flux get:*)",
+          "Bash(flux reconcile:*)",
+          "Bash(flux suspend:*)",
+          "Bash(flux resume:*)"
+        ]
+      }
+    }
+    PERMS
+      fi
       if ! [ -f /nas/roles/pr-review.md ]; then
         cat > /nas/roles/pr-review.md <<'ROLE'
     Role: pr-review
@@ -147,7 +170,7 @@ data:
           cat "$ROLE" 2>/dev/null
           printf "\n\nTask:\n\n"
           cat "$QUEUE/claimed/coordinator/$task"
-        } | claude -p --verbose --output-format stream-json > "$jsonl" 2> "$err"
+        } | claude -p --verbose --output-format stream-json --settings /nas/roles/guardian-permissions.json > "$jsonl" 2> "$err"
         rc=$?
         cat "$jsonl"
         python3 /opt/claude-code/guardian-finish.py "$task" "$jsonl" "$err" "$rc" "$start" > "$QUEUE/done/${task%.md}.result.md" || true
