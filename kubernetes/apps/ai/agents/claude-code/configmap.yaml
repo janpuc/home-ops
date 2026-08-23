@@ -98,6 +98,11 @@ data:
        issue. Facts only, no drafted prose.
     6. End the result with: what happened, what you did, what remains for
        the human.
+
+    Access note: kubectl and flux read commands in your allowlist run
+    without approval. Probe with kubectl get nodes, never kubectl version.
+    If a command is denied, say which exact command and proceed with the
+    allowed ones.
     ROLE
       fi
       if ! [ -f /nas/roles/guardian-permissions.json ]; then
@@ -117,7 +122,12 @@ data:
           "Bash(flux get:*)",
           "Bash(flux reconcile:*)",
           "Bash(flux suspend:*)",
-          "Bash(flux resume:*)"
+          "Bash(flux resume:*)",
+          "Bash(kubectl version:*)",
+          "Bash(kubectl api-resources:*)",
+          "Bash(kubectl explain:*)",
+          "Bash(flux stats:*)",
+          "Bash(flux version:*)"
         ]
       }
     }
