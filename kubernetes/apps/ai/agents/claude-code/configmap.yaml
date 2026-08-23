@@ -149,8 +149,11 @@ data:
           "Bash(gh repo clone:*)",
           "Bash(gh pr create:*)",
           "Bash(gh pr view:*)",
-          "Bash(gh pr list:*)"
-        ]
+          "Bash(gh pr list:*)",
+          "Edit",
+          "Write"
+        ],
+        "additionalDirectories": ["/nas"]
       }
     }
     PERMS
