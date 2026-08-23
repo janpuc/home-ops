@@ -148,28 +148,32 @@ data:
   alert-intake.py: |-
     """Turn Alertmanager webhook posts into guardian queue tasks.
 
-    Dedupe is by alert fingerprint across every queue state, so a still-firing
-    alert never spawns a second task while the first is anywhere in flight.
-    Resolved notifications are ignored on purpose: the guardian's result note
-    records what it found, and a task for a self-healed alert still documents
-    the blip. Fail-open HTTP 200 always - Alertmanager retries on non-2xx and
-    a poison alert must not wedge the receiver.
+    One task per Alertmanager GROUP, never per alert: the route groups by
+    alertname/cluster/job, and a single incident (like a storage wedge) can
+    fan out into 100+ alert fingerprints that all share one root cause.
+    Task identity is the hash of the groupKey, deduped across every queue
+    state, so a still-firing group never spawns a second task while the
+    first is anywhere in flight. Resolved-only notifications are ignored on
+    purpose. Fail-open HTTP 200 always - Alertmanager retries on non-2xx
+    and a poison payload must not wedge the receiver.
     """
+    import hashlib
     import json
     import os
     import re
     from http.server import BaseHTTPRequestHandler, HTTPServer
 
     QUEUE = "/nas/queue"
+    MAX_LISTED = 20
 
 
-    def seen(fingerprint):
-        for state in ("backlog", "claimed/coordinator", "done"):
+    def seen(group_id):
+        for state in ("backlog", "claimed/coordinator", "review", "done"):
             root = os.path.join(QUEUE, state)
             if not os.path.isdir(root):
                 continue
             for name in os.listdir(root):
-                if fingerprint in name:
+                if group_id in name:
                     return True
         return False
 
@@ -179,27 +183,42 @@ data:
             try:
                 raw = self.rfile.read(int(self.headers.get("Content-Length", 0)))
                 payload = json.loads(raw)
-                for alert in payload.get("alerts", []):
-                    if alert.get("status") != "firing":
-                        continue
-                    fp = alert.get("fingerprint", "nofp")
-                    if seen(fp):
-                        continue
-                    name = alert.get("labels", {}).get("alertname", "unknown")
-                    slug = re.sub(r"[^A-Za-z0-9_-]", "-", name)[:40]
-                    os.makedirs(os.path.join(QUEUE, "backlog"), exist_ok=True)
-                    path = os.path.join(QUEUE, "backlog", f"alert-{slug}-{fp}.md")
-                    tmp = path + ".partial"
-                    with open(tmp, "w") as f:
-                        f.write(f"# Alert: {name}\n\nrole: cluster-guardian\n\n")
-                        f.write("## Labels\n\n")
-                        for k, v in sorted(alert.get("labels", {}).items()):
-                            f.write(f"- {k}: {v}\n")
-                        f.write("\n## Annotations\n\n")
-                        for k, v in sorted(alert.get("annotations", {}).items()):
-                            f.write(f"- {k}: {v}\n")
-                        f.write(f"\nstartsAt: {alert.get('startsAt', '')}\n")
-                    os.rename(tmp, path)
+                firing = [a for a in payload.get("alerts", []) if a.get("status") == "firing"]
+                if not firing:
+                    raise ValueError("nothing firing")
+                group_id = hashlib.sha256(
+                    payload.get("groupKey", "nokey").encode()
+                ).hexdigest()[:12]
+                if seen(group_id):
+                    raise ValueError("group already queued")
+                name = payload.get("commonLabels", {}).get("alertname") or firing[0].get(
+                    "labels", {}
+                ).get("alertname", "unknown")
+                slug = re.sub(r"[^A-Za-z0-9_-]", "-", name)[:40]
+                os.makedirs(os.path.join(QUEUE, "backlog"), exist_ok=True)
+                path = os.path.join(QUEUE, "backlog", f"alert-{slug}-{group_id}.md")
+                tmp = path + ".partial"
+                with open(tmp, "w") as f:
+                    f.write(f"Alert group: {name} ({len(firing)} firing)\n\n")
+                    f.write("role: cluster-guardian\n\nCommon labels:\n\n")
+                    for k, v in sorted(payload.get("commonLabels", {}).items()):
+                        f.write(f"- {k}: {v}\n")
+                    f.write("\nCommon annotations:\n\n")
+                    for k, v in sorted(payload.get("commonAnnotations", {}).items()):
+                        f.write(f"- {k}: {v}\n")
+                    f.write("\nMember alerts:\n\n")
+                    for alert in firing[:MAX_LISTED]:
+                        labels = alert.get("labels", {})
+                        detail = ", ".join(
+                            f"{k}={v}"
+                            for k, v in sorted(labels.items())
+                            if k not in payload.get("commonLabels", {})
+                        )
+                        f.write(f"- {detail or 'identical to common labels'}\n")
+                    if len(firing) > MAX_LISTED:
+                        f.write(f"- ... and {len(firing) - MAX_LISTED} more\n")
+                    f.write(f"\nstartsAt: {firing[0].get('startsAt', '')}\n")
+                os.rename(tmp, path)
             except Exception:
                 pass
             self.send_response(200)
