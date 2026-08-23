@@ -100,6 +100,24 @@ spec:
             - name: signing
               mountPath: /etc/claude-code/signing
               readOnly: true
+        - name: agents-bridge
+          image: docker.io/library/node:22-bookworm
+          command: ["python3", "/opt/claude-code/agents-bridge.py"]
+          envFrom:
+            - secretRef:
+                name: claude-code-secret
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
+          volumeMounts:
+            - name: nas
+              mountPath: /nas
+            - name: bootstrap
+              mountPath: /opt/claude-code
+              readOnly: true
         - name: alert-intake
           image: docker.io/library/node:22-bookworm
           command: ["python3", "/opt/claude-code/alert-intake.py"]
