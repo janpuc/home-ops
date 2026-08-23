@@ -51,6 +51,8 @@ spec:
           volumeMounts:
             - name: home
               mountPath: /home/agent
+            - name: nas
+              mountPath: /nas
             - name: bootstrap
               mountPath: /opt/claude-code
               readOnly: true
