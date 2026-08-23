@@ -22,6 +22,10 @@ spec:
       - .venv/**
       - .github/labels.yaml
       - kubernetes/apps/ai/agents/operator/sandbox-with-extensions.yaml
+      - kubernetes/apps/ai/agents/crds/agents.x-k8s.io_sandboxes.yaml
+      - kubernetes/apps/ai/agents/crds/extensions.agents.x-k8s.io_sandboxclaims.yaml
+      - kubernetes/apps/ai/agents/crds/extensions.agents.x-k8s.io_sandboxtemplates.yaml
+      - kubernetes/apps/ai/agents/crds/extensions.agents.x-k8s.io_sandboxwarmpools.yaml
       - bootstrap/helmfile/apps.yaml
       - bootstrap/helmfile/crds.yaml
       - kubernetes/apps/media/sonarr/app/resources/refresh-series.sh
