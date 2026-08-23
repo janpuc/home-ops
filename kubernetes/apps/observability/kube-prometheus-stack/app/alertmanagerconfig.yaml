@@ -19,6 +19,12 @@ spec:
           - name: alertname
             value: InfoInhibitor
             matchType: =
+      - receiver: agents
+        continue: true
+        matchers:
+          - name: alertname
+            value: Watchdog|InfoInhibitor
+            matchType: "!~"
       - receiver: pushover
         matchers:
           - name: severity
@@ -46,6 +52,10 @@ spec:
 
   receivers:
     - name: blackhole
+    - name: agents
+      webhookConfigs:
+        - url: http://claude-code.ai.svc.cluster.local:9096/alerts
+          sendResolved: false
     - name: pushover
       pushoverConfigs:
         - html: true

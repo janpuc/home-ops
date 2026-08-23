@@ -1,0 +1,51 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0PKWKAEZ0YKEZ0KAVTZKS8E
+  created: "2026-08-23T06:10:52Z"
+spec:
+  target:
+    file: kubernetes/apps/observability/kube-prometheus-stack/app/alertmanagerconfig.yaml
+  type: why
+  title: Alerts are the trigger that starts agent runs
+  body: |-
+    Janek's directive (2026-08-23): alerts ARE the trigger for the agents
+    system. This route tees every non-noise alert (continue: true, so pushover
+    still fires) to the alert-intake container in the claude-code coordinator
+    Sandbox, which writes one queue task per alert fingerprint to
+    /nas/queue/backlog; the guardian loop in the same pod consumes them with the
+    cluster-guardian role file. sendResolved: false and firing-only intake are
+    deliberate — a resolved alert must not spawn a second triage run; the
+    dedupe key is the alert fingerprint across all queue states. The webhook URL
+    is the Sandbox's headless-service FQDN, so it survives pod recreation; the
+    blackhole routes for Watchdog/InfoInhibitor sit above and are terminal, and
+    the !~ matcher here is belt-and-braces if route order ever changes. If the
+    intake is down Alertmanager retries, and losing an alert task is acceptable:
+    the guardian's next alert-driven run sees current cluster state anyway.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+            - receiver: agents
+              continue: true
+    before: |2-
+                - name: alertname
+                  value: InfoInhibitor
+                  matchType: =
+    after: |2-
+              matchers:
+                - name: alertname
+                  value: Watchdog|InfoInhibitor
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: add20454ac7a8856fe8de33a805d5e00aa082f6d
+    path: kubernetes/apps/observability/kube-prometheus-stack/app/alertmanagerconfig.yaml
+    line: 22
+status:
+  lastSeenLine: 22
+  resolution: ok
+  resolvedAt: "2026-08-23T06:10:52Z"
+  resolvedCommit: add20454ac7a8856fe8de33a805d5e00aa082f6d

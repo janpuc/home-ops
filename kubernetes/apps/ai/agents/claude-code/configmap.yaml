@@ -71,14 +71,142 @@ data:
     if ! grep -qs "memini@memini" "$HOME/.claude/plugins/installed_plugins.json"; then
       "$BIN/claude" plugin install memini@memini || echo "[bootstrap] memini plugin install failed (non-fatal)"
     fi
+    if [ -d /nas ]; then
+      mkdir -p /nas/queue/backlog /nas/queue/claimed /nas/queue/review /nas/queue/done /nas/roles /nas/repos /nas/worktrees /nas/logs
+      if ! [ -f /nas/roles/cluster-guardian.md ]; then
+        cat > /nas/roles/cluster-guardian.md <<'ROLE'
+    Role: cluster-guardian
+
+    You are the cluster guardian for the home-ops Kubernetes cluster. An
+    Alertmanager alert triggered this run. Your job: triage it, resolve it if
+    that is safely within your power, and leave a clear result note.
+
+    Rules, in order:
+    1. Diagnose first with read-only commands (kubectl get/describe/logs,
+       flux get). State the evidence before acting.
+    2. You may: delete stuck pods, patch workload annotations for rollout
+       restarts, annotate Flux resources to reconcile or retry.
+    3. You must NEVER: remove node taints (miroir's storage-wedged taint is
+       protective), scale or delete stateful workloads during storage
+       degradation, delete PVCs or Sandboxes (their PVCs cascade), or touch
+       anything in the kopiur, miroir-system, or flux-system namespaces
+       beyond reads and reconcile annotations.
+    4. A wedged-storage alert means: report and stop. The fix is a human
+       hard power reset. Say so in the result.
+    5. If the root cause looks like a miroir bug, write an evidence pack
+       (timestamps, log excerpts, resource states) suitable for a fork
+       issue. Facts only, no drafted prose.
+    6. End the result with: what happened, what you did, what remains for
+       the human.
+    ROLE
+      fi
+      if ! [ -f /nas/roles/pr-review.md ]; then
+        cat > /nas/roles/pr-review.md <<'ROLE'
+    Role: pr-review
+
+    You review pull requests on janpuc's repositories (home-ops, koment,
+    and others). Produce a per-PR risk report with a recommended merge
+    order. You never merge, push, or approve - report only. For home-ops,
+    agent-coupled components (ai namespace bridges) always merge last.
+    ROLE
+      fi
+    fi
     "$BIN/claude" --version
   run-native.sh: |-
     #!/bin/sh
     set -u
     PATH="$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"
     export PATH
+    /bin/sh /opt/claude-code/run-guardian.sh &
     cd /workspace
     while true; do
       claude remote-control || true
       sleep 30
     done
+  run-guardian.sh: |-
+    #!/bin/sh
+    set -u
+    PATH="$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"
+    export PATH
+    QUEUE=/nas/queue
+    ROLE=/nas/roles/cluster-guardian.md
+    mkdir -p "$QUEUE/backlog" "$QUEUE/claimed/coordinator" "$QUEUE/done"
+    cd /workspace
+    while true; do
+      task=$(ls "$QUEUE/backlog" 2>/dev/null | head -1)
+      if [ -n "$task" ]; then
+        mv "$QUEUE/backlog/$task" "$QUEUE/claimed/coordinator/$task" 2>/dev/null || continue
+        {
+          cat "$ROLE" 2>/dev/null
+          printf "\n\n## Task\n\n"
+          cat "$QUEUE/claimed/coordinator/$task"
+        } | claude -p --output-format text > "$QUEUE/done/${task%.md}.result.md" 2>&1 || true
+        mv "$QUEUE/claimed/coordinator/$task" "$QUEUE/done/$task" 2>/dev/null || true
+      fi
+      sleep 30
+    done
+  alert-intake.py: |-
+    """Turn Alertmanager webhook posts into guardian queue tasks.
+
+    Dedupe is by alert fingerprint across every queue state, so a still-firing
+    alert never spawns a second task while the first is anywhere in flight.
+    Resolved notifications are ignored on purpose: the guardian's result note
+    records what it found, and a task for a self-healed alert still documents
+    the blip. Fail-open HTTP 200 always - Alertmanager retries on non-2xx and
+    a poison alert must not wedge the receiver.
+    """
+    import json
+    import os
+    import re
+    from http.server import BaseHTTPRequestHandler, HTTPServer
+
+    QUEUE = "/nas/queue"
+
+
+    def seen(fingerprint):
+        for state in ("backlog", "claimed/coordinator", "done"):
+            root = os.path.join(QUEUE, state)
+            if not os.path.isdir(root):
+                continue
+            for name in os.listdir(root):
+                if fingerprint in name:
+                    return True
+        return False
+
+
+    class Handler(BaseHTTPRequestHandler):
+        def do_POST(self):
+            try:
+                raw = self.rfile.read(int(self.headers.get("Content-Length", 0)))
+                payload = json.loads(raw)
+                for alert in payload.get("alerts", []):
+                    if alert.get("status") != "firing":
+                        continue
+                    fp = alert.get("fingerprint", "nofp")
+                    if seen(fp):
+                        continue
+                    name = alert.get("labels", {}).get("alertname", "unknown")
+                    slug = re.sub(r"[^A-Za-z0-9_-]", "-", name)[:40]
+                    os.makedirs(os.path.join(QUEUE, "backlog"), exist_ok=True)
+                    path = os.path.join(QUEUE, "backlog", f"alert-{slug}-{fp}.md")
+                    tmp = path + ".partial"
+                    with open(tmp, "w") as f:
+                        f.write(f"# Alert: {name}\n\nrole: cluster-guardian\n\n")
+                        f.write("## Labels\n\n")
+                        for k, v in sorted(alert.get("labels", {}).items()):
+                            f.write(f"- {k}: {v}\n")
+                        f.write("\n## Annotations\n\n")
+                        for k, v in sorted(alert.get("annotations", {}).items()):
+                            f.write(f"- {k}: {v}\n")
+                        f.write(f"\nstartsAt: {alert.get('startsAt', '')}\n")
+                    os.rename(tmp, path)
+            except Exception:
+                pass
+            self.send_response(200)
+            self.end_headers()
+
+        def log_message(self, *args):
+            pass
+
+
+    HTTPServer(("0.0.0.0", 9096), Handler).serve_forever()
