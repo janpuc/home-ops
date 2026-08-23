@@ -10,7 +10,8 @@ spec:
       labels:
         app.kubernetes.io/name: claude-code
     spec:
-      automountServiceAccountToken: false
+      serviceAccountName: claude-code
+      automountServiceAccountToken: true
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
@@ -35,6 +36,12 @@ spec:
             - name: KOMENT_CLI_VERSION
               # renovate: datasource=github-releases depName=koment-dev/koment extractVersion=^v(?<version>.+)$
               value: "3.1.5"
+            - name: KUBECTL_VERSION
+              # renovate: datasource=github-releases depName=kubernetes/kubernetes extractVersion=^v(?<version>.+)$
+              value: "1.36.3"
+            - name: FLUX_CLI_VERSION
+              # renovate: datasource=github-releases depName=fluxcd/flux2 extractVersion=^v(?<version>.+)$
+              value: "2.9.4"
           resources:
             requests:
               cpu: 100m

@@ -1,0 +1,48 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0PHDYW2R53NX9JG5H8JJTD1
+  created: "2026-08-23T05:27:56Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/agents/claude-code/rbac.yaml
+  type: why
+  title: Read-everything plus targeted mutations, deliberately short of admin
+  body: |-
+    Janek asked (2026-08-23) for "pretty permissive RBAC to allow for debugging"
+    on the workbench. The shape: get/list/watch on * / * (including secrets and
+    CRs — full read visibility is the point), plus the mutations debugging
+    actually needs: exec/port-forward/ephemeral debug containers, pod
+    delete+evict (bouncing workloads), patch on workload controllers (rollout
+    restarts are a template-annotation patch), and patch on the Flux CRDs
+    (reconcile/suspend annotations). Deliberately NOT cluster-admin: this pod
+    runs model-directed code with outbound internet, so it cannot create
+    arbitrary workloads, mutate RBAC, or delete anything beyond pods. Widening
+    later is a one-line roleRef change to cluster-admin if the friction ever
+    warrants it. This is intentionally broader than the curated hermes SA —
+    hermes is a headless automation surface, this is Janek's interactive
+    debugging seat.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        - apiGroups: ["*"]
+          resources: ["*"]
+          verbs: ["get", "list", "watch"]
+    before: |-
+      metadata:
+        name: claude-code-debug
+      rules:
+    after: |2-
+        - apiGroups: [""]
+          resources: ["pods/exec", "pods/portforward", "pods/ephemeralcontainers", "pods/eviction"]
+          verbs: ["create"]
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+status:
+  lastSeenLine: 12
+  resolution: ok
+  resolvedAt: "2026-08-23T05:27:56Z"
+  resolvedCommit: dd478b5d5690d0ab2fa8d6f8d6ee97aa2721f605

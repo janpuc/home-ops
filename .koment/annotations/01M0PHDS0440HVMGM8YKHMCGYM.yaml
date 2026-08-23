@@ -1,0 +1,50 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0PHDS0440HVMGM8YKHMCGYM
+  created: "2026-08-23T05:27:50Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/agents/operator/kustomization.yaml
+  type: why
+  title: Operator is vendored release manifests, not a chart
+  body: |-
+    kubernetes-sigs/agent-sandbox (chosen 2026-08-22 over kagent — LLM
+    tool-agents, not CLI workbenches — and chrisbattarbee/claude-code-helm,
+    stale with 5 stars) publishes no OCI chart: only raw release manifests plus
+    an in-repo chart installable from a git checkout. A GitRepository-sourced
+    HelmRelease worked but violated the repo convention (OCI sources only), and
+    no proxy exists at ghcr.io/home-operations/charts (checked 2026-08-23, 404).
+    So this vendors upstream's primary documented install artifact,
+    sandbox-with-extensions.yaml from the v0.5.6 release, byte-identical and
+    listed under vendoredPaths in .koment/policy.yaml. It deploys into its own
+    agent-sandbox-system namespace exactly as upstream ships it, which is why
+    the agents-operator Flux Kustomization sets no targetNamespace — forcing
+    ai would break the manifest's internal namespace references (webhook
+    service, RBAC subjects). Upgrading = re-download the new release's file
+    verbatim and replace; Renovate cannot bump a vendored manifest, so the
+    version rides on release-watching. The controller watches Sandboxes
+    cluster-wide, so the claude-code Sandbox stays in ai.
+  anchor:
+    scope: excerpt
+    excerpt: |-
+      resources:
+        - ./sandbox-with-extensions.yaml
+    before: |-
+      # yaml-language-server: $schema=https://json.schemastore.org/kustomization
+      apiVersion: kustomize.config.k8s.io/v1beta1
+      kind: Kustomization
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: dd478b5d5690d0ab2fa8d6f8d6ee97aa2721f605
+    path: kubernetes/apps/ai/agents/operator/kustomization.yaml
+    line: 5
+status:
+  lastSeenLine: 5
+  resolution: ok
+  resolvedAt: "2026-08-23T05:27:50Z"
+  resolvedCommit: dd478b5d5690d0ab2fa8d6f8d6ee97aa2721f605

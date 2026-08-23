@@ -1,0 +1,57 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0PHEA25MBBWK71H751XS3W4
+  created: "2026-08-23T05:28:07Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/agents/claude-code/sandbox.yaml
+  type: why
+  title: Remote Control server loop, not official self-hosted runners
+  body: |-
+    The in-cluster Claude Code agent on Janek's Max subscription. The official
+    Claude Code self-hosted environment runners were evaluated 2026-08-22 and
+    rejected on two hard blockers: they are Team/Enterprise-only public beta (an
+    org Owner must enable them in claude.ai admin settings), and runner sessions
+    authenticate with Anthropic-issued session tokens, so inference cannot route
+    through an LLM gateway. A LiteLLM-routed Sandbox twin was built and then cut
+    for the mirror-image reason: Remote Control requires an eligible claude.ai
+    login, which a gateway-routed profile can never have. The Max-compatible
+    design is Remote Control (all plans): the main command loops `claude
+    remote-control` (server mode), so after a one-time `kubectl exec` + `/login`
+    the pod serves sessions drivable from claude.ai/code and the Claude mobile
+    app; before that first login the loop logs a failed attempt every 30s —
+    expected, not a crash. OAuth credentials persist in /home/agent/.claude on
+    the PVC, so the loop self-heals across pod restarts. The image is stock
+    node:22-bookworm (this repo builds no custom images); the init container
+    seeds claude, gh, koment, kubectl, flux, and t3 onto the home PVC, and the
+    full non-slim image is load-bearing because t3's node-pty dependency
+    compiles from source. GH_TOKEN (classic PAT, repo scope, verified to cover
+    every repo janpuc can access) plus the gh credential helper lets the agent
+    clone any of Janek's repos over HTTPS. volumeClaimTemplates are immutable
+    — resizing means delete and recreate the Sandbox (PVCs survive).
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+            containers:
+              - name: workbench
+                image: docker.io/library/node:22-bookworm
+                command: ["/bin/sh", "/opt/claude-code/run-native.sh"]
+    before: |2-
+                  - name: bootstrap
+                    mountPath: /opt/claude-code
+                    readOnly: true
+    after: |2-
+                workingDir: /workspace
+                env:
+                  - name: HOME
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+status:
+  lastSeenLine: 57
+  resolution: ok
+  resolvedAt: "2026-08-23T05:28:07Z"
+  resolvedCommit: dd478b5d5690d0ab2fa8d6f8d6ee97aa2721f605

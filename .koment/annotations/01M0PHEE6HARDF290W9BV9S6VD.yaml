@@ -2,11 +2,11 @@
 apiVersion: koment.dev/v1alpha
 kind: Annotation
 metadata:
-  id: 01M0NPWV0FRE39G54JQHCX0H4G
-  created: "2026-08-22T21:44:12Z"
+  id: 01M0PHEE6HARDF290W9BV9S6VD
+  created: "2026-08-23T05:28:11Z"
 spec:
   target:
-    file: kubernetes/apps/ai/agents/claude/sandbox.yaml
+    file: kubernetes/apps/ai/agents/claude-code/sandbox.yaml
   type: gotcha
   title: Signing key provenance and rotation
   body: |-
@@ -41,12 +41,8 @@ spec:
     name: claude-code
     kind: agent
     source: session
-  git:
-    commit: eb3030fc6e425d646123d4378d03625e6675c2d4
-    path: kubernetes/apps/ai/agents/claude/sandbox.yaml
-    line: 83
 status:
-  lastSeenLine: 83
+  lastSeenLine: 97
   resolution: ok
-  resolvedAt: "2026-08-22T21:44:12Z"
-  resolvedCommit: eb3030fc6e425d646123d4378d03625e6675c2d4
+  resolvedAt: "2026-08-23T05:28:11Z"
+  resolvedCommit: dd478b5d5690d0ab2fa8d6f8d6ee97aa2721f605

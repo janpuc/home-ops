@@ -30,6 +30,18 @@ data:
       rm -f /tmp/koment
       printf %s "$KOMENT_CLI_VERSION" > "$BIN/.koment-version"
     fi
+    if ! [ "$(cat "$BIN/.kubectl-version" 2>/dev/null)" = "$KUBECTL_VERSION" ]; then
+      curl -fsSL "https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl" -o "$BIN/kubectl.partial"
+      chmod 755 "$BIN/kubectl.partial"
+      mv "$BIN/kubectl.partial" "$BIN/kubectl"
+      printf %s "$KUBECTL_VERSION" > "$BIN/.kubectl-version"
+    fi
+    if ! [ "$(cat "$BIN/.flux-version" 2>/dev/null)" = "$FLUX_CLI_VERSION" ]; then
+      curl -fsSL "https://github.com/fluxcd/flux2/releases/download/v${FLUX_CLI_VERSION}/flux_${FLUX_CLI_VERSION}_linux_amd64.tar.gz" | tar -xz -C /tmp flux
+      install -m 755 /tmp/flux "$BIN/flux"
+      rm -f /tmp/flux
+      printf %s "$FLUX_CLI_VERSION" > "$BIN/.flux-version"
+    fi
     git config --global user.name >/dev/null 2>&1 || git config --global user.name "janpuc"
     git config --global user.email >/dev/null 2>&1 || git config --global user.email "janpuc@proton.me"
     git config --global credential.helper >/dev/null 2>&1 || git config --global credential.helper "!$BIN/gh auth git-credential"

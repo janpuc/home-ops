@@ -21,6 +21,7 @@ spec:
     vendoredPaths:
       - .venv/**
       - .github/labels.yaml
+      - kubernetes/apps/ai/agents/operator/sandbox-with-extensions.yaml
       - bootstrap/helmfile/apps.yaml
       - bootstrap/helmfile/crds.yaml
       - kubernetes/apps/media/sonarr/app/resources/refresh-series.sh
