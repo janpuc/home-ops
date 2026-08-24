@@ -27,10 +27,10 @@ spec:
         interval: 1h
         path: ./kubernetes/apps/dispatch/operator/app
   author:
-    name: janpuc
-    email: janpuc@proton.me
-    kind: human
-    source: git-config
+    name: Claude Fable 5
+    email: noreply@anthropic.com
+    kind: agent
+    source: session
 status:
   lastSeenLine: 6
   resolution: ok

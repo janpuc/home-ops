@@ -37,15 +37,15 @@ spec:
     nested refs and cannot rot the same way.
   anchor:
     scope: excerpt
-    excerpt: '    "github>home-operations/renovate-presets#7.0.0",'
+    excerpt: '    "github>home-operations/renovate-presets#8.1.0",'
     before: |-
       {
         $schema: "https://docs.renovatebot.com/renovate-schema.json",
         extends: [
     after: |2-
-          "github>home-operations/renovate-presets//apps/llamacpp.json5#7.0.0",
-          "github>home-operations/renovate-presets//apps/searxng.json5#7.0.0",
-          "github>home-operations/renovate-presets//apps/talosFactory.json5#7.0.0",
+          "github>home-operations/renovate-presets//apps/llamacpp.json5#8.1.0",
+          "github>home-operations/renovate-presets//apps/searxng.json5#8.1.0",
+          "github>home-operations/renovate-presets//apps/talosFactory.json5#8.1.0",
   author:
     name: claude-code
     kind: agent
@@ -57,5 +57,5 @@ spec:
 status:
   lastSeenLine: 4
   resolution: ok
-  resolvedAt: "2026-08-10T07:58:41Z"
-  resolvedCommit: edcd3ef2d52426714d41e3fb0e6f814d6e4035e1
+  resolvedAt: "2026-08-24T15:05:37Z"
+  resolvedCommit: 27bfb6d706b8fb03596e7a28fe11ad5d6ffcc03f

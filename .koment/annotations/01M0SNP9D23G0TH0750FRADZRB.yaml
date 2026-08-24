@@ -9,13 +9,15 @@ spec:
     file: kubernetes/apps/dispatch/operator/app/externalsecret.yaml
   type: why
   body: |-
-    The 1Password item `dispatch` must carry a CLAUDE_CREDENTIALS field holding
-    the JSON content of ~/.claude/.credentials.json from a machine logged into
-    the Claude Max plan (the long-lived token from `claude setup-token` also
-    works). The dispatch-run shim copies the rendered .credentials.json into
-    each session's persistent HOME so headless `claude -p` authenticates against
-    the subscription instead of API billing — bare mode cannot do this, which
-    is why runners run non-bare (dispatch repo, ADR-0003).
+    The 1Password item `dispatch` carries a CLAUDE_CODE_OAUTH_TOKEN field with
+    the long-lived token from `claude setup-token` on a Max-plan login. The
+    extract maps every item field 1:1 into the claude-max-primary Secret, and
+    the dispatch operator injects that Secret's keys as environment variables
+    into runner pods — CLAUDE_CODE_OAUTH_TOKEN is exactly the variable headless
+    `claude -p` reads for subscription auth, which keeps sessions off API
+    billing (dispatch repo, ADR-0003). Rotate by replacing the field in
+    1Password; add further runner env (e.g. GH_TOKEN) as new fields on the same
+    item.
   anchor:
     scope: excerpt
     excerpt: |2-
@@ -23,14 +25,13 @@ spec:
           - extract:
               key: dispatch
     before: |2-
-          template:
-            data:
-              .credentials.json: "{{ .CLAUDE_CREDENTIALS }}"
+        target:
+          name: claude-max-primary
   author:
-    name: janpuc
-    email: janpuc@proton.me
-    kind: human
-    source: git-config
+    name: Claude Fable 5
+    email: noreply@anthropic.com
+    kind: agent
+    source: session
 status:
   lastSeenLine: 16
   resolution: ok

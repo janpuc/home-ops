@@ -26,10 +26,10 @@ spec:
                   allowPrivilegeEscalation: false
                   readOnlyRootFilesystem: true
   author:
-    name: janpuc
-    email: janpuc@proton.me
-    kind: human
-    source: git-config
+    name: Claude Fable 5
+    email: noreply@anthropic.com
+    kind: agent
+    source: session
 status:
   lastSeenLine: 25
   resolution: ok
