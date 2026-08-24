@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0SNP9EPSTZYSH8WT72JDS0K
+  created: "2026-08-24T10:40:06Z"
+spec:
+  target:
+    file: kubernetes/apps/dispatch/operator/app/deployment.yaml
+  type: why
+  body: |-
+    The mutable :main tag is deliberate bootstrap state: images publish from the
+    dispatch repo's images workflow on every push to main, and no semver release
+    exists yet. Pin to a vX.Y.Z tag (Renovate-managed) once the first dispatch
+    release is cut. The single replica runs without --leader-elect because the
+    generated ClusterRole carries no coordination.k8s.io lease rules.
+  anchor:
+    scope: excerpt
+    excerpt: "          image: ghcr.io/janpuc/dispatch-operator:main"
+    before: |2-
+                type: RuntimeDefault
+            containers:
+              - name: operator
+    after: |2-
+                securityContext:
+                  allowPrivilegeEscalation: false
+                  readOnlyRootFilesystem: true
+  author:
+    name: janpuc
+    email: janpuc@proton.me
+    kind: human
+    source: git-config
+status:
+  lastSeenLine: 25
+  resolution: ok
+  resolvedAt: "2026-08-24T10:40:06Z"
+  resolvedCommit: f0152218464c2e9ed741325f7cf01e5468307be1

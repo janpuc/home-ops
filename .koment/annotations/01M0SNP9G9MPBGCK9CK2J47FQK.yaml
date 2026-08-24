@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0SNP9G9MPBGCK9CK2J47FQK
+  created: "2026-08-24T10:40:06Z"
+spec:
+  target:
+    file: kubernetes/apps/dispatch/operator/ks.yaml
+  type: why
+  body: |-
+    The operator runs without --sessions-pvc on purpose: every miroir storage
+    class provisions ReadWriteOnce only (verified against live PVs 2026-08-24),
+    so a shared session-records volume cannot be attached across runner pods.
+    Records therefore land inside each workspace PVC (dispatch ADR-0005
+    deployment note). When an RWX class exists, add a dispatch-sessions claim
+    and the --sessions-pvc flag to centralize them.
+  anchor:
+    scope: excerpt
+    excerpt: "  name: dispatch-operator"
+    before: |-
+      apiVersion: kustomize.toolkit.fluxcd.io/v1
+      kind: Kustomization
+      metadata:
+    after: |-
+      spec:
+        interval: 1h
+        path: ./kubernetes/apps/dispatch/operator/app
+  author:
+    name: janpuc
+    email: janpuc@proton.me
+    kind: human
+    source: git-config
+status:
+  lastSeenLine: 6
+  resolution: ok
+  resolvedAt: "2026-08-24T10:40:06Z"
+  resolvedCommit: f0152218464c2e9ed741325f7cf01e5468307be1
