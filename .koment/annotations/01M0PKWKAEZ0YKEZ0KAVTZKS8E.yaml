@@ -11,18 +11,22 @@ spec:
   title: Alerts are the trigger that starts agent runs
   body: |-
     Janek's directive (2026-08-23): alerts ARE the trigger for the agents
-    system. This route tees every non-noise alert (continue: true, so pushover
-    still fires) to the alert-intake container in the claude-code coordinator
-    Sandbox, which writes one queue task per alert fingerprint to
-    /nas/queue/backlog; the guardian loop in the same pod consumes them with the
-    cluster-guardian role file. sendResolved: false and firing-only intake are
-    deliberate — a resolved alert must not spawn a second triage run; the
-    dedupe key is the alert fingerprint across all queue states. The webhook URL
-    is the Sandbox's headless-service FQDN, so it survives pod recreation; the
-    blackhole routes for Watchdog/InfoInhibitor sit above and are terminal, and
-    the !~ matcher here is belt-and-braces if route order ever changes. If the
-    intake is down Alertmanager retries, and losing an alert task is acceptable:
-    the guardian's next alert-driven run sees current cluster state anyway.
+    system. Since 2026-08-24 this route tees every non-noise alert (continue:
+    true, so pushover still fires) to the dispatch operator's event gateway
+    (janpuc/dispatch), which replaced the earlier claude-code coordinator
+    Sandbox queue on the NAS. The gateway normalizes each alert into an event,
+    runs zero-token CEL gates from Trigger CRs in the dispatch namespace, and
+    creates a Session CR per surviving alert — Trigger dedupe on
+    event.data.fingerprint with a cooldown replaces the old
+    one-queue-task-per-fingerprint rule. sendResolved: false and firing-only
+    intake remain deliberate: a resolved alert must not spawn a second triage
+    run (Trigger `when` gates also filter on status == "firing"). The
+    blackhole routes for Watchdog/InfoInhibitor sit above and are terminal,
+    and the !~ matcher here is belt-and-braces if route order ever changes. If
+    the gateway is down Alertmanager retries; a lost alert is acceptable
+    because the duty agent's next alert-driven or patrol run sees current
+    cluster state anyway. With no Trigger CRs defined the gateway accepts and
+    drops everything, so this route is safe to point at a fresh install.
   anchor:
     scope: excerpt
     excerpt: |2-

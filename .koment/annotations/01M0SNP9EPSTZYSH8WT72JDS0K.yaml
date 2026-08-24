@@ -6,7 +6,7 @@ metadata:
   created: "2026-08-24T10:40:06Z"
 spec:
   target:
-    file: kubernetes/apps/dispatch/operator/app/deployment.yaml
+    file: kubernetes/apps/dispatch/operator/app/helmrelease.yaml
   type: why
   body: |-
     The mutable :main tag is deliberate bootstrap state: images publish from the
@@ -16,22 +16,23 @@ spec:
     generated ClusterRole carries no coordination.k8s.io lease rules.
   anchor:
     scope: excerpt
-    excerpt: "          image: ghcr.io/janpuc/dispatch-operator:main"
+    excerpt: |2-
+            tag: main
+            pullPolicy: Always
     before: |2-
-                type: RuntimeDefault
-            containers:
-              - name: operator
+        interval: 30m
+        values:
+          image:
     after: |2-
-                securityContext:
-                  allowPrivilegeEscalation: false
-                  readOnlyRootFilesystem: true
+          serviceMonitor:
+            enabled: true
   author:
     name: Claude Fable 5
     email: noreply@anthropic.com
     kind: agent
     source: session
 status:
-  lastSeenLine: 25
+  lastSeenLine: 14
   resolution: ok
-  resolvedAt: "2026-08-24T10:40:06Z"
-  resolvedCommit: f0152218464c2e9ed741325f7cf01e5468307be1
+  resolvedAt: "2026-08-24T15:39:44Z"
+  resolvedCommit: 4581069efd4ff0ca8d31810f59e7b704e4e8eb64

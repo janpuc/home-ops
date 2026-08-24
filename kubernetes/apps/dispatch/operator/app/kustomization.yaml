@@ -3,12 +3,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ./crds/dispatch.janpuc.com_agents.yaml
-  - ./crds/dispatch.janpuc.com_sessions.yaml
-  - ./crds/dispatch.janpuc.com_triggers.yaml
-  - ./crds/dispatch.janpuc.com_workspaces.yaml
-  - ./rbac.yaml
   - ./externalsecret.yaml
-  - ./deployment.yaml
-  - ./service.yaml
-  - ./servicemonitor.yaml
+  - ./ocirepository.yaml
+  - ./helmrelease.yaml
