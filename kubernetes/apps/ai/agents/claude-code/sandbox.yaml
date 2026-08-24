@@ -45,6 +45,9 @@ spec:
             - name: GO_VERSION
               # renovate: datasource=golang-version depName=golang
               value: "1.27.0"
+            - name: OPENCODE_VERSION
+              # renovate: datasource=npm depName=opencode-ai
+              value: "1.18.21"
           resources:
             requests:
               cpu: 50m
@@ -99,6 +102,34 @@ spec:
               readOnly: true
             - name: signing
               mountPath: /etc/claude-code/signing
+              readOnly: true
+        - name: t3serve
+          image: docker.io/library/node:22-bookworm
+          command: ["/bin/sh", "/opt/claude-code/run-t3.sh"]
+          env:
+            - name: HOME
+              value: /home/agent
+          envFrom:
+            - secretRef:
+                name: claude-code-secret
+          ports:
+            - name: t3
+              containerPort: 7333
+          resources:
+            requests:
+              cpu: 25m
+              memory: 128Mi
+            limits:
+              memory: 1Gi
+          volumeMounts:
+            - name: home
+              mountPath: /home/agent
+            - name: workspace
+              mountPath: /workspace
+            - name: nas
+              mountPath: /nas
+            - name: bootstrap
+              mountPath: /opt/claude-code
               readOnly: true
         - name: agents-bridge
           image: docker.io/library/node:22-bookworm

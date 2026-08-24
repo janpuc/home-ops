@@ -18,6 +18,33 @@ data:
     if ! [ -x "$HOME/.npm-global/bin/t3" ]; then
       npm install --global --prefix "$HOME/.npm-global" t3@latest
     fi
+    if ! [ "$("$HOME/.npm-global/bin/opencode" --version 2>/dev/null)" = "$OPENCODE_VERSION" ]; then
+      npm install --global --prefix "$HOME/.npm-global" "opencode-ai@$OPENCODE_VERSION"
+    fi
+    if ! [ -f "$HOME/.config/opencode/opencode.json" ]; then
+      mkdir -p "$HOME/.config/opencode"
+      cat > "$HOME/.config/opencode/opencode.json" <<'OCCFG'
+    {
+      "$schema": "https://opencode.ai/config.json",
+      "provider": {
+        "litellm": {
+          "npm": "@ai-sdk/openai-compatible",
+          "name": "LiteLLM",
+          "options": {
+            "baseURL": "http://litellm.ai:4000/v1",
+            "apiKey": "{env:LITELLM_API_KEY}"
+          },
+          "models": {
+            "minimax/MiniMax-M3": {},
+            "opencode-go/glm-5.2": {},
+            "opencode-go/deepseek-v4-flash-vision-exp": {},
+            "opencode-go/hy3": {}
+          }
+        }
+      }
+    }
+    OCCFG
+    fi
     ghinstalled="$("$BIN/gh" --version 2>/dev/null | head -1 | cut -d" " -f3 || true)"
     if [ "$ghinstalled" != "$GH_CLI_VERSION" ]; then
       curl -fsSL "https://github.com/cli/cli/releases/download/v${GH_CLI_VERSION}/gh_${GH_CLI_VERSION}_linux_amd64.tar.gz" | tar -xz -C /tmp
@@ -339,6 +366,16 @@ data:
             pass
     else:
         print(result_text)
+  run-t3.sh: |-
+    #!/bin/sh
+    set -u
+    PATH="$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"
+    export PATH
+    cd /workspace
+    while true; do
+      t3 serve --host 0.0.0.0 --port 7333 --no-browser --auto-bootstrap-project-from-cwd /workspace || true
+      sleep 10
+    done
   agents-bridge.py: |-
     """Matrix bridge: Janek's guidance interface to the agents queue.
 
