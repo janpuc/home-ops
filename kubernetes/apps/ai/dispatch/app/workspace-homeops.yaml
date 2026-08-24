@@ -1,0 +1,14 @@
+---
+apiVersion: dispatch.janpuc.com/v1alpha1
+kind: Workspace
+metadata:
+  name: homeops
+spec:
+  origin:
+    gitUrl: https://github.com/janpuc/home-ops.git
+    defaultBranch: main
+  storage:
+    storageClassName: miroir-slow
+    size: 10Gi
+  lease:
+    singleActiveSession: true

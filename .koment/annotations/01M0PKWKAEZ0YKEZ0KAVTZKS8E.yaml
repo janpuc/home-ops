@@ -15,8 +15,9 @@ spec:
     true, so pushover still fires) to the dispatch operator's event gateway
     (janpuc/dispatch), which replaced the earlier claude-code coordinator
     Sandbox queue on the NAS. The gateway normalizes each alert into an event,
-    runs zero-token CEL gates from Trigger CRs in the dispatch namespace, and
-    creates a Session CR per surviving alert — Trigger dedupe on
+    runs zero-token CEL gates from Trigger CRs in the ai namespace (where
+    dispatch and its guardian agent live), and creates a Session CR per
+    surviving alert — Trigger dedupe on
     event.data.fingerprint with a cooldown replaces the old
     one-queue-task-per-fingerprint rule. sendResolved: false and firing-only
     intake remain deliberate: a resolved alert must not spawn a second triage

@@ -1,0 +1,34 @@
+---
+apiVersion: dispatch.janpuc.com/v1alpha1
+kind: Agent
+metadata:
+  name: guardian
+spec:
+  description: >-
+    Watch officer for the homelab. Investigates firing alerts with read-only
+    cluster access and a home-ops checkout, and proposes fixes as dispatch/*
+    branches; never merges, never mutates the cluster.
+  runner:
+    image: ghcr.io/janpuc/dispatch-runner:main@sha256:bf644b7723fbaba4f677eb36da1d66adc38fd9e8f0ddbdc0cca17b4f3832da2a
+    cli: claude
+    credentialsRef:
+      name: claude-max-primary
+  models:
+    session: claude-fable-5
+    triage: claude-haiku-4-5
+  workspaceRef:
+    name: homeops
+  serviceAccountName: dispatch-agent-readonly
+  git:
+    author: "Guardian <guardian@dispatch.janpuc.com>"
+    pushBranches:
+      - dispatch/*
+  budgets:
+    maxConcurrentSessions: 1
+    perSession:
+      maxTurns: 80
+      timeout: 45m
+    daily:
+      maxSessions: 20
+      maxCostUSD: 15
+    subscriptionWindowReserve: 0.25

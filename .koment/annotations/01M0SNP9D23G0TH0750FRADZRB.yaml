@@ -6,7 +6,7 @@ metadata:
   created: "2026-08-24T10:40:06Z"
 spec:
   target:
-    file: kubernetes/apps/dispatch/operator/app/externalsecret.yaml
+    file: kubernetes/apps/ai/dispatch/app/externalsecret.yaml
   type: why
   body: |-
     The 1Password item `dispatch` carries a CLAUDE_CODE_OAUTH_TOKEN field with
@@ -25,6 +25,7 @@ spec:
           - extract:
               key: dispatch
     before: |2-
+          name: onepassword-connect
         target:
           name: claude-max-primary
   author:
@@ -33,7 +34,7 @@ spec:
     kind: agent
     source: session
 status:
-  lastSeenLine: 16
+  lastSeenLine: 13
   resolution: ok
-  resolvedAt: "2026-08-24T10:40:06Z"
-  resolvedCommit: f0152218464c2e9ed741325f7cf01e5468307be1
+  resolvedAt: "2026-08-24T22:14:15Z"
+  resolvedCommit: 4fe301b71d7d7ab233f51b34fda0dcddb94f270f

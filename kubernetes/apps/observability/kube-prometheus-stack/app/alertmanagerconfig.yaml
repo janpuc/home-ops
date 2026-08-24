@@ -54,7 +54,7 @@ spec:
     - name: blackhole
     - name: agents
       webhookConfigs:
-        - url: http://dispatch-operator.dispatch.svc.cluster.local:9080/hooks/alertmanager
+        - url: http://dispatch-operator.ai.svc.cluster.local:9080/hooks/alertmanager
           sendResolved: false
     - name: pushover
       pushoverConfigs:

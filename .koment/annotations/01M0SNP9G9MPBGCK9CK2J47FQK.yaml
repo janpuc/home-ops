@@ -6,7 +6,7 @@ metadata:
   created: "2026-08-24T10:40:06Z"
 spec:
   target:
-    file: kubernetes/apps/dispatch/operator/ks.yaml
+    file: kubernetes/apps/ai/dispatch/ks.yaml
   type: why
   body: |-
     The operator runs without --sessions-pvc on purpose: every miroir storage
@@ -17,7 +17,7 @@ spec:
     and the --sessions-pvc flag to centralize them.
   anchor:
     scope: excerpt
-    excerpt: "  name: dispatch-operator"
+    excerpt: "  name: dispatch"
     before: |-
       apiVersion: kustomize.toolkit.fluxcd.io/v1
       kind: Kustomization
@@ -25,7 +25,7 @@ spec:
     after: |-
       spec:
         interval: 1h
-        path: ./kubernetes/apps/dispatch/operator/app
+        path: ./kubernetes/apps/ai/dispatch/app
   author:
     name: Claude Fable 5
     email: noreply@anthropic.com
@@ -34,5 +34,5 @@ spec:
 status:
   lastSeenLine: 6
   resolution: ok
-  resolvedAt: "2026-08-24T10:40:06Z"
-  resolvedCommit: f0152218464c2e9ed741325f7cf01e5468307be1
+  resolvedAt: "2026-08-24T22:14:15Z"
+  resolvedCommit: 4fe301b71d7d7ab233f51b34fda0dcddb94f270f

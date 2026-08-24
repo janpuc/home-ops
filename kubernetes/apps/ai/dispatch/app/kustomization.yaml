@@ -6,3 +6,6 @@ resources:
   - ./externalsecret.yaml
   - ./ocirepository.yaml
   - ./helmrelease.yaml
+  - ./workspace-homeops.yaml
+  - ./agent-guardian.yaml
+  - ./trigger-guardian-alerts.yaml

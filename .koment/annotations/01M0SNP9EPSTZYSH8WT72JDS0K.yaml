@@ -6,24 +6,27 @@ metadata:
   created: "2026-08-24T10:40:06Z"
 spec:
   target:
-    file: kubernetes/apps/dispatch/operator/app/helmrelease.yaml
+    file: kubernetes/apps/ai/dispatch/app/helmrelease.yaml
   type: why
   body: |-
-    The mutable :main tag is deliberate bootstrap state: images publish from the
-    dispatch repo's images workflow on every push to main, and no semver release
-    exists yet. Pin to a vX.Y.Z tag (Renovate-managed) once the first dispatch
-    release is cut. The single replica runs without --leader-elect because the
-    generated ClusterRole carries no coordination.k8s.io lease rules.
+    The image is pinned by digest because this cluster runs spegel: the p2p
+    mirror resolves mutable tags from peer caches, so :main with pullPolicy
+    Always still served a stale digest (observed 2026-08-24 — the operator
+    CrashLoopBackOff'ed on an old image missing the gateway flag). Deploying a
+    new dispatch build means bumping this digest; move to Renovate-managed
+    vX.Y.Z tags once dispatch cuts releases. The same rule covers the runner
+    digest in agent-guardian.yaml. The single replica runs without
+    --leader-elect because the generated ClusterRole carries no
+    coordination.k8s.io lease rules.
   anchor:
     scope: excerpt
-    excerpt: |2-
-            tag: main
-            pullPolicy: Always
+    excerpt: "      tag: main@sha256:d8f57faf7981fde74d833b45cfaeda96c2ebd2dbb330c6d458b3551f158b6888"
     before: |2-
         interval: 30m
         values:
           image:
     after: |2-
+            pullPolicy: IfNotPresent
           serviceMonitor:
             enabled: true
   author:
@@ -34,5 +37,5 @@ spec:
 status:
   lastSeenLine: 14
   resolution: ok
-  resolvedAt: "2026-08-24T15:39:44Z"
-  resolvedCommit: 4581069efd4ff0ca8d31810f59e7b704e4e8eb64
+  resolvedAt: "2026-08-24T22:14:15Z"
+  resolvedCommit: 4fe301b71d7d7ab233f51b34fda0dcddb94f270f
