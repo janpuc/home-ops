@@ -23,7 +23,7 @@ spec:
       initContainers:
         - name: bootstrap
           image: docker.io/library/node:22-bookworm
-          command: ["/bin/sh", "/opt/claude-code/bootstrap.sh"]
+          command: ["/bin/sh", "/opt/agents/bootstrap.sh"]
           env:
             - name: HOME
               value: /home/agent
@@ -59,13 +59,13 @@ spec:
               mountPath: /home/agent
             - name: nas
               mountPath: /nas
-            - name: bootstrap
-              mountPath: /opt/claude-code
+            - name: scripts
+              mountPath: /opt/agents
               readOnly: true
       containers:
-        - name: workbench
+        - name: orchestrator
           image: docker.io/library/node:22-bookworm
-          command: ["/bin/sh", "/opt/claude-code/run-native.sh"]
+          command: ["/bin/sh", "/opt/agents/orchestrator.sh"]
           workingDir: /workspace
           env:
             - name: HOME
@@ -97,15 +97,46 @@ spec:
               mountPath: /workspace
             - name: nas
               mountPath: /nas
-            - name: bootstrap
-              mountPath: /opt/claude-code
+            - name: scripts
+              mountPath: /opt/agents
               readOnly: true
             - name: signing
               mountPath: /etc/claude-code/signing
               readOnly: true
-        - name: t3serve
+        - name: queue-runner
           image: docker.io/library/node:22-bookworm
-          command: ["/bin/sh", "/opt/claude-code/run-t3.sh"]
+          command: ["/bin/sh", "/opt/agents/queue-loop.sh"]
+          workingDir: /workspace
+          env:
+            - name: HOME
+              value: /home/agent
+            - name: NPM_CONFIG_PREFIX
+              value: /home/agent/.npm-global
+          envFrom:
+            - secretRef:
+                name: claude-code-secret
+          resources:
+            requests:
+              cpu: 50m
+              memory: 256Mi
+            limits:
+              memory: 4Gi
+          volumeMounts:
+            - name: home
+              mountPath: /home/agent
+            - name: workspace
+              mountPath: /workspace
+            - name: nas
+              mountPath: /nas
+            - name: scripts
+              mountPath: /opt/agents
+              readOnly: true
+            - name: signing
+              mountPath: /etc/claude-code/signing
+              readOnly: true
+        - name: t3
+          image: docker.io/library/node:22-bookworm
+          command: ["/bin/sh", "/opt/agents/surface-t3.sh"]
           env:
             - name: HOME
               value: /home/agent
@@ -128,12 +159,12 @@ spec:
               mountPath: /workspace
             - name: nas
               mountPath: /nas
-            - name: bootstrap
-              mountPath: /opt/claude-code
+            - name: scripts
+              mountPath: /opt/agents
               readOnly: true
-        - name: agents-bridge
+        - name: bridge
           image: docker.io/library/node:22-bookworm
-          command: ["python3", "/opt/claude-code/agents-bridge.py"]
+          command: ["python3", "/opt/agents/bridge-matrix.py"]
           envFrom:
             - secretRef:
                 name: claude-code-secret
@@ -146,12 +177,12 @@ spec:
           volumeMounts:
             - name: nas
               mountPath: /nas
-            - name: bootstrap
-              mountPath: /opt/claude-code
+            - name: scripts
+              mountPath: /opt/agents
               readOnly: true
-        - name: alert-intake
+        - name: intake
           image: docker.io/library/node:22-bookworm
-          command: ["python3", "/opt/claude-code/alert-intake.py"]
+          command: ["python3", "/opt/agents/intake-alerts.py"]
           ports:
             - name: alerts
               containerPort: 9096
@@ -164,8 +195,8 @@ spec:
           volumeMounts:
             - name: nas
               mountPath: /nas
-            - name: bootstrap
-              mountPath: /opt/claude-code
+            - name: scripts
+              mountPath: /opt/agents
               readOnly: true
         - name: codeserver
           # renovate: datasource=docker depName=ghcr.io/coder/code-server
@@ -197,9 +228,9 @@ spec:
             - name: nas
               mountPath: /nas
       volumes:
-        - name: bootstrap
+        - name: scripts
           configMap:
-            name: claude-code-bootstrap
+            name: agents-scripts
         - name: signing
           secret:
             secretName: claude-code-signing

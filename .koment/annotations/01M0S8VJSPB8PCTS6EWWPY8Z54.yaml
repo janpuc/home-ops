@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0S8VJSPB8PCTS6EWWPY8Z54
+  created: "2026-08-24T06:55:48Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/agents/claude-code/scripts/bootstrap.sh
+  type: gotcha
+  title: Idempotent, version-gated, and every seed is absence-gated
+  body: |-
+    Runs on every pod start against the persistent home volume and the NAS.
+    Version gates: claude/gh/opencode gate on --version output,
+    koment/kubectl/flux/go on marker files — without gates every restart pays
+    a ~340 MB claude download. The `.partial` + `mv` dance prevents a crashed
+    download from leaving a half-written binary the gate would then execute.
+    Every NAS seed (roles, claude-queue-settings.json, opencode.json) is
+    absence-gated so live edits — the roles are deliberately data, editable in
+    code-server — survive restarts; to re-seed, delete the file. The
+    guardian-permissions→claude-queue-settings copy is a one-time rename
+    migration. The memini plugin steps swallow failures with a warning instead
+    of letting set -eu kill the init container. Git identity, credential helper
+    (written directly — `gh auth setup-git` fails without a token in init),
+    and signing config are set-if-unset.
+  anchor:
+    scope: excerpt
+    excerpt: installed="$("$BIN/claude" --version 2>/dev/null | cut -d" " -f1 || true)"
+    before: |-
+      set -eu
+      BIN="$HOME/.local/bin"
+      mkdir -p "$BIN" "$HOME/.npm-global"
+    after: |-
+      if [ "$installed" != "$CLAUDE_CODE_VERSION" ]; then
+        curl -fsSL "https://downloads.claude.ai/claude-code-releases/${CLAUDE_CODE_VERSION}/linux-x64/claude" -o "$BIN/claude.partial"
+        chmod 755 "$BIN/claude.partial"
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+status:
+  lastSeenLine: 5
+  resolution: ok
+  resolvedAt: "2026-08-24T06:55:48Z"
+  resolvedCommit: a8298d6bf56037230074dc9cf7be8f395aeb2414
