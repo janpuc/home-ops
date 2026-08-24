@@ -34,13 +34,13 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: agents-claude-code
+  name: agents-orchestrator
 spec:
   dependsOn:
     - name: agents-operator
       namespace: ai
   interval: 1h
-  path: ./kubernetes/apps/ai/agents/claude-code
+  path: ./kubernetes/apps/ai/agents/orchestrator
   prune: true
   sourceRef:
     kind: GitRepository

@@ -6,7 +6,7 @@ metadata:
   created: "2026-08-23T05:27:56Z"
 spec:
   target:
-    file: kubernetes/apps/ai/agents/claude-code/rbac.yaml
+    file: kubernetes/apps/ai/agents/orchestrator/rbac.yaml
   type: why
   title: Read-everything plus targeted mutations, deliberately short of admin
   body: |-
@@ -31,7 +31,7 @@ spec:
           verbs: ["get", "list", "watch"]
     before: |-
       metadata:
-        name: claude-code-debug
+        name: orchestrator-debug
       rules:
     after: |2-
         - apiGroups: [""]
@@ -44,5 +44,5 @@ spec:
 status:
   lastSeenLine: 12
   resolution: ok
-  resolvedAt: "2026-08-23T05:27:56Z"
-  resolvedCommit: dd478b5d5690d0ab2fa8d6f8d6ee97aa2721f605
+  resolvedAt: "2026-08-24T07:00:01Z"
+  resolvedCommit: bac76b9afd2b29edbfddb312a1dfc949aad3d473

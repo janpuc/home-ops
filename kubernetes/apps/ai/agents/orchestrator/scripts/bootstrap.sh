@@ -74,7 +74,7 @@ git config --global user.email >/dev/null 2>&1 || git config --global user.email
 git config --global credential.helper >/dev/null 2>&1 || git config --global credential.helper "!$BIN/gh auth git-credential"
 if ! git config --global gpg.format >/dev/null 2>&1; then
   git config --global gpg.format ssh
-  git config --global user.signingkey /etc/claude-code/signing/id_ed25519
+  git config --global user.signingkey /etc/agents/signing/id_ed25519
   git config --global commit.gpgsign true
 fi
 if [ -d /nas ]; then

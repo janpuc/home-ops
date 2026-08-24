@@ -6,7 +6,7 @@ metadata:
   created: "2026-08-24T06:55:42Z"
 spec:
   target:
-    file: kubernetes/apps/ai/agents/claude-code/scripts/queue-loop.sh
+    file: kubernetes/apps/ai/agents/orchestrator/scripts/queue-loop.sh
   type: why
   title: "Role routes to runtime: OpenCode for triage, Claude only on escalation"
   body: |-
@@ -46,5 +46,5 @@ spec:
 status:
   lastSeenLine: 25
   resolution: ok
-  resolvedAt: "2026-08-24T06:55:42Z"
-  resolvedCommit: a8298d6bf56037230074dc9cf7be8f395aeb2414
+  resolvedAt: "2026-08-24T07:00:07Z"
+  resolvedCommit: bac76b9afd2b29edbfddb312a1dfc949aad3d473

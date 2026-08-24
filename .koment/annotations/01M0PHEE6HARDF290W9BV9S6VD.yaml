@@ -6,7 +6,7 @@ metadata:
   created: "2026-08-23T05:28:11Z"
 spec:
   target:
-    file: kubernetes/apps/ai/agents/claude-code/sandbox.yaml
+    file: kubernetes/apps/ai/agents/orchestrator/sandbox.yaml
   type: gotcha
   title: Signing key provenance and rotation
   body: |-
@@ -27,22 +27,22 @@ spec:
     excerpt: |2-
               - name: signing
                 secret:
-                  secretName: claude-code-signing
+                  secretName: orchestrator-signing
                   defaultMode: 288
     before: |2-
-              - name: bootstrap
+              - name: scripts
                 configMap:
-                  name: claude-code-bootstrap
+                  name: agents-scripts
     after: |2-
-        volumeClaimTemplates:
-          - metadata:
-              name: home
+              - name: nas
+                nfs:
+                  server: bigmouth.internal
   author:
     name: claude-code
     kind: agent
     source: session
 status:
-  lastSeenLine: 97
+  lastSeenLine: 234
   resolution: ok
-  resolvedAt: "2026-08-23T05:28:11Z"
-  resolvedCommit: dd478b5d5690d0ab2fa8d6f8d6ee97aa2721f605
+  resolvedAt: "2026-08-24T07:00:27Z"
+  resolvedCommit: bac76b9afd2b29edbfddb312a1dfc949aad3d473

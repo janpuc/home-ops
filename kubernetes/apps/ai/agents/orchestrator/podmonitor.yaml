@@ -3,11 +3,11 @@
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
-  name: claude-code
+  name: orchestrator
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: claude-code
+      app.kubernetes.io/name: orchestrator
   podMetricsEndpoints:
     - port: alerts
       path: /metrics

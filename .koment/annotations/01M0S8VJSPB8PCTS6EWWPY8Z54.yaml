@@ -6,7 +6,7 @@ metadata:
   created: "2026-08-24T06:55:48Z"
 spec:
   target:
-    file: kubernetes/apps/ai/agents/claude-code/scripts/bootstrap.sh
+    file: kubernetes/apps/ai/agents/orchestrator/scripts/bootstrap.sh
   type: gotcha
   title: Idempotent, version-gated, and every seed is absence-gated
   body: |-
@@ -41,5 +41,5 @@ spec:
 status:
   lastSeenLine: 5
   resolution: ok
-  resolvedAt: "2026-08-24T06:55:48Z"
-  resolvedCommit: a8298d6bf56037230074dc9cf7be8f395aeb2414
+  resolvedAt: "2026-08-24T07:00:09Z"
+  resolvedCommit: bac76b9afd2b29edbfddb312a1dfc949aad3d473

@@ -2,15 +2,15 @@
 apiVersion: agents.x-k8s.io/v1beta1
 kind: Sandbox
 metadata:
-  name: claude-code
+  name: orchestrator
 spec:
   service: true
   podTemplate:
     metadata:
       labels:
-        app.kubernetes.io/name: claude-code
+        app.kubernetes.io/name: orchestrator
     spec:
-      serviceAccountName: claude-code
+      serviceAccountName: orchestrator
       automountServiceAccountToken: true
       securityContext:
         runAsNonRoot: true
@@ -80,7 +80,7 @@ spec:
               value: /home/agent/.local/bin:/home/agent/.local/go/bin:/home/agent/.npm-global/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
           envFrom:
             - secretRef:
-                name: claude-code-secret
+                name: orchestrator-secret
           ports:
             - name: otel
               containerPort: 9464
@@ -101,7 +101,7 @@ spec:
               mountPath: /opt/agents
               readOnly: true
             - name: signing
-              mountPath: /etc/claude-code/signing
+              mountPath: /etc/agents/signing
               readOnly: true
         - name: queue-runner
           image: docker.io/library/node:22-bookworm
@@ -114,7 +114,7 @@ spec:
               value: /home/agent/.npm-global
           envFrom:
             - secretRef:
-                name: claude-code-secret
+                name: orchestrator-secret
           resources:
             requests:
               cpu: 50m
@@ -132,7 +132,7 @@ spec:
               mountPath: /opt/agents
               readOnly: true
             - name: signing
-              mountPath: /etc/claude-code/signing
+              mountPath: /etc/agents/signing
               readOnly: true
         - name: t3
           image: docker.io/library/node:22-bookworm
@@ -142,7 +142,7 @@ spec:
               value: /home/agent
           envFrom:
             - secretRef:
-                name: claude-code-secret
+                name: orchestrator-secret
           ports:
             - name: t3
               containerPort: 7333
@@ -167,7 +167,7 @@ spec:
           command: ["python3", "/opt/agents/bridge-matrix.py"]
           envFrom:
             - secretRef:
-                name: claude-code-secret
+                name: orchestrator-secret
           resources:
             requests:
               cpu: 10m
@@ -233,7 +233,7 @@ spec:
             name: agents-scripts
         - name: signing
           secret:
-            secretName: claude-code-signing
+            secretName: orchestrator-signing
             defaultMode: 288
         - name: nas
           nfs:
