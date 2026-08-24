@@ -22,7 +22,7 @@ spec:
           type: RuntimeDefault
       initContainers:
         - name: bootstrap
-          image: docker.io/library/node:22-bookworm
+          image: docker.io/library/node:24-bookworm
           command: ["/bin/sh", "/opt/agents/bootstrap.sh"]
           env:
             - name: HOME
@@ -64,7 +64,7 @@ spec:
               readOnly: true
       containers:
         - name: orchestrator
-          image: docker.io/library/node:22-bookworm
+          image: docker.io/library/node:24-bookworm
           command: ["/bin/sh", "/opt/agents/orchestrator.sh"]
           workingDir: /workspace
           env:
@@ -104,7 +104,7 @@ spec:
               mountPath: /etc/agents/signing
               readOnly: true
         - name: queue-runner
-          image: docker.io/library/node:22-bookworm
+          image: docker.io/library/node:24-bookworm
           command: ["/bin/sh", "/opt/agents/queue-loop.sh"]
           workingDir: /workspace
           env:
@@ -135,7 +135,7 @@ spec:
               mountPath: /etc/agents/signing
               readOnly: true
         - name: t3
-          image: docker.io/library/node:22-bookworm
+          image: docker.io/library/node:24-bookworm
           command: ["/bin/sh", "/opt/agents/surface-t3.sh"]
           env:
             - name: HOME
@@ -163,7 +163,7 @@ spec:
               mountPath: /opt/agents
               readOnly: true
         - name: bridge
-          image: docker.io/library/node:22-bookworm
+          image: docker.io/library/node:24-bookworm
           command: ["python3", "/opt/agents/bridge-matrix.py"]
           envFrom:
             - secretRef:
@@ -181,7 +181,7 @@ spec:
               mountPath: /opt/agents
               readOnly: true
         - name: intake
-          image: docker.io/library/node:22-bookworm
+          image: docker.io/library/node:24-bookworm
           command: ["python3", "/opt/agents/intake-alerts.py"]
           ports:
             - name: alerts
