@@ -23,6 +23,7 @@ spec:
       containers:
         - name: operator
           image: ghcr.io/janpuc/dispatch-operator:main
+          imagePullPolicy: Always
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
