@@ -10,7 +10,6 @@ components:
 
 resources:
   - ./namespace.yaml
-  - ./alacarte/ks.yaml
   - ./autobrr/ks.yaml
   - ./qbittorrent/ks.yaml
   - ./qui/ks.yaml
