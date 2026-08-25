@@ -10,7 +10,7 @@ spec:
     branches, and delegates bulk work to MiniMax-backed worker sessions.
     Never merges, never mutates the cluster.
   runner:
-    image: ghcr.io/janpuc/dispatch-runner:main@sha256:2cd3af547ad0821a09cd86c9e2f83325c44e95dccb462dd5451d7dd33ea5fb17
+    image: ghcr.io/janpuc/dispatch-runner:main@sha256:9607a2ff86239aacd5ecfb161e082e35a47e2e09617a72dd98a47eb886424801
     cli: claude
     credentialsRef:
       name: claude-max-primary
