@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0WAB3VQSGNSG98F85QW7H2M
+  created: "2026-08-25T11:19:29Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/kustomization.yaml
+  type: why
+  title: dispatch is intentionally absent, not forgotten
+  body: |-
+    `./dispatch/ks.yaml` is deliberately missing from this list. The app was
+    disabled in commit `d4ddfe00` ("chore: disable dispatch for now"), which
+    carried the line as a commented-out entry; that comment is now this
+    annotation.
+
+    Everything under `kubernetes/apps/ai/dispatch/` is still on disk and
+    unmodified — the operator, its agents, workspaces and triggers. Only the
+    Flux Kustomization reference was withdrawn, so Flux pruned the `dispatch`
+    Kustomization from the cluster while the manifests stayed in git.
+
+    Re-enable by adding ` - ./dispatch/ks.yaml` back to `resources`. Nothing
+    else needs restoring.
+
+    Do not treat the absence as dead code and delete the directory. "For now"
+    was the stated intent, and the manifests are being kept precisely so the
+    decision can be reversed with a one-line change.
+  anchor:
+    scope: excerpt
+    excerpt: |-
+      resources:
+        - ./namespace.yaml
+        - ./hermes/ks.yaml
+    before: |2
+        - ../../components/alerts
+        - ../../components/kopiur/secret
+    after: |2-
+        - ./hermes-matrix/ks.yaml
+        - ./litellm/ks.yaml
+        - ./litellm-operator/ks.yaml
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: d4ddfe001b2d8945147c66bcc561534a57e609f6
+    path: kubernetes/apps/ai/kustomization.yaml
+    line: 11
+status:
+  lastSeenLine: 11
+  resolution: ok
+  resolvedAt: "2026-08-25T11:19:29Z"
+  resolvedCommit: d4ddfe001b2d8945147c66bcc561534a57e609f6
