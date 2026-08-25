@@ -4,6 +4,8 @@ kind: ConfigMap
 metadata:
   name: t3-code-configmap
 data:
+  machine-info: |-
+    PRETTY_HOSTNAME="Cluster"
   t3code.toml: |-
     [server]
     host = "0.0.0.0"

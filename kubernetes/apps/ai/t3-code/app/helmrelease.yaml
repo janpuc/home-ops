@@ -212,6 +212,15 @@ spec:
           t3-code:
             init-config:
               - path: /run/config
+      machine-info:
+        type: configMap
+        name: t3-code-configmap
+        advancedMounts:
+          t3-code:
+            app:
+              - path: /etc/machine-info
+                subPath: machine-info
+                readOnly: true
       tmp:
         type: emptyDir
         globalMounts:

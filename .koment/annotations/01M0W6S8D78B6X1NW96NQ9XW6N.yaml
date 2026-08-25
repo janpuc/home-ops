@@ -1,0 +1,64 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0W6S8D78B6X1NW96NQ9XW6N
+  created: "2026-08-25T10:17:18Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
+  type: why
+  title: This file is the environment name clients display
+  body: |-
+    Without this mount the T3 client shows the pod name —
+    `t3-code-85dcd5fdbf-zrpqh` — which changes on every rollout, so the same
+    backend appears under a new name after each deploy.
+
+    T3 resolves its `ExecutionEnvironmentDescriptor.label` on Linux by reading
+    `PRETTY_HOSTNAME` from `/etc/machine-info`, then falling back to
+    `hostnamectl --pretty`, then the raw hostname. Neither of the first two
+    exists in this image, so it lands on the hostname, which Kubernetes sets to
+    the pod name.
+
+    Mounting rather than writing is deliberate. `/etc` is root-owned and the
+    container runs as uid 1000, so the init container cannot create this file. A
+    ConfigMap subPath mount installs it without root and keeps the value
+    declarative.
+
+    `PRETTY_HOSTNAME` is not a DNS label, so it accepts arbitrary casing.
+    `spec.hostname: cluster` would also stabilise the name but is restricted to
+    a lowercase DNS label and could not produce `Cluster`.
+
+    One failure mode to know: if the `machine-info` key is ever removed from the
+    ConfigMap while this mount stays, kubelet does not fail — it silently
+    creates an empty *directory* at `/etc/machine-info`. T3's existence check
+    then passes, the read fails, and it quietly falls back to the pod name.
+    Confirmed by hitting exactly that while testing. If the name reverts after a
+    change here, check that the key still exists before suspecting T3.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+                    - path: /etc/machine-info
+                      subPath: machine-info
+                      readOnly: true
+    before: |2-
+              advancedMounts:
+                t3-code:
+                  app:
+    after: |2-
+            tmp:
+              type: emptyDir
+              globalMounts:
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: b917d04c1e5de95d21a7a16f9d5e3e5368581647
+    path: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
+    line: 221
+status:
+  lastSeenLine: 221
+  resolution: ok
+  resolvedAt: "2026-08-25T10:17:18Z"
+  resolvedCommit: b917d04c1e5de95d21a7a16f9d5e3e5368581647
