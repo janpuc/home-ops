@@ -4,6 +4,48 @@ kind: ConfigMap
 metadata:
   name: t3-code-configmap
 data:
+  normalize-openssh-key.py: |-
+    import pathlib
+    import sys
+
+    HEADER = "-----BEGIN OPENSSH PRIVATE KEY-----"
+    FOOTER = "-----END OPENSSH PRIVATE KEY-----"
+    WRAP_COLUMNS = 70
+
+
+    def rewrap_openssh_private_key(raw: str) -> str:
+        body = "".join(raw.replace(HEADER, "").replace(FOOTER, "").split())
+        if not body:
+            raise SystemExit("source holds no OpenSSH private key body")
+        chunks = [body[i:i + WRAP_COLUMNS] for i in range(0, len(body), WRAP_COLUMNS)]
+        return "\n".join([HEADER] + chunks + [FOOTER, ""])
+
+
+    source = pathlib.Path(sys.argv[1])
+    target = pathlib.Path(sys.argv[2])
+    target.write_text(rewrap_openssh_private_key(source.read_text()))
+    target.chmod(0o600)
+  gitconfig: |-
+    [user]
+    	name = janpuc
+    	email = janpuc@proton.me
+    	signingkey = /data/home/.ssh/id_signing.pub
+    [gpg]
+    	format = ssh
+    [gpg "ssh"]
+    	allowedSignersFile = /data/home/.ssh/allowed_signers
+    [commit]
+    	gpgsign = true
+    [tag]
+    	gpgsign = true
+    [credential "https://github.com"]
+    	helper = !gh auth git-credential
+    [init]
+    	defaultBranch = main
+    [push]
+    	autoSetupRemote = true
+    [pull]
+    	rebase = true
   machine-info: |-
     PRETTY_HOSTNAME="Cluster"
   t3code.toml: |-
@@ -190,12 +232,6 @@ data:
       }
     }
   codex-config.toml: |-
-    [model_providers.litellm]
-    name = "LiteLLM"
-    base_url = "http://litellm.ai.svc.cluster.local:4000/v1"
-    env_key = "LITELLM_API_KEY"
-    wire_api = "responses"
-
     [mcp_servers.koment]
     command = "koment"
     args = ["mcp", "--write"]
@@ -299,6 +335,7 @@ data:
       },
       "model": "litellm/minimax/MiniMax-M3",
       "small_model": "litellm/opencode-go/hy3",
+      "plugin": ["@eleboucher/opencode-memini", "@koment/opencode-koment"],
       "mcp": {
         "koment": {
           "type": "local",

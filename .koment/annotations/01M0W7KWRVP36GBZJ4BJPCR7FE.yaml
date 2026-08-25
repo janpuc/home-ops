@@ -1,0 +1,62 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0W7KWRVP36GBZJ4BJPCR7FE
+  created: "2026-08-25T10:31:51Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
+  type: gotcha
+  title: 1Password stores the signing key on one line; it must be rewrapped
+  body: |-
+    A plain `install` of the mounted key does not work, and the failure is
+    misleading.
+
+    `SSH_SIGNING_KEY` in the 1Password `t3-code` item arrives as a **single
+    line** — the newlines were collapsed to spaces when the value was saved.
+    OpenSSH requires the header, a wrapped base64 body, and the footer on
+    separate lines, so ssh-keygen cannot load it and git aborts the commit with:
+
+    error: No private key found for "/data/home/.ssh/id_signing"? fatal: failed
+    to write commit object
+
+    That names the path, which reads like the file is missing or the permissions
+    are wrong. It is neither: the file exists, is mode 0600, and is owned by the
+    right uid. Only its line structure is wrong.
+
+    The normalizer strips all whitespace from the body and rewraps at 70
+    columns, so it is correct whether the field is stored flat or already
+    wrapped. Fixing the 1Password field instead would work today and silently
+    regress the next time the value is re-pasted.
+
+    Verified end to end from a pod on this image: the rebuilt key loads, its
+    fingerprint `SHA256:sGvpOUgEVjXsip/pfYIQJllFVUaJLTTW2Ynyx/IRB88` matches
+    `SSH_SIGNING_PUB`, and `git verify-commit` reports a good signature.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+                      python3 /run/config/normalize-openssh-key.py \
+                        /run/secrets/git-signing/id_signing \
+                        /data/home/.ssh/id_signing
+    before: |2-
+                      install -m 0644 /run/config/mise.toml /data/home/.config/mise/config.toml
+
+                      install -d -m 0700 /data/home/.ssh
+    after: |2-
+                      install -m 0644 /run/secrets/git-signing/id_signing.pub /data/home/.ssh/id_signing.pub
+                      install -m 0644 /run/config/gitconfig /data/home/.gitconfig
+                      printf '%s %s\n' \
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: ea4af3c206ca98e0df4e3517906d68bb2b8404c6
+    path: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
+    line: 55
+status:
+  lastSeenLine: 55
+  resolution: ok
+  resolvedAt: "2026-08-25T10:31:51Z"
+  resolvedCommit: ea4af3c206ca98e0df4e3517906d68bb2b8404c6

@@ -51,6 +51,18 @@ spec:
                 mkdir -p /data/home/.config/mise
                 install -m 0644 /run/config/mise.toml /data/home/.config/mise/config.toml
 
+                install -d -m 0700 /data/home/.ssh
+                python3 /run/config/normalize-openssh-key.py \
+                  /run/secrets/git-signing/id_signing \
+                  /data/home/.ssh/id_signing
+                install -m 0644 /run/secrets/git-signing/id_signing.pub /data/home/.ssh/id_signing.pub
+                install -m 0644 /run/config/gitconfig /data/home/.gitconfig
+                printf '%s %s\n' \
+                  "$(git config -f /data/home/.gitconfig user.email)" \
+                  "$(cat /data/home/.ssh/id_signing.pub)" \
+                  > /data/home/.ssh/allowed_signers
+                chmod 0644 /data/home/.ssh/allowed_signers
+
                 mkdir -p /data/t3/userdata
                 if ! jq -e . /data/t3/userdata/settings.json >/dev/null 2>&1; then
                   install -m 0600 /run/config/t3-selection.json /data/t3/userdata/settings.json
@@ -73,6 +85,7 @@ spec:
                   || echo "codex plugin marketplace unavailable; memini reaches Codex over MCP"
                 codex plugin add memini@memini \
                   || echo "codex plugin install unavailable; memini reaches Codex over MCP"
+                codex plugin list || true
             securityContext: &containerSecurity
               allowPrivilegeEscalation: false
               capabilities:
@@ -212,6 +225,14 @@ spec:
           t3-code:
             init-config:
               - path: /run/config
+      git-signing:
+        type: secret
+        name: t3-code-git-signing
+        defaultMode: 0o440
+        advancedMounts:
+          t3-code:
+            init-config:
+              - path: /run/secrets/git-signing
       machine-info:
         type: configMap
         name: t3-code-configmap

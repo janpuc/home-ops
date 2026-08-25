@@ -1,0 +1,57 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0W7M7HRMTMJ49DAVFHMRPHG
+  created: "2026-08-25T10:32:02Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/t3-code/app/configmap.yaml
+  type: invariant
+  title: Agents here commit, sign and push as a real human identity
+  body: |-
+    This config gives every agent in the pod the ability to author, sign and
+    push commits that GitHub attributes to a person, not a bot. Treat it as a
+    credential boundary.
+
+    Three pieces make that work together. Commits are authored as `janpuc
+    <janpuc@proton.me>`, so GitHub attributes them by email. They are signed
+    with the ed25519 key from 1Password, registered on GitHub as the
+    `claude-code-agent@home-ops` signing key, which is why they render
+    **Verified** rather than merely claiming the identity. Pushes authenticate
+    through `gh auth git-credential`, which reads `GH_TOKEN` — the `janpuc`
+    PAT carrying `repo` scope, so it reaches every repository that account can
+    write.
+
+    `commit.gpgsign = true` is deliberate. An unsigned commit from this pod
+    would still be attributed to the human by email while being
+    indistinguishable from a forgery, so signing is what makes the attribution
+    meaningful.
+
+    The consequence worth stating plainly: an agent that acts on untrusted
+    repository content can push signed, verified commits under a human identity.
+    The signing key is separate from the human's own laptop key, so it can be
+    revoked on GitHub independently without disturbing local signing — that
+    separation is the containment mechanism and should be preserved.
+
+    `allowed_signers` is generated at init from the mounted public key rather
+    than hardcoded, so it cannot drift from whatever key the secret actually
+    carries.
+  anchor:
+    scope: excerpt
+    excerpt: "    [commit]\n    \tgpgsign = true"
+    before: "    \tformat = ssh\n    [gpg \"ssh\"]\n    \tallowedSignersFile = /data/home/.ssh/allowed_signers"
+    after: "    [tag]\n    \tgpgsign = true\n    [credential \"https://github.com\"]"
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: ea4af3c206ca98e0df4e3517906d68bb2b8404c6
+    path: kubernetes/apps/ai/t3-code/app/configmap.yaml
+    line: 37
+status:
+  lastSeenLine: 37
+  resolution: ok
+  resolvedAt: "2026-08-25T10:32:02Z"
+  resolvedCommit: ea4af3c206ca98e0df4e3517906d68bb2b8404c6

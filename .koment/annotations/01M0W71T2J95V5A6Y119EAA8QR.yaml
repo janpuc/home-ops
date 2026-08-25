@@ -1,0 +1,64 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0W71T2J95V5A6Y119EAA8QR
+  created: "2026-08-25T10:21:58Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/t3-code/app/configmap.yaml
+  type: invariant
+  title: One model backend per provider; do not cross-wire them
+  body: |-
+    The three enabled providers each own exactly one model backend, and that
+    separation is the point rather than an accident:
+
+    - claude -> Anthropic directly, on `CLAUDE_CODE_OAUTH_TOKEN`.
+    `ANTHROPIC_BASE_URL` is deliberately unset. - codex -> OpenAI, on a ChatGPT
+    device login persisted in `/data/codex`. No `model_provider` and no
+    `model_providers` table. - opencode -> LiteLLM, the only provider carrying
+    the MiniMax/GLM/Qwen/Kimi set.
+
+    An earlier revision defined `[model_providers.litellm]` in this Codex config
+    without selecting it, on the theory that it cost nothing and kept a switch
+    one line away. It was not free. It carried `wire_api = "chat"`, which
+    codex-cli 0.146 rejects outright, and because Codex fails on config *parse*,
+    that broke every `codex` invocation including `t3-auth codex login` — the
+    command that gives Codex its only credential. An unused convenience block
+    took out the provider it was meant to help.
+
+    So: if Codex should ever move to LiteLLM, change it deliberately and verify
+    `codex login status` still runs. Do not leave an unselected provider block
+    sitting here.
+
+    `LITELLM_API_KEY` still appears in every provider's environment, and that is
+    not a contradiction — it is the bearer for the LiteLLM *MCP gateway*
+    (`/mcp/<alias>/mcp`), which is tool access, not model routing.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        codex-config.toml: |-
+          [mcp_servers.koment]
+          command = "koment"
+          args = ["mcp", "--write"]
+    before: |2-
+              }
+            }
+          }
+    after: |2-
+
+          [mcp_servers.memini]
+          url = "http://memini.ai.svc.cluster.local:8080/mcp"
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: ea4af3c206ca98e0df4e3517906d68bb2b8404c6
+    path: kubernetes/apps/ai/t3-code/app/configmap.yaml
+    line: 192
+status:
+  lastSeenLine: 192
+  resolution: ok
+  resolvedAt: "2026-08-25T10:21:58Z"
+  resolvedCommit: ea4af3c206ca98e0df4e3517906d68bb2b8404c6
