@@ -10,21 +10,20 @@ spec:
   type: why
   title: kube-apiserver LB can use Local safely; not like Envoy
   body: |-
-    Local is safe here and deliberately differs from the Envoy gateway service,
-    which must use Cluster. kube-apiserver is a static pod on every
-    control-plane node and all three nodes in this cluster are control-plane, so
-    whichever node Cilium hands the L2 lease to always has a local endpoint. The
-    pod-less-node blackhole that forces Cluster on the Envoy service cannot
-    happen for this Service.
-
-    Local also keeps the real client address on API requests. Do not harmonise
-    these two settings in either direction without checking endpoint coverage
-    per node first.
+    Cluster is required even though kube-apiserver runs as a static pod on every
+    control-plane node. Cilium can keep the L2 lease on a node after its local
+    API becomes unready; the endpoints controller then removes that local
+    endpoint, and externalTrafficPolicy Local rejects the VIP traffic instead of
+    forwarding it to a healthy control-plane peer. The 2026-08-25 incident
+    demonstrated k8s-0 advertising the VIP and refusing connections while the
+    direct APIs on k8s-1 and k8s-2 remained healthy. API availability therefore
+    takes precedence over preserving the original client address for this
+    Service.
   anchor:
     scope: excerpt
     excerpt: |2-
         type: LoadBalancer
-        externalTrafficPolicy: Local
+        externalTrafficPolicy: Cluster
     before: |2-
           external-dns.alpha.kubernetes.io/hostname: k8s.janpuc.com
           lbipam.cilium.io/ips: 192.168.69.50
@@ -43,3 +42,6 @@ spec:
     line: 42
 status:
   lastSeenLine: 42
+  resolution: ok
+  resolvedAt: "2026-08-25T12:06:52Z"
+  resolvedCommit: 34165753104a3fc37ff7f7f5b051a005f1b31b1a

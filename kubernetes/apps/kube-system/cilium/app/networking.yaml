@@ -40,7 +40,7 @@ metadata:
     lbipam.cilium.io/ips: 192.168.69.50
 spec:
   type: LoadBalancer
-  externalTrafficPolicy: Local
+  externalTrafficPolicy: Cluster
   selector:
     k8s-app: kube-apiserver
     tier: control-plane

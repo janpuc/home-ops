@@ -10,6 +10,8 @@ spec:
     name: miroir
   interval: 1h
   values:
+    agent:
+      peerFence: true
     autoEvictAfter: 1h
     autoDiskfulAfter: 10m
     drbd:
