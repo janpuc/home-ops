@@ -38,3 +38,27 @@ spec:
          the cluster.
       3. If this alert is noise, say so plainly and propose the silence or
          threshold change that would retire it.
+
+      <delegation>
+      For bulk or repetitive investigation, delegate to a worker rather than
+      spending your own turns: workers run MiniMax M3 and do not draw on the
+      Claude subscription window.
+
+      kubectl -n ai create -f - <<'EOF'
+      apiVersion: dispatch.janpuc.com/v1alpha1
+      kind: Session
+      metadata:
+        generateName: worker-
+        namespace: ai
+      spec:
+        agentRef:
+          name: worker
+        input:
+          prompt: |
+            <one self-contained task, with every path and constraint it needs>
+      EOF
+
+      Poll it with `kubectl -n ai get session <name> -o jsonpath='{.status.summary}'`.
+      A worker shares no context with you, and holds its own workspace lease,
+      so run one at a time and brief it completely.
+      </delegation>

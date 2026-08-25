@@ -9,20 +9,20 @@ spec:
     file: kubernetes/apps/ai/dispatch/app/agent-guardian.yaml
   type: why
   body: |-
-    Sonnet 5, not Fable 5, because the guardian shares one Claude Max usage
-    window with Janek's interactive sessions. On 2026-08-24 the first guardian
-    fleet ran Fable 5 and exhausted the top-tier window within the hour ("You're
-    out of usage credits" in every session's termination message); Haiku still
-    had quota at the same moment, so the exhaustion is per-tier, not
-    account-wide. Sonnet 5 gives near-Opus agentic and coding quality at a
-    fraction of the window burn, which is the right default for an always-on
-    duty agent that fires on every alert. Raise a single session to Fable or
-    Opus deliberately when a task earns it, rather than paying top tier for
-    routine triage. ADR-0004's subscriptionWindowReserve is the structural fix
-    and is not implemented yet — the reserve field here is inert.
+    Opus 5 is Janek's call (2026-08-25): the guardian is the one agent whose
+    judgement is worth top-tier tokens. It is not Fable 5 — on 2026-08-24 a
+    Fable guardian exhausted the shared Claude Max window within the hour
+    ("You're out of usage credits" in every session's termination message,
+    while Haiku still answered, so exhaustion is per-tier rather than
+    account-wide). Opus 5 is half Fable's price for comparable agentic work.
+    The window is shared with Janek's interactive sessions, so the guardian
+    must stay frugal: it delegates bulk work to the `worker` agent, which runs
+    MiniMax M3 through litellm and spends no subscription quota at all.
+    ADR-0004's subscriptionWindowReserve is the structural fix and is still
+    inert — the reserve field below does nothing yet.
   anchor:
     scope: excerpt
-    excerpt: "    session: claude-sonnet-5"
+    excerpt: "    session: claude-opus-5"
     before: |2-
           credentialsRef:
             name: claude-max-primary
@@ -41,7 +41,7 @@ spec:
     path: kubernetes/apps/ai/dispatch/app/agent-guardian.yaml
     line: 17
 status:
-  lastSeenLine: 17
+  lastSeenLine: 18
   resolution: ok
-  resolvedAt: "2026-08-25T06:16:51Z"
-  resolvedCommit: ffea9bd110c3cef04de2d0d707bbb543daab9a17
+  resolvedAt: "2026-08-25T07:28:36Z"
+  resolvedCommit: 1fae9d0ae3af8eab6750443a00ba831befc0f260

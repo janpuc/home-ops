@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0VX4BK2WQAV4PCZ9X44N7M5
+  created: "2026-08-25T07:28:36Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/dispatch/app/agent-guardian.yaml
+  type: gotcha
+  body: |-
+    The coordinator account is cluster-wide `view` plus namespaced create on
+    sessions, which is what lets the guardian delegate to workers. That is real
+    authority in the hands of a model reading untrusted alert payloads: a prompt
+    injection could make it spawn sessions. Two things bound the blast radius
+    — a spawned session runs under its own agent's service account and
+    budgets, not the guardian's, and every agent here is read-only toward the
+    cluster — but the spend is real, so keep the worker's daily maxSessions
+    honest and review `kubectl -n ai get sessions` if a bill looks wrong. Do not
+    widen this account to cluster-write without revisiting that exposure.
+  anchor:
+    scope: excerpt
+    excerpt: "  serviceAccountName: dispatch-agent-coordinator"
+    before: |2-
+          triage: claude-haiku-4-5
+        workspaceRef:
+          name: homeops
+    after: |2-
+        git:
+          author: "Guardian <guardian@dispatch.janpuc.com>"
+          pushBranches:
+  author:
+    name: janpuc
+    email: janpuc@proton.me
+    kind: human
+    source: git-config
+  git:
+    commit: 1fae9d0ae3af8eab6750443a00ba831befc0f260
+    path: kubernetes/apps/ai/dispatch/app/agent-guardian.yaml
+    line: 22
+status:
+  lastSeenLine: 22
+  resolution: ok
+  resolvedAt: "2026-08-25T07:28:36Z"
+  resolvedCommit: 1fae9d0ae3af8eab6750443a00ba831befc0f260

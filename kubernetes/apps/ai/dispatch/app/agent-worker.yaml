@@ -1,0 +1,31 @@
+---
+apiVersion: dispatch.janpuc.com/v1alpha1
+kind: Agent
+metadata:
+  name: worker
+spec:
+  description: >-
+    Execution agent the guardian delegates scoped tasks to. Runs MiniMax M3
+    through the litellm anthropic endpoint, so its token spend never touches
+    the Claude subscription window.
+  runner:
+    image: ghcr.io/janpuc/dispatch-runner:main@sha256:fc5ac6a084cdf471d2aacaffffb0aa7c9de6455cb82771bcb81aae2e3beab3d5
+    cli: claude
+    credentialsRef:
+      name: dispatch-minimax
+  models:
+    session: minimax/MiniMax-M3-anthropic
+  workspaceRef:
+    name: homeops-worker
+  serviceAccountName: dispatch-agent-readonly
+  git:
+    author: "Dispatch Worker <worker@dispatch.janpuc.com>"
+    pushBranches:
+      - dispatch/*
+  budgets:
+    maxConcurrentSessions: 1
+    perSession:
+      maxTurns: 60
+      timeout: 30m
+    daily:
+      maxSessions: 40

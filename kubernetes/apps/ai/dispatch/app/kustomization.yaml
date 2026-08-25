@@ -7,5 +7,8 @@ resources:
   - ./ocirepository.yaml
   - ./helmrelease.yaml
   - ./workspace-homeops.yaml
+  - ./workspace-homeops-worker.yaml
   - ./agent-guardian.yaml
+  - ./agent-worker.yaml
   - ./trigger-guardian-alerts.yaml
+  - ./trigger-guardian-patrol.yaml

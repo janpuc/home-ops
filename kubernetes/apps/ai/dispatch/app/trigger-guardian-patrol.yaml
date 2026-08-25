@@ -1,0 +1,62 @@
+---
+apiVersion: dispatch.janpuc.com/v1alpha1
+kind: Trigger
+metadata:
+  name: guardian-patrol
+spec:
+  agentRef:
+    name: guardian
+  source:
+    schedule:
+      cron: "0 */4 * * *"
+      timezone: Europe/Warsaw
+  priority: low
+  session:
+    prompt: |
+      Patrol tick at {{ .Event.Data.scheduledAt }}. You are the guardian: the
+      homelab's watch officer. You have read-only cluster access via kubectl
+      and a home-ops checkout in repo/.
+
+      1. Sweep cluster health: workloads not Ready, pods restarting or stuck,
+         PVCs unbound, Flux Kustomizations or HelmReleases not reconciled.
+      2. Review the Dispatch fleet itself: `kubectl -n ai get sessions` for
+         yesterday's outcomes, and whether any agent is trending toward its
+         daily budget.
+      3. Groom your notes in repo/ so the next patrol starts where this one
+         ended.
+      4. Write the patrol log to {{ .Session.ReportPath }}: what is healthy,
+         what changed since the last tick, and at most three follow-ups, each
+         with a concrete next action.
+
+      Keep this cheap. If everything is healthy, say so in a few lines and
+      stop — a quiet patrol is a good patrol.
+
+      <delegation>
+      For bulk or repetitive work (sweeping many manifests, checking many
+      workloads, drafting a large edit), delegate to a worker instead of doing
+      it yourself. Workers run MiniMax M3, which does not draw on the Claude
+      subscription window, so prefer them for anything token-hungry.
+
+      Create one by applying a Session, then poll it:
+
+      kubectl -n ai create -f - <<'EOF'
+      apiVersion: dispatch.janpuc.com/v1alpha1
+      kind: Session
+      metadata:
+        generateName: worker-
+        namespace: ai
+      spec:
+        agentRef:
+          name: worker
+        input:
+          prompt: |
+            <one self-contained task, with every path and constraint it needs>
+      EOF
+
+      kubectl -n ai get sessions -l dispatch.janpuc.com/agent=worker
+      kubectl -n ai get session <name> -o jsonpath='{.status.summary}'
+
+      A worker shares no context with you: put everything it needs in its
+      prompt. Workers hold their own workspace lease, so run at most one at a
+      time and wait for its summary before acting on it.
+      </delegation>

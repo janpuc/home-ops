@@ -1,0 +1,41 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0VX4BHJ5G3853YRG0Z0KPW3
+  created: "2026-08-25T07:28:36Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/dispatch/app/agent-worker.yaml
+  type: why
+  body: |-
+    MiniMax M3 through the litellm anthropic endpoint is the fan-out tier: it is
+    the model Janek has the most tokens for, and it spends none of the Claude
+    Max window that the guardian and his interactive sessions share. The
+    `-anthropic` variant matters — the dispatch runner drives the Claude Code
+    CLI, which speaks the Anthropic /v1/messages API, so the worker's
+    credentials Secret carries ANTHROPIC_BASE_URL pointing at litellm plus
+    ANTHROPIC_AUTH_TOKEN holding the litellm master key, and deliberately no
+    CLAUDE_CODE_OAUTH_TOKEN: if both were present the CLI would prefer the
+    subscription and silently bill the wrong pool.
+  anchor:
+    scope: excerpt
+    excerpt: "    session: minimax/MiniMax-M3-anthropic"
+    before: |2-
+          credentialsRef:
+            name: dispatch-minimax
+        models:
+    after: |2-
+        workspaceRef:
+          name: homeops-worker
+        serviceAccountName: dispatch-agent-readonly
+  author:
+    name: janpuc
+    email: janpuc@proton.me
+    kind: human
+    source: git-config
+status:
+  lastSeenLine: 17
+  resolution: ok
+  resolvedAt: "2026-08-25T07:28:36Z"
+  resolvedCommit: 1fae9d0ae3af8eab6750443a00ba831befc0f260
