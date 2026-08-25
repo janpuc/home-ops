@@ -33,16 +33,13 @@ spec:
           [model_providers.litellm]
           name = "LiteLLM"
           base_url = "http://litellm.ai.svc.cluster.local:4000/v1"
-          env_key = "LITELLM_API_KEY"
-          wire_api = "chat"
     before: |2-
             }
           }
         codex-config.toml: |-
-    after: |2-
-
-          [mcp_servers.koment]
-          command = "koment"
+    after: |2
+          env_key = "LITELLM_API_KEY"
+          wire_api = "responses"
   author:
     name: claude-code
     kind: agent
@@ -50,5 +47,5 @@ spec:
 status:
   lastSeenLine: 191
   resolution: ok
-  resolvedAt: "2026-08-25T08:54:50Z"
-  resolvedCommit: 33d13e31c4da1c176cf585cff284f9e23f5fe4bb
+  resolvedAt: "2026-08-25T09:41:13Z"
+  resolvedCommit: 455b16ff124fe67d084a9074f51c2e2e9d70b033

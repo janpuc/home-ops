@@ -192,7 +192,7 @@ data:
     name = "LiteLLM"
     base_url = "http://litellm.ai.svc.cluster.local:4000/v1"
     env_key = "LITELLM_API_KEY"
-    wire_api = "chat"
+    wire_api = "responses"
 
     [mcp_servers.koment]
     command = "koment"

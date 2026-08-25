@@ -1,0 +1,60 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0W4PJ3M49W11EFSH11GBT6J
+  created: "2026-08-25T09:40:52Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
+  type: gotcha
+  title: Pairing tokens are one-time and expire in 5 minutes by default
+  body: |-
+    Keeping the auth proxy off means every browser and phone must pair, and the
+    startup banner is a trap for how that is done.
+
+    The token printed in the log at boot is single-use. The first client
+    consumes it — in practice the T3 Code Desktop app — and every later
+    attempt fails with "The one-time pairing token was already submitted." That
+    reads like a broken deployment when it is just a spent token. `t3 auth
+    session list` distinguishes the two: an existing session proves pairing
+    works.
+
+    Do not restart the pod to get a new banner. Mint one:
+
+    t3 auth pairing create --ttl 1h --label phone --base-url
+    https://t3.janpuc.com
+
+    Two flags matter. The default TTL is 5 minutes, which is not enough time to
+    walk to a phone. And `--base-url` prints a complete `/pair#token=...` link
+    on the public hostname; without it the banner prints the pod IP, which no
+    client can reach, and the pair page can fail with "This pairing link is
+    missing its backend host or token."
+
+    Sessions are durable — 30 days, listed by `t3 auth session list`,
+    revocable with `t3 auth session`. Pairing is a per-device one-off, not a
+    per-visit login.
+  anchor:
+    scope: excerpt
+    excerpt: '              T3_AUTH_PROXY: "0"'
+    before: |2-
+                    PATH: /data/home/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/data/home/.local/share/mise/shims
+                    T3CODE_CONFIG_PATH: /config/t3code.toml
+                    T3CODE_HOME: /data/t3
+    after: |2-
+                    T3_GIT_REPOSITORY_SCAN_DEPTH: "4"
+                    T3_WORKDIR: /workspace
+                    TERM: xterm-256color
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 455b16ff124fe67d084a9074f51c2e2e9d70b033
+    path: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
+    line: 126
+status:
+  lastSeenLine: 126
+  resolution: ok
+  resolvedAt: "2026-08-25T09:40:53Z"
+  resolvedCommit: 455b16ff124fe67d084a9074f51c2e2e9d70b033
