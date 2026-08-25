@@ -1,0 +1,64 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0W3K8QZ7YB4NDXVS2FHTR69
+  created: "2026-08-25T09:32:23Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/llmkube/models/bge-embedding-m3.yaml
+  type: invariant
+  title: embedder batch pinned between the GTT ceiling and the longest memini input
+  body: |-
+    These two are bounded from above by the 2 GiB GTT aperture
+    (amdgpu.gttsize=2048) and from below by the longest single input memini
+    sends. They were 8192/4096 until 2026-08-25, and that killed the device.
+
+    Upper bound. llama.cpp allocates one compute graph per slot, sized by
+    n_ubatch, and parallelSlots=2 means the aperture pays for it twice. At
+    uBatchSize 4096, measured on 192.168.69.20: weights sat at ~710 MiB, one
+    busy slot took GTT to ~1235 MiB, and both slots busy took it to
+    ~1948/2048 MiB — at which point every decode failed with
+    `vk::Queue::submit: ErrorDeviceLost` and stayed failing until the pod was
+    replaced. One slot alone never reached the cap, so this only reproduces
+    under concurrent load: memini's dedup sweep runs at
+    MEMINI_EMBED_MAX_CONCURRENCY=2 and saturates both slots.
+
+    Also note batchSize is not a free parameter here. With --embedding,
+    llama.cpp refuses n_batch > n_ubatch and silently rewrites n_batch down to
+    n_ubatch at startup, so the two must be written equal or the manifest lies
+    about what runs.
+
+    Lower bound. A whole input must fit in one physical batch or llama.cpp
+    rejects it with "input (N tokens) is too large to process". The longest
+    input observed from memini is 1208 tokens, so 2048 clears it with room and
+    is the smallest power of two that does.
+
+    So: uBatchSize >= the longest single document you expect, batchSize ==
+    uBatchSize, and n_ctx_slot (contextSize/parallelSlots) >= uBatchSize. The
+    reranker next door is pinned the same way for the same reason, at 1024,
+    because a cross-encoder's graph is far larger at equal batch — do not copy
+    numbers between the two.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        batchSize: 2048
+        uBatchSize: 2048
+    before: |2-
+        replicas: 1
+        contextSize: 8192
+        parallelSlots: 2
+    after: |2-
+        resources:
+          cpu: 100m
+          memory: 2Gi
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 33d13e31c4da1c176cf585cff284f9e23f5fe4bb
+    path: kubernetes/apps/ai/llmkube/models/bge-embedding-m3.yaml
+    line: 33
+status:
+  lastSeenLine: 33

@@ -13,25 +13,25 @@ spec:
     What matters is per-slot context, which llama.cpp derives as
     contextSize/parallelSlots — so 8192 across 2 slots gives 4096 each, enough
     for long memini docs. Raising parallelSlots without raising contextSize
-    shrinks every slot and starts truncating documents. These numbers are far
-    larger than the reranker's next door because an embedding model's compute
-    buffer is much smaller at the same batch; the two share one 2 GiB GTT
-    aperture and are not interchangeable.
+    shrinks every slot and starts truncating documents.
+
+    This pair is deliberately NOT the lever for GTT pressure. Per-slot context
+    costs KV; what actually fills the 2 GiB aperture is the compute graph,
+    which is sized by uBatchSize on the two lines below — see the invariant
+    recorded there. Shrink the batch, not the context.
   anchor:
     scope: excerpt
     excerpt: |2-
         contextSize: 8192
         parallelSlots: 2
-        batchSize: 8192
-        uBatchSize: 4096
     before: |2-
         runtime: llamacpp
         image: ghcr.io/ggml-org/llama.cpp:server-vulkan-b10603@sha256:033d0cd1352d6e9cd87337772f530e2087cffed6284d9f47c2b859982c470b3b
         replicas: 1
     after: |2-
+        batchSize: 2048
+        uBatchSize: 2048
         resources:
-          cpu: 100m
-          memory: 2Gi
   author:
     name: claude-code
     kind: agent

@@ -30,8 +30,8 @@ spec:
   replicas: 1
   contextSize: 8192
   parallelSlots: 2
-  batchSize: 8192
-  uBatchSize: 4096
+  batchSize: 2048
+  uBatchSize: 2048
   resources:
     cpu: 100m
     memory: 2Gi
