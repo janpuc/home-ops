@@ -9,12 +9,12 @@ spec:
     cluster access and a home-ops checkout, and proposes fixes as dispatch/*
     branches; never merges, never mutates the cluster.
   runner:
-    image: ghcr.io/janpuc/dispatch-runner:main@sha256:bf644b7723fbaba4f677eb36da1d66adc38fd9e8f0ddbdc0cca17b4f3832da2a
+    image: ghcr.io/janpuc/dispatch-runner:main@sha256:fc5ac6a084cdf471d2aacaffffb0aa7c9de6455cb82771bcb81aae2e3beab3d5
     cli: claude
     credentialsRef:
       name: claude-max-primary
   models:
-    session: claude-fable-5
+    session: claude-sonnet-5
     triage: claude-haiku-4-5
   workspaceRef:
     name: homeops

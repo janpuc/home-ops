@@ -1,0 +1,47 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0VS0Z1YG30AA5PPZX9WMG67
+  created: "2026-08-25T06:16:51Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/dispatch/app/agent-guardian.yaml
+  type: why
+  body: |-
+    Sonnet 5, not Fable 5, because the guardian shares one Claude Max usage
+    window with Janek's interactive sessions. On 2026-08-24 the first guardian
+    fleet ran Fable 5 and exhausted the top-tier window within the hour ("You're
+    out of usage credits" in every session's termination message); Haiku still
+    had quota at the same moment, so the exhaustion is per-tier, not
+    account-wide. Sonnet 5 gives near-Opus agentic and coding quality at a
+    fraction of the window burn, which is the right default for an always-on
+    duty agent that fires on every alert. Raise a single session to Fable or
+    Opus deliberately when a task earns it, rather than paying top tier for
+    routine triage. ADR-0004's subscriptionWindowReserve is the structural fix
+    and is not implemented yet — the reserve field here is inert.
+  anchor:
+    scope: excerpt
+    excerpt: "    session: claude-sonnet-5"
+    before: |2-
+          credentialsRef:
+            name: claude-max-primary
+        models:
+    after: |2-
+          triage: claude-haiku-4-5
+        workspaceRef:
+          name: homeops
+  author:
+    name: janpuc
+    email: janpuc@proton.me
+    kind: human
+    source: git-config
+  git:
+    commit: ffea9bd110c3cef04de2d0d707bbb543daab9a17
+    path: kubernetes/apps/ai/dispatch/app/agent-guardian.yaml
+    line: 17
+status:
+  lastSeenLine: 17
+  resolution: ok
+  resolvedAt: "2026-08-25T06:16:51Z"
+  resolvedCommit: ffea9bd110c3cef04de2d0d707bbb543daab9a17

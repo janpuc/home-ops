@@ -20,7 +20,7 @@ spec:
     coordination.k8s.io lease rules.
   anchor:
     scope: excerpt
-    excerpt: "      tag: main@sha256:d8f57faf7981fde74d833b45cfaeda96c2ebd2dbb330c6d458b3551f158b6888"
+    excerpt: "      tag: main@sha256:a426ac4ee6dcf1adb1a2360f36b7f229be81a4f3edfc047a7f53f70732c64859"
     before: |2-
         interval: 30m
         values:
@@ -37,5 +37,5 @@ spec:
 status:
   lastSeenLine: 14
   resolution: ok
-  resolvedAt: "2026-08-24T22:14:15Z"
-  resolvedCommit: 4fe301b71d7d7ab233f51b34fda0dcddb94f270f
+  resolvedAt: "2026-08-25T06:26:39Z"
+  resolvedCommit: ffea9bd110c3cef04de2d0d707bbb543daab9a17

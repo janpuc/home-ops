@@ -11,7 +11,7 @@ spec:
   interval: 30m
   values:
     image:
-      tag: main@sha256:d8f57faf7981fde74d833b45cfaeda96c2ebd2dbb330c6d458b3551f158b6888
+      tag: main@sha256:a426ac4ee6dcf1adb1a2360f36b7f229be81a4f3edfc047a7f53f70732c64859
       pullPolicy: IfNotPresent
     serviceMonitor:
       enabled: true
