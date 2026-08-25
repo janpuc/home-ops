@@ -17,7 +17,63 @@ spec:
           annotations:
             summary: "Miroir pool past 60% allocated on {{ $labels.node }} ({{ $labels.pool }})"
             description: >-
-              Every volume is provisioned with three diskful replicas, so each
-              node carries a full copy and the thin pool grows on all three at
-              once. Watch for the chart's MiroirPoolUsageHigh (80%, 15m) to fire
-              next. Current usage: {{ $value | humanizePercentage }}.
+              Volumes are provisioned with two diskful replicas plus a diskless
+              tie-breaker, and autoDiskfulAfter promotes that tie-breaker ten
+              minutes later, so the thin pool ends up growing on all three nodes
+              anyway. Watch for the chart's MiroirPoolUsageHigh (80%, 15m) to
+              fire next. Current usage: {{ $value | humanizePercentage }}.
+    - name: miroir-system.csi
+      interval: 1m
+      rules:
+        - alert: MiroirVolumeStagingBlocked
+          expr: >-
+            sum by (node) (
+              rate(csi_operations_seconds_count{
+                driver_name="miroir.home-operations.com",
+                method_name="/csi.v1.Node/NodeStageVolume",
+                grpc_status_code="FailedPrecondition"
+              }[15m])
+            ) > 0
+          for: 10m
+          labels:
+            severity: critical
+          annotations:
+            summary: >-
+              miroir is refusing to stage a volume on {{ $labels.node }} and
+              cannot retry its way out
+            description: >-
+              FailedPrecondition is the class miroir uses for "manual resolution
+              required", so kubelet will retry the mount forever and the pod
+              stays in Init until a human intervenes. Do not assume the replicas
+              are damaged: this fires on miroir's own refusal, which can latch
+              on while DRBD itself is connected and up to date. Check the
+              replicas first with
+              `kubectl -n miroir-system logs -l app.kubernetes.io/name=miroir
+              -c agent --tail=50` and the volume health metrics
+              (miroir_volume_split_brain, miroir_volume_connected,
+              miroir_volume_up_to_date) before touching any data. Find the stuck
+              pods with `kubectl get pods -A --field-selector=status.phase!=Running`
+              and the volume with
+              `kubectl -n <ns> describe pod <pod> | grep FailedMount`.
+        - alert: MiroirVolumeStagingFailing
+          expr: >-
+            sum by (node, grpc_status_code) (
+              rate(csi_operations_seconds_count{
+                driver_name="miroir.home-operations.com",
+                method_name="/csi.v1.Node/NodeStageVolume",
+                grpc_status_code!~"OK|FailedPrecondition"
+              }[15m])
+            ) > 0
+          for: 30m
+          labels:
+            severity: warning
+          annotations:
+            summary: >-
+              miroir NodeStageVolume failing with {{ $labels.grpc_status_code }}
+              on {{ $labels.node }} for 30m
+            description: >-
+              Staging errors are expected briefly while a node reboots or a
+              replica resyncs, so this only fires once they have persisted well
+              past a normal tuppr upgrade. Sustained failures mean a volume is
+              wedged rather than slow, and the workload will sit in Init until
+              it clears.

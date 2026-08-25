@@ -1,0 +1,60 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0W5FQ2WRKC5N4BF36TZNX4M
+  created: "2026-08-25T09:54:37Z"
+spec:
+  target:
+    file: kubernetes/apps/miroir-system/miroir/app/prometheusrule.yaml
+  type: why
+  body: |-
+    This rule reads the CSI driver's gRPC status code rather than miroir's own
+    volume health metrics. The overlap with the chart's MiroirVolumeSplitBrain
+    is deliberate — do not collapse the two, they do not watch the same thing.
+
+    On 2026-08-25 plex and stash sat in Init for eleven hours because
+    NodeStageVolume kept returning `FailedPrecondition ... is split-brain on
+    node <n> — manual resolution required`. Across that entire window
+    `miroir_volume_split_brain` was 0 and `miroir_volume_connected` never left
+    1 on either replica, so MiroirVolumeSplitBrain, MiroirVolumeQuorumLost and
+    MiroirVolumeDisconnected all stayed inactive. The volume metrics are
+    sampled from live DRBD state; the staging refusal is a separate decision
+    inside the driver that latches until someone clears it. The two can
+    disagree indefinitely, and while they disagree only the CSI side predicts
+    whether a pod can actually start.
+
+    That outage surfaced as GatusEndpointDown on the plex HTTP probe — an
+    external symptom check, eleven hours late. Any rule that only watches DRBD
+    health misses this class of failure by construction, which is the whole
+    reason this group exists.
+
+    `Unavailable` and `Internal` are split into the warning rule with a longer
+    `for` because they occur normally while a node reboots under tuppr.
+    `FailedPrecondition` is the driver's "a human must intervene" code and
+    never clears on its own, so it pages at ten minutes.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+              - alert: MiroirVolumeStagingBlocked
+    before: |2-
+          - name: miroir-system.csi
+            interval: 1m
+            rules:
+    after: |2-
+                expr: >-
+                  sum by (node) (
+                    rate(csi_operations_seconds_count{
+  author:
+    name: guardian
+    kind: agent
+    source: session
+  git:
+    commit: 7f402840e5f472971328d408640531661f769c2b
+    path: kubernetes/apps/miroir-system/miroir/app/prometheusrule.yaml
+    line: 28
+status:
+  lastSeenLine: 28
+  resolution: ok
+  resolvedAt: "2026-08-25T09:54:37Z"
+  resolvedCommit: 7f402840e5f472971328d408640531661f769c2b
