@@ -1,0 +1,50 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0W2188AMEG49MSG91D78MFP
+  created: "2026-08-25T08:54:17Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
+  type: why
+  title: mise shims go last so they cannot shadow the image toolchain
+  body: |-
+    The shim directory is deliberately the last PATH entry rather than the
+    first.
+
+    `mise` is here as the dynamic escape hatch: add a tool to the `mise.toml`
+    key of the ConfigMap, Flux reconciles, reloader restarts the pod, and the
+    `install-tools` init container installs it. Nothing in the list conflicts
+    with the image today, because the image ships no kubectl, helm, flux or
+    talosctl.
+
+    Putting shims first would make that escape hatch dangerous. The image runs
+    t3, claude, codex and opencode from a pinned Node toolchain in
+    `/usr/local/bin`. A future `node` or `bun` entry in the mise config would
+    silently shadow it and break the server itself, and the failure would look
+    like a T3 bug rather than a config change.
+
+    The entrypoint additionally prepends `/opt/t3-docker/runtime-bin`,
+    `$NPM_CONFIG_PREFIX/bin` and `$HOME/.local/bin` to whatever PATH this sets,
+    so the pinned binaries win regardless.
+  anchor:
+    scope: excerpt
+    excerpt: "              PATH: /data/home/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/data/home/.local/share/mise/shims"
+    before: |2-
+                    NPM_CONFIG_CACHE: /data/npm-cache
+                    NPM_CONFIG_PREFIX: /data/npm-global
+                    OPENCODE_CONFIG_DIR: /data/home/.config/opencode
+    after: |2-
+                    T3CODE_CONFIG_PATH: /config/t3code.toml
+                    T3CODE_HOME: /data/t3
+                    T3_AUTH_PROXY: "0"
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+status:
+  lastSeenLine: 121
+  resolution: ok
+  resolvedAt: "2026-08-25T08:54:17Z"
+  resolvedCommit: 33d13e31c4da1c176cf585cff284f9e23f5fe4bb

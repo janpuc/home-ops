@@ -1,0 +1,377 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: t3-code-configmap
+data:
+  t3code.toml: |-
+    [server]
+    host = "0.0.0.0"
+    port = 3773
+    workdir = "/workspace"
+    t3_home = "/data/t3"
+    no_browser = true
+    auto_bootstrap_project_from_cwd = true
+    default_thread_env_mode = "local"
+    new_worktrees_start_from_origin = false
+
+    [updates]
+    on_start = false
+    codex = false
+    claude = false
+    cursor = false
+    grok = false
+    opencode = false
+    install_disabled_providers = false
+    provider_update_checks = false
+
+    [providers.codex]
+    enabled = true
+    binary_path = "codex"
+    home_path = "/data/codex"
+    config_dir_source = "/config/codex"
+
+    [[providers.codex.env]]
+    name = "LITELLM_API_KEY"
+    from_env = "LITELLM_API_KEY"
+    sensitive = true
+
+    [[providers.codex.env]]
+    name = "MEMINI_API_KEY"
+    from_env = "MEMINI_API_KEY"
+    sensitive = true
+
+    [[providers.codex.env]]
+    name = "MEMINI_BASE_URL"
+    from_env = "MEMINI_BASE_URL"
+
+    [[providers.codex.env]]
+    name = "MEMINI_HOME"
+    from_env = "MEMINI_HOME"
+
+    [providers.claude]
+    enabled = true
+    binary_path = "claude"
+    home_path = "/data/claude-home"
+    config_dir_source = "/config/claude"
+
+    [[providers.claude.env]]
+    name = "LITELLM_API_KEY"
+    from_env = "LITELLM_API_KEY"
+    sensitive = true
+
+    [[providers.claude.env]]
+    name = "MEMINI_API_KEY"
+    from_env = "MEMINI_API_KEY"
+    sensitive = true
+
+    [[providers.claude.env]]
+    name = "MEMINI_BASE_URL"
+    from_env = "MEMINI_BASE_URL"
+
+    [[providers.claude.env]]
+    name = "MEMINI_HOME"
+    from_env = "MEMINI_HOME"
+
+    [providers.cursor]
+    enabled = false
+
+    [providers.grok]
+    enabled = false
+
+    [providers.opencode]
+    enabled = true
+    binary_path = "opencode"
+    managed_server = true
+    managed_host = "127.0.0.1"
+    managed_port = 4096
+    config_dir_source = "/config/opencode"
+    config_sync_mode = "preserve-mcp"
+    config_source = "/data/home/.config/opencode/opencode.jsonc"
+    config_path = "/data/home/.config/opencode/opencode.jsonc"
+    cloudflare_mcp = "off"
+    cloudflare_auth = "auto"
+    mcp_presets = ""
+    default_model = "litellm/minimax/MiniMax-M3"
+
+    [[providers.opencode.env]]
+    name = "LITELLM_API_KEY"
+    from_env = "LITELLM_API_KEY"
+    sensitive = true
+
+    [[providers.opencode.env]]
+    name = "MEMINI_API_KEY"
+    from_env = "MEMINI_API_KEY"
+    sensitive = true
+
+    [[providers.opencode.env]]
+    name = "MEMINI_BASE_URL"
+    from_env = "MEMINI_BASE_URL"
+
+    [[providers.opencode.env]]
+    name = "MEMINI_HOME"
+    from_env = "MEMINI_HOME"
+  t3-selection.json: |-
+    {
+      "textGenerationModelSelection": {
+        "instanceId": "claudeAgent",
+        "model": "claude-haiku-4-5"
+      }
+    }
+  claude-settings.json: |-
+    {
+      "env": {
+        "MEMINI_BASE_URL": "http://memini.ai.svc.cluster.local:8080",
+        "MEMINI_HOME": "personal/jan"
+      },
+      "enabledPlugins": {
+        "memini@memini": true,
+        "koment@koment-dev": true
+      },
+      "extraKnownMarketplaces": {
+        "memini": {
+          "source": {
+            "source": "github",
+            "repo": "eleboucher/memini"
+          }
+        },
+        "koment-dev": {
+          "source": {
+            "source": "github",
+            "repo": "koment-dev/koment"
+          }
+        }
+      },
+      "enabledMcpjsonServers": ["koment"],
+      "effortLevel": "xhigh",
+      "theme": "dark"
+    }
+  claude-mcp.json: |-
+    {
+      "hasCompletedOnboarding": true,
+      "mcpServers": {
+        "kubectl": {
+          "type": "http",
+          "url": "http://litellm.ai.svc.cluster.local:4000/mcp/kubectl/mcp",
+          "headers": { "Authorization": "Bearer $${LITELLM_API_KEY}" }
+        },
+        "prometheus": {
+          "type": "http",
+          "url": "http://litellm.ai.svc.cluster.local:4000/mcp/prometheus/mcp",
+          "headers": { "Authorization": "Bearer $${LITELLM_API_KEY}" }
+        },
+        "victoria-logs": {
+          "type": "http",
+          "url": "http://litellm.ai.svc.cluster.local:4000/mcp/victoria_logs/mcp",
+          "headers": { "Authorization": "Bearer $${LITELLM_API_KEY}" }
+        },
+        "github": {
+          "type": "http",
+          "url": "http://litellm.ai.svc.cluster.local:4000/mcp/github/mcp",
+          "headers": { "Authorization": "Bearer $${LITELLM_API_KEY}" }
+        },
+        "context7": {
+          "type": "http",
+          "url": "http://litellm.ai.svc.cluster.local:4000/mcp/context7/mcp",
+          "headers": { "Authorization": "Bearer $${LITELLM_API_KEY}" }
+        },
+        "home-assistant": {
+          "type": "http",
+          "url": "http://litellm.ai.svc.cluster.local:4000/mcp/ha/mcp",
+          "headers": { "Authorization": "Bearer $${LITELLM_API_KEY}" }
+        },
+        "sidero": {
+          "type": "http",
+          "url": "http://litellm.ai.svc.cluster.local:4000/mcp/sidero/mcp",
+          "headers": { "Authorization": "Bearer $${LITELLM_API_KEY}" }
+        }
+      }
+    }
+  codex-config.toml: |-
+    [model_providers.litellm]
+    name = "LiteLLM"
+    base_url = "http://litellm.ai.svc.cluster.local:4000/v1"
+    env_key = "LITELLM_API_KEY"
+    wire_api = "chat"
+
+    [mcp_servers.koment]
+    command = "koment"
+    args = ["mcp", "--write"]
+
+    [mcp_servers.memini]
+    url = "http://memini.ai.svc.cluster.local:8080/mcp"
+    bearer_token_env_var = "MEMINI_API_KEY"
+
+    [mcp_servers.kubectl]
+    url = "http://litellm.ai.svc.cluster.local:4000/mcp/kubectl/mcp"
+    bearer_token_env_var = "LITELLM_API_KEY"
+
+    [mcp_servers.prometheus]
+    url = "http://litellm.ai.svc.cluster.local:4000/mcp/prometheus/mcp"
+    bearer_token_env_var = "LITELLM_API_KEY"
+
+    [mcp_servers.victoria_logs]
+    url = "http://litellm.ai.svc.cluster.local:4000/mcp/victoria_logs/mcp"
+    bearer_token_env_var = "LITELLM_API_KEY"
+
+    [mcp_servers.github]
+    url = "http://litellm.ai.svc.cluster.local:4000/mcp/github/mcp"
+    bearer_token_env_var = "LITELLM_API_KEY"
+
+    [mcp_servers.context7]
+    url = "http://litellm.ai.svc.cluster.local:4000/mcp/context7/mcp"
+    bearer_token_env_var = "LITELLM_API_KEY"
+
+    [mcp_servers.home_assistant]
+    url = "http://litellm.ai.svc.cluster.local:4000/mcp/ha/mcp"
+    bearer_token_env_var = "LITELLM_API_KEY"
+
+    [mcp_servers.sidero]
+    url = "http://litellm.ai.svc.cluster.local:4000/mcp/sidero/mcp"
+    bearer_token_env_var = "LITELLM_API_KEY"
+
+    [plugins.memini.mcp_servers.memini]
+    enabled = false
+  opencode.jsonc: |-
+    {
+      "$schema": "https://opencode.ai/config.json",
+      "provider": {
+        "litellm": {
+          "npm": "@ai-sdk/openai-compatible",
+          "name": "LiteLLM",
+          "options": {
+            "baseURL": "http://litellm.ai.svc.cluster.local:4000/v1",
+            "apiKey": "{env:LITELLM_API_KEY}"
+          },
+          "models": {
+            "minimax/MiniMax-M3": {
+              "name": "MiniMax M3",
+              "limit": { "context": 1000000, "output": 64000 }
+            },
+            "opencode-go/glm-5.3": {
+              "name": "GLM 5.3",
+              "limit": { "context": 1000000, "output": 64000 }
+            },
+            "opencode-go/glm-5.2": {
+              "name": "GLM 5.2",
+              "limit": { "context": 1000000, "output": 64000 }
+            },
+            "opencode-go/kimi-k3": {
+              "name": "Kimi K3",
+              "limit": { "context": 1048576, "output": 64000 }
+            },
+            "opencode-go/kimi-k2.7-code": {
+              "name": "Kimi K2.7 Code",
+              "limit": { "context": 262144, "output": 64000 }
+            },
+            "opencode-go/qwen3.8-max": {
+              "name": "Qwen 3.8 Max",
+              "limit": { "context": 1000000, "output": 64000 }
+            },
+            "opencode-go/deepseek-v4-pro": {
+              "name": "DeepSeek V4 Pro",
+              "limit": { "context": 1000000, "output": 64000 }
+            },
+            "opencode-go/deepseek-v4-flash-vision-exp": {
+              "name": "DeepSeek V4 Flash Vision",
+              "limit": { "context": 1000000, "output": 64000 }
+            },
+            "opencode-go/gpt-5.6-luna": {
+              "name": "GPT 5.6 Luna",
+              "limit": { "context": 1050000, "output": 64000 }
+            },
+            "opencode-go/grok-4.5": {
+              "name": "Grok 4.5",
+              "limit": { "context": 500000, "output": 64000 }
+            },
+            "opencode-go/mimo-v2.5-pro": {
+              "name": "MiMo v2.5 Pro",
+              "limit": { "context": 1048576, "output": 64000 }
+            },
+            "opencode-go/hy3": {
+              "name": "HY3",
+              "limit": { "context": 256000, "output": 32000 }
+            }
+          }
+        }
+      },
+      "model": "litellm/minimax/MiniMax-M3",
+      "small_model": "litellm/opencode-go/hy3",
+      "mcp": {
+        "koment": {
+          "type": "local",
+          "command": ["koment", "mcp", "--write"],
+          "enabled": true
+        },
+        "memini": {
+          "type": "remote",
+          "url": "http://memini.ai.svc.cluster.local:8080/mcp",
+          "enabled": true,
+          "headers": { "Authorization": "Bearer {env:MEMINI_API_KEY}" }
+        },
+        "kubectl": {
+          "type": "remote",
+          "url": "http://litellm.ai.svc.cluster.local:4000/mcp/kubectl/mcp",
+          "enabled": true,
+          "headers": { "Authorization": "Bearer {env:LITELLM_API_KEY}" }
+        },
+        "prometheus": {
+          "type": "remote",
+          "url": "http://litellm.ai.svc.cluster.local:4000/mcp/prometheus/mcp",
+          "enabled": true,
+          "headers": { "Authorization": "Bearer {env:LITELLM_API_KEY}" }
+        },
+        "victoria-logs": {
+          "type": "remote",
+          "url": "http://litellm.ai.svc.cluster.local:4000/mcp/victoria_logs/mcp",
+          "enabled": true,
+          "headers": { "Authorization": "Bearer {env:LITELLM_API_KEY}" }
+        },
+        "github": {
+          "type": "remote",
+          "url": "http://litellm.ai.svc.cluster.local:4000/mcp/github/mcp",
+          "enabled": true,
+          "headers": { "Authorization": "Bearer {env:LITELLM_API_KEY}" }
+        },
+        "context7": {
+          "type": "remote",
+          "url": "http://litellm.ai.svc.cluster.local:4000/mcp/context7/mcp",
+          "enabled": true,
+          "headers": { "Authorization": "Bearer {env:LITELLM_API_KEY}" }
+        },
+        "home-assistant": {
+          "type": "remote",
+          "url": "http://litellm.ai.svc.cluster.local:4000/mcp/ha/mcp",
+          "enabled": true,
+          "headers": { "Authorization": "Bearer {env:LITELLM_API_KEY}" }
+        },
+        "sidero": {
+          "type": "remote",
+          "url": "http://litellm.ai.svc.cluster.local:4000/mcp/sidero/mcp",
+          "enabled": true,
+          "headers": { "Authorization": "Bearer {env:LITELLM_API_KEY}" }
+        }
+      }
+    }
+  mise.toml: |-
+    [settings]
+    experimental = true
+    idiomatic_version_file_enable_tools = []
+
+    [tools]
+    actionlint = "latest"
+    flux2 = "latest"
+    "github:koment-dev/koment" = "latest"
+    "github:mitsuhiko/minijinja" = "latest"
+    helm = "latest"
+    helmfile = "latest"
+    just = "latest"
+    k9s = "latest"
+    kubeconform = "latest"
+    kubectl = "latest"
+    kustomize = "latest"
+    lefthook = "latest"
+    oxfmt = "latest"
+    stern = "latest"
+    talosctl = "latest"
+    zizmor = "latest"

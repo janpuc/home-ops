@@ -1,0 +1,53 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0W222W7DAB67S5YK8RRQADV
+  created: "2026-08-25T08:54:44Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
+  type: why
+  title: Seed the model selection because T3 always defaults to Codex
+  body: |-
+    Without this seed the first session opens on a provider that has no
+    credential.
+
+    `render-config.py` picks the default provider from a fixed order — codex,
+    claudeAgent, cursor, grok, opencode — and takes the first enabled one.
+    Codex is enabled here, so T3 always selects it with model `gpt-5.4-mini`.
+    Codex authenticates by ChatGPT device login (`t3-auth codex login`), which
+    cannot be done before the pod exists, so that first session fails.
+
+    Claude has `CLAUDE_CODE_OAUTH_TOKEN` from 1Password and works on first boot,
+    so the seed points there. `claude-haiku-4-5` is T3's own documented default
+    for the `claudeAgent` instance, chosen over a stronger model because it is
+    certain to be a model id this T3 build accepts.
+
+    The `jq -e` guard makes this first-boot only. `merge_managed` preserves
+    `textGenerationModelSelection` on later starts and only overwrites it when
+    the selected instance is disabled, so a choice made in the UI survives
+    restarts.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+                      mkdir -p /data/t3/userdata
+                      if ! jq -e . /data/t3/userdata/settings.json >/dev/null 2>&1; then
+                        install -m 0600 /run/config/t3-selection.json /data/t3/userdata/settings.json
+                      fi
+    before: |2
+                      mkdir -p /data/home/.config/mise
+                      install -m 0644 /run/config/mise.toml /data/home/.config/mise/config.toml
+    after: |2-
+
+                      mkdir -p /data/claude-home
+                      if ! jq -e . /data/claude-home/.claude.json >/dev/null 2>&1; then
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+status:
+  lastSeenLine: 52
+  resolution: ok
+  resolvedAt: "2026-08-25T08:54:44Z"
+  resolvedCommit: 33d13e31c4da1c176cf585cff284f9e23f5fe4bb

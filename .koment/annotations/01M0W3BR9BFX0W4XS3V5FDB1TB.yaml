@@ -1,0 +1,61 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0W3BR9BFX0W4XS3V5FDB1TB
+  created: "2026-08-25T09:17:30Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
+  type: gotcha
+  title: GID 3100 is what makes SMB-created files reachable
+  body: |-
+    This looks like a spare group and is not. Without it the pod cannot read or
+    write anything created from macOS over SMB.
+
+    The workspace is dual-access. A file the human creates over SMB is owned by
+    uid 3000, and inherits group 3100 from the dataset ACL. The pod runs
+    `1000:1000`, so it matches neither `owner@` (3000) nor `USER 3000`. The only
+    ACE left that can grant it access is `GROUP 3100`, and NFS AUTH_SYS only
+    presents a gid the pod actually holds.
+
+    Measured against bigmouth, on a file created as uid 3000 in
+    `/mnt/Vault/Workspace`:
+
+    uid=1000 gid=1000 groups=1000 -> READ_DENIED, WRITE_DENIED uid=1000 gid=1000
+    groups=1000,3100 -> READ_OK, WRITE_OK
+
+    The failure mode is nasty because it is one-directional and silent. Files
+    the pod creates stay fine — the human reaches those through the inheriting
+    `USER 3000` ACE — so the workspace looks healthy right up until someone
+    edits a repo from their laptop and the agent starts reporting permission
+    errors on files that plainly exist.
+
+    This is the same mechanism upstream documents as `T3_WORKSPACE_GID`, and the
+    reason its README says to keep the ACLs on the storage server and set only a
+    supplemental group rather than recursively chowning the workspace.
+
+    3100 is the `workspace` group on TrueNAS, holding both `jan.pucilowski` and
+    `k8s`. Changing that gid means changing it here too.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+              supplementalGroups:
+                - 3100
+    before: |2-
+              runAsGroup: 1000
+              runAsNonRoot: true
+              runAsUser: 1000
+    after: |2-
+              seccompProfile:
+                type: RuntimeDefault
+          controllers:
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+status:
+  lastSeenLine: 22
+  resolution: ok
+  resolvedAt: "2026-08-25T09:17:30Z"
+  resolvedCommit: 33d13e31c4da1c176cf585cff284f9e23f5fe4bb

@@ -1,0 +1,453 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: t3-code
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: t3-code
+  interval: 15m
+  values:
+    defaultPodOptions:
+      automountServiceAccountToken: true
+      terminationGracePeriodSeconds: 120
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+        supplementalGroups:
+          - 3100
+        seccompProfile:
+          type: RuntimeDefault
+    controllers:
+      t3-code:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        replicas: 1
+        strategy: Recreate
+        type: deployment
+        initContainers:
+          init-config:
+            image: &image
+              repository: ghcr.io/traktuner/docker-t3-code
+              tag: 0.0.28-23@sha256:638e2025be89f837dc74dbf3a6dc58578e7930b1c2669d89c3585ae4041c1316
+            command:
+              - /bin/bash
+              - -c
+              - |
+                set -Eeuo pipefail
+
+                rm -rf /config/claude /config/codex /config/opencode /config/t3code.toml
+                mkdir -p /config/claude /config/codex /config/opencode
+                install -m 0644 /run/config/t3code.toml /config/t3code.toml
+                install -m 0644 /run/config/claude-settings.json /config/claude/settings.json
+                install -m 0644 /run/config/codex-config.toml /config/codex/config.toml
+                install -m 0644 /run/config/opencode.jsonc /config/opencode/opencode.jsonc
+
+                mkdir -p /data/home/.config/mise
+                install -m 0644 /run/config/mise.toml /data/home/.config/mise/config.toml
+
+                mkdir -p /data/t3/userdata
+                if ! jq -e . /data/t3/userdata/settings.json >/dev/null 2>&1; then
+                  install -m 0600 /run/config/t3-selection.json /data/t3/userdata/settings.json
+                fi
+
+                mkdir -p /data/claude-home
+                if ! jq -e . /data/claude-home/.claude.json >/dev/null 2>&1; then
+                  printf '{}\n' > /data/claude-home/.claude.json
+                fi
+                jq -s '.[0] * .[1]' \
+                  /data/claude-home/.claude.json \
+                  /run/config/claude-mcp.json > /tmp/claude-merged.json
+                install -m 0600 /tmp/claude-merged.json /data/claude-home/.claude.json
+                rm -f /tmp/claude-merged.json
+
+                export HOME=/data/home
+                export CODEX_HOME=/data/codex
+                mkdir -p "$CODEX_HOME"
+                codex plugin marketplace add eleboucher/memini \
+                  || echo "codex plugin marketplace unavailable; memini reaches Codex over MCP"
+                codex plugin add memini@memini \
+                  || echo "codex plugin install unavailable; memini reaches Codex over MCP"
+            securityContext: &containerSecurity
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                  - ALL
+              readOnlyRootFilesystem: false
+          install-tools:
+            image: *image
+            command:
+              - /bin/bash
+              - -c
+              - |
+                set -Eeuo pipefail
+
+                export HOME=/data/home
+                export XDG_CONFIG_HOME=/data/home/.config
+                export XDG_DATA_HOME=/data/home/.local/share
+                export XDG_CACHE_HOME=/data/home/.cache
+                export MISE_INSTALL_PATH=/data/home/.local/bin/mise
+                export MISE_YES=1
+
+                mkdir -p /data/home/.local/bin
+                if [ ! -x "$MISE_INSTALL_PATH" ]; then
+                  curl -fsSL https://mise.run | sh
+                fi
+
+                "$MISE_INSTALL_PATH" install --yes \
+                  || "$MISE_INSTALL_PATH" install --yes
+                "$MISE_INSTALL_PATH" reshim
+                "$MISE_INSTALL_PATH" ls --installed
+            envFrom: &envFrom
+              - secretRef:
+                  name: t3-code-config
+            securityContext: *containerSecurity
+        containers:
+          app:
+            image: *image
+            env:
+              CODEX_HOME: /data/codex
+              GH_GIT_PROTOCOL: https
+              GH_HOST: github.com
+              HOME: /data/home
+              MEMINI_BASE_URL: http://memini.ai.svc.cluster.local:8080
+              MEMINI_HOME: personal/jan
+              NPM_CONFIG_CACHE: /data/npm-cache
+              NPM_CONFIG_PREFIX: /data/npm-global
+              OPENCODE_CONFIG_DIR: /data/home/.config/opencode
+              PATH: /data/home/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/data/home/.local/share/mise/shims
+              T3CODE_CONFIG_PATH: /config/t3code.toml
+              T3CODE_HOME: /data/t3
+              T3_AUTH_PROXY: "0"
+              T3_GIT_REPOSITORY_SCAN_DEPTH: "4"
+              T3_WORKDIR: /workspace
+              TERM: xterm-256color
+              XDG_CACHE_HOME: /data/home/.cache
+              XDG_CONFIG_HOME: /data/home/.config
+              XDG_DATA_HOME: /data/home/.local/share
+            envFrom: *envFrom
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: &port 3773
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: *port
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: *port
+                  periodSeconds: 10
+                  failureThreshold: 60
+            resources:
+              requests:
+                cpu: 500m
+                memory: 2Gi
+              limits:
+                memory: 8Gi
+            securityContext: *containerSecurity
+    service:
+      app:
+        controller: t3-code
+        ipFamilies:
+          - IPv4
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        hostnames:
+          - t3.janpuc.com
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: *port
+            timeouts:
+              request: "0s"
+              backendRequest: "0s"
+    persistence:
+      data:
+        existingClaim: t3-code
+        globalMounts:
+          - path: /data
+      workspace:
+        type: nfs
+        server: bigmouth.internal
+        path: /mnt/Vault/Workspace
+        globalMounts:
+          - path: /workspace
+      config:
+        type: emptyDir
+        globalMounts:
+          - path: /config
+      config-src:
+        type: configMap
+        name: t3-code-configmap
+        advancedMounts:
+          t3-code:
+            init-config:
+              - path: /run/config
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
+    serviceAccount:
+      t3-code: {}
+    rbac:
+      roles:
+        read-all:
+          type: ClusterRole
+          rules:
+            - apiGroups:
+                - ""
+              resources:
+                - pods
+                - pods/log
+                - nodes
+                - services
+                - namespaces
+                - configmaps
+                - persistentvolumes
+                - persistentvolumeclaims
+                - endpoints
+                - resourcequotas
+                - limitranges
+                - serviceaccounts
+                - events
+              verbs:
+                - "get"
+                - "list"
+                - "watch"
+            - apiGroups:
+                - "apps"
+              resources:
+                - deployments
+                - daemonsets
+                - statefulsets
+                - replicasets
+                - controllerrevisions
+              verbs:
+                - "get"
+                - "list"
+                - "watch"
+            - apiGroups:
+                - "batch"
+              resources:
+                - jobs
+                - cronjobs
+              verbs:
+                - "get"
+                - "list"
+                - "watch"
+            - apiGroups:
+                - "networking.k8s.io"
+              resources:
+                - ingresses
+                - ingressclasses
+                - networkpolicies
+              verbs:
+                - "get"
+                - "list"
+                - "watch"
+            - apiGroups:
+                - "gateway.networking.k8s.io"
+              resources:
+                - gateways
+                - httproutes
+                - grpcroutes
+                - tcproutes
+                - tlsroutes
+                - referencegrants
+              verbs:
+                - "get"
+                - "list"
+                - "watch"
+            - apiGroups:
+                - "gateway.envoyproxy.io"
+              resources:
+                - backends
+                - backendtrafficpolicies
+                - clienttrafficpolicies
+                - envoyproxies
+                - securitypolicies
+              verbs:
+                - "get"
+                - "list"
+                - "watch"
+            - apiGroups:
+                - "storage.k8s.io"
+              resources:
+                - storageclasses
+                - csinodes
+                - csidrivers
+                - volumeattachments
+              verbs:
+                - "get"
+                - "list"
+                - "watch"
+            - apiGroups:
+                - "rbac.authorization.k8s.io"
+              resources:
+                - roles
+                - rolebindings
+                - clusterroles
+                - clusterrolebindings
+              verbs:
+                - "get"
+                - "list"
+                - "watch"
+            - apiGroups:
+                - "helm.toolkit.fluxcd.io"
+              resources:
+                - helmreleases
+              verbs:
+                - "get"
+                - "list"
+                - "watch"
+            - apiGroups:
+                - "kustomize.toolkit.fluxcd.io"
+              resources:
+                - kustomizations
+              verbs:
+                - "get"
+                - "list"
+                - "watch"
+            - apiGroups:
+                - "source.toolkit.fluxcd.io"
+              resources:
+                - gitrepositories
+                - helmrepositories
+                - ocirepositories
+                - buckets
+                - helmcharts
+              verbs:
+                - "get"
+                - "list"
+                - "watch"
+            - apiGroups:
+                - "external-secrets.io"
+              resources:
+                - externalsecrets
+                - secretstores
+                - clustersecretstores
+              verbs:
+                - "get"
+                - "list"
+                - "watch"
+            - apiGroups:
+                - "miroir.home-operations.com"
+              resources:
+                - miroirvolumes
+                - miroirnodes
+                - miroirnodegroups
+                - miroirsnapshots
+                - miroirsnapshotgroups
+              verbs:
+                - "get"
+                - "list"
+                - "watch"
+            - apiGroups:
+                - "kopiur.home-operations.com"
+              resources:
+                - snapshots
+                - snapshotpolicies
+                - snapshotschedules
+                - restores
+                - repositories
+                - clusterrepositories
+              verbs:
+                - "get"
+                - "list"
+                - "watch"
+            - apiGroups:
+                - "cert-manager.io"
+              resources:
+                - certificates
+                - certificaterequests
+                - issuers
+                - clusterissuers
+              verbs:
+                - "get"
+                - "list"
+                - "watch"
+            - apiGroups:
+                - "metrics.k8s.io"
+              resources:
+                - nodes
+                - pods
+              verbs:
+                - "get"
+                - "list"
+        pod-delete:
+          type: ClusterRole
+          rules:
+            - apiGroups:
+                - ""
+              resources:
+                - pods
+              verbs:
+                - "delete"
+        exec-deploy:
+          type: Role
+          rules:
+            - apiGroups:
+                - ""
+              resources:
+                - pods/exec
+              verbs:
+                - "create"
+            - apiGroups:
+                - "apps"
+              resources:
+                - deployments
+              verbs:
+                - "patch"
+                - "update"
+      bindings:
+        read-all:
+          type: ClusterRoleBinding
+          roleRef:
+            identifier: read-all
+          subjects:
+            - identifier: t3-code
+              serviceAccount: t3-code
+        pod-delete:
+          type: ClusterRoleBinding
+          roleRef:
+            identifier: pod-delete
+          subjects:
+            - identifier: t3-code
+              serviceAccount: t3-code
+        exec-deploy:
+          type: RoleBinding
+          roleRef:
+            identifier: exec-deploy
+          subjects:
+            - identifier: t3-code
+              serviceAccount: t3-code
+              namespace: ai

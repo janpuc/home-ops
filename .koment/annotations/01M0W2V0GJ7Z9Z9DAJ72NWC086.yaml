@@ -1,0 +1,62 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0W2V0GJ7Z9Z9DAJ72NWC086
+  created: "2026-08-25T09:08:21Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
+  type: why
+  title: Internal gateway only; read this before moving to envoy-external
+  body: |-
+    External exposure was deliberately deferred, and moving this parentRef to
+    `envoy-external` is not on its own a safe change.
+
+    Two things must land with it. First, a Cloudflare Access application on the
+    hostname, because the tunnel routes `*.janpuc.com` to envoy-external and
+    nothing else authenticates at the edge.
+
+    Second, and less obvious: Cloudflare Access does not cover the LAN.
+    unifi-dns runs without a `--gateway-name` filter, so it publishes internal
+    records for envoy-external routes too. Measured here —
+    `litellm.janpuc.com` resolves internally to `192.168.69.54`, the
+    envoy-external LoadBalancer IP, not the Cloudflare edge. A LAN client
+    reaches the origin without ever traversing the tunnel, so an Access policy
+    alone leaves the app open to anything on the network.
+
+    Closing that needs an Envoy `SecurityPolicy` on the HTTPRoute validating the
+    `Cf-Access-Jwt-Assertion` header against the team JWKS, which fails closed
+    for origin-direct traffic. Envoy Gateway v1.9.0 supports it.
+
+    `T3_AUTH_PROXY: "0"` keeps T3's own pairing as an independent second factor
+    and is why the internal-only posture is acceptable today. Do not set it to
+    `1` while this pod holds the Claude OAuth token, the LiteLLM master key, a
+    GitHub PAT and cluster RBAC.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+              parentRefs:
+                - name: envoy-internal
+                  namespace: network
+              rules:
+                - backendRefs:
+                    - identifier: app
+                      port: *port
+    before: |2-
+            app:
+              hostnames:
+                - t3.janpuc.com
+    after: |2-
+                  timeouts:
+                    request: "0s"
+                    backendRequest: "0s"
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+status:
+  lastSeenLine: 181
+  resolution: ok
+  resolvedAt: "2026-08-25T09:08:21Z"
+  resolvedCommit: 33d13e31c4da1c176cf585cff284f9e23f5fe4bb
