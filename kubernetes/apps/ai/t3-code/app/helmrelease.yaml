@@ -86,6 +86,17 @@ spec:
                 codex plugin add memini@memini \
                   || echo "codex plugin install unavailable; memini reaches Codex over MCP"
                 codex plugin list || true
+
+                export CLAUDE_CONFIG_DIR=/data/claude-home
+                for marketplace in eleboucher/memini koment-dev/koment; do
+                  claude plugin marketplace add "$marketplace" \
+                    || echo "claude plugin marketplace $marketplace unavailable"
+                done
+                for plugin in memini@memini koment@koment-dev; do
+                  claude plugin install "$plugin" \
+                    || echo "claude plugin install $plugin unavailable"
+                done
+                claude plugin list || true
             securityContext: &containerSecurity
               allowPrivilegeEscalation: false
               capabilities:
@@ -112,9 +123,17 @@ spec:
                   curl -fsSL https://mise.run | sh
                 fi
 
+                cd /data/home
                 "$MISE_INSTALL_PATH" install --yes \
                   || "$MISE_INSTALL_PATH" install --yes
                 "$MISE_INSTALL_PATH" reshim
+
+                if koment_bin=$("$MISE_INSTALL_PATH" which koment); then
+                  ln -sf "$koment_bin" /data/home/.local/bin/koment
+                else
+                  echo "koment not installed by mise; koment MCP will be unavailable"
+                fi
+
                 "$MISE_INSTALL_PATH" ls --installed
             envFrom: &envFrom
               - secretRef:

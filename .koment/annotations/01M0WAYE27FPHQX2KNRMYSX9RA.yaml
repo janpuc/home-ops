@@ -1,0 +1,67 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0WAYE27FPHQX2KNRMYSX9RA
+  created: "2026-08-25T11:30:02Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/t3-code/app/configmap.yaml
+  type: gotcha
+  title: MEMINI_HOME in the environment does not scope an HTTP MCP client
+  body: |-
+    Passing `MEMINI_HOME` through `providers.codex.env` is not enough. The
+    server reads the namespace from a request header, so a plain HTTP MCP client
+    that only sends a bearer token lands in the default namespace and sees none
+    of the personal memories.
+
+    Measured against the live service, calling `memory_briefing` with the same
+    token and changing only the headers:
+
+    no namespace header -> "Scope: default" X-Memini-Home -> "Scope: default <-
+    personal/jan(52)"
+
+    So the failure is silent and total: memini answers normally, reports itself
+    healthy, and recalls nothing. Fifty-two memories were invisible to Codex.
+
+    These names mirror `.mcp.codex.json` in the memini plugin, which is the
+    upstream source for this table. That file is not used directly because it
+    hardcodes `http://localhost:8080/mcp`; the plugin's own server is switched
+    off at the bottom of this config and this entry carries the in-cluster URL
+    instead. The headers had to come across with it and did not.
+
+    `MEMINI_NAMESPACE` is deliberately unset here — memini derives the
+    per-project namespace itself, and `MEMINI_HOME` is the personal tier merged
+    into every recall. Codex tolerates the unset variable and simply omits the
+    header; verified with `codex mcp list` against this config.
+
+    The equivalent header on the opencode server below is the same fix in
+    opencode's `{env:...}` syntax. Claude needs no entry at all: its plugin
+    resolves the namespace through a headersHelper script.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+          [mcp_servers.memini.env_http_headers]
+          "X-Memini-Namespace" = "MEMINI_NAMESPACE"
+          "X-Memini-Home" = "MEMINI_HOME"
+    before: |2
+          url = "http://memini.ai.svc.cluster.local:8080/mcp"
+          bearer_token_env_var = "MEMINI_API_KEY"
+    after: |2-
+
+          [mcp_servers.kubectl]
+          url = "http://litellm.ai.svc.cluster.local:4000/mcp/kubectl/mcp"
+  author:
+    name: janpuc
+    email: janpuc@proton.me
+    kind: agent
+    source: git-config
+  git:
+    commit: 69db8f83fbff3fb46ad71ce1e99b17bff2808a56
+    path: kubernetes/apps/ai/t3-code/app/configmap.yaml
+    line: 242
+status:
+  lastSeenLine: 242
+  resolution: ok
+  resolvedAt: "2026-08-25T11:30:02Z"
+  resolvedCommit: 69db8f83fbff3fb46ad71ce1e99b17bff2808a56

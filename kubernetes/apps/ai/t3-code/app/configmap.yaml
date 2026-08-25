@@ -186,7 +186,6 @@ data:
           }
         }
       },
-      "enabledMcpjsonServers": ["koment"],
       "effortLevel": "xhigh",
       "theme": "dark"
     }
@@ -239,6 +238,10 @@ data:
     [mcp_servers.memini]
     url = "http://memini.ai.svc.cluster.local:8080/mcp"
     bearer_token_env_var = "MEMINI_API_KEY"
+
+    [mcp_servers.memini.env_http_headers]
+    "X-Memini-Namespace" = "MEMINI_NAMESPACE"
+    "X-Memini-Home" = "MEMINI_HOME"
 
     [mcp_servers.kubectl]
     url = "http://litellm.ai.svc.cluster.local:4000/mcp/kubectl/mcp"
@@ -346,7 +349,10 @@ data:
           "type": "remote",
           "url": "http://memini.ai.svc.cluster.local:8080/mcp",
           "enabled": true,
-          "headers": { "Authorization": "Bearer {env:MEMINI_API_KEY}" }
+          "headers": {
+            "Authorization": "Bearer {env:MEMINI_API_KEY}",
+            "X-Memini-Home": "{env:MEMINI_HOME}"
+          }
         },
         "kubectl": {
           "type": "remote",

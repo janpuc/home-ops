@@ -1,0 +1,71 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0WAXN3CPBFGQE5WSTMXCX3M
+  created: "2026-08-25T11:29:36Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
+  type: gotcha
+  title: koment must not be reached through a mise shim
+  body: |-
+    Every harness spawns the koment MCP server as the bare command `koment`, so
+    whatever that name resolves to has to work from an arbitrary repository
+    directory. The mise shim does not.
+
+    A shim re-evaluates every mise config on the path to the process cwd, and
+    mise refuses to run an untrusted one. Only `/data/home` is trusted here —
+    mise trusts its own config dir and nothing else — so a shim invoked from
+    anywhere under `/workspace` dies before koment starts:
+
+    mise ERROR Config files in /workspace/home-ops/.mise/config.toml are not
+    trusted. Trust them with `mise trust`.
+
+    Measured in the running pod: `claude mcp list` reported
+    `plugin:koment:koment - Failed to connect CONNECTION_CLOSED`, and codex and
+    opencode spawn the same command, so all three harnesses lost koment at once
+    for the same reason. The symlink resolves it for all three.
+
+    `mise which` runs after `cd /data/home` deliberately — it is itself a mise
+    command and would hit the same trust wall from a repository directory.
+
+    `/data/home/.local/bin` is prepended to PATH by the image entrypoint, so
+    this link wins over the shim directory that the container PATH puts last.
+    That ordering is deliberate and documented separately; do not invert it to
+    fix this, because the shim would still fail on untrusted configs.
+
+    `mise which` resolves to the `latest` install directory rather than a
+    version directory, because the mise config for this pod pins `latest`, so
+    the link survives a koment upgrade without being rewritten.
+
+    Do not replace this with `mise trust`. Trusting configs under `/workspace`
+    would let any repository cloned into the NFS share execute its own `[hooks]
+    postinstall` inside a pod holding a GitHub PAT, the LiteLLM master key and
+    cluster RBAC.
+  anchor:
+    scope: excerpt
+    excerpt: |-
+      if koment_bin=$("$MISE_INSTALL_PATH" which koment); then
+                        ln -sf "$koment_bin" /data/home/.local/bin/koment
+    before: |2
+                        || "$MISE_INSTALL_PATH" install --yes
+                      "$MISE_INSTALL_PATH" reshim
+    after: |2-
+                      else
+                        echo "koment not installed by mise; koment MCP will be unavailable"
+                      fi
+  author:
+    name: janpuc
+    email: janpuc@proton.me
+    kind: agent
+    source: git-config
+  git:
+    commit: 69db8f83fbff3fb46ad71ce1e99b17bff2808a56
+    path: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
+    line: 131
+status:
+  lastSeenLine: 131
+  resolution: ok
+  resolvedAt: "2026-08-25T11:29:36Z"
+  resolvedCommit: 69db8f83fbff3fb46ad71ce1e99b17bff2808a56

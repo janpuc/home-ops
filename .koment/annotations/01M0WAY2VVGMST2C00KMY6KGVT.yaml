@@ -1,0 +1,66 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0WAY2VVGMST2C00KMY6KGVT
+  created: "2026-08-25T11:29:50Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
+  type: gotcha
+  title: enabling a Claude plugin does not install it
+  body: |-
+    `claude-settings.json` lists both plugins under `enabledPlugins` and
+    declares their marketplaces under `extraKnownMarketplaces`. Neither field
+    installs anything. Without these commands the pod ran for months with
+    `installed_plugins.json` holding `{"plugins": {}}` — memini and koment
+    were enabled, absent, and silently so.
+
+    Both plugins ship their own `.mcp.json`, so installing them is also what
+    registers their MCP servers. Claude namespaces those as
+    `plugin:memini:memini` and `plugin:koment:koment`, which is why neither
+    belongs in `claude-mcp.json`: a hand-written entry there would be a second
+    server process exposing a duplicate tool set.
+
+    The memini plugin is the reason to prefer this over a manual entry. Its
+    `.mcp.json` resolves auth and the per-project namespace through a
+    `headersHelper` script, which a static `Authorization` header cannot do —
+    see the annotation on the Codex memini headers for what goes wrong when the
+    namespace is missing.
+
+    `CLAUDE_CONFIG_DIR` must be exported here. This init container inherits no
+    env block, and the variable overrides HOME for plugin state, so without it
+    the install lands somewhere the app container never reads. The plugin tree
+    is `$CLAUDE_CONFIG_DIR/plugins/`, not `$CLAUDE_CONFIG_DIR/.claude/plugins/`;
+    the latter exists and is empty, which makes "not installed" easy to
+    misdiagnose.
+
+    Failures are tolerated rather than fatal, matching the Codex block above:
+    both commands clone from GitHub at pod start, and a network blip should cost
+    memory and annotations, not the whole pod.
+  anchor:
+    scope: excerpt
+    excerpt: |-
+      export CLAUDE_CONFIG_DIR=/data/claude-home
+                      for marketplace in eleboucher/memini koment-dev/koment; do
+    before: |2
+                        || echo "codex plugin install unavailable; memini reaches Codex over MCP"
+                      codex plugin list || true
+    after: |2-
+                        claude plugin marketplace add "$marketplace" \
+                          || echo "claude plugin marketplace $marketplace unavailable"
+                      done
+  author:
+    name: janpuc
+    email: janpuc@proton.me
+    kind: agent
+    source: git-config
+  git:
+    commit: 69db8f83fbff3fb46ad71ce1e99b17bff2808a56
+    path: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
+    line: 90
+status:
+  lastSeenLine: 90
+  resolution: ok
+  resolvedAt: "2026-08-25T11:29:51Z"
+  resolvedCommit: 69db8f83fbff3fb46ad71ce1e99b17bff2808a56
