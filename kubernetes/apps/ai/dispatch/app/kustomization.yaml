@@ -12,3 +12,4 @@ resources:
   - ./agent-worker.yaml
   - ./trigger-guardian-alerts.yaml
   - ./trigger-guardian-patrol.yaml
+  - ./grafanadashboard.yaml
