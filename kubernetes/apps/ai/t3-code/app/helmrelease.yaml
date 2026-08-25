@@ -34,7 +34,7 @@ spec:
           init-config:
             image: &image
               repository: ghcr.io/traktuner/docker-t3-code
-              tag: 0.0.28-23@sha256:638e2025be89f837dc74dbf3a6dc58578e7930b1c2669d89c3585ae4041c1316
+              tag: 0.0.33-3@sha256:023429ff9fd1cc6e8e5ae83925d90d649f2669433ffb398fd2151e2192f1ac2b
             command:
               - /bin/bash
               - -c
