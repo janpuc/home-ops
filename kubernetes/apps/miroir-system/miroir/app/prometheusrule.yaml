@@ -21,3 +21,26 @@ spec:
               node carries a full copy and the thin pool grows on all three at
               once. Watch for the chart's MiroirPoolUsageHigh (80%, 15m) to fire
               next. Current usage: {{ $value | humanizePercentage }}.
+    - name: miroir-system.agent
+      interval: 30s
+      rules:
+        - alert: MiroirAgentReconcileStuck
+          expr: >-
+            sum by (node, controller) (
+              rate(controller_runtime_reconcile_errors_total{job="miroir-system/miroir"}[15m])
+            ) > 0
+          for: 2h
+          labels:
+            severity: critical
+          annotations:
+            summary: "Miroir {{ $labels.controller }} stuck retrying on {{ $labels.node }}"
+            description: >-
+              The agent has failed the same reconcile continuously for two
+              hours, so whatever it is trying to apply to DRBD is being
+              refused and will not clear on its own. Volumes already mounted
+              keep serving, which is why nothing else alerts; the damage
+              shows up only when a pod next needs to stage one and
+              NodeStageVolume refuses. Read the error with `kubectl -n
+              miroir-system logs -l app.kubernetes.io/name=miroir -c agent
+              --tail=200 | grep 'Reconciler error'` and expect it to name a
+              single volume.

@@ -1,0 +1,66 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0WGKQ4H7N2XPB3RJDVC8E5F
+  created: "2026-08-25T11:05:00Z"
+spec:
+  target:
+    file: kubernetes/apps/miroir-system/miroir/app/prometheusrule.yaml
+  type: why
+  body: |-
+    The 2h `for` is the whole alert. Reconcile errors are not rare here, so
+    presence proves nothing and only duration separates a blip from a wedge.
+
+    Measured over the full 14d Prometheus window on 2026-08-25, the longest
+    continuous run of `rate(...[15m]) > 0` that was NOT a real incident is 60
+    minutes (k8s-0, 2026-08-21 00:08); k8s-1 and k8s-2 both top out at 40. The
+    runs that were real incidents are three orders away: 3275 min on k8s-1 from
+    2026-08-23 06:18, 3615 min on k8s-2 from 2026-08-23 00:38, and two earlier
+    episodes nobody noticed at the time — 5745 min on k8s-2 from 2026-08-13 and
+    1340 min on k8s-1 from 2026-08-18. 2h sits in the empty gap between 60 min
+    and 8h, so it cannot be tripped by the ordinary churn and cannot miss a
+    wedge.
+
+    Why this signal and not a volume-health one: on 2026-08-23 the k8s-1 and
+    k8s-2 agents entered a permanent `drbdadm adjust` failure ("Can not drop
+    the bitmap when both sides have a disk") on the plex and stash volumes.
+    Every miroir volume gauge stayed green throughout — `miroir_volume_connected`
+    never left 1, `miroir_volume_split_brain` never left 0 — because those
+    gauges sample live DRBD state on a leg that still looks healthy, while the
+    thing that is broken is the config the agent cannot apply to it. Every
+    chart alert (MiroirVolumeSplitBrain, MiroirVolumeQuorumLost,
+    MiroirVolumeDisconnected) read `inactive` for the entire outage.
+
+    The failure is invisible until a pod restages: already-mounted volumes keep
+    serving, so the blast radius is deferred and arrives as an unrelated-looking
+    KubeDeploymentReplicasMismatch. That is what actually surfaced it, 42 hours
+    late. This expression was true 2 hours in.
+
+    `sum by (node, controller)` is deliberate: the metric also carries `pod`,
+    `instance` and `endpoint`, so without collapsing them an agent DaemonSet
+    pod restart would open a second alert for the same stuck node. `controller`
+    is kept rather than summed away because it names which loop is wedged —
+    agent-volume and agent-snapshot fail for different reasons.
+
+    Severity is critical, not warning: unlike a pool filling up there is no
+    slow burn and no self-healing path. The error repeats every reconcile until
+    someone intervenes.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+                  sum by (node, controller) (
+                    rate(controller_runtime_reconcile_errors_total{job="miroir-system/miroir"}[15m])
+                  ) > 0
+    before: |2-
+            rules:
+              - alert: MiroirAgentReconcileStuck
+                expr: >-
+    after: |2-
+                for: 2h
+                labels:
+                  severity: critical
+  author:
+    name: claude-code
+    kind: agent
+    source: session
