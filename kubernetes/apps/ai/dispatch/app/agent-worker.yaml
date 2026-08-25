@@ -9,7 +9,7 @@ spec:
     through the litellm anthropic endpoint, so its token spend never touches
     the Claude subscription window.
   runner:
-    image: ghcr.io/janpuc/dispatch-runner:main@sha256:16ad54c8014b26cbef4c501b00f3c84458bb717b4183f60de337f0b12013fd4d
+    image: ghcr.io/janpuc/dispatch-runner:main@sha256:2cd3af547ad0821a09cd86c9e2f83325c44e95dccb462dd5451d7dd33ea5fb17
     cli: claude
     credentialsRef:
       name: dispatch-minimax
