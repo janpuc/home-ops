@@ -271,7 +271,14 @@ data:
     url = "http://litellm.ai.svc.cluster.local:4000/mcp/sidero/mcp"
     bearer_token_env_var = "LITELLM_API_KEY"
 
-    [plugins.memini.mcp_servers.memini]
+    [marketplaces.memini]
+    source_type = "git"
+    source = "https://github.com/eleboucher/memini.git"
+
+    [plugins."memini@memini"]
+    enabled = true
+
+    [plugins."memini@memini".mcp_servers.memini]
     enabled = false
 
     [marketplaces.koment-dev]

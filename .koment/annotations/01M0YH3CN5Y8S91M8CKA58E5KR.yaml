@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0YH3CN5Y8S91M8CKA58E5KR
+  created: "2026-08-26T07:56:05Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/t3-code/app/configmap.yaml
+  type: why
+  title: Persist the fully qualified Memini plugin
+  body: |-
+    T3 copies this managed file into `CODEX_HOME` after the init containers
+    finish. The marketplace and fully qualified plugin tables preserve Memini
+    after that copy. The plugin supplies its skills and hooks. Its bundled MCP
+    server stays disabled because the explicit `mcp_servers.memini` entry
+    supplies the in-cluster URL, bearer token, and personal namespace headers.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+          [marketplaces.memini]
+          source_type = "git"
+          source = "https://github.com/eleboucher/memini.git"
+
+          [plugins."memini@memini"]
+          enabled = true
+
+          [plugins."memini@memini".mcp_servers.memini]
+          enabled = false
+    before: |2
+          url = "http://litellm.ai.svc.cluster.local:4000/mcp/sidero/mcp"
+          bearer_token_env_var = "LITELLM_API_KEY"
+    after: |2-
+
+          [marketplaces.koment-dev]
+          source_type = "local"
+  author:
+    name: codex-mcp-client
+    kind: agent
+    source: session
+  git:
+    commit: fddeb14147bfb95460416d6067f656e992bb3e0a
+    path: kubernetes/apps/ai/t3-code/app/configmap.yaml
+    line: 274
+status:
+  lastSeenLine: 274
+  resolution: ok
+  resolvedAt: "2026-08-26T07:56:05Z"
+  resolvedCommit: fddeb14147bfb95460416d6067f656e992bb3e0a

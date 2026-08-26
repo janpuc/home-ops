@@ -35,6 +35,12 @@ spec:
             image: &image
               repository: ghcr.io/traktuner/docker-t3-code
               tag: 0.0.33-3@sha256:023429ff9fd1cc6e8e5ae83925d90d649f2669433ffb398fd2151e2192f1ac2b
+            env:
+              GH_TOKEN:
+                valueFrom:
+                  secretKeyRef:
+                    name: t3-code-config
+                    key: GH_TOKEN
             command:
               - /bin/bash
               - -c
@@ -81,6 +87,8 @@ spec:
                 export HOME=/data/home
                 export CODEX_HOME=/data/codex
                 mkdir -p "$CODEX_HOME"
+                install -m 0644 /run/config/codex-config.toml "$CODEX_HOME/config.toml"
+                codex plugin marketplace remove memini >/dev/null 2>&1 || true
                 codex plugin marketplace add eleboucher/memini \
                   || echo "codex plugin marketplace unavailable; memini reaches Codex over MCP"
                 codex plugin add memini@memini \
@@ -131,9 +139,15 @@ spec:
                   claude plugin marketplace add "$marketplace" \
                     || echo "claude plugin marketplace $marketplace unavailable"
                 done
+                for marketplace in memini koment-dev; do
+                  claude plugin marketplace update "$marketplace" \
+                    || echo "claude plugin marketplace $marketplace update unavailable"
+                done
                 for plugin in memini@memini koment@koment-dev; do
                   claude plugin install "$plugin" \
                     || echo "claude plugin install $plugin unavailable"
+                  claude plugin update "$plugin" \
+                    || echo "claude plugin update $plugin unavailable"
                 done
                 claude plugin list || true
             securityContext: &containerSecurity

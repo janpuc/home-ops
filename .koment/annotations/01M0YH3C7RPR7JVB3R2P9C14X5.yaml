@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0YH3C7RPR7JVB3R2P9C14X5
+  created: "2026-08-26T07:56:04Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
+  type: why
+  title: Limit GitHub credentials in init
+  body: |-
+    The GitHub CLI in `init-config` reads `GH_TOKEN` while it resolves and
+    downloads koment releases. This container receives only that key. It does
+    not receive every credential from `t3-code-config`.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+                  env:
+                    GH_TOKEN:
+                      valueFrom:
+                        secretKeyRef:
+                          name: t3-code-config
+                          key: GH_TOKEN
+    before: |2-
+                  image: &image
+                    repository: ghcr.io/traktuner/docker-t3-code
+                    tag: 0.0.33-3@sha256:023429ff9fd1cc6e8e5ae83925d90d649f2669433ffb398fd2151e2192f1ac2b
+    after: |2-
+                  command:
+                    - /bin/bash
+                    - -c
+  author:
+    name: codex-mcp-client
+    kind: agent
+    source: session
+  git:
+    commit: fddeb14147bfb95460416d6067f656e992bb3e0a
+    path: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
+    line: 38
+status:
+  lastSeenLine: 38
+  resolution: ok
+  resolvedAt: "2026-08-26T07:56:04Z"
+  resolvedCommit: fddeb14147bfb95460416d6067f656e992bb3e0a
