@@ -1,0 +1,58 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0YDC2HM5SDR30NTHHERMH4R
+  created: "2026-08-26T06:50:55Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
+  type: gotcha
+  title: Codex needs the released local marketplace archive
+  body: |-
+    The koment repository root is not a Codex marketplace. Release packaging
+    puts the required `.agents/plugins/marketplace.json` and `plugins/koment`
+    tree in `koment-plugin-codex_v<version>.tar.gz`, so adding
+    `koment-dev/koment` directly cannot discover this plugin.
+
+    The pod installs the latest release because its mise configuration also
+    installs the latest koment binary. It verifies the archive against the
+    release checksum before it replaces the stable local marketplace path. Codex
+    treats a repeated add from that same path as idempotent, and `codex plugin
+    add` atomically refreshes the installed version.
+
+    A GitHub lookup or download failure does not fail the pod. The previous
+    plugin cache remains installed, and the explicit koment MCP entry still
+    supplies the tools.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+                      koment_plugin_stage="$(mktemp -d)"
+                      if koment_plugin_tag="$(
+                        gh release view --repo koment-dev/koment --json tagName --jq .tagName
+                      )"; then
+                        koment_plugin_version="$(printf '%s' "$koment_plugin_tag" | sed 's/^v//')"
+                        koment_plugin_archive="koment-plugin-codex_$koment_plugin_tag.tar.gz"
+                        koment_plugin_checksums="$(
+                          printf 'koment-plugins_%s_checksums.txt' "$koment_plugin_version"
+                        )"
+    before: |2
+                      codex plugin add memini@memini \
+                        || echo "codex plugin install unavailable; memini reaches Codex over MCP"
+    after: |2-
+                        if gh release download "$koment_plugin_tag" \
+                          --repo koment-dev/koment \
+                          --pattern "$koment_plugin_archive" \
+  author:
+    name: codex-mcp-client
+    kind: agent
+    source: session
+  git:
+    commit: 34165753104a3fc37ff7f7f5b051a005f1b31b1a
+    path: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
+    line: 89
+status:
+  lastSeenLine: 89
+  resolution: ok
+  resolvedAt: "2026-08-26T06:50:55Z"
+  resolvedCommit: 34165753104a3fc37ff7f7f5b051a005f1b31b1a

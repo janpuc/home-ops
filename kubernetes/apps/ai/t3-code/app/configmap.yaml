@@ -273,6 +273,16 @@ data:
 
     [plugins.memini.mcp_servers.memini]
     enabled = false
+
+    [marketplaces.koment-dev]
+    source_type = "local"
+    source = "/data/home/.local/share/koment/codex-marketplace"
+
+    [plugins."koment@koment-dev"]
+    enabled = true
+
+    [plugins."koment@koment-dev".mcp_servers.koment]
+    enabled = false
   opencode.jsonc: |-
     {
       "$schema": "https://opencode.ai/config.json",

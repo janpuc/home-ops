@@ -1,0 +1,59 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0YDB8GVPFBNEKQBS2F8M5XB
+  created: "2026-08-26T06:50:28Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/t3-code/app/configmap.yaml
+  type: why
+  title: The plugin supplies policy while the explicit MCP stays primary
+  body: |-
+    The Codex plugin is installed for its standing skill and repository policy
+    hooks. Its bundled MCP server runs the same `koment mcp --write` command as
+    the explicit `[mcp_servers.koment]` entry above.
+
+    T3 copies `/config/codex/config.toml` into `CODEX_HOME` after the init
+    containers finish. The marketplace and enabled-plugin tables preserve the
+    state that `codex plugin marketplace add` and `codex plugin add` wrote
+    during init. Without them, the plugin files remain cached but Codex does
+    not load them.
+
+    Keeping both servers active would expose the same tools twice. The explicit
+    server remains primary because it still works if a pod restart cannot
+    download or refresh the plugin release. Disabling only
+    `plugins."koment@koment-dev".mcp_servers.koment` preserves that fallback
+    while the plugin continues to provide its skill and hooks.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+          [marketplaces.koment-dev]
+          source_type = "local"
+          source = "/data/home/.local/share/koment/codex-marketplace"
+
+          [plugins."koment@koment-dev"]
+          enabled = true
+
+          [plugins."koment@koment-dev".mcp_servers.koment]
+          enabled = false
+    before: |2
+          [plugins.memini.mcp_servers.memini]
+          enabled = false
+    after: |2-
+        opencode.jsonc: |-
+          {
+            "$schema": "https://opencode.ai/config.json",
+  author:
+    name: codex-mcp-client
+    kind: agent
+    source: session
+  git:
+    commit: 34165753104a3fc37ff7f7f5b051a005f1b31b1a
+    path: kubernetes/apps/ai/t3-code/app/configmap.yaml
+    line: 277
+status:
+  lastSeenLine: 277
+  resolution: ok
+  resolvedAt: "2026-08-26T06:50:28Z"
+  resolvedCommit: 34165753104a3fc37ff7f7f5b051a005f1b31b1a

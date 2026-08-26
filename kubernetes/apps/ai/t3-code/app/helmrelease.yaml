@@ -85,6 +85,45 @@ spec:
                   || echo "codex plugin marketplace unavailable; memini reaches Codex over MCP"
                 codex plugin add memini@memini \
                   || echo "codex plugin install unavailable; memini reaches Codex over MCP"
+
+                koment_plugin_stage="$(mktemp -d)"
+                if koment_plugin_tag="$(
+                  gh release view --repo koment-dev/koment --json tagName --jq .tagName
+                )"; then
+                  koment_plugin_version="$(printf '%s' "$koment_plugin_tag" | sed 's/^v//')"
+                  koment_plugin_archive="koment-plugin-codex_$koment_plugin_tag.tar.gz"
+                  koment_plugin_checksums="$(
+                    printf 'koment-plugins_%s_checksums.txt' "$koment_plugin_version"
+                  )"
+                  if gh release download "$koment_plugin_tag" \
+                    --repo koment-dev/koment \
+                    --pattern "$koment_plugin_archive" \
+                    --pattern "$koment_plugin_checksums" \
+                    --dir "$koment_plugin_stage" \
+                    && (
+                      cd "$koment_plugin_stage"
+                      awk -v archive="$koment_plugin_archive" '$2 == archive' \
+                        "$koment_plugin_checksums" | sha256sum --check -
+                    ); then
+                    mkdir -p "$koment_plugin_stage/marketplace"
+                    tar -xzf "$koment_plugin_stage/$koment_plugin_archive" \
+                      -C "$koment_plugin_stage/marketplace" \
+                      --strip-components=1
+                    rm -rf /data/home/.local/share/koment/codex-marketplace
+                    mkdir -p /data/home/.local/share/koment
+                    mv "$koment_plugin_stage/marketplace" \
+                      /data/home/.local/share/koment/codex-marketplace
+                    codex plugin marketplace add \
+                      /data/home/.local/share/koment/codex-marketplace \
+                      || echo "codex plugin marketplace unavailable; koment reaches Codex over MCP"
+                    codex plugin add koment@koment-dev \
+                      || echo "codex plugin install unavailable; koment reaches Codex over MCP"
+                  else
+                    echo "koment Codex plugin archive unavailable; koment reaches Codex over MCP"
+                  fi
+                else
+                  echo "koment Codex plugin release unavailable; koment reaches Codex over MCP"
+                fi
                 codex plugin list || true
 
                 export CLAUDE_CONFIG_DIR=/data/claude-home
