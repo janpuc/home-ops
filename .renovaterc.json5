@@ -7,6 +7,28 @@
     "github>home-operations/renovate-presets//apps/talosFactory.json5#8.1.0",
     ":timezone(Europe/Warsaw)",
   ],
+  customManagers: [
+    {
+      customType: "regex",
+      description: "Update the koment CLI version used by GitHub Pages",
+      managerFilePatterns: ["/^\\.github\\/workflows\\/koment-pages\\.yaml$/"],
+      matchStrings: ["version: (?<currentValue>v?\\d+\\.\\d+\\.\\d+)"],
+      depNameTemplate: "koment-dev/koment",
+      packageNameTemplate: "koment-dev/koment",
+      datasourceTemplate: "github-releases",
+      versioningTemplate: "semver",
+    },
+    {
+      customType: "regex",
+      description: "Update the koment CLI version embedded in t3-code",
+      managerFilePatterns: ["/^kubernetes\\/apps\\/ai\\/t3-code\\/app\\/configmap\\.yaml$/"],
+      matchStrings: ['"github:koment-dev/koment" = "(?<currentValue>v?\\d+\\.\\d+\\.\\d+)"'],
+      depNameTemplate: "koment-dev/koment",
+      packageNameTemplate: "koment-dev/koment",
+      datasourceTemplate: "github-releases",
+      versioningTemplate: "semver",
+    },
+  ],
   lockFileMaintenance: {
     enabled: true,
     schedule: ["before 3am on the first day of the month"],
@@ -101,6 +123,16 @@
       matchManagers: ["mise"],
       groupName: "mise tools",
       groupSlug: "mise-tools",
+    },
+    {
+      description: "Koment Group",
+      groupName: "koment",
+      groupSlug: "koment",
+      matchPackageNames: ["koment-dev/koment", "ghcr.io/koment-dev/charts/koment"],
+      group: {
+        commitMessageTopic: "{{{groupName}}} group",
+      },
+      minimumGroupSize: 5,
     },
     {
       description: "Talos Group",

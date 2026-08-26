@@ -1,0 +1,51 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0YJBH7P1PV8MJYG91D8PCRX
+  created: "2026-08-26T08:18:00Z"
+spec:
+  target:
+    file: .renovaterc.json5
+  type: invariant
+  title: Koment upgrades require all five dependency updates
+  body: |-
+    A koment release creates five Renovate updates. Native managers extract the
+    GitHub Action SHA, the repository mise tool, and the OCI chart. Regex
+    managers extract the GitHub Pages CLI input and t3-code's embedded mise
+    tool.
+
+    `minimumGroupSize: 5` postpones branch creation until all five updates are
+    available. This prevents a partial release from changing only one runtime.
+
+    Keep this rule after the Mise Tools Group. Renovate applies later matching
+    rules last, so this position moves the repository koment tool out of the
+    generic mise group.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+            description: "Koment Group",
+            groupName: "koment",
+            groupSlug: "koment",
+            matchPackageNames: ["koment-dev/koment", "ghcr.io/koment-dev/charts/koment"],
+    before: |2-
+            groupSlug: "mise-tools",
+          },
+          {
+    after: |2-
+            group: {
+              commitMessageTopic: "{{{groupName}}} group",
+            },
+  author:
+    name: codex-mcp-client
+    kind: agent
+    source: session
+  git:
+    commit: e9d662c767272598ce2da51ca8012fc1b1b0fb44
+    path: .renovaterc.json5
+    line: 134
+status:
+  lastSeenLine: 128
+  resolution: ok
+  resolvedAt: "2026-08-26T08:18:00Z"
+  resolvedCommit: e9d662c767272598ce2da51ca8012fc1b1b0fb44

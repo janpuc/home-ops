@@ -35,9 +35,9 @@ spec:
     That ordering is deliberate and documented separately; do not invert it to
     fix this, because the shim would still fail on untrusted configs.
 
-    `mise which` resolves to the `latest` install directory rather than a
-    version directory, because the mise config for this pod pins `latest`, so
-    the link survives a koment upgrade without being rewritten.
+    `mise which` resolves the exact version from the managed mise configuration.
+    The init container rebuilds this link after every installation, so a grouped
+    Renovate upgrade retargets it without a manual path change.
 
     Do not replace this with `mise trust`. Trusting configs under `/workspace`
     would let any repository cloned into the NFS share execute its own `[hooks]

@@ -8,18 +8,17 @@ spec:
   target:
     file: .github/workflows/koment-pages.yaml
   type: why
-  title: action owner is koment-dev, not janpuc; SHA and input must match
+  title: action owner is koment-dev and its SHA must match the CLI
   body: |-
     Pin the owner `koment-dev/koment`, not `janpuc/koment`. The latter was
     archived when the project moved organisations in v2.0.0 (`koment-dev/koment`
     #71) and pinning it now causes the workflow to fail with a "repository not
-    found" error before any step runs. The SHA is the v2.0.1 commit object
-    (`ffd1070…`), and the `version` input must match it exactly — the action
-    downloads the release tarball at that tag and SHA-pins are checked
-    independently, so drift between the two fails the install step's checksum.
-    The trap to watch: when bumping, update both this SHA, the `# vX.Y.Z`
-    marker, the `version:` input, **and** `.mise/config.toml` — four places,
-    no manager tracks the input.
+    found" error before any step runs.
+
+    The action code uses a commit SHA, while the `version` input selects the
+    release tarball. Both must identify the same release. Renovate's native
+    GitHub Actions manager updates the SHA and marker. The custom manager
+    updates the input in the same five-way Koment Group PR.
   anchor:
     scope: excerpt
     excerpt: "- name: Setup Koment"

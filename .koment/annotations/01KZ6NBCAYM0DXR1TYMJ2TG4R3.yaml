@@ -8,18 +8,18 @@ spec:
   target:
     file: .github/workflows/koment-pages.yaml
   type: gotcha
-  title: koment version input must move with the mise config pin
+  title: Renovate must move every koment installation together
   body: |-
-    The koment version is pinned in TWO places and they must be bumped together:
-    this `version` input and `"github:koment-dev/koment"` in .mise/config.toml.
-    Renovate's mise manager tracks the config.toml pin and its action manager
-    tracks the SHA above, but nothing tracks this input value — there is no
-    customManager configured for workflow inputs in .renovaterc.json5.
+    One koment release appears as five Renovate updates: the action SHA, this
+    CLI input, the repository mise tool, t3-code's embedded mise tool, and the
+    in-cluster OCI chart. The Koment Group in .renovaterc.json5 waits for all
+    five updates and puts them in one PR. Its two custom managers cover this
+    input and the embedded t3-code input that native managers cannot extract.
 
     Letting them drift means CI runs `koment check` on a different build than
     the one developers run locally, so a check can pass on a laptop and fail
-    here for reasons nobody can reproduce. If the two ever disagree,
-    .mise/config.toml is the source of truth.
+    here for reasons nobody can reproduce. The five-way group also keeps the
+    deployed chart and t3-code tools on the same release.
   anchor:
     scope: excerpt
     excerpt: "- name: Setup Koment"

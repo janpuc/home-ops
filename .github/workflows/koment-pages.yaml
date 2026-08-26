@@ -28,7 +28,7 @@ jobs:
       - name: Setup Koment
         uses: koment-dev/koment@8d4d707e9862865efdd8aeb16f1e31b198df922f # v3.1.5
         with:
-          version: 3.0.0
+          version: v3.1.5
 
       - name: Check Annotations
         run: |

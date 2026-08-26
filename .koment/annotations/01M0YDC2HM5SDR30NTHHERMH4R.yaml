@@ -15,11 +15,13 @@ spec:
     tree in `koment-plugin-codex_v<version>.tar.gz`, so adding
     `koment-dev/koment` directly cannot discover this plugin.
 
-    The pod installs the latest release because its mise configuration also
-    installs the latest koment binary. It verifies the archive against the
-    release checksum before it replaces the stable local marketplace path. Codex
-    treats a repeated add from that same path as idempotent, and `codex plugin
-    add` atomically refreshes the installed version.
+    The pod reads the release tag from its managed mise configuration. This
+    keeps the Codex plugin on the exact release used by the koment binary.
+    Renovate updates that pin with every other koment installation. The pod
+    verifies the archive against the release checksum before it replaces the
+    stable local marketplace path. Codex treats a repeated add from that same
+    path as idempotent, and `codex plugin add` atomically refreshes the installed
+    version.
 
     A GitHub lookup or download failure does not fail the pod. The previous
     plugin cache remains installed, and the explicit koment MCP entry still
@@ -28,9 +30,11 @@ spec:
     scope: excerpt
     excerpt: |2-
                       koment_plugin_stage="$(mktemp -d)"
-                      if koment_plugin_tag="$(
-                        gh release view --repo koment-dev/koment --json tagName --jq .tagName
-                      )"; then
+                      koment_plugin_tag="$(
+                        awk -F '"' '$2 == "github:koment-dev/koment" { print $4; exit }' \
+                          /data/home/.config/mise/config.toml
+                      )"
+                      if [ -n "$koment_plugin_tag" ]; then
                         koment_plugin_version="$(printf '%s' "$koment_plugin_tag" | sed 's/^v//')"
                         koment_plugin_archive="koment-plugin-codex_$koment_plugin_tag.tar.gz"
                         koment_plugin_checksums="$(
