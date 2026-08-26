@@ -28,6 +28,16 @@
       datasourceTemplate: "github-releases",
       versioningTemplate: "semver",
     },
+    {
+      customType: "regex",
+      description: "Update the agent-kit skill batch provisioned into t3-code",
+      managerFilePatterns: ["/^kubernetes\\/apps\\/ai\\/t3-code\\/app\\/helmrelease\\.yaml$/"],
+      matchStrings: ["AGENT_KIT_VERSION: (?<currentValue>v?\\d+\\.\\d+\\.\\d+)"],
+      depNameTemplate: "janpuc/agent-kit",
+      packageNameTemplate: "janpuc/agent-kit",
+      datasourceTemplate: "github-releases",
+      versioningTemplate: "semver",
+    },
   ],
   lockFileMaintenance: {
     enabled: true,

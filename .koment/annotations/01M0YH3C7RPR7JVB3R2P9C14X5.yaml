@@ -11,21 +11,21 @@ spec:
   title: Limit GitHub credentials in init
   body: |-
     The GitHub CLI in `init-config` reads `GH_TOKEN` while it resolves and
-    downloads koment releases. This container receives only that key. It does
-    not receive every credential from `t3-code-config`.
+    downloads the koment Codex plugin and the agent-kit skill batch. This
+    container receives only that key. It does not receive every credential from
+    `t3-code-config`.
   anchor:
     scope: excerpt
     excerpt: |2-
-                  env:
                     GH_TOKEN:
                       valueFrom:
                         secretKeyRef:
                           name: t3-code-config
                           key: GH_TOKEN
     before: |2-
-                  image: &image
-                    repository: ghcr.io/traktuner/docker-t3-code
                     tag: 0.0.33-3@sha256:023429ff9fd1cc6e8e5ae83925d90d649f2669433ffb398fd2151e2192f1ac2b
+                  env:
+                    AGENT_KIT_VERSION: v0.1.0
     after: |2-
                   command:
                     - /bin/bash
@@ -39,7 +39,7 @@ spec:
     path: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
     line: 38
 status:
-  lastSeenLine: 38
+  lastSeenLine: 40
   resolution: ok
-  resolvedAt: "2026-08-26T07:56:04Z"
-  resolvedCommit: fddeb14147bfb95460416d6067f656e992bb3e0a
+  resolvedAt: "2026-08-26T10:45:30Z"
+  resolvedCommit: 6a63c3e64f37e32daefc51a6139fa1bbdf6e9d83

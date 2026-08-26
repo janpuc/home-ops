@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0YTVM0MS98NVMPM7PGWHE7W
+  created: "2026-08-26T10:46:36Z"
+spec:
+  target:
+    file: .renovaterc.json5
+  type: why
+  title: agent-kit needs a regex manager; nothing native sees it
+  body: |-
+    agent-kit is not a container image, a Helm chart or a mise tool, so no
+    native manager finds it. Its version reaches the cluster as a plain
+    environment variable on t3-code's `init-config` container, which only a
+    regex manager can extract.
+
+    Deliberately ungrouped, unlike the Koment Group below. A koment release
+    produces five coordinated updates across the Action SHA, two mise pins, the
+    OCI chart and the Pages workflow, and `minimumGroupSize: 5` is what stops a
+    partial release from upgrading one runtime and not the others. agent-kit has
+    exactly one consumer and one pin, so a group would only delay the PR.
+
+    The pattern deliberately anchors on `AGENT_KIT_VERSION:` rather than a bare
+    semver. `managerFilePatterns` scopes it to t3-code's HelmRelease, which also
+    carries an image tag and a chart version, and an unanchored semver regex
+    would match those too.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+          {
+            customType: "regex",
+            description: "Update the agent-kit skill batch provisioned into t3-code",
+    before: |2-
+            datasourceTemplate: "github-releases",
+            versioningTemplate: "semver",
+          },
+    after: |2-
+            managerFilePatterns: ["/^kubernetes\\/apps\\/ai\\/t3-code\\/app\\/helmrelease\\.yaml$/"],
+            matchStrings: ["AGENT_KIT_VERSION: (?<currentValue>v?\\d+\\.\\d+\\.\\d+)"],
+            depNameTemplate: "janpuc/agent-kit",
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 6a63c3e64f37e32daefc51a6139fa1bbdf6e9d83
+    path: .renovaterc.json5
+    line: 31
+status:
+  lastSeenLine: 31
+  resolution: ok
+  resolvedAt: "2026-08-26T10:46:36Z"
+  resolvedCommit: 6a63c3e64f37e32daefc51a6139fa1bbdf6e9d83

@@ -36,6 +36,7 @@ spec:
               repository: ghcr.io/traktuner/docker-t3-code
               tag: 0.0.33-3@sha256:023429ff9fd1cc6e8e5ae83925d90d649f2669433ffb398fd2151e2192f1ac2b
             env:
+              AGENT_KIT_VERSION: v0.1.0
               GH_TOKEN:
                 valueFrom:
                   secretKeyRef:
@@ -152,6 +153,48 @@ spec:
                     || echo "claude plugin update $plugin unavailable"
                 done
                 claude plugin list || true
+
+                agent_kit_home=/data/home/.local/share/agent-kit
+                agent_kit_installed=$agent_kit_home/installed
+                agent_kit_skill_roots="$CLAUDE_CONFIG_DIR/skills $HOME/.agents/skills"
+                agent_kit_stage="$(mktemp -d)"
+                agent_kit_archive="agent-kit_$AGENT_KIT_VERSION.tar.gz"
+                agent_kit_checksums="$(
+                  printf 'agent-kit_%s_checksums.txt' \
+                    "$(printf '%s' "$AGENT_KIT_VERSION" | sed 's/^v//')"
+                )"
+                if gh release download "$AGENT_KIT_VERSION" \
+                  --repo janpuc/agent-kit \
+                  --pattern "$agent_kit_archive" \
+                  --pattern "$agent_kit_checksums" \
+                  --dir "$agent_kit_stage" \
+                  && (
+                    cd "$agent_kit_stage"
+                    awk -v archive="$agent_kit_archive" '$2 == archive' \
+                      "$agent_kit_checksums" | sha256sum --check -
+                  ); then
+                  mkdir -p "$agent_kit_stage/release"
+                  tar -xzf "$agent_kit_stage/$agent_kit_archive" \
+                    -C "$agent_kit_stage/release" \
+                    --strip-components=1
+                  for previously_installed in "$agent_kit_installed"/skills/*/; do
+                    [ -d "$previously_installed" ] || continue
+                    for skills_root in $agent_kit_skill_roots; do
+                      rm -rf "$skills_root/$(basename "$previously_installed")"
+                    done
+                  done
+                  for skills_root in $agent_kit_skill_roots; do
+                    mkdir -p "$skills_root"
+                    cp -a "$agent_kit_stage/release/skills/." "$skills_root/"
+                  done
+                  rm -rf "$agent_kit_installed"
+                  mkdir -p "$agent_kit_home"
+                  mv "$agent_kit_stage/release" "$agent_kit_installed"
+                  echo "agent-kit $AGENT_KIT_VERSION skills installed"
+                else
+                  echo "agent-kit release unavailable; skills stay at the last provisioned batch"
+                fi
+                rm -rf "$agent_kit_stage"
             securityContext: &containerSecurity
               allowPrivilegeEscalation: false
               capabilities:

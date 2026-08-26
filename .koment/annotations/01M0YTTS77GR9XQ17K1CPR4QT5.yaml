@@ -1,0 +1,89 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M0YTTS77GR9XQ17K1CPR4QT5
+  created: "2026-08-26T10:46:08Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
+  type: why
+  title: agent-kit ships as plain skill directories, not as a plugin
+  body: |-
+    `janpuc/agent-kit` is one versioned batch of seven skills that has to load
+    in all three harnesses this pod runs. Unlike memini and koment above, it is
+    installed as plain directories rather than through each harness's plugin
+    system. That is deliberate, and reversing it costs more than it looks.
+
+    No single directory serves all three harnesses. agent-kit's own PLAN.md
+    records the discovery paths, verified against harness source rather than
+    docs: Claude Code reads `.claude/skills` and never `.agents/skills`; Codex
+    reads `.agents/skills` and has no Claude-compatible path; OpenCode reads
+    both and deduplicates by skill name, so the overlap is free. Two roots is
+    the minimum, and the two here are exactly that —
+    `$CLAUDE_CONFIG_DIR/skills` for Claude, `$HOME/.agents/skills` for Codex and
+    OpenCode.
+
+    The plugin route was considered and does not pay. agent-kit's repository
+    root is simultaneously a Claude marketplace and a Codex marketplace, so
+    those two would install with `marketplace add janpuc/agent-kit`, but a git
+    marketplace tracks `main` and pins nothing — it throws away the one
+    version and one sha256 that are the whole point of the batch. OpenCode has
+    no marketplace at all; its plugin is an npm package,
+    `@janpuc/agent-kit-opencode`, which is unpublished — the registry returns
+    404 — so OpenCode would need a path into an extracted release regardless.
+    The release archive is therefore unavoidable for one harness and preferable
+    for the other two, and once you are extracting it, copying seven directories
+    is less machinery than three marketplaces.
+
+    `$CLAUDE_CONFIG_DIR` is the config root itself. `$CLAUDE_CONFIG_DIR/skills`
+    is right and `$CLAUDE_CONFIG_DIR/.claude/skills` is a path Claude does not
+    read. This is not hypothetical: the image's own
+    `scripts/provision-promo-video-skill.py` computes `T3_CLAUDE_HOME_PATH /
+    ".claude" / "skills"`, which is correct in user scope where the base is
+    `$HOME` and wrong in container scope where the base is already the config
+    dir. Do not "fix" this block to match it.
+
+    Codex advertises six of the seven. `triage` ships `agents/openai.yaml` with
+    `policy: allow_implicit_invocation: false`, so Codex installs it and
+    withholds it from the model-visible list while keeping it explicitly
+    invocable. That is upstream's instruction, not a broken install, and it is
+    recorded per harness in the release's `agent-kit.lock.json`.
+
+    The archive is verified against the published checksum before anything is
+    replaced, and a GitHub failure is tolerated rather than fatal, matching the
+    koment and memini blocks above: a network blip should cost a skill refresh,
+    not the pod.
+
+    Flux postBuild substitution runs over this HelmRelease, so this script
+    contains no `${...}` sequences anywhere — that is why the checksum
+    filename is built with `printf` instead of `${var}_checksums.txt`, and why
+    `agent_kit_skill_roots` is a space-separated string iterated by word
+    splitting rather than a bash array, which could only be expanded as
+    `${name[@]}`.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+                      agent_kit_home=/data/home/.local/share/agent-kit
+                      agent_kit_installed=$agent_kit_home/installed
+                      agent_kit_skill_roots="$CLAUDE_CONFIG_DIR/skills $HOME/.agents/skills"
+    before: |2
+                      done
+                      claude plugin list || true
+    after: |2-
+                      agent_kit_stage="$(mktemp -d)"
+                      agent_kit_archive="agent-kit_$AGENT_KIT_VERSION.tar.gz"
+                      agent_kit_checksums="$(
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 6a63c3e64f37e32daefc51a6139fa1bbdf6e9d83
+    path: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
+    line: 157
+status:
+  lastSeenLine: 157
+  resolution: ok
+  resolvedAt: "2026-08-26T10:46:08Z"
+  resolvedCommit: 6a63c3e64f37e32daefc51a6139fa1bbdf6e9d83
