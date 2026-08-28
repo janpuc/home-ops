@@ -56,8 +56,8 @@ spec:
               TUITER_RERANKER_URL: http://bge-reranker-v2-m3.ai.svc.cluster.local:8080
               TUITER_FETCHER_URL: http://flaresolverr.selfhosted.svc.cluster.local:8191
               TUITER_READ_PROVIDER: cdp
-              TUITER_CDP_URL: http://tuiter-chrome-reader.ai.svc.cluster.local:9222
-              TUITER_POSTER_CDP_URL: http://tuiter-chrome-poster.ai.svc.cluster.local:9222
+              TUITER_CDP_URL: http://tuiter-chrome-reader.ai.svc.cluster.local:9223
+              TUITER_POSTER_CDP_URL: http://tuiter-chrome-poster.ai.svc.cluster.local:9223
               TUITER_READER_UI_URL: https://tuiter-reader.janpuc.com
               TUITER_POSTER_UI_URL: https://tuiter-poster.janpuc.com
               TUITER_TIMEZONE: Europe/Warsaw
@@ -123,6 +123,27 @@ spec:
             securityContext: &chromeSecurity
               seccompProfile:
                 type: Unconfined
+          cdp-forward:
+            image: &socat
+              repository: docker.io/alpine/socat
+              tag: 1.8.1.3@sha256:3d9e7966201dd3a065df591020a09fd3c70845de7e7086e3531ea69db774406b
+            args: &socatArgs
+              - TCP-LISTEN:9223,fork,reuseaddr
+              - TCP:127.0.0.1:9222
+            resources: &socatResources
+              requests:
+                cpu: 10m
+                memory: 16Mi
+              limits:
+                memory: 64Mi
+            securityContext: &socatSecurity
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              runAsNonRoot: true
+              runAsUser: 65534
+              capabilities:
+                drop:
+                  - ALL
       chrome-poster:
         annotations:
           reloader.stakater.com/auto: "true"
@@ -140,6 +161,11 @@ spec:
               limits:
                 memory: 3Gi
             securityContext: *chromeSecurity
+          cdp-forward:
+            image: *socat
+            args: *socatArgs
+            resources: *socatResources
+            securityContext: *socatSecurity
 
     service:
       app:
@@ -155,7 +181,7 @@ spec:
           http:
             port: &kasm 3000
           cdp:
-            port: &cdp 9222
+            port: &cdp 9223
       chrome-poster:
         controller: chrome-poster
         ports:
