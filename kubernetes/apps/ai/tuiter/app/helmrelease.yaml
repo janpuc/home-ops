@@ -25,7 +25,7 @@ spec:
           migrate:
             image: &image
               repository: ghcr.io/janpuc/tuiter
-              tag: 0.3.0@sha256:85e77d07b7b50ba2dfc540a3d0a84bdd99658d5b3620ac55a9c99898770eccf7
+              tag: 0.3.1@sha256:653619a9a723227a9613e2a2ab1e2d0178d1d4e5f56e37b078a0534c004fda8f
             command:
               - python
               - /app/migrations/migrate.py
@@ -109,6 +109,7 @@ spec:
               TZ: Europe/Warsaw
               CHROME_CLI: >-
                 --remote-debugging-port=9222
+                --remote-debugging-address=0.0.0.0
                 --remote-allow-origins=*
                 --no-first-run
                 --no-default-browser-check
