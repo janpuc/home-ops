@@ -1,0 +1,210 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: tuiter
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: tuiter
+  interval: 15m
+  values:
+    defaultPodOptions:
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    controllers:
+      tuiter:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        replicas: 1
+        strategy: Recreate
+        type: deployment
+        initContainers:
+          migrate:
+            image: &image
+              repository: ghcr.io/janpuc/tuiter
+              tag: 0.2.1@sha256:b1c59703bcfe04ff54d00e1efc3d4ddddf10f156333648e7a0f245b76fe47fbf
+            command:
+              - python
+              - /app/migrations/migrate.py
+            env:
+              TUITER_DB_PATH: /data/tuiter.db
+              TUITER_EMBEDDING_DIM: "1024"
+            securityContext: &appSecurity
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              runAsUser: 1000
+              runAsGroup: 1000
+              capabilities:
+                drop:
+                  - ALL
+        containers:
+          app:
+            image: *image
+            env:
+              TUITER_DB_PATH: /data/tuiter.db
+              TUITER_PERSONA_DIR: /persona
+              TUITER_LITELLM_BASE_URL: http://litellm.ai.svc.cluster.local:4000
+              TUITER_DRAFT_MODEL: minimax/MiniMax-M2-7
+              TUITER_ESCALATION_MODEL: minimax/MiniMax-M3
+              TUITER_EMBEDDING_MODEL: bge-embedding-m3
+              TUITER_EMBEDDING_BASE_URL: http://bge-embedding-m3.ai.svc.cluster.local:8080
+              TUITER_EMBEDDING_DIM: "1024"
+              TUITER_SEARXNG_URL: http://searxng.selfhosted.svc.cluster.local:8080
+              TUITER_RERANKER_URL: http://bge-reranker-v2-m3.ai.svc.cluster.local:8080
+              TUITER_FETCHER_URL: http://flaresolverr.selfhosted.svc.cluster.local:8191
+              TUITER_READ_PROVIDER: cdp
+              TUITER_CDP_URL: http://127.0.0.1:9222
+              TUITER_POSTER_CDP_URL: http://127.0.0.1:9223
+              TUITER_TIMEZONE: Europe/Warsaw
+              TUITER_WAKE_AT: "07:00"
+              TUITER_SLEEP_AT: "00:30"
+              TUITER_PRIMARY_LANG: en
+              TUITER_SECONDARY_LANG: pl
+              TUITER_SECONDARY_VALIDATED: "false"
+              TUITER_ACCOUNT_TIER: premium
+              TUITER_MONTHLY_BUDGET_USD: "150"
+              TUITER_COLD_START: "true"
+              TUITER_RUNNER_ENABLED: "false"
+            envFrom:
+              - secretRef:
+                  name: tuiter-secret
+            probes:
+              liveness: &probe
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: &port 8080
+                  initialDelaySeconds: 15
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+              readiness: *probe
+            resources:
+              requests:
+                cpu: 50m
+                memory: 512Mi
+              limits:
+                memory: 2Gi
+            securityContext: *appSecurity
+          chrome:
+            image: &chrome
+              repository: ghcr.io/linuxserver/chromium
+              tag: latest@sha256:4c7b9086d2e5054b61c9e6b0f75efceece5befeff2bec3ff543d52e000cee21d
+            env:
+              PUID: "1000"
+              PGID: "1000"
+              TZ: Europe/Warsaw
+              CHROME_CLI: >-
+                --remote-debugging-port=9222
+                --remote-allow-origins=*
+                --no-first-run
+                --no-default-browser-check
+                --disable-features=Translate
+                --window-size=1440,2400
+            resources:
+              requests:
+                cpu: 100m
+                memory: 1Gi
+              limits:
+                memory: 4Gi
+            securityContext: &chromeSecurity
+              seccompProfile:
+                type: Unconfined
+          chrome-poster:
+            image: *chrome
+            env:
+              PUID: "1000"
+              PGID: "1000"
+              TZ: Europe/Warsaw
+              CHROME_CLI: >-
+                --remote-debugging-port=9223
+                --remote-allow-origins=*
+                --no-first-run
+                --no-default-browser-check
+                --disable-features=Translate
+                --window-size=1440,2400
+            resources:
+              requests:
+                cpu: 50m
+                memory: 768Mi
+              limits:
+                memory: 3Gi
+            securityContext: *chromeSecurity
+    service:
+      app:
+        controller: tuiter
+        ipFamilies:
+          - IPv4
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        hostnames:
+          - tuiter.janpuc.com
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: *port
+    persistence:
+      data:
+        existingClaim: tuiter
+        advancedMounts:
+          tuiter:
+            app:
+              - path: /data
+            migrate:
+              - path: /data
+      persona:
+        type: secret
+        name: tuiter-persona
+        advancedMounts:
+          tuiter:
+            app:
+              - path: /persona
+                readOnly: true
+      reader-profile:
+        existingClaim: tuiter-reader-profile
+        advancedMounts:
+          tuiter:
+            chrome:
+              - path: /config
+      poster-profile:
+        existingClaim: tuiter-poster-profile
+        advancedMounts:
+          tuiter:
+            chrome-poster:
+              - path: /config
+      tmp:
+        type: emptyDir
+        advancedMounts:
+          tuiter:
+            app:
+              - path: /tmp
+            migrate:
+              - path: /tmp
+      home:
+        type: emptyDir
+        advancedMounts:
+          tuiter:
+            app:
+              - path: /home/tuiter
+            migrate:
+              - path: /home/tuiter
+      dshm:
+        type: emptyDir
+        medium: Memory
+        sizeLimit: 2Gi
+        advancedMounts:
+          tuiter:
+            chrome:
+              - path: /dev/shm
+            chrome-poster:
+              - path: /dev/shm
