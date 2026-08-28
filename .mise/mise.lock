@@ -72,43 +72,43 @@ url_api = "https://api.github.com/repos/rhysd/actionlint/releases/assets/3849249
 provenance = "github-attestations"
 
 [[tools."github:koment-dev/koment"]]
-version = "3.1.5"
+version = "3.2.0"
 backend = "github:koment-dev/koment"
 
 [tools."github:koment-dev/koment"."platforms.linux-arm64"]
-checksum = "sha256:fc2f6d0ebb29612b4ace15119252402521bc577ea09cb927a003211486af8693"
-url = "https://github.com/koment-dev/koment/releases/download/v3.1.5/koment_3.1.5_linux_arm64.tar.gz"
-url_api = "https://api.github.com/repos/koment-dev/koment/releases/assets/522116511"
+checksum = "sha256:52f6af0833fd3b67fa7254ac6d42eb67f9189e954bb54410daf264dcebe75291"
+url = "https://github.com/koment-dev/koment/releases/download/v3.2.0/koment_3.2.0_linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/koment-dev/koment/releases/assets/529631029"
 
 [tools."github:koment-dev/koment"."platforms.linux-arm64-musl"]
-checksum = "sha256:fc2f6d0ebb29612b4ace15119252402521bc577ea09cb927a003211486af8693"
-url = "https://github.com/koment-dev/koment/releases/download/v3.1.5/koment_3.1.5_linux_arm64.tar.gz"
-url_api = "https://api.github.com/repos/koment-dev/koment/releases/assets/522116511"
+checksum = "sha256:52f6af0833fd3b67fa7254ac6d42eb67f9189e954bb54410daf264dcebe75291"
+url = "https://github.com/koment-dev/koment/releases/download/v3.2.0/koment_3.2.0_linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/koment-dev/koment/releases/assets/529631029"
 
 [tools."github:koment-dev/koment"."platforms.linux-x64"]
-checksum = "sha256:b626092258896d8d215d2d4feb2f799190a437c0d5df284e267eacb1cc66bca2"
-url = "https://github.com/koment-dev/koment/releases/download/v3.1.5/koment_3.1.5_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/koment-dev/koment/releases/assets/522116503"
+checksum = "sha256:08abde03af8ba835b57bcc761710ae1ad52677d2d553a491dbfb247f0da31dfe"
+url = "https://github.com/koment-dev/koment/releases/download/v3.2.0/koment_3.2.0_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/koment-dev/koment/releases/assets/529631006"
 
 [tools."github:koment-dev/koment"."platforms.linux-x64-musl"]
-checksum = "sha256:b626092258896d8d215d2d4feb2f799190a437c0d5df284e267eacb1cc66bca2"
-url = "https://github.com/koment-dev/koment/releases/download/v3.1.5/koment_3.1.5_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/koment-dev/koment/releases/assets/522116503"
+checksum = "sha256:08abde03af8ba835b57bcc761710ae1ad52677d2d553a491dbfb247f0da31dfe"
+url = "https://github.com/koment-dev/koment/releases/download/v3.2.0/koment_3.2.0_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/koment-dev/koment/releases/assets/529631006"
 
 [tools."github:koment-dev/koment"."platforms.macos-arm64"]
-checksum = "sha256:0747afacf6e586ead705cb452d38b0b34acc6c0e1d0d0fe19c73ea47a4659276"
-url = "https://github.com/koment-dev/koment/releases/download/v3.1.5/koment_3.1.5_darwin_arm64.tar.gz"
-url_api = "https://api.github.com/repos/koment-dev/koment/releases/assets/522116500"
+checksum = "sha256:eb2521afeddc20530e3b58906f7b35706d76526af451595d45b20cd20d66b688"
+url = "https://github.com/koment-dev/koment/releases/download/v3.2.0/koment_3.2.0_darwin_arm64.tar.gz"
+url_api = "https://api.github.com/repos/koment-dev/koment/releases/assets/529630994"
 
 [tools."github:koment-dev/koment"."platforms.macos-x64"]
-checksum = "sha256:7876ddbb475b47c78b55828f4d65bbbaac0a4b28aa25c080e9ed6d3d99f6b3bc"
-url = "https://github.com/koment-dev/koment/releases/download/v3.1.5/koment_3.1.5_darwin_amd64.tar.gz"
-url_api = "https://api.github.com/repos/koment-dev/koment/releases/assets/522116494"
+checksum = "sha256:9f82abbae3e47f5ae41d2a5530fc88abd2227ac2eed7333e01f2165375841645"
+url = "https://github.com/koment-dev/koment/releases/download/v3.2.0/koment_3.2.0_darwin_amd64.tar.gz"
+url_api = "https://api.github.com/repos/koment-dev/koment/releases/assets/529630989"
 
 [tools."github:koment-dev/koment"."platforms.windows-x64"]
-checksum = "sha256:fa41881c547c42dbca6443ffc085a04c456a154f339f803b388fae547288dea0"
-url = "https://github.com/koment-dev/koment/releases/download/v3.1.5/koment_3.1.5_windows_amd64.zip"
-url_api = "https://api.github.com/repos/koment-dev/koment/releases/assets/522116531"
+checksum = "sha256:01b81102185996ca03124c511b64b29f5cbb3b2fb154e6bfd492edfaf9901430"
+url = "https://github.com/koment-dev/koment/releases/download/v3.2.0/koment_3.2.0_windows_amd64.zip"
+url_api = "https://api.github.com/repos/koment-dev/koment/releases/assets/529631048"
 
 [[tools."github:mitsuhiko/minijinja"]]
 version = "2.24.0"
