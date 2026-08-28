@@ -1,0 +1,34 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kubernetes-networkpolicy.json
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: tuiter-chrome
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: tuiter
+    matchExpressions:
+      - key: app.kubernetes.io/controller
+        operator: In
+        values:
+          - chrome-reader
+          - chrome-poster
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: tuiter
+              app.kubernetes.io/controller: tuiter
+      ports:
+        - protocol: TCP
+          port: 9222
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: network
+      ports:
+        - protocol: TCP
+          port: 3000
