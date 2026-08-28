@@ -25,7 +25,7 @@ spec:
           migrate:
             image: &image
               repository: ghcr.io/janpuc/tuiter
-              tag: 0.3.2@sha256:89aa59db40fd78fa8817471cdeb58ca6663dd25ba5d55b2af5a62e5ee4501fff
+              tag: 0.3.3@sha256:8b7b51b659186087c0f84d6baa05971ae489ba50eae94c58de9b83a6f1160c55
             command:
               - python
               - /app/migrations/migrate.py
