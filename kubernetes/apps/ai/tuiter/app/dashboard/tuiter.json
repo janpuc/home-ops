@@ -82,7 +82,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(increase(tuiter_publishes_total{outcome=\"published\"}[24h]))",
+          "expr": "(sum(increase(tuiter_publishes_total{outcome=\"published\"}[24h]))) or vector(0)",
           "legendFormat": "",
           "refId": "A"
         }
@@ -128,7 +128,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(tuiter_actions{kind=\"repost\"})",
+          "expr": "(sum(tuiter_actions{kind=\"repost\"})) or vector(0)",
           "legendFormat": "",
           "refId": "A"
         }
@@ -174,7 +174,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(tuiter_actions{status=~\"drafted|queued\"})",
+          "expr": "(sum(tuiter_actions{status=~\"drafted|queued\"})) or vector(0)",
           "legendFormat": "",
           "refId": "A"
         }
@@ -220,7 +220,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(tuiter_rules)",
+          "expr": "(sum(tuiter_rules)) or vector(0)",
           "legendFormat": "",
           "refId": "A"
         }
@@ -590,7 +590,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(tuiter_exemplars{positive=\"1\"})",
+          "expr": "(sum(tuiter_exemplars{positive=\"1\"})) or vector(0)",
           "legendFormat": "",
           "refId": "A"
         }
@@ -636,7 +636,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(tuiter_exemplars{positive=\"0\"})",
+          "expr": "(sum(tuiter_exemplars{positive=\"0\"})) or vector(0)",
           "legendFormat": "",
           "refId": "A"
         }
@@ -682,7 +682,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "tuiter_topics",
+          "expr": "(tuiter_topics) or vector(0)",
           "legendFormat": "",
           "refId": "A"
         }
@@ -728,7 +728,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "tuiter_seconds_since_last_publish",
+          "expr": "(tuiter_seconds_since_last_publish) or vector(0)",
           "legendFormat": "",
           "refId": "A"
         }
