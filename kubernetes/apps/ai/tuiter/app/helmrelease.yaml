@@ -25,7 +25,7 @@ spec:
           migrate:
             image: &image
               repository: ghcr.io/janpuc/tuiter
-              tag: 0.8.3@sha256:deca29e0d550beb516d3679d4b80c0cbf2f75b5aa4d02b9ef8f691c22d9488b6
+              tag: 0.9.0@sha256:caa9b47034982823ec0e3614f22a9593849ce9bc413dc9d4e6d801b77194d97b
             command:
               - python
               - /app/migrations/migrate.py
@@ -66,8 +66,8 @@ spec:
               TUITER_PRIMARY_LANG: en
               TUITER_SECONDARY_LANG: pl
               TUITER_SECONDARY_VALIDATED: "false"
-              TUITER_ACCOUNT_TIER: premium
-              TUITER_MONTHLY_BUDGET_USD: "150"
+              TUITER_ACCOUNT_TIER: basic
+              TUITER_MONTHLY_BUDGET_USD: "25"
               TUITER_COLD_START: "true"
               TUITER_MODE_ORIGINAL: review
               TUITER_MODE_REPLY: review
