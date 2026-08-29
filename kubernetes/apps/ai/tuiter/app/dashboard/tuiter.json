@@ -1,5 +1,6 @@
 {
   "id": null,
+  "uid": "tuiter",
   "title": "tuiter",
   "tags": [
     "tuiter",
@@ -7,7 +8,7 @@
   ],
   "timezone": "browser",
   "schemaVersion": 39,
-  "version": 1,
+  "version": 2,
   "refresh": "1m",
   "time": {
     "from": "now-24h",
@@ -49,23 +50,32 @@
         "type": "prometheus",
         "uid": "${datasource}"
       },
-      "description": "Every publish goes through the queue, so this is what actually went out.",
+      "description": "Everything published that carries words: originals, replies, quotes, reposts.",
       "fieldConfig": {
         "defaults": {
-          "unit": "short"
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
         },
         "overrides": []
       },
       "gridPos": {
         "h": 4,
-        "w": 6,
+        "w": 4,
         "x": 0,
         "y": 1
       },
       "id": 2,
       "options": {
-        "colorMode": "value",
-        "graphMode": "area",
+        "colorMode": "none",
+        "graphMode": "none",
         "justifyMode": "auto",
         "textMode": "auto",
         "reduceOptions": {
@@ -82,12 +92,12 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "(sum(increase(tuiter_publishes_total{outcome=\"published\"}[24h]))) or vector(0)",
+          "expr": "sum(increase(tuiter_publishes_total{outcome=\"published\",kind!=\"like\"}[24h]))",
           "legendFormat": "",
           "refId": "A"
         }
       ],
-      "title": "Posts published, 24h",
+      "title": "Posts, 24h",
       "type": "stat"
     },
     {
@@ -95,23 +105,32 @@
         "type": "prometheus",
         "uid": "${datasource}"
       },
-      "description": "Zero here for the account's whole history was the bug: memes have no caption, and the substance filter dropped them before the repost branch ever saw them.",
+      "description": "Likes run full auto beside the review queue. They have their own caps.",
       "fieldConfig": {
         "defaults": {
-          "unit": "short"
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
         },
         "overrides": []
       },
       "gridPos": {
         "h": 4,
-        "w": 6,
-        "x": 6,
+        "w": 4,
+        "x": 4,
         "y": 1
       },
       "id": 3,
       "options": {
-        "colorMode": "value",
-        "graphMode": "area",
+        "colorMode": "none",
+        "graphMode": "none",
         "justifyMode": "auto",
         "textMode": "auto",
         "reduceOptions": {
@@ -128,12 +147,12 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "(sum(tuiter_actions{kind=\"repost\"})) or vector(0)",
+          "expr": "sum(increase(tuiter_publishes_total{outcome=\"published\",kind=\"like\"}[24h]))",
           "legendFormat": "",
           "refId": "A"
         }
       ],
-      "title": "Reposts, all time",
+      "title": "Likes, 24h",
       "type": "stat"
     },
     {
@@ -141,23 +160,40 @@
         "type": "prometheus",
         "uid": "${datasource}"
       },
-      "description": "Drafts written and not yet judged.",
+      "description": "A browser compose that died. One is worth a look; several is a broken poster.",
       "fieldConfig": {
         "defaults": {
-          "unit": "short"
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 3
+              }
+            ]
+          }
         },
         "overrides": []
       },
       "gridPos": {
         "h": 4,
-        "w": 6,
-        "x": 12,
+        "w": 4,
+        "x": 8,
         "y": 1
       },
       "id": 4,
       "options": {
         "colorMode": "value",
-        "graphMode": "area",
+        "graphMode": "none",
         "justifyMode": "auto",
         "textMode": "auto",
         "reduceOptions": {
@@ -174,7 +210,62 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "(sum(tuiter_actions{status=~\"drafted|queued\"})) or vector(0)",
+          "expr": "sum(increase(tuiter_publishes_total{outcome=\"failed\"}[24h]))",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "title": "Failed publishes, 24h",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Drafts that passed the gate and now wait for a human. Seeds are not counted.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 12,
+        "y": 1
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "textMode": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum(tuiter_actions{status=~\"drafted|queued\"})",
           "legendFormat": "",
           "refId": "A"
         }
@@ -187,23 +278,41 @@
         "type": "prometheus",
         "uid": "${datasource}"
       },
-      "description": "Distillation ran on a tick counter that restarts with the process, so this stayed at zero through 39 verdicts.",
+      "description": "Likes do not reset this. 'never' means nothing has ever been published.",
       "fieldConfig": {
         "defaults": {
-          "unit": "short"
+          "unit": "s",
+          "noValue": "never",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 172800
+              },
+              {
+                "color": "red",
+                "value": 432000
+              }
+            ]
+          }
         },
         "overrides": []
       },
       "gridPos": {
         "h": 4,
-        "w": 6,
-        "x": 18,
+        "w": 4,
+        "x": 16,
         "y": 1
       },
-      "id": 5,
+      "id": 6,
       "options": {
         "colorMode": "value",
-        "graphMode": "area",
+        "graphMode": "none",
         "justifyMode": "auto",
         "textMode": "auto",
         "reduceOptions": {
@@ -220,12 +329,12 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "(sum(tuiter_rules)) or vector(0)",
+          "expr": "tuiter_seconds_since_last_publish",
           "legendFormat": "",
           "refId": "A"
         }
       ],
-      "title": "Rules proposed",
+      "title": "Since the last post",
       "type": "stat"
     },
     {
@@ -233,38 +342,133 @@
         "type": "prometheus",
         "uid": "${datasource}"
       },
-      "description": "Publishes per hour by kind. Failures are publishes that raised in the browser.",
+      "description": "Model tokens are the only real cost left. The budget is $25.",
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
-          "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 8,
-            "lineWidth": 2,
-            "showPoints": "never",
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            }
+          "unit": "currencyUSD",
+          "decimals": 2,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 20
+              },
+              {
+                "color": "red",
+                "value": 25
+              }
+            ]
           }
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 7,
-        "w": 12,
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 1
+      },
+      "id": 7,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "textMode": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "tuiter_spend_usd_month",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "title": "Spend, month to date",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
         "x": 0,
         "y": 5
       },
-      "id": 6,
+      "id": 8,
+      "panels": [],
+      "title": "What it does, and why it goes quiet",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Words only; likes have their own panel. Failed is any kind.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "custom": {
+            "drawStyle": "bars",
+            "lineWidth": 2,
+            "fillOpacity": 65,
+            "pointSize": 5,
+            "showPoints": "never",
+            "stacking": {
+              "mode": "normal"
+            },
+            "axisBorderShow": false,
+            "gridLineWidth": 0.5
+          },
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "failed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 6
+      },
+      "id": 9,
       "options": {
         "legend": {
-          "displayMode": "table",
+          "displayMode": "list",
           "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "sum"
-          ],
           "showLegend": true
         },
         "tooltip": {
@@ -278,7 +482,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum by (kind) (increase(tuiter_publishes_total{outcome=\"published\"}[1h]))",
+          "expr": "sum by (kind) (increase(tuiter_publishes_total{outcome=\"published\",kind!=\"like\"}[1h]))",
           "legendFormat": "{{kind}}",
           "refId": "A"
         },
@@ -292,7 +496,7 @@
           "refId": "B"
         }
       ],
-      "title": "What it published",
+      "title": "Published per hour, by kind",
       "type": "timeseries"
     },
     {
@@ -300,38 +504,71 @@
         "type": "prometheus",
         "uid": "${datasource}"
       },
-      "description": "A tick that decides to do nothing still counts as ok. Failed ticks are exceptions.",
+      "description": "Every tick the scheduler answers once. 'clear' means it was allowed to act; everything else names the brake that held it.",
       "fieldConfig": {
         "defaults": {
           "unit": "short",
+          "min": 0,
           "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 8,
+            "drawStyle": "bars",
             "lineWidth": 2,
+            "fillOpacity": 65,
+            "pointSize": 5,
             "showPoints": "never",
             "stacking": {
-              "group": "A",
-              "mode": "none"
-            }
+              "mode": "normal"
+            },
+            "axisBorderShow": false,
+            "gridLineWidth": 0.5
+          },
+          "color": {
+            "mode": "palette-classic"
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "clear"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "budget"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
-        "h": 7,
+        "h": 8,
         "w": 12,
         "x": 12,
-        "y": 5
+        "y": 6
       },
-      "id": 7,
+      "id": 10,
       "options": {
         "legend": {
-          "displayMode": "table",
+          "displayMode": "list",
           "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "sum"
-          ],
           "showLegend": true
         },
         "tooltip": {
@@ -345,12 +582,12 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum by (outcome) (increase(tuiter_ticks_total[1h]))",
-          "legendFormat": "{{outcome}}",
+          "expr": "sum by (code) (increase(tuiter_tick_decisions_total[1h]))",
+          "legendFormat": "{{code}}",
           "refId": "A"
         }
       ],
-      "title": "Runner ticks",
+      "title": "Why ticks went quiet",
       "type": "timeseries"
     },
     {
@@ -359,11 +596,11 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 12
+        "y": 14
       },
-      "id": 8,
+      "id": 11,
       "panels": [],
-      "title": "What the gate is doing",
+      "title": "The gate, and the models behind it",
       "type": "row"
     },
     {
@@ -371,38 +608,86 @@
         "type": "prometheus",
         "uid": "${datasource}"
       },
-      "description": "passed reached the queue. gated failed three attempts. duplicate means the trigger already produced an action and no model call was spent.",
+      "description": "'gated' is the system refusing its own output, which is it working. 'duplicate' is a trigger seen twice and skipped for free.",
       "fieldConfig": {
         "defaults": {
           "unit": "short",
+          "min": 0,
           "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 20,
+            "drawStyle": "bars",
             "lineWidth": 2,
+            "fillOpacity": 65,
+            "pointSize": 5,
             "showPoints": "never",
             "stacking": {
-              "group": "A",
               "mode": "normal"
-            }
+            },
+            "axisBorderShow": false,
+            "gridLineWidth": 0.5
+          },
+          "color": {
+            "mode": "palette-classic"
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "passed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "gated"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "duplicate"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "text"
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
-        "h": 7,
-        "w": 12,
+        "h": 8,
+        "w": 8,
         "x": 0,
-        "y": 13
+        "y": 15
       },
-      "id": 9,
+      "id": 12,
       "options": {
         "legend": {
-          "displayMode": "table",
+          "displayMode": "list",
           "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "sum"
-          ],
           "showLegend": true
         },
         "tooltip": {
@@ -421,7 +706,7 @@
           "refId": "A"
         }
       ],
-      "title": "Drafts by outcome",
+      "title": "Drafts per hour, by outcome",
       "type": "timeseries"
     },
     {
@@ -429,22 +714,20 @@
         "type": "prometheus",
         "uid": "${datasource}"
       },
-      "description": "Counted per attempt, not per draft, so retries show here even when the draft eventually passed. This is where voice problems appear first.",
+      "description": "Which rules are doing the work. A rule that never fires may be dead; one that always fires is a prompt problem.",
       "fieldConfig": {
         "defaults": {
-          "custom": {
-            "align": "auto"
-          }
+          "unit": "short"
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 7,
-        "w": 12,
-        "x": 12,
-        "y": 13
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 15
       },
-      "id": 10,
+      "id": 13,
       "options": {
         "showHeader": true,
         "sortBy": [
@@ -460,26 +743,131 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sort_desc(sum by (rule) (increase(tuiter_gate_blocks_total[24h])))",
+          "expr": "sort_desc(sum by (rule) (increase(tuiter_gate_blocks_total[24h])) != 0)",
+          "legendFormat": "",
+          "refId": "A",
           "format": "table",
-          "instant": true,
-          "refId": "A"
+          "instant": true
         }
       ],
+      "title": "Gate blocks by rule, 24h",
+      "type": "table",
       "transformations": [
         {
           "id": "organize",
           "options": {
             "excludeByName": {
-              "Time": true,
-              "job": true,
-              "instance": true
+              "Time": true
             }
           }
         }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "'empty' is the reasoning cap eating the whole budget. 'error' is the provider failing after retries.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "custom": {
+            "drawStyle": "bars",
+            "lineWidth": 2,
+            "fillOpacity": 65,
+            "pointSize": 5,
+            "showPoints": "never",
+            "stacking": {
+              "mode": "normal"
+            },
+            "axisBorderShow": false,
+            "gridLineWidth": 0.5
+          },
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "ok"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "empty"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "error"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 15
+      },
+      "id": 14,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (outcome) (increase(tuiter_llm_calls_total[1h]))",
+          "legendFormat": "{{outcome}}",
+          "refId": "A"
+        }
       ],
-      "title": "Gate blocks by rule, 24h",
-      "type": "table"
+      "title": "Model calls per hour, by result",
+      "type": "timeseries"
     },
     {
       "collapsed": false,
@@ -487,9 +875,9 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 20
+        "y": 23
       },
-      "id": 11,
+      "id": 15,
       "panels": [],
       "title": "The learning loop",
       "type": "row"
@@ -499,38 +887,40 @@
         "type": "prometheus",
         "uid": "${datasource}"
       },
-      "description": "auto is approval recorded by publishing from the queue. human is the buttons. Only human answers whether it sounded right.",
+      "description": "Totals, not rates. 'auto' is publishing counting as approval; 'human' is him.",
       "fieldConfig": {
         "defaults": {
           "unit": "short",
+          "min": 0,
           "custom": {
             "drawStyle": "line",
-            "fillOpacity": 8,
             "lineWidth": 2,
+            "fillOpacity": 12,
+            "pointSize": 5,
             "showPoints": "never",
             "stacking": {
-              "group": "A",
               "mode": "none"
-            }
+            },
+            "axisBorderShow": false,
+            "gridLineWidth": 0.5
+          },
+          "color": {
+            "mode": "palette-classic"
           }
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 7,
-        "w": 12,
+        "h": 8,
+        "w": 8,
         "x": 0,
-        "y": 21
+        "y": 24
       },
-      "id": 12,
+      "id": 16,
       "options": {
         "legend": {
-          "displayMode": "table",
+          "displayMode": "list",
           "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "sum"
-          ],
           "showLegend": true
         },
         "tooltip": {
@@ -545,11 +935,11 @@
             "uid": "${datasource}"
           },
           "expr": "sum by (verdict, source) (tuiter_verdicts)",
-          "legendFormat": "{{verdict}} / {{source}}",
+          "legendFormat": "{{verdict}} ({{source}})",
           "refId": "A"
         }
       ],
-      "title": "Verdicts",
+      "title": "Verdicts held, by decision and origin",
       "type": "timeseries"
     },
     {
@@ -557,23 +947,32 @@
         "type": "prometheus",
         "uid": "${datasource}"
       },
-      "description": "What gets retrieved as voice examples when drafting.",
+      "description": "The voice bank. Drafting retrieves against these.",
       "fieldConfig": {
         "defaults": {
-          "unit": "short"
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
         },
         "overrides": []
       },
       "gridPos": {
         "h": 4,
         "w": 4,
-        "x": 12,
-        "y": 21
+        "x": 8,
+        "y": 24
       },
-      "id": 13,
+      "id": 17,
       "options": {
-        "colorMode": "value",
-        "graphMode": "area",
+        "colorMode": "none",
+        "graphMode": "none",
         "justifyMode": "auto",
         "textMode": "auto",
         "reduceOptions": {
@@ -590,7 +989,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "(sum(tuiter_exemplars{positive=\"1\"})) or vector(0)",
+          "expr": "tuiter_exemplars{polarity=\"positive\"}",
           "legendFormat": "",
           "refId": "A"
         }
@@ -603,23 +1002,32 @@
         "type": "prometheus",
         "uid": "${datasource}"
       },
-      "description": "Rejections, retrieved alongside the positives as counter-examples.",
+      "description": "What not to sound like, with his stated reason.",
       "fieldConfig": {
         "defaults": {
-          "unit": "short"
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
         },
         "overrides": []
       },
       "gridPos": {
         "h": 4,
         "w": 4,
-        "x": 16,
-        "y": 21
+        "x": 12,
+        "y": 24
       },
-      "id": 14,
+      "id": 18,
       "options": {
-        "colorMode": "value",
-        "graphMode": "area",
+        "colorMode": "none",
+        "graphMode": "none",
         "justifyMode": "auto",
         "textMode": "auto",
         "reduceOptions": {
@@ -636,7 +1044,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "(sum(tuiter_exemplars{positive=\"0\"})) or vector(0)",
+          "expr": "tuiter_exemplars{polarity=\"negative\"}",
           "legendFormat": "",
           "refId": "A"
         }
@@ -649,23 +1057,32 @@
         "type": "prometheus",
         "uid": "${datasource}"
       },
-      "description": "Dedup memory. A near-copy of any of these is blocked before it is written.",
+      "description": "The dedup window. Rejected drafts land here too.",
       "fieldConfig": {
         "defaults": {
-          "unit": "short"
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
         },
         "overrides": []
       },
       "gridPos": {
         "h": 4,
         "w": 4,
-        "x": 20,
-        "y": 21
+        "x": 8,
+        "y": 28
       },
-      "id": 15,
+      "id": 19,
       "options": {
-        "colorMode": "value",
-        "graphMode": "area",
+        "colorMode": "none",
+        "graphMode": "none",
         "justifyMode": "auto",
         "textMode": "auto",
         "reduceOptions": {
@@ -682,7 +1099,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "(tuiter_topics) or vector(0)",
+          "expr": "tuiter_topics",
           "legendFormat": "",
           "refId": "A"
         }
@@ -695,23 +1112,32 @@
         "type": "prometheus",
         "uid": "${datasource}"
       },
-      "description": "Long gaps are normal by design; a flat line for days is not.",
+      "description": "Waiting for a decision on /rules.",
       "fieldConfig": {
         "defaults": {
-          "unit": "s"
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
         },
         "overrides": []
       },
       "gridPos": {
         "h": 4,
-        "w": 12,
+        "w": 4,
         "x": 12,
-        "y": 25
+        "y": 28
       },
-      "id": 16,
+      "id": 20,
       "options": {
-        "colorMode": "value",
-        "graphMode": "area",
+        "colorMode": "none",
+        "graphMode": "none",
         "justifyMode": "auto",
         "textMode": "auto",
         "reduceOptions": {
@@ -728,64 +1154,53 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "(tuiter_seconds_since_last_publish) or vector(0)",
+          "expr": "tuiter_rules{status=\"proposed\"}",
           "legendFormat": "",
           "refId": "A"
         }
       ],
-      "title": "Since the last post",
+      "title": "Rules proposed",
       "type": "stat"
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 28
-      },
-      "id": 17,
-      "panels": [],
-      "title": "The browsers, and what it can see",
-      "type": "row"
     },
     {
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
-      "description": "unfetchable is the image itself, not the model: the failures observed so far were DNS against pbs.twimg.com and are retried once.",
+      "description": "Capped at 6 an hour and 30 a day, at most 2 per author. A flat ceiling here means the cap is doing the shaping, which is a bot tell.",
       "fieldConfig": {
         "defaults": {
           "unit": "short",
+          "min": 0,
           "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 20,
+            "drawStyle": "bars",
             "lineWidth": 2,
+            "fillOpacity": 65,
+            "pointSize": 5,
             "showPoints": "never",
             "stacking": {
-              "group": "A",
               "mode": "normal"
-            }
+            },
+            "axisBorderShow": false,
+            "gridLineWidth": 0.5
+          },
+          "color": {
+            "mode": "palette-classic"
           }
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 7,
-        "w": 12,
-        "x": 0,
-        "y": 29
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 24
       },
-      "id": 18,
+      "id": 21,
       "options": {
         "legend": {
-          "displayMode": "table",
+          "displayMode": "list",
           "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "sum"
-          ],
           "showLegend": true
         },
         "tooltip": {
@@ -799,12 +1214,85 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum by (outcome) (increase(tuiter_vision_total[1h]))",
-          "legendFormat": "{{outcome}}",
+          "expr": "sum(increase(tuiter_publishes_total{kind=\"like\",outcome=\"published\"}[1h]))",
+          "legendFormat": "likes",
           "refId": "A"
         }
       ],
-      "title": "Images read",
+      "title": "Likes per hour",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 32
+      },
+      "id": 22,
+      "panels": [],
+      "title": "The browsers",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "A whole browser compose. Creeping toward the 90s timeout is X's DOM changing under us.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 12,
+            "pointSize": 5,
+            "showPoints": "never",
+            "stacking": {
+              "mode": "none"
+            },
+            "axisBorderShow": false,
+            "gridLineWidth": 0.5
+          },
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 33
+      },
+      "id": 23,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(tuiter_publish_seconds_bucket[6h])))",
+          "legendFormat": "p95",
+          "refId": "A"
+        }
+      ],
+      "title": "Publish duration, p95",
       "type": "timeseries"
     },
     {
@@ -812,38 +1300,40 @@
         "type": "prometheus",
         "uid": "${datasource}"
       },
-      "description": "A renderer that accepts connections and answers nothing. Self-healing, but a rising line here means something is repeatedly getting stuck.",
+      "description": "The recycler closing a page that stopped answering. Occasional is normal; constant means a browser is dying repeatedly.",
       "fieldConfig": {
         "defaults": {
           "unit": "short",
+          "min": 0,
           "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 8,
+            "drawStyle": "bars",
             "lineWidth": 2,
+            "fillOpacity": 65,
+            "pointSize": 5,
             "showPoints": "never",
             "stacking": {
-              "group": "A",
-              "mode": "none"
-            }
+              "mode": "normal"
+            },
+            "axisBorderShow": false,
+            "gridLineWidth": 0.5
+          },
+          "color": {
+            "mode": "palette-classic"
           }
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 7,
-        "w": 12,
-        "x": 12,
-        "y": 29
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 33
       },
-      "id": 19,
+      "id": 24,
       "options": {
         "legend": {
-          "displayMode": "table",
+          "displayMode": "list",
           "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "sum"
-          ],
           "showLegend": true
         },
         "tooltip": {
@@ -870,22 +1360,154 @@
         "type": "prometheus",
         "uid": "${datasource}"
       },
-      "description": "The whole history at a glance. A kind that never appears is a path that has never run.",
+      "description": "Vision calls against posts that carry pictures. 'unfetchable' is usually DNS against pbs.twimg.com.",
       "fieldConfig": {
         "defaults": {
+          "unit": "short",
+          "min": 0,
           "custom": {
-            "align": "auto"
+            "drawStyle": "bars",
+            "lineWidth": 2,
+            "fillOpacity": 65,
+            "pointSize": 5,
+            "showPoints": "never",
+            "stacking": {
+              "mode": "normal"
+            },
+            "axisBorderShow": false,
+            "gridLineWidth": 0.5
+          },
+          "color": {
+            "mode": "palette-classic"
           }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "described"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "failed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "empty"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "unfetchable"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 33
+      },
+      "id": 25,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (outcome) (increase(tuiter_vision_total[1h]))",
+          "legendFormat": "{{outcome}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Images read, by outcome",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 41
+      },
+      "id": 26,
+      "panels": [],
+      "title": "Bookkeeping",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "The whole actions table, seeds excluded. 'failed' rows here are publishes that died and can be retried from the queue.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 7,
+        "h": 8,
         "w": 12,
         "x": 0,
-        "y": 36
+        "y": 42
       },
-      "id": 20,
+      "id": 27,
       "options": {
         "showHeader": true,
         "sortBy": [
@@ -901,64 +1523,96 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sort_desc(sum by (kind, status) (tuiter_actions))",
+          "expr": "sort_desc(sum by (kind, status) (tuiter_actions != 0))",
+          "legendFormat": "",
+          "refId": "A",
           "format": "table",
-          "instant": true,
-          "refId": "A"
+          "instant": true
         }
       ],
+      "title": "Everything, by kind and status",
+      "type": "table",
       "transformations": [
         {
           "id": "organize",
           "options": {
             "excludeByName": {
-              "Time": true,
-              "job": true,
-              "instance": true
+              "Time": true
             }
           }
         }
-      ],
-      "title": "Everything, by kind and status",
-      "type": "table"
+      ]
     },
     {
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
       },
-      "description": "The only real cost: posting and reading go through a browser.",
+      "description": "A failed tick logged an exception and kept going. The loop never dies of one.",
       "fieldConfig": {
         "defaults": {
-          "unit": "currencyUSD",
+          "unit": "short",
+          "min": 0,
           "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 8,
+            "drawStyle": "bars",
             "lineWidth": 2,
+            "fillOpacity": 65,
+            "pointSize": 5,
             "showPoints": "never",
             "stacking": {
-              "group": "A",
-              "mode": "none"
-            }
+              "mode": "normal"
+            },
+            "axisBorderShow": false,
+            "gridLineWidth": 0.5
+          },
+          "color": {
+            "mode": "palette-classic"
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "ok"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "failed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
-        "h": 7,
+        "h": 8,
         "w": 12,
         "x": 12,
-        "y": 36
+        "y": 42
       },
-      "id": 21,
+      "id": 28,
       "options": {
         "legend": {
-          "displayMode": "table",
+          "displayMode": "list",
           "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "sum"
-          ],
           "showLegend": true
         },
         "tooltip": {
@@ -972,12 +1626,12 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "tuiter_spend_usd_month",
-          "legendFormat": "usd",
+          "expr": "sum by (outcome) (increase(tuiter_ticks_total[1h]))",
+          "legendFormat": "{{outcome}}",
           "refId": "A"
         }
       ],
-      "title": "Model spend, month to date",
+      "title": "Runner ticks per hour",
       "type": "timeseries"
     }
   ]
