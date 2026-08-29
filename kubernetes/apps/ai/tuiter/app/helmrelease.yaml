@@ -25,7 +25,7 @@ spec:
           migrate:
             image: &image
               repository: ghcr.io/janpuc/tuiter
-              tag: 0.11.0@sha256:638d3e6334a2d6a15beef8617f6d9a5415033692f63edad53c3ba52804046fd3
+              tag: 0.11.1@sha256:1484a9db1e247599aab829826335abd304e8e985606566b927d3a128c24cbc88
             command:
               - python
               - /app/migrations/migrate.py
@@ -73,7 +73,7 @@ spec:
               TUITER_MODE_REPLY: review
               TUITER_MODE_QUOTE: review
               TUITER_MODE_REPOST: review
-              TUITER_RUNNER_ENABLED: "false"
+              TUITER_RUNNER_ENABLED: "true"
             envFrom:
               - secretRef:
                   name: tuiter-secret
