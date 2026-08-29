@@ -8,3 +8,6 @@ resources:
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
   - ./helmrelease.yaml
+  - ./servicemonitor.yaml
+  - ./grafanadashboard.yaml
+  - ./dashboard/

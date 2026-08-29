@@ -1,0 +1,24 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/monitoring.coreos.com/servicemonitor_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: tuiter
+  labels:
+    app.kubernetes.io/instance: tuiter
+    app.kubernetes.io/name: tuiter
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/service: tuiter-app
+  namespaceSelector:
+    matchNames:
+      - ai
+  targetLabels:
+    - app.kubernetes.io/instance
+    - app.kubernetes.io/name
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 60s
+      scrapeTimeout: 15s
