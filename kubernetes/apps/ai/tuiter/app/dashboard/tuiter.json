@@ -201,7 +201,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(increase(tuiter_publishes_total{outcome=\"failed\"}[24h]))",
+          "expr": "sum(increase(tuiter_publishes_total{outcome=~\"failed|unconfirmed\"}[24h]))",
           "legendFormat": "",
           "refId": "A"
         }
@@ -476,8 +476,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(increase(tuiter_publishes_total{outcome=\"failed\"}[1h]))",
-          "legendFormat": "failed",
+          "expr": "sum by (outcome) (increase(tuiter_publishes_total{outcome=~\"failed|unconfirmed\"}[1h]))",
+          "legendFormat": "{{outcome}}",
           "refId": "B"
         }
       ],
