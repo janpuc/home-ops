@@ -25,7 +25,7 @@ spec:
           migrate:
             image: &image
               repository: ghcr.io/janpuc/tuiter
-              tag: 0.30.0@sha256:d35dc733fb82a0b1f92e4621b4a7d6179c6fafa2ee8e7f9a872d469e197b2a8d
+              tag: 0.31.0@sha256:25ddbdd7095128bce83e0070618d00428fc95751e95bee6458e8823116b900f1
             command:
               - python
               - /app/migrations/migrate.py
@@ -44,6 +44,7 @@ spec:
           app:
             image: *image
             env:
+              TUITER_VERSION: "0.31.0"
               TUITER_DB_PATH: /data/tuiter.db
               TUITER_PERSONA_DIR: /persona
               TUITER_LITELLM_BASE_URL: http://litellm.ai.svc.cluster.local:4000
