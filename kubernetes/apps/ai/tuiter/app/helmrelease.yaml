@@ -25,7 +25,7 @@ spec:
           migrate:
             image: &image
               repository: ghcr.io/janpuc/tuiter
-              tag: 0.24.0@sha256:a2ce5706da17c6bc4e2fb9d67cead377e538eb85399210fbf2ef4f868d3b3801
+              tag: 0.25.0@sha256:625f22377709d02465ce85e29af4dfd7b78f14d985b668e6ebac0c66513d0b9e
             command:
               - python
               - /app/migrations/migrate.py
@@ -47,7 +47,8 @@ spec:
               TUITER_DB_PATH: /data/tuiter.db
               TUITER_PERSONA_DIR: /persona
               TUITER_LITELLM_BASE_URL: http://litellm.ai.svc.cluster.local:4000
-              TUITER_DRAFT_MODEL: minimax/MiniMax-M2-7
+              TUITER_DRAFT_MODEL: minimax/MiniMax-M3
+              TUITER_DRAFT_MAX_TOKENS: "12000"
               TUITER_ESCALATION_MODEL: minimax/MiniMax-M3
               TUITER_EMBEDDING_MODEL: bge-embedding-m3
               TUITER_EMBEDDING_BASE_URL: http://bge-embedding-m3.ai.svc.cluster.local:8080
