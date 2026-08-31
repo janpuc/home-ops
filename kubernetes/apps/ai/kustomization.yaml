@@ -18,4 +18,5 @@ resources:
   - ./memini/ks.yaml
   - ./open-webui/ks.yaml
   - ./t3-code/ks.yaml
+  - ./t3-code-operator/ks.yaml
   - ./tuiter/ks.yaml

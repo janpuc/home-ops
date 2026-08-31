@@ -1,0 +1,551 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: t3-code-operator
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: t3-code-operator
+  interval: 15m
+  install:
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  values:
+    operator:
+      image:
+        repository: ghcr.io/janpuc/t3-code-operator
+        tag: ""
+        digest: sha256:3e08002beec8d73d7676e3e80c7288d58d0f5a6328c942574c0f8d4741e56f99
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          memory: 512Mi
+    workstations:
+      - name: t3-code-canary
+        spec:
+          image: ghcr.io/janpuc/t3-code-operator@sha256:3e08002beec8d73d7676e3e80c7288d58d0f5a6328c942574c0f8d4741e56f99
+          serviceAccountName: t3-code
+          resources:
+            requests:
+              cpu: 500m
+              memory: 2Gi
+            limits:
+              memory: 8Gi
+          env:
+            - name: T3_AUTH_PROXY
+              value: "0"
+            - name: T3_GIT_REPOSITORY_SCAN_DEPTH
+              value: "4"
+            - name: TERM
+              value: xterm-256color
+            - name: NPM_CONFIG_CACHE
+              value: /data/npm-cache
+            - name: NPM_CONFIG_PREFIX
+              value: /data/npm-global
+          machineInfo:
+            prettyHostname: Cluster Canary
+          storage:
+            data:
+              type: ClaimTemplate
+              claimTemplate:
+                spec:
+                  accessModes:
+                    - ReadWriteOnce
+                  storageClassName: miroir-fast
+                  resources:
+                    requests:
+                      storage: 30Gi
+                retentionPolicy: Retain
+            workspace:
+              type: ClaimTemplate
+              claimTemplate:
+                spec:
+                  accessModes:
+                    - ReadWriteOnce
+                  storageClassName: miroir-fast
+                  resources:
+                    requests:
+                      storage: 50Gi
+                retentionPolicy: Retain
+          workspaceSharing:
+            smb:
+              username: t3
+              shareName: workspace
+              passwordSecretRef:
+                name: t3-code-canary-smb
+                key: password
+              resources:
+                requests:
+                  cpu: 25m
+                  memory: 64Mi
+                limits:
+                  memory: 256Mi
+              service:
+                type: LoadBalancer
+                externalTrafficPolicy: Cluster
+                loadBalancerSourceRanges:
+                  - 192.168.69.0/24
+                annotations:
+                  lbipam.cilium.io/ips: 192.168.69.56
+                  external-dns.alpha.kubernetes.io/hostname: t3-smb.janpuc.com
+          git:
+            userName: janpuc
+            userEmail: janpuc@proton.me
+            githubUser: janpuc
+            credentialSecretRef:
+              name: t3-code-config
+              key: GH_TOKEN
+            signingKeySecretRef:
+              name: t3-code-git-signing
+              privateKeyKey: id_signing
+              publicKeyKey: id_signing.pub
+          drain:
+            policy: WaitForIdle
+            timeout: 30m
+            timeoutAction: Block
+    harnesses:
+      - name: codex
+        spec:
+          instanceId: codex
+          driver: codex
+          displayName: Codex
+          enabled: true
+          environment:
+            - name: LITELLM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: t3-code-config
+                  key: LITELLM_API_KEY
+            - name: MEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: t3-code-config
+                  key: MEMINI_API_KEY
+            - name: MEMINI_BASE_URL
+              value: http://memini.ai.svc.cluster.local:8080
+            - name: MEMINI_HOME
+              value: personal/jan
+          config:
+            binaryPath: codex
+            customModels:
+              - gpt-5.6-sol
+          workstationRefs:
+            - name: t3-code-canary
+      - name: claude
+        spec:
+          instanceId: claude
+          driver: claudeAgent
+          displayName: Claude
+          enabled: true
+          environment:
+            - name: CLAUDE_CODE_OAUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: t3-code-config
+                  key: CLAUDE_CODE_OAUTH_TOKEN
+            - name: LITELLM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: t3-code-config
+                  key: LITELLM_API_KEY
+            - name: MEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: t3-code-config
+                  key: MEMINI_API_KEY
+            - name: MEMINI_BASE_URL
+              value: http://memini.ai.svc.cluster.local:8080
+            - name: MEMINI_HOME
+              value: personal/jan
+          config:
+            binaryPath: claude
+            customModels:
+              - claude-opus-4-1
+            file:
+              effortLevel: xhigh
+              theme: dark
+          workstationRefs:
+            - name: t3-code-canary
+      - name: cursor
+        spec:
+          instanceId: cursor
+          driver: cursor
+          displayName: Cursor
+          enabled: true
+          config:
+            binaryPath: cursor-agent
+          workstationRefs:
+            - name: t3-code-canary
+      - name: grok
+        spec:
+          instanceId: grok
+          driver: grok
+          displayName: Grok
+          enabled: true
+          config:
+            binaryPath: grok
+          workstationRefs:
+            - name: t3-code-canary
+      - name: opencode
+        spec:
+          instanceId: opencode
+          driver: opencode
+          displayName: OpenCode
+          enabled: true
+          environment:
+            - name: LITELLM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: t3-code-config
+                  key: LITELLM_API_KEY
+            - name: MEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: t3-code-config
+                  key: MEMINI_API_KEY
+            - name: MEMINI_BASE_URL
+              value: http://memini.ai.svc.cluster.local:8080
+            - name: MEMINI_HOME
+              value: personal/jan
+          config:
+            binaryPath: opencode
+            customModels:
+              - litellm/minimax/MiniMax-M3
+              - litellm/opencode-go/glm-5.3
+              - litellm/opencode-go/glm-5.2
+              - litellm/opencode-go/kimi-k3
+              - litellm/opencode-go/kimi-k2.7-code
+              - litellm/opencode-go/qwen3.8-max
+              - litellm/opencode-go/deepseek-v4-pro
+              - litellm/opencode-go/deepseek-v4-flash-vision-exp
+              - litellm/opencode-go/gpt-5.6-luna
+              - litellm/opencode-go/grok-4.5
+              - litellm/opencode-go/mimo-v2.5-pro
+              - litellm/opencode-go/hy3
+            file:
+              "$schema": https://opencode.ai/config.json
+              provider:
+                litellm:
+                  npm: "@ai-sdk/openai-compatible"
+                  name: LiteLLM
+                  options:
+                    baseURL: http://litellm.ai.svc.cluster.local:4000/v1
+                    apiKey: "{env:LITELLM_API_KEY}"
+                  models:
+                    minimax/MiniMax-M3:
+                      name: MiniMax M3
+                      limit:
+                        context: 1000000
+                        output: 64000
+                    opencode-go/glm-5.3:
+                      name: GLM 5.3
+                      limit:
+                        context: 1000000
+                        output: 64000
+                    opencode-go/glm-5.2:
+                      name: GLM 5.2
+                      limit:
+                        context: 1000000
+                        output: 64000
+                    opencode-go/kimi-k3:
+                      name: Kimi K3
+                      limit:
+                        context: 1048576
+                        output: 64000
+                    opencode-go/kimi-k2.7-code:
+                      name: Kimi K2.7 Code
+                      limit:
+                        context: 262144
+                        output: 64000
+                    opencode-go/qwen3.8-max:
+                      name: Qwen 3.8 Max
+                      limit:
+                        context: 1000000
+                        output: 64000
+                    opencode-go/deepseek-v4-pro:
+                      name: DeepSeek V4 Pro
+                      limit:
+                        context: 1000000
+                        output: 64000
+                    opencode-go/deepseek-v4-flash-vision-exp:
+                      name: DeepSeek V4 Flash Vision
+                      limit:
+                        context: 1000000
+                        output: 64000
+                    opencode-go/gpt-5.6-luna:
+                      name: GPT 5.6 Luna
+                      limit:
+                        context: 1050000
+                        output: 64000
+                    opencode-go/grok-4.5:
+                      name: Grok 4.5
+                      limit:
+                        context: 500000
+                        output: 64000
+                    opencode-go/mimo-v2.5-pro:
+                      name: MiMo v2.5 Pro
+                      limit:
+                        context: 1048576
+                        output: 64000
+                    opencode-go/hy3:
+                      name: HY3
+                      limit:
+                        context: 256000
+                        output: 32000
+              model: litellm/minimax/MiniMax-M3
+              small_model: litellm/opencode-go/hy3
+              plugin:
+                - "@eleboucher/opencode-memini"
+          workstationRefs:
+            - name: t3-code-canary
+    extensions:
+      - name: agent-kit
+        spec:
+          source:
+            type: Git
+            git:
+              url: https://github.com/janpuc/agent-kit.git
+              commit: 0024da86a0710cad9e289035d1721fe319ce2aa9
+              path: skills
+              credentialSecretRef:
+                name: t3-code-config
+                key: GH_TOKEN
+            include:
+              - codebase-design
+              - diagnosing-bugs
+              - karpathy-guidelines
+              - research
+              - tdd
+              - triage
+              - writing-for-agents
+          harnessRefs:
+            - name: codex
+            - name: claude
+            - name: opencode
+      - name: memini
+        spec:
+          source:
+            type: Marketplace
+            marketplace:
+              marketplace: memini
+              extension: memini
+              repositoryUrl: https://github.com/eleboucher/memini.git
+              commit: 56346fe9372b1c444d61e835a357f985f6b28828
+              credentialSecretRef:
+                name: t3-code-config
+                key: GH_TOKEN
+          harnessRefs:
+            - name: codex
+            - name: claude
+    mcpServers:
+      - name: koment
+        spec:
+          transport: stdio
+          config:
+            command: koment
+            args:
+              - mcp
+              - --write
+          harnessRefs:
+            - name: codex
+            - name: claude
+            - name: opencode
+      - name: memini
+        spec:
+          transport: http
+          config:
+            url: http://memini.ai.svc.cluster.local:8080/mcp
+            enabled: true
+          headers:
+            - name: Authorization
+              prefix: "Bearer "
+              valueFrom:
+                secretKeyRef:
+                  name: t3-code-config
+                  key: MEMINI_API_KEY
+            - name: X-Memini-Home
+              value: personal/jan
+          harnessRefs:
+            - name: codex
+            - name: claude
+            - name: opencode
+      - name: kubectl
+        spec:
+          transport: http
+          config:
+            url: http://litellm.ai.svc.cluster.local:4000/mcp/kubectl/mcp
+            enabled: true
+          headers:
+            - name: Authorization
+              prefix: "Bearer "
+              valueFrom:
+                secretKeyRef:
+                  name: t3-code-config
+                  key: LITELLM_API_KEY
+          harnessRefs:
+            - name: codex
+            - name: claude
+            - name: opencode
+      - name: prometheus
+        spec:
+          transport: http
+          config:
+            url: http://litellm.ai.svc.cluster.local:4000/mcp/prometheus/mcp
+            enabled: true
+          headers:
+            - name: Authorization
+              prefix: "Bearer "
+              valueFrom:
+                secretKeyRef:
+                  name: t3-code-config
+                  key: LITELLM_API_KEY
+          harnessRefs:
+            - name: codex
+            - name: claude
+            - name: opencode
+      - name: victoria-logs
+        spec:
+          transport: http
+          config:
+            url: http://litellm.ai.svc.cluster.local:4000/mcp/victoria_logs/mcp
+            enabled: true
+          headers:
+            - name: Authorization
+              prefix: "Bearer "
+              valueFrom:
+                secretKeyRef:
+                  name: t3-code-config
+                  key: LITELLM_API_KEY
+          harnessRefs:
+            - name: codex
+            - name: claude
+            - name: opencode
+      - name: github
+        spec:
+          transport: http
+          config:
+            url: http://litellm.ai.svc.cluster.local:4000/mcp/github/mcp
+            enabled: true
+          headers:
+            - name: Authorization
+              prefix: "Bearer "
+              valueFrom:
+                secretKeyRef:
+                  name: t3-code-config
+                  key: LITELLM_API_KEY
+          harnessRefs:
+            - name: codex
+            - name: claude
+            - name: opencode
+      - name: context7
+        spec:
+          transport: http
+          config:
+            url: http://litellm.ai.svc.cluster.local:4000/mcp/context7/mcp
+            enabled: true
+          headers:
+            - name: Authorization
+              prefix: "Bearer "
+              valueFrom:
+                secretKeyRef:
+                  name: t3-code-config
+                  key: LITELLM_API_KEY
+          harnessRefs:
+            - name: codex
+            - name: claude
+            - name: opencode
+      - name: home-assistant
+        spec:
+          transport: http
+          config:
+            url: http://litellm.ai.svc.cluster.local:4000/mcp/ha/mcp
+            enabled: true
+          headers:
+            - name: Authorization
+              prefix: "Bearer "
+              valueFrom:
+                secretKeyRef:
+                  name: t3-code-config
+                  key: LITELLM_API_KEY
+          harnessRefs:
+            - name: codex
+            - name: claude
+            - name: opencode
+      - name: sidero
+        spec:
+          transport: http
+          config:
+            url: http://litellm.ai.svc.cluster.local:4000/mcp/sidero/mcp
+            enabled: true
+          headers:
+            - name: Authorization
+              prefix: "Bearer "
+              valueFrom:
+                secretKeyRef:
+                  name: t3-code-config
+                  key: LITELLM_API_KEY
+          harnessRefs:
+            - name: codex
+            - name: claude
+            - name: opencode
+    extraObjects:
+      - apiVersion: generators.external-secrets.io/v1alpha1
+        kind: Password
+        metadata:
+          name: t3-code-canary-smb
+          namespace: "{{ .Release.Namespace }}"
+        spec:
+          length: 32
+          noUpper: false
+          digits: 6
+          symbols: 4
+          symbolCharacters: "-_"
+          allowRepeat: true
+      - apiVersion: external-secrets.io/v1
+        kind: ExternalSecret
+        metadata:
+          name: t3-code-canary-smb
+          namespace: "{{ .Release.Namespace }}"
+        spec:
+          refreshPolicy: CreatedOnce
+          target:
+            name: t3-code-canary-smb
+            creationPolicy: Orphan
+            immutable: true
+          dataFrom:
+            - sourceRef:
+                generatorRef:
+                  apiVersion: generators.external-secrets.io/v1alpha1
+                  kind: Password
+                  name: t3-code-canary-smb
+      - apiVersion: gateway.networking.k8s.io/v1
+        kind: HTTPRoute
+        metadata:
+          name: t3-code-canary
+          namespace: "{{ .Release.Namespace }}"
+        spec:
+          hostnames:
+            - t3-canary.janpuc.com
+          parentRefs:
+            - group: gateway.networking.k8s.io
+              kind: Gateway
+              name: envoy-internal
+              namespace: network
+          rules:
+            - backendRefs:
+                - group: ""
+                  kind: Service
+                  name: t3-code-canary
+                  port: 3773
+              timeouts:
+                request: 0s
+                backendRequest: 0s
