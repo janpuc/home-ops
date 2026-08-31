@@ -25,7 +25,7 @@ spec:
           migrate:
             image: &image
               repository: ghcr.io/janpuc/tuiter
-              tag: 0.32.0@sha256:6597aad3a041a872b31b3d41addb653d3d508b7ec5982079da9f589f98d0c3c8
+              tag: 0.33.0@sha256:23a1356738a214eadfa00ceca0bc98e1d365e958d32debaec580e7b41bef5a31
             command:
               - python
               - /app/migrations/migrate.py
@@ -44,7 +44,7 @@ spec:
           app:
             image: *image
             env:
-              TUITER_VERSION: "0.32.0"
+              TUITER_VERSION: "0.33.0"
               TUITER_DB_PATH: /data/tuiter.db
               TUITER_PERSONA_DIR: /persona
               TUITER_LITELLM_BASE_URL: http://litellm.ai.svc.cluster.local:4000
@@ -74,6 +74,7 @@ spec:
               TUITER_REPOST_FROM: KyleKulinski
               TUITER_COLD_START: "true"
               TUITER_MODE_ORIGINAL: review
+              TUITER_MODE_THREAD: review
               TUITER_MODE_REPLY: review
               TUITER_MODE_QUOTE: review
               TUITER_MODE_REPOST: auto
