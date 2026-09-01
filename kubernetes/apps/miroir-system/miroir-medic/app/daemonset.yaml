@@ -23,7 +23,7 @@ spec:
         - operator: Exists
       containers:
         - name: medic
-          image: docker.io/library/alpine:3.22.1
+          image: docker.io/library/alpine:3.24.1
           imagePullPolicy: IfNotPresent
           command:
             - /bin/sh
