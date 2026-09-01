@@ -423,7 +423,7 @@ data:
     [tools]
     actionlint = "latest"
     flux2 = "latest"
-    "github:koment-dev/koment" = "v3.1.5"
+    "github:koment-dev/koment" = "v3.2.0"
     "github:mitsuhiko/minijinja" = "latest"
     helm = "latest"
     helmfile = "latest"
