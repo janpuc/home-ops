@@ -44,6 +44,7 @@ spec:
           SETTLE_UPTIME_SECONDS=900
           KUBELET_CONSECUTIVE_FAILS_BEFORE_RESET=20
           STRANDED_TASKS_MIN=3
+          STRANDED_COMMS_MIN=2
           STRANDED_POLLS_BEFORE_RESET=30
           PEERS_DOWN_OVERRIDE_SECONDS=1800
           MIN_SECONDS_BETWEEN_RESETS=1800
@@ -63,5 +64,5 @@ spec:
 status:
   lastSeenLine: 17
   resolution: ok
-  resolvedAt: "2026-09-01T17:34:59Z"
-  resolvedCommit: b8d05121e462a3828228218175d2a63dc73169cd
+  resolvedAt: "2026-09-01T18:00:15Z"
+  resolvedCommit: 17d2b3f5b3003533c51470e13b5976f85c3e5626

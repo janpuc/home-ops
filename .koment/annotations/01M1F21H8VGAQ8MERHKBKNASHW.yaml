@@ -1,0 +1,52 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M1F21H8VGAQ8MERHKBKNASHW
+  created: "2026-09-01T18:00:01Z"
+spec:
+  target:
+    file: kubernetes/apps/miroir-system/miroir-medic/app/configmap.yaml
+  type: gotcha
+  title: Kernel threads must never count as stranded — this line fired a node
+  body: |-
+    The first deployment of this detector had no kernel-thread exclusion and
+    hard-reset healthy k8s-1 at 2026-09-01T17:56Z, 21 minutes after rollout:
+    DRBD's own resync receiver threads camp in uninterruptible sleep for the
+    whole duration of a large transfer, three of them appeared after the
+    boot-time baseline (the resyncs started later), and 30 polls later they
+    satisfied every threshold. The reset destroyed the resync it was measuring
+    and regressed ~40 volumes — the exact storm the budgets exist to cap.
+
+    An empty /proc/<pid>/cmdline is the kernel-thread test (also race-safe: a
+    PID that exits mid-scan reads as empty and is skipped). Userspace-only
+    D-state is the honest wedge signal — it is also what miroir's own breaker
+    counts (stuck lvm/mount/kopia processes). STRANDED_COMMS_MIN adds the second
+    discriminator: a real wedge strands *different* programs at once, while
+    legitimately slow I/O (a kopia mover pushing multi-GB blobs to the NAS)
+    holds one command in D at a time, so three stuck tasks must span at least
+    two distinct comms before the medic may fire.
+  anchor:
+    scope: excerpt
+    excerpt: '        [ -s "/proc/$task_pid/cmdline" ] || continue'
+    before: |2-
+              task_state="${after_comm%% *}"
+              [ "$task_state" = "D" ] || continue
+              task_pid="${stat_line%% *}"
+    after: |2-
+              task_comm="${stat_line#*(}"
+              task_comm="${task_comm%)*}"
+              echo "$task_pid ($task_comm)" >> "$BOOT_STATE/dtasks.now"
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 17d2b3f5b3003533c51470e13b5976f85c3e5626
+    path: kubernetes/apps/miroir-system/miroir-medic/app/configmap.yaml
+    line: 75
+status:
+  lastSeenLine: 75
+  resolution: ok
+  resolvedAt: "2026-09-01T18:00:01Z"
+  resolvedCommit: 17d2b3f5b3003533c51470e13b5976f85c3e5626
