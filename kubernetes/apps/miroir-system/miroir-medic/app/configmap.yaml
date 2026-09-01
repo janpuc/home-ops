@@ -66,7 +66,7 @@ data:
     scan_d_tasks() {
       : > "$BOOT_STATE/dtasks.now"
       for stat_file in /proc/[0-9]*/stat; do
-        read -r stat_line < "$stat_file" 2>/dev/null || continue
+        read -r stat_line 2>/dev/null < "$stat_file" || continue
         after_comm="${stat_line##*) }"
         task_state="${after_comm%% *}"
         [ "$task_state" = "D" ] || continue
