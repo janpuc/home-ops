@@ -25,7 +25,7 @@ spec:
           migrate:
             image: &image
               repository: ghcr.io/janpuc/tuiter
-              tag: 0.35.0@sha256:0a2279fa14943b12235d023e26f2844899a89c80bbbd59d30ee04dbae713df8f
+              tag: 0.36.0@sha256:460350c9b1fb2a59de546be4d19b7ccbddc54690b0bdb65a718be290b220db61
             command:
               - python
               - /app/migrations/migrate.py
@@ -44,7 +44,7 @@ spec:
           app:
             image: *image
             env:
-              TUITER_VERSION: "0.35.0"
+              TUITER_VERSION: "0.36.0"
               TUITER_DB_PATH: /data/tuiter.db
               TUITER_PERSONA_DIR: /persona
               TUITER_LITELLM_BASE_URL: http://litellm.ai.svc.cluster.local:4000
@@ -72,7 +72,7 @@ spec:
               TUITER_ORIGINAL_MEDIA_MIN_CHARS: "180"
               TUITER_ORIGINAL_MEDIA_MAX_CHARS: "700"
               TUITER_MEDIA_ATTACH_PROBABILITY: "0.18"
-              TUITER_MEDIA_CANDIDATE_LIMIT: "4"
+              TUITER_MEDIA_POSTING_ENABLED: "false"
               TUITER_MONTHLY_BUDGET_USD: "25"
               TUITER_VISION_MODEL: opencode-go/qwen3.7-plus
               TUITER_REPOST_FROM: KyleKulinski
