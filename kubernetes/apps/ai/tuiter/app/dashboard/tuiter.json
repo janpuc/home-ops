@@ -257,7 +257,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum(tuiter_published_actions_24h{kind!=\"like\"})",
+          "expr": "sum(max by (kind) (tuiter_published_actions_24h{kind!=\"like\"}))",
           "instant": true,
           "legendFormat": "",
           "range": false,
@@ -328,7 +328,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum(tuiter_actions{status=~\"drafted|queued\"})",
+          "expr": "sum(max by (kind, status) (tuiter_actions{status=~\"drafted|queued\"}))",
           "instant": true,
           "legendFormat": "",
           "range": false,
@@ -470,7 +470,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "max(tuiter_seconds_since_last_publish)",
+          "expr": "min(tuiter_seconds_since_last_publish)",
           "instant": true,
           "legendFormat": "",
           "range": false,
@@ -783,7 +783,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by (kind) (tuiter_actions{status=~\"drafted|queued\"})",
+          "expr": "sum by (kind) (max by (kind, status) (tuiter_actions{status=~\"drafted|queued\"}))",
           "instant": true,
           "legendFormat": "{{kind}}",
           "range": false,
@@ -964,9 +964,9 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum(increase(tuiter_gate_blocks_total{rule=\"ceiling.punching_left\"}[$__range])) or vector(0)",
+          "expr": "sum(increase(tuiter_gate_blocks_total{rule=\"mechanics.sentence_case\"}[$__range])) or vector(0)",
           "instant": true,
-          "legendFormat": "Punching left",
+          "legendFormat": "Lowercase sentence start",
           "range": false,
           "refId": "C"
         },
@@ -1012,7 +1012,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum(increase(tuiter_gate_blocks_total{rule!~\"ceiling.unverified_news|mechanics.aphorism|ceiling.punching_left|sources.uncited_claim|mechanics.length|mechanics.too_short|thread.format\"}[$__range])) or vector(0)",
+          "expr": "sum(increase(tuiter_gate_blocks_total{rule!~\"ceiling.unverified_news|mechanics.aphorism|mechanics.sentence_case|sources.uncited_claim|mechanics.length|mechanics.too_short|thread.format\"}[$__range])) or vector(0)",
           "instant": true,
           "legendFormat": "Other rules",
           "range": false,
@@ -1275,7 +1275,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by (kind) (tuiter_published_actions_24h)",
+          "expr": "max by (kind) (tuiter_published_actions_24h)",
           "instant": true,
           "legendFormat": "{{kind}}",
           "range": false,
@@ -1415,6 +1415,114 @@
         "x": 0,
         "y": 47
       },
+      "id": 28,
+      "panels": [],
+      "title": "Curated media and data integrity",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Active library size is current. The other values cover the selected dashboard time range. Surface corrections change database labels only and leave posts on X untouched.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "decimals": 0,
+          "min": 0,
+          "noValue": "0",
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 48
+      },
+      "id": 29,
+      "options": {
+        "displayMode": "gradient",
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "text": {},
+        "valueMode": "color"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum(max by (state, mime_type) (tuiter_media_assets{state=\"active\"}))",
+          "instant": true,
+          "legendFormat": "Active curated assets",
+          "range": false,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum(increase(tuiter_media_publishes_total{outcome=\"published\"}[$__range])) or vector(0)",
+          "instant": true,
+          "legendFormat": "Posts with curated media",
+          "range": false,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "(sum(increase(tuiter_media_publishes_total{outcome=~\"failed|unconfirmed\"}[$__range])) or vector(0)) + (sum(increase(tuiter_media_choices_total{outcome=\"error\"}[$__range])) or vector(0))",
+          "instant": true,
+          "legendFormat": "Media pipeline failures",
+          "range": false,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum(increase(tuiter_reconciler_fixes_total{outcome=\"surface_corrected\"}[$__range])) or vector(0)",
+          "instant": true,
+          "legendFormat": "Quote rows corrected to replies",
+          "range": false,
+          "refId": "D"
+        }
+      ],
+      "title": "Media and quote data · selected time",
+      "type": "bargauge"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 55
+      },
       "id": 23,
       "panels": [],
       "title": "Operational failures",
@@ -1458,7 +1566,7 @@
         "h": 4,
         "w": 6,
         "x": 0,
-        "y": 48
+        "y": 56
       },
       "id": 24,
       "options": {
@@ -1529,7 +1637,7 @@
         "h": 4,
         "w": 6,
         "x": 6,
-        "y": 48
+        "y": 56
       },
       "id": 25,
       "options": {
@@ -1600,7 +1708,7 @@
         "h": 4,
         "w": 6,
         "x": 12,
-        "y": 48
+        "y": 56
       },
       "id": 26,
       "options": {
@@ -1671,7 +1779,7 @@
         "h": 4,
         "w": 6,
         "x": 18,
-        "y": 48
+        "y": 56
       },
       "id": 27,
       "options": {
@@ -1738,6 +1846,6 @@
   "timezone": "browser",
   "title": "Tuiter · account operations",
   "uid": "tuiter",
-  "version": 3,
+  "version": 4,
   "weekStart": ""
 }
