@@ -1,0 +1,48 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M1DYYJJEERBBZWZR9JTN3VG0
+  created: "2026-09-01T07:46:43Z"
+spec:
+  target:
+    file: kubernetes/apps/miroir-system/miroir/app/helmrelease.yaml
+  type: why
+  title: Upgrades must not wait on the agent DaemonSet
+  body: |-
+    With helm's default wait, any upgrade that lands while a node is down times
+    out on "DaemonSet/miroir-agent status: InProgress" and rolls back —
+    observed 2026-09-01, when the autoDiskfulAfter change failed to apply
+    because k8s-2 was NotReady. On this cluster that is a standing hazard, not
+    an edge case: nodes go down precisely when miroir is being fixed (DRBD
+    wedges, medic resets), and Renovate auto-merges chart bumps with nobody
+    watching. A rollback loop during a wedge would fight the recovery. The
+    manifests are applied either way; the DaemonSet converges whenever the node
+    returns, and miroir-config's dependsOn still gates on the release itself
+    being made.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        upgrade:
+          disableWait: true
+    before: |2-
+          kind: OCIRepository
+          name: miroir
+        interval: 1h
+    after: |2-
+        values:
+          agent:
+            peerFence: true
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: f4c00426b17fa4394e9428d696ce841c655bbf76
+    path: kubernetes/apps/miroir-system/miroir/app/helmrelease.yaml
+    line: 12
+status:
+  lastSeenLine: 12
+  resolution: ok
+  resolvedAt: "2026-09-01T07:46:43Z"
+  resolvedCommit: f4c00426b17fa4394e9428d696ce841c655bbf76
