@@ -13,7 +13,7 @@ spec:
     agent:
       peerFence: true
     autoEvictAfter: 1h
-    autoDiskfulAfter: 10m
+    autoDiskfulAfter: 72h
     drbd:
       alExtents: 6007
     groupSnapshots:

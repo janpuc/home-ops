@@ -1,0 +1,64 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M1DYC0CDDKSJT6R3Z8SDVJS0
+  created: "2026-09-01T07:36:35Z"
+spec:
+  target:
+    file: kubernetes/apps/miroir-system/miroir-medic/app/daemonset.yaml
+  type: why
+  title: "Self-contained node auto-reset: the one recovery a wedged node allows"
+  body: |-
+    DRBD 9.3.3 carries an unfixed refcount bug (LINBIT/drbd#137, miroir #414):
+    under replica-transfer load a node latches "ASSERTION i >= 0 FAILED in
+    put_ldev" and its storage stack is dead until the machine restarts. miroir
+    0.11.23-janpuc.x detects, taints, fences and refuses staging — everything
+    except the restart itself, which no software path delivers: on 2026-09-01
+    `talosctl reboot` on such a node stopped kubelet and etcd, then hung forever
+    in volume teardown, and `--mode force` could not take over the hung
+    sequence. The only reliable remote remedy, validated live that day, is `echo
+    b > /proc/sysrq-trigger` from a privileged pod: k8s-0 was back Ready with
+    etcd rejoined in under 30 seconds.
+
+    Every design choice here is about working while the node is dying:
+
+    - privileged + hostPath /proc access: sysrq-trigger and the kernel ring
+    (dmesg) are the detection and the cure; both need privilege and neither
+    needs the apiserver. - automountServiceAccountToken false, no RBAC:
+    detection is kmsg-only (same two signatures miroir's AssertionWatcher
+    latches on) so the medic keeps working when the control plane is gone. -
+    hostNetwork + dnsPolicy Default: kubelet healthz on 127.0.0.1:10248, peer
+    probes and Pushover must not depend on cluster DNS or CNI health. -
+    system-node-critical + tolerate everything: it must already be running on
+    the node before the wedge (a wedged or NotReady node cannot start new pods),
+    and must survive the storage-wedged taint it is meant to cure. - secret keys
+    optional: a 1Password/external-secrets outage must never keep the medic from
+    starting; it only mutes notifications. - alpine, not busybox: busybox lacks
+    TLS, and the peer-apiserver probe and Pushover need https.
+
+    The Talos WatchdogTimerConfig (SP5100 TCO) backs this up for the class where
+    even userspace dies; the Talos kernel has no hung-task detector
+    (CONFIG_DETECT_HUNG_TASK is off), so there is no kernel-side alternative to
+    this DaemonSet.
+  anchor:
+    scope: excerpt
+    excerpt: |-
+      apiVersion: apps/v1
+      kind: DaemonSet
+      metadata:
+        name: miroir-medic
+    before: "---"
+    after: |2-
+        annotations:
+          reloader.stakater.com/auto: "true"
+      spec:
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+status:
+  lastSeenLine: 2
+  resolution: ok
+  resolvedAt: "2026-09-01T07:36:35Z"
+  resolvedCommit: a9e993615845e4c62b4e55676763617e31462041

@@ -1,0 +1,79 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: miroir-medic
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: miroir-medic
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: miroir-medic
+    spec:
+      hostNetwork: true
+      dnsPolicy: Default
+      priorityClassName: system-node-critical
+      terminationGracePeriodSeconds: 5
+      automountServiceAccountToken: false
+      tolerations:
+        - operator: Exists
+      containers:
+        - name: medic
+          image: docker.io/library/alpine:3.22.1
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - /opt/medic/medic.sh
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: HOST_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: PUSHOVER_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: miroir-medic-secret
+                  key: PUSHOVER_TOKEN
+                  optional: true
+            - name: PUSHOVER_USER
+              valueFrom:
+                secretKeyRef:
+                  name: miroir-medic-secret
+                  key: PUSHOVER_USER
+                  optional: true
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
+          volumeMounts:
+            - name: script
+              mountPath: /opt/medic
+              readOnly: true
+            - name: persistent-state
+              mountPath: /var/lib/miroir-medic
+            - name: boot-state
+              mountPath: /run/miroir-medic
+      volumes:
+        - name: script
+          configMap:
+            name: miroir-medic
+        - name: persistent-state
+          hostPath:
+            path: /var/lib/miroir-medic
+            type: DirectoryOrCreate
+        - name: boot-state
+          hostPath:
+            path: /run/miroir-medic
+            type: DirectoryOrCreate

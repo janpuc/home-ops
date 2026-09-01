@@ -31,6 +31,11 @@ cluster:
     key: op://Kubernetes/talos/CLUSTER_SERVICEACCOUNT_KEY
 ---
 apiVersion: v1alpha1
+kind: WatchdogTimerConfig
+device: /dev/watchdog0
+timeout: 5m0s
+---
+apiVersion: v1alpha1
 kind: KubeNodeConfig
 labels:
   node-role.kubernetes.io/control-plane: ""

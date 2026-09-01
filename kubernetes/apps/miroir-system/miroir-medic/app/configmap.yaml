@@ -1,0 +1,161 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: miroir-medic
+data:
+  medic.sh: |
+    #!/bin/sh
+    set -u
+
+    PERSISTENT_STATE=/var/lib/miroir-medic
+    BOOT_STATE=/run/miroir-medic
+    FATAL_ASSERTION_PATTERN='ASSERTION.*FAILED in (put_ldev|drbd_al_begin_io_fastpath)'
+    PEER_IPS="${PEER_IPS:-192.168.69.20 192.168.69.21 192.168.69.22}"
+    NODE="${NODE_NAME:-unknown}"
+    SELF_IP="${HOST_IP:?HOST_IP is required}"
+    SETTLE_UPTIME_SECONDS=900
+    KUBELET_CONSECUTIVE_FAILS_BEFORE_RESET=20
+    PEERS_DOWN_OVERRIDE_SECONDS=1800
+    MIN_SECONDS_BETWEEN_RESETS=1800
+    MAX_RESETS_PER_6H=3
+    MAX_RESETS_PER_24H=5
+    STANDDOWN_RENOTIFY_SECONDS=21600
+    POLL_SECONDS=30
+
+    mkdir -p "$PERSISTENT_STATE" "$BOOT_STATE"
+
+    log() { echo "$(date -u +%FT%TZ) $*"; }
+
+    epoch_now() { date +%s; }
+
+    uptime_seconds() { cut -d. -f1 /proc/uptime; }
+
+    notify() {
+      [ -n "${PUSHOVER_TOKEN:-}" ] && [ -n "${PUSHOVER_USER:-}" ] || return 0
+      wget -T 8 -q -O /dev/null --post-data \
+        "token=$PUSHOVER_TOKEN&user=$PUSHOVER_USER&priority=1&title=miroir-medic $NODE&message=$1" \
+        https://api.pushover.net/1/messages.json 2>/dev/null || log "notify failed: $1"
+    }
+
+    resets_within() {
+      cutoff=$(( $(epoch_now) - $1 ))
+      [ -f "$PERSISTENT_STATE/resets" ] || { echo 0; return; }
+      awk -v c="$cutoff" '$1 >= c' "$PERSISTENT_STATE/resets" | wc -l
+    }
+
+    seconds_since_last_reset() {
+      last=$(tail -1 "$PERSISTENT_STATE/resets" 2>/dev/null)
+      echo $(( $(epoch_now) - ${last:-0} ))
+    }
+
+    latch_wedge_if_asserting() {
+      [ -f "$BOOT_STATE/wedge" ] && return 0
+      if dmesg 2>/dev/null | grep -qE "$FATAL_ASSERTION_PATTERN"; then
+        log "fatal DRBD assertion sighted in kernel log; latching wedge"
+        dmesg 2>/dev/null | grep -E "$FATAL_ASSERTION_PATTERN" | tail -3
+        touch "$BOOT_STATE/wedge"
+      fi
+      return 0
+    }
+
+    wedged() { [ -f "$BOOT_STATE/wedge" ]; }
+
+    kubelet_probe_ok() { wget -T 5 -q -O /dev/null http://127.0.0.1:10248/healthz 2>/dev/null; }
+
+    kubelet_unhealthy_too_long() {
+      if kubelet_probe_ok; then
+        rm -f "$BOOT_STATE/kubelet_fails"
+        return 1
+      fi
+      fails=$(( $(cat "$BOOT_STATE/kubelet_fails" 2>/dev/null || echo 0) + 1 ))
+      echo "$fails" > "$BOOT_STATE/kubelet_fails"
+      [ "$fails" = "$KUBELET_CONSECUTIVE_FAILS_BEFORE_RESET" ] && log "kubelet healthz failing ($fails consecutive)"
+      [ "$fails" -ge "$KUBELET_CONSECUTIVE_FAILS_BEFORE_RESET" ]
+    }
+
+    peer_serving_apiserver() {
+      wget -T 4 -q -O /dev/null --no-check-certificate "https://$1:6443/healthz" 2>/dev/null
+    }
+
+    peers_gate() {
+      any_down=0
+      for peer in $PEER_IPS; do
+        [ "$peer" = "$SELF_IP" ] && continue
+        peer_serving_apiserver "$peer" || any_down=1
+      done
+      if [ "$any_down" = 0 ]; then
+        rm -f "$BOOT_STATE/peers_down_since"
+        return 0
+      fi
+      [ -f "$BOOT_STATE/peers_down_since" ] || epoch_now > "$BOOT_STATE/peers_down_since"
+      down_since=$(cat "$BOOT_STATE/peers_down_since")
+      if [ "$1" = allow_override ] && [ $(( $(epoch_now) - down_since )) -ge "$PEERS_DOWN_OVERRIDE_SECONDS" ]; then
+        log "peer apiserver down ${PEERS_DOWN_OVERRIDE_SECONDS}s+ while self wedged; overriding quorum hold"
+        return 0
+      fi
+      return 1
+    }
+
+    stagger_by_node() {
+      case "$SELF_IP" in
+        *.20) sleep 0 ;;
+        *.21) sleep 90 ;;
+        *.22) sleep 180 ;;
+        *) sleep 45 ;;
+      esac
+    }
+
+    attempt_reset() {
+      reason="$1"
+      used_6h=$(resets_within 21600)
+      used_24h=$(resets_within 86400)
+      if [ "$(seconds_since_last_reset)" -lt "$MIN_SECONDS_BETWEEN_RESETS" ] \
+        || [ "$used_6h" -ge "$MAX_RESETS_PER_6H" ] \
+        || [ "$used_24h" -ge "$MAX_RESETS_PER_24H" ]; then
+        last_warned=$(cat "$PERSISTENT_STATE/standdown_warned" 2>/dev/null || echo 0)
+        if [ $(( $(epoch_now) - last_warned )) -ge "$STANDDOWN_RENOTIFY_SECONDS" ]; then
+          epoch_now > "$PERSISTENT_STATE/standdown_warned"
+          log "reset budget exhausted ($reason, 6h=$used_6h 24h=$used_24h); standing down"
+          notify "$reason persists but reset budget is exhausted (6h=$used_6h 24h=$used_24h); node left fenced, needs manual attention"
+        fi
+        return 0
+      fi
+      stagger_by_node
+      if [ "$reason" = kubelet ] && kubelet_probe_ok; then
+        log "kubelet recovered during stagger; aborting reset"
+        rm -f "$BOOT_STATE/kubelet_fails"
+        return 0
+      fi
+      epoch_now >> "$PERSISTENT_STATE/resets"
+      echo "$reason $(date -u +%FT%TZ)" > "$PERSISTENT_STATE/pending"
+      log "hard reset now: $reason (reset $((used_24h + 1)) of $MAX_RESETS_PER_24H per 24h)"
+      notify "$reason detected; hard-resetting this node (reset $((used_24h + 1)) of $MAX_RESETS_PER_24H per 24h)"
+      sleep 2
+      echo s > /proc/sysrq-trigger 2>/dev/null
+      sleep 8
+      echo b > /proc/sysrq-trigger 2>/dev/null || notify "sysrq reset write FAILED; node still wedged"
+      sleep 300
+    }
+
+    if [ -f "$PERSISTENT_STATE/pending" ]; then
+      if [ "$(uptime_seconds)" -lt 3600 ]; then
+        notify "node is back after hard reset ($(cat "$PERSISTENT_STATE/pending")); uptime $(uptime_seconds)s"
+      fi
+      rm -f "$PERSISTENT_STATE/pending"
+    fi
+
+    log "miroir-medic watching on $NODE ($SELF_IP); resets used 24h=$(resets_within 86400)"
+
+    while :; do
+      sleep "$POLL_SECONDS"
+      [ "$(uptime_seconds)" -ge "$SETTLE_UPTIME_SECONDS" ] || continue
+      latch_wedge_if_asserting
+      if wedged; then
+        peers_gate allow_override && attempt_reset wedge
+        continue
+      fi
+      if kubelet_unhealthy_too_long; then
+        peers_gate no_override && attempt_reset kubelet
+      fi
+    done

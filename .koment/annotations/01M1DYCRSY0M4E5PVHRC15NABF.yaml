@@ -1,0 +1,51 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M1DYCRSY0M4E5PVHRC15NABF
+  created: "2026-09-01T07:37:00Z"
+spec:
+  target:
+    file: kubernetes/apps/miroir-system/miroir/app/helmrelease.yaml
+  type: why
+  title: "72h auto-diskful: cut put_ldev trigger surface while unattended"
+  body: |-
+    Raised from 10m on 2026-09-01, before a multi-week unattended period.
+    Diskless-to-diskful conversion is a full resync into an attached backing —
+    the same replica-transfer class that LINBIT/drbd#137 names as the put_ldev
+    assertion trigger (there via `toggle-disk --migrate-from`), and both node
+    wedges here (2026-08-17 k8s-0, 2026-09-01 k8s-0) latched during exactly such
+    transfer storms. With ~29 KEDA scale-to-zero apps, a 10m threshold converted
+    legs continually as consumers woke and settled; at 72h a settled consumer
+    just keeps paying the network hop, which costs latency, not a kernel.
+
+    This is deliberately a mitigation, not a cure — the medic DaemonSet
+    handles the wedges that still happen. Restore 10m only when the underlying
+    DRBD bug is fixed upstream or someone is around to press power buttons
+    again.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+          autoEvictAfter: 1h
+          autoDiskfulAfter: 72h
+    before: |2-
+        values:
+          agent:
+            peerFence: true
+    after: |2-
+          drbd:
+            alExtents: 6007
+          groupSnapshots:
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: a9e993615845e4c62b4e55676763617e31462041
+    path: kubernetes/apps/miroir-system/miroir/app/helmrelease.yaml
+    line: 15
+status:
+  lastSeenLine: 15
+  resolution: ok
+  resolvedAt: "2026-09-01T07:37:00Z"
+  resolvedCommit: a9e993615845e4c62b4e55676763617e31462041

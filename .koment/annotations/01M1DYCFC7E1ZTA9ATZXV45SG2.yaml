@@ -1,0 +1,65 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M1DYCFC7E1ZTA9ATZXV45SG2
+  created: "2026-09-01T07:36:50Z"
+spec:
+  target:
+    file: kubernetes/apps/miroir-system/miroir-medic/app/configmap.yaml
+  type: invariant
+  title: "Reset gates: settle, peer quorum, stagger, budget — in that order"
+  body: |-
+    The script's safety comes from four gates that must stay in this order; each
+    exists because of a specific way an automatic hard reset can make things
+    worse on a 3-node all-control-plane cluster.
+
+    - SETTLE_UPTIME_SECONDS (15 min): resync after a boot is exactly the
+    put_ldev-heavy transfer that re-triggers LINBIT/drbd#137 — k8s-0
+    re-latched 6 minutes after a manual reboot on 2026-09-01. The settle window
+    also bounds the tightest possible reboot loop. Cross-boot false latches are
+    impossible (the kmsg ring and /run flags both clear on boot), so no extra
+    guard is needed there. - peers_gate: self-reset drops etcd to 2/3 only if
+    both other members are up, so both peers must answer on :6443 first
+    (anonymous /healthz is enabled cluster-wide in KubeAuthenticationConfig).
+    The allow_override branch exists because a wedge plus a 30-minutes-dead peer
+    means the cluster is already down — rolling staggered resets are then the
+    only path back, and that is precisely how the 2026-09-01 outage was resolved
+    by hand. The kubelet reason never overrides: a kubelet-dead node with a dead
+    peer must hold, since its own reset would take etcd from 2/3 to 1/3. -
+    stagger_by_node (0/90/180s by host IP): two nodes latching in the same
+    window must not reset simultaneously; whoever fires first closes the other's
+    peers_gate. - budgets (30 min spacing, 3/6h, 5/24h in /var/lib, which
+    survives reboots): if resets are not curing the wedge, looping power cycles
+    only multiply resync storms. The end state after an exhausted budget is
+    deliberate: node stays fenced by miroir's taint, cluster degrades to two
+    nodes, Pushover says so every 6h.
+
+    kubelet_probe_ok is re-checked after the stagger for the kubelet reason
+    only; the wedge latch is permanent for the boot by design (matching miroir's
+    Wedge.Latch semantics — the kernel state cannot recover).
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+          SETTLE_UPTIME_SECONDS=900
+          KUBELET_CONSECUTIVE_FAILS_BEFORE_RESET=20
+          PEERS_DOWN_OVERRIDE_SECONDS=1800
+          MIN_SECONDS_BETWEEN_RESETS=1800
+          MAX_RESETS_PER_6H=3
+          MAX_RESETS_PER_24H=5
+    before: |2-
+          PEER_IPS="${PEER_IPS:-192.168.69.20 192.168.69.21 192.168.69.22}"
+          NODE="${NODE_NAME:-unknown}"
+          SELF_IP="${HOST_IP:?HOST_IP is required}"
+    after: |2
+          STANDDOWN_RENOTIFY_SECONDS=21600
+          POLL_SECONDS=30
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+status:
+  lastSeenLine: 17
+  resolution: ok
+  resolvedAt: "2026-09-01T07:36:50Z"
+  resolvedCommit: a9e993615845e4c62b4e55676763617e31462041

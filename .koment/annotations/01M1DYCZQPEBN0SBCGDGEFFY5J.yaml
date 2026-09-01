@@ -1,0 +1,57 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M1DYCZQPEBN0SBCGDGEFFY5J
+  created: "2026-09-01T07:37:07Z"
+spec:
+  target:
+    file: talos/controlplane.yaml.j2
+  type: why
+  title: "Hardware watchdog: the backstop below the medic DaemonSet"
+  body: |-
+    All three nodes are ThinkCentre M75q-1 with an SP5100 TCO timer at
+    /dev/watchdog0. machined feeds it; a machine so far gone that machined stops
+    feeding for 5 minutes gets reset by silicon, with no software, network, or
+    storage dependency.
+
+    This exists because the DRBD put_ldev wedge class (LINBIT/drbd#137) showed
+    that graceful paths cannot be trusted here: on 2026-09-01 a `talosctl
+    reboot` hung forever mid-teardown with kubelet and etcd already stopped. The
+    miroir-medic DaemonSet handles that class (userspace alive, storage dead)
+    via sysrq; this document covers the remaining class where userspace itself
+    dies. The kernel offers no middle layer — Talos ships without
+    CONFIG_DETECT_HUNG_TASK, so hung-task panic is unavailable; kernel.panic=10
+    and panic_on_oops=1 are Talos defaults and already reboot on panic.
+
+    5m0s is deliberately generous: machined stays healthy through storage wedges
+    (proven twice), so a shorter timeout buys nothing and risks resets during
+    legitimately slow moments (upgrades, memory pressure).
+  anchor:
+    scope: excerpt
+    excerpt: |-
+      apiVersion: v1alpha1
+      kind: WatchdogTimerConfig
+      device: /dev/watchdog0
+      timeout: 5m0s
+    before: |2-
+        serviceAccount:
+          key: op://Kubernetes/talos/CLUSTER_SERVICEACCOUNT_KEY
+      ---
+    after: |-
+      ---
+      apiVersion: v1alpha1
+      kind: KubeNodeConfig
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: a9e993615845e4c62b4e55676763617e31462041
+    path: talos/controlplane.yaml.j2
+    line: 33
+status:
+  lastSeenLine: 33
+  resolution: ok
+  resolvedAt: "2026-09-01T07:37:07Z"
+  resolvedCommit: a9e993615845e4c62b4e55676763617e31462041
