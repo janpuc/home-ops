@@ -22,7 +22,7 @@ spec:
       image:
         repository: ghcr.io/janpuc/t3-code-operator
         tag: ""
-        digest: sha256:3e08002beec8d73d7676e3e80c7288d58d0f5a6328c942574c0f8d4741e56f99
+        digest: sha256:f663ae8ce81ec1e9e5d9aea8e74176c30a1e8e786e6e965bf869f7ddd6e797f0
       resources:
         requests:
           cpu: 50m
@@ -32,7 +32,7 @@ spec:
     workstations:
       - name: t3-code-canary
         spec:
-          image: ghcr.io/janpuc/t3-code-operator@sha256:3e08002beec8d73d7676e3e80c7288d58d0f5a6328c942574c0f8d4741e56f99
+          image: ghcr.io/janpuc/t3-code-operator@sha256:f663ae8ce81ec1e9e5d9aea8e74176c30a1e8e786e6e965bf869f7ddd6e797f0
           serviceAccountName: t3-code
           resources:
             requests:
