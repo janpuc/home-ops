@@ -28,7 +28,7 @@ spec:
       fsGroup: 1000
       fsGroupChangePolicy: OnRootMismatch
     scratch:
-      capacity: 10Gi
+      capacity: 60Gi
       storageClassName: miroir-fast-local
     securityContext:
       runAsUser: 1000

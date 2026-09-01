@@ -1,0 +1,50 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M1EA26WKCP04JF7GH04DDD09
+  created: "2026-09-01T11:00:57Z"
+spec:
+  target:
+    file: kubernetes/apps/kopiur-system/kopiur/repository/clusterrepository.yaml
+  type: why
+  title: Scratch must fit the largest volume's deep-verify restore
+  body: |-
+    Deep verification restores a full snapshot into this scratch PVC, so its
+    capacity must cover the used data of the largest protected volume — plex
+    and the Prometheus TSDB are both 50Gi. At 10Gi the monthly deep tier (`H 5 1
+    * *`) failed for plex on 2026-09-01 with ENOSPC mid-restore, and there is no
+    per-SnapshotPolicy scratch override in the CRD, so this global value is the
+    only knob.
+
+    60Gi is safe to overcommit: the PVC is thin-provisioned on miroir-fast-local
+    and lives only for the mover run (ttlSecondsAfterFinished 300), so real pool
+    usage is bounded by the bytes actually restored, not by concurrent 60Gi
+    claims. Grow this alongside the largest volume, not alongside pool usage.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+          scratch:
+            capacity: 60Gi
+            storageClassName: miroir-fast-local
+    before: |2-
+          podSecurityContext:
+            fsGroup: 1000
+            fsGroupChangePolicy: OnRootMismatch
+    after: |2-
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: c3ad29e05fb7d3d9059daed9195f15a5c313e5b0
+    path: kubernetes/apps/kopiur-system/kopiur/repository/clusterrepository.yaml
+    line: 30
+status:
+  lastSeenLine: 30
+  resolution: ok
+  resolvedAt: "2026-09-01T11:00:57Z"
+  resolvedCommit: c3ad29e05fb7d3d9059daed9195f15a5c313e5b0
