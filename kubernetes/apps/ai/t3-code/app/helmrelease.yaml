@@ -79,7 +79,7 @@ spec:
                 if ! jq -e . /data/claude-home/.claude.json >/dev/null 2>&1; then
                   printf '{}\n' > /data/claude-home/.claude.json
                 fi
-                jq -s '.[0] * .[1]' \
+                jq -s 'map(select(type == "object")) | reduce .[] as $doc ({}; . * $doc)' \
                   /data/claude-home/.claude.json \
                   /run/config/claude-mcp.json > /tmp/claude-merged.json
                 install -m 0600 /tmp/claude-merged.json /data/claude-home/.claude.json
