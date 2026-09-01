@@ -16,6 +16,8 @@ data:
     SELF_IP="${HOST_IP:?HOST_IP is required}"
     SETTLE_UPTIME_SECONDS=900
     KUBELET_CONSECUTIVE_FAILS_BEFORE_RESET=20
+    STRANDED_TASKS_MIN=3
+    STRANDED_POLLS_BEFORE_RESET=30
     PEERS_DOWN_OVERRIDE_SECONDS=1800
     MIN_SECONDS_BETWEEN_RESETS=1800
     MAX_RESETS_PER_6H=3
@@ -60,6 +62,45 @@ data:
     }
 
     wedged() { [ -f "$BOOT_STATE/wedge" ]; }
+
+    scan_d_tasks() {
+      : > "$BOOT_STATE/dtasks.now"
+      for stat_file in /proc/[0-9]*/stat; do
+        read -r stat_line < "$stat_file" 2>/dev/null || continue
+        after_comm="${stat_line##*) }"
+        task_state="${after_comm%% *}"
+        [ "$task_state" = "D" ] || continue
+        task_pid="${stat_line%% *}"
+        task_comm="${stat_line#*(}"
+        task_comm="${task_comm%)*}"
+        echo "$task_pid ($task_comm)" >> "$BOOT_STATE/dtasks.now"
+      done
+    }
+
+    stranded_storage_check() {
+      scan_d_tasks
+      if [ ! -f "$BOOT_STATE/dtasks.baseline" ]; then
+        cp "$BOOT_STATE/dtasks.now" "$BOOT_STATE/dtasks.baseline"
+        return 1
+      fi
+      : > "$BOOT_STATE/dtasks.streak.new"
+      stuck_count=0
+      while IFS= read -r task; do
+        grep -Fxq "$task" "$BOOT_STATE/dtasks.baseline" && continue
+        prev_line=$(grep -F "|$task" "$BOOT_STATE/dtasks.streak" 2>/dev/null | head -1)
+        prev_count="${prev_line%%|*}"
+        streak=$(( ${prev_count:-0} + 1 ))
+        echo "$streak|$task" >> "$BOOT_STATE/dtasks.streak.new"
+        [ "$streak" -ge "$STRANDED_POLLS_BEFORE_RESET" ] && stuck_count=$(( stuck_count + 1 ))
+      done < "$BOOT_STATE/dtasks.now"
+      mv "$BOOT_STATE/dtasks.streak.new" "$BOOT_STATE/dtasks.streak"
+      if [ "$stuck_count" -ge "$STRANDED_TASKS_MIN" ]; then
+        stuck_tasks=$(sort -rn "$BOOT_STATE/dtasks.streak" | head -5 | cut -d'|' -f2 | tr '\n' ' ')
+        log "storage stranded: $stuck_count tasks in uninterruptible sleep beyond the window: $stuck_tasks"
+        return 0
+      fi
+      return 1
+    }
 
     kubelet_probe_ok() { wget -T 5 -q -O /dev/null http://127.0.0.1:10248/healthz 2>/dev/null; }
 
@@ -127,6 +168,10 @@ data:
         rm -f "$BOOT_STATE/kubelet_fails"
         return 0
       fi
+      if [ "$reason" = stranded ] && ! stranded_storage_check; then
+        log "stranded tasks drained during stagger; aborting reset"
+        return 0
+      fi
       epoch_now >> "$PERSISTENT_STATE/resets"
       echo "$reason $(date -u +%FT%TZ)" > "$PERSISTENT_STATE/pending"
       log "hard reset now: $reason (reset $((used_24h + 1)) of $MAX_RESETS_PER_24H per 24h)"
@@ -153,6 +198,10 @@ data:
       latch_wedge_if_asserting
       if wedged; then
         peers_gate allow_override && attempt_reset wedge
+        continue
+      fi
+      if stranded_storage_check; then
+        peers_gate no_override && attempt_reset stranded
         continue
       fi
       if kubelet_unhealthy_too_long; then

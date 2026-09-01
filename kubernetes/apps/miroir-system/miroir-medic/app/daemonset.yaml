@@ -15,6 +15,7 @@ spec:
         app.kubernetes.io/name: miroir-medic
     spec:
       hostNetwork: true
+      hostPID: true
       dnsPolicy: Default
       priorityClassName: system-node-critical
       terminationGracePeriodSeconds: 5

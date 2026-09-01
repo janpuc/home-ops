@@ -1,0 +1,64 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M1F0JX8NGJY9F5WWQ8W09WS2
+  created: "2026-09-01T17:34:33Z"
+spec:
+  target:
+    file: kubernetes/apps/miroir-system/miroir-medic/app/configmap.yaml
+  type: why
+  title: D-state detector covers the assertion-less wedge that blinded v1
+  body: |-
+    On 2026-09-01 ~16:17Z k8s-2's storage died the quiet way: miroir's breaker
+    latched on stranded children (stuck lvm/mount commands), no kernel assertion
+    was ever printed, kubelet stayed healthy — and the kmsg-only medic v1 sat
+    correctly silent while a human had to force-reboot two nodes. Worse, the
+    StorageWedged condition un-latched itself four minutes later when the agent
+    restarted and the kmsg replay was clean, so even condition-watching would
+    have missed it; the agent's view can lie across restarts, the kernel's
+    cannot.
+
+    Sustained uninterruptible sleep is the honest node-local signal for that
+    class: every I/O against a dead device parks its task in D. The thresholds
+    encode the difference between stuck and slow — a real wedge strands many
+    tasks at once and forever, while heavy-but-healthy I/O (a kopia mover
+    pushing to the NAS over NFS) can legitimately hold one or two tasks in D for
+    minutes. Hence ≥3 distinct non-baseline tasks, each D across 30
+    consecutive 30s polls (15 min), with the streak reset the moment a task
+    leaves D.
+
+    The boot-time baseline set (first scan after the settle window) is excluded
+    forever: some kernel threads park in D legitimately, and whatever was
+    already stuck before the medic could judge it predates its ability to reason
+    about it. Unlike the assertion latch this check is evaluated live, never
+    latched — D-state can drain, and attempt_reset re-verifies after the
+    stagger so a recovered node is not shot. Parsing uses /proc/<pid>/stat with
+    the state taken from after the last ") " so comms containing parentheses or
+    spaces cannot shift the field; requires hostPID on the DaemonSet, or the
+    medic sees only its own container's processes.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+          scan_d_tasks() {
+            : > "$BOOT_STATE/dtasks.now"
+    before: |2
+
+          wedged() { [ -f "$BOOT_STATE/wedge" ]; }
+    after: |2-
+            for stat_file in /proc/[0-9]*/stat; do
+              read -r stat_line < "$stat_file" 2>/dev/null || continue
+              after_comm="${stat_line##*) }"
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: b8d05121e462a3828228218175d2a63dc73169cd
+    path: kubernetes/apps/miroir-system/miroir-medic/app/configmap.yaml
+    line: 66
+status:
+  lastSeenLine: 66
+  resolution: ok
+  resolvedAt: "2026-09-01T17:34:33Z"
+  resolvedCommit: b8d05121e462a3828228218175d2a63dc73169cd
