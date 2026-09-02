@@ -31,6 +31,9 @@ spec:
           memory: 128Mi
         limits:
           memory: 512Mi
+    rbac:
+      secretResourceNames:
+        - t3-code-canary-smb
     workstations:
       - name: t3-code-canary
         spec:
