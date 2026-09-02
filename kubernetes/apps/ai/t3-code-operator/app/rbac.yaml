@@ -1,0 +1,272 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: t3-code-agents
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: t3-code-agents-read-all
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - pods/log
+      - nodes
+      - services
+      - namespaces
+      - configmaps
+      - persistentvolumes
+      - persistentvolumeclaims
+      - endpoints
+      - resourcequotas
+      - limitranges
+      - serviceaccounts
+      - events
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+      - daemonsets
+      - statefulsets
+      - replicasets
+      - controllerrevisions
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - batch
+    resources:
+      - jobs
+      - cronjobs
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - networking.k8s.io
+    resources:
+      - ingresses
+      - ingressclasses
+      - networkpolicies
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - gateway.networking.k8s.io
+    resources:
+      - gateways
+      - httproutes
+      - grpcroutes
+      - tcproutes
+      - tlsroutes
+      - referencegrants
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - gateway.envoyproxy.io
+    resources:
+      - backends
+      - backendtrafficpolicies
+      - clienttrafficpolicies
+      - envoyproxies
+      - securitypolicies
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - storage.k8s.io
+    resources:
+      - storageclasses
+      - csinodes
+      - csidrivers
+      - volumeattachments
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - rbac.authorization.k8s.io
+    resources:
+      - roles
+      - rolebindings
+      - clusterroles
+      - clusterrolebindings
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - helm.toolkit.fluxcd.io
+    resources:
+      - helmreleases
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - kustomize.toolkit.fluxcd.io
+    resources:
+      - kustomizations
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - source.toolkit.fluxcd.io
+    resources:
+      - gitrepositories
+      - helmrepositories
+      - ocirepositories
+      - buckets
+      - helmcharts
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - external-secrets.io
+    resources:
+      - externalsecrets
+      - secretstores
+      - clustersecretstores
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - miroir.home-operations.com
+    resources:
+      - miroirvolumes
+      - miroirnodes
+      - miroirnodegroups
+      - miroirsnapshots
+      - miroirsnapshotgroups
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - kopiur.home-operations.com
+    resources:
+      - snapshots
+      - snapshotpolicies
+      - snapshotschedules
+      - restores
+      - repositories
+      - clusterrepositories
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - cert-manager.io
+    resources:
+      - certificates
+      - certificaterequests
+      - issuers
+      - clusterissuers
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - t3code.janpuc.com
+    resources:
+      - workstations
+      - harnesses
+      - extensions
+      - mcpservers
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - metrics.k8s.io
+    resources:
+      - nodes
+      - pods
+    verbs:
+      - get
+      - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: t3-code-agents-pod-delete
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+    verbs:
+      - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: t3-code-agents-read-all
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: t3-code-agents-read-all
+subjects:
+  - kind: ServiceAccount
+    name: t3-code-agents
+    namespace: ai
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: t3-code-agents-pod-delete
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: t3-code-agents-pod-delete
+subjects:
+  - kind: ServiceAccount
+    name: t3-code-agents
+    namespace: ai
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: t3-code-agents-exec-deploy
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods/exec
+    verbs:
+      - create
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+    verbs:
+      - patch
+      - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: t3-code-agents-exec-deploy
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: t3-code-agents-exec-deploy
+subjects:
+  - kind: ServiceAccount
+    name: t3-code-agents
+    namespace: ai
