@@ -35,11 +35,12 @@
         "/^kubernetes\\/apps\\/ai\\/t3-code-operator\\/app\\/helmrelease\\.yaml$/",
       ],
       matchStrings: [
-        "backend: github:koment-dev/koment\\s+version: (?<currentValue>v?\\d+\\.\\d+\\.\\d+)",
+        'backend: github:koment-dev/koment\\s+version: "(?<currentValue>\\d+\\.\\d+\\.\\d+)"',
       ],
       depNameTemplate: "koment-dev/koment",
       packageNameTemplate: "koment-dev/koment",
       datasourceTemplate: "github-releases",
+      extractVersionTemplate: "^v(?<version>.+)$",
       versioningTemplate: "semver",
     },
     {
