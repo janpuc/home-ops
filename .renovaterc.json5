@@ -30,6 +30,20 @@
     },
     {
       customType: "regex",
+      description: "Update the koment tool pinned in t3-code-operator Workstations",
+      managerFilePatterns: [
+        "/^kubernetes\\/apps\\/ai\\/t3-code-operator\\/app\\/helmrelease\\.yaml$/",
+      ],
+      matchStrings: [
+        "backend: github:koment-dev/koment\\s+version: (?<currentValue>v?\\d+\\.\\d+\\.\\d+)",
+      ],
+      depNameTemplate: "koment-dev/koment",
+      packageNameTemplate: "koment-dev/koment",
+      datasourceTemplate: "github-releases",
+      versioningTemplate: "semver",
+    },
+    {
+      customType: "regex",
       description: "Update the agent-kit skill batch provisioned into t3-code",
       managerFilePatterns: ["/^kubernetes\\/apps\\/ai\\/t3-code\\/app\\/helmrelease\\.yaml$/"],
       matchStrings: ["AGENT_KIT_VERSION: (?<currentValue>v?\\d+\\.\\d+\\.\\d+)"],

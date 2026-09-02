@@ -22,7 +22,7 @@ spec:
       image:
         repository: ghcr.io/janpuc/t3-code-operator
         tag: ""
-        digest: sha256:f663ae8ce81ec1e9e5d9aea8e74176c30a1e8e786e6e965bf869f7ddd6e797f0
+        digest: sha256:246a8239809fee3f3e2ae65403bb210a776c21f13a3b2dbe792c5381c3cff86c
       resources:
         requests:
           cpu: 50m
@@ -32,7 +32,7 @@ spec:
     workstations:
       - name: t3-code-canary
         spec:
-          image: ghcr.io/janpuc/t3-code-operator@sha256:f663ae8ce81ec1e9e5d9aea8e74176c30a1e8e786e6e965bf869f7ddd6e797f0
+          image: ghcr.io/janpuc/t3-code-operator@sha256:246a8239809fee3f3e2ae65403bb210a776c21f13a3b2dbe792c5381c3cff86c
           serviceAccountName: t3-code
           resources:
             requests:
@@ -108,6 +108,10 @@ spec:
               name: t3-code-git-signing
               privateKeyKey: id_signing
               publicKeyKey: id_signing.pub
+          tools:
+            - name: koment
+              backend: github:koment-dev/koment
+              version: v3.2.0
           drain:
             policy: WaitForIdle
             timeout: 30m
@@ -305,6 +309,7 @@ spec:
               small_model: litellm/opencode-go/hy3
               plugin:
                 - "@eleboucher/opencode-memini"
+                - "@koment/opencode-koment"
           workstationRefs:
             - name: t3-code-canary
     extensions:
@@ -345,6 +350,34 @@ spec:
                 key: GH_TOKEN
           harnessRefs:
             - name: codex
+            - name: claude
+      - name: koment
+        spec:
+          source:
+            type: GitHubRelease
+            githubRelease:
+              repository: koment-dev/koment
+              tag: v3.2.0
+              asset: koment-plugin-codex_v3.2.0.tar.gz
+              sha256: a8b3dfe698339455072ae6009ec70b831ede689b73789b26033886b0157c7f48
+              credentialSecretRef:
+                name: t3-code-config
+                key: GH_TOKEN
+          harnessRefs:
+            - name: codex
+      - name: koment-claude
+        spec:
+          source:
+            type: Marketplace
+            marketplace:
+              marketplace: koment-dev
+              extension: koment
+              repositoryUrl: https://github.com/koment-dev/koment.git
+              commit: c000b74a5b09c433f96a69fa102c5c8f6583dff0
+              credentialSecretRef:
+                name: t3-code-config
+                key: GH_TOKEN
+          harnessRefs:
             - name: claude
     mcpServers:
       - name: koment
