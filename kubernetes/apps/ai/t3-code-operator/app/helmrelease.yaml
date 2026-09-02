@@ -190,7 +190,7 @@ spec:
         spec:
           instanceId: cursor
           driver: cursor
-          displayName: Cursor
+          displayName: Cursor (alpha)
           enabled: true
           config:
             binaryPath: cursor-agent
@@ -200,7 +200,7 @@ spec:
         spec:
           instanceId: grok
           driver: grok
-          displayName: Grok
+          displayName: Grok (alpha)
           enabled: true
           config:
             binaryPath: grok
