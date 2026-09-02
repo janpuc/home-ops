@@ -24,17 +24,22 @@ spec:
       image:
         repository: ghcr.io/janpuc/t3-code-operator
         tag: ""
-        digest: sha256:ce1333008c290e358faa5c5d86a41484ef5ff8308b5eb0b363aef7a613285e80
+        digest: sha256:53219f350c9cc72aabe1d5834e24b286735278d170f339206e719055b6fe97c9
       resources:
         requests:
           cpu: 50m
           memory: 128Mi
         limits:
           memory: 512Mi
+    smb:
+      image:
+        repository: ghcr.io/janpuc/t3-code-smbd
+        tag: ""
+        digest: sha256:1dd1e78686a2ff0141ab3ec6fdde50e50de50eda013ed60048efd6ed68a6de03
     workstations:
       - name: t3-code-canary
         spec:
-          image: ghcr.io/janpuc/t3-code-operator@sha256:ce1333008c290e358faa5c5d86a41484ef5ff8308b5eb0b363aef7a613285e80
+          image: ghcr.io/janpuc/t3-code-runtime@sha256:bdfa9d6ad467b7031c7307a617778a83850fb9a1b7a85996a230078ff1987cd1
           serviceAccountName: t3-code
           resources:
             requests:
@@ -116,8 +121,8 @@ spec:
               version: "3.2.0"
           drain:
             policy: WaitForIdle
-            timeout: 30m
-            timeoutAction: Block
+            timeout: 10m
+            timeoutAction: Force
     harnesses:
       - name: codex
         spec:
