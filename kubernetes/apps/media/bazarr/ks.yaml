@@ -6,11 +6,11 @@ metadata:
   name: bazarr
 spec:
   components:
+    - ../../../../components/zeroscaler
     - ../../../../components/kopiur/backup
   dependsOn:
     - name: miroir-config
       namespace: miroir-system
-  force: true
   interval: 1h
   path: ./kubernetes/apps/media/bazarr/app
   postBuild:
