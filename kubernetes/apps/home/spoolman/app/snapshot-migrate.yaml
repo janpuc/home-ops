@@ -3,7 +3,7 @@
 apiVersion: kopiur.home-operations.com/v1alpha1
 kind: Snapshot
 metadata:
-  name: ${APP}-migrate-local
+  name: ${APP}-local-proof
 spec:
   deletionPolicy: Retain
   policyRef:
