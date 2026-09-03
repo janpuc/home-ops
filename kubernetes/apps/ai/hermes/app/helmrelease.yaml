@@ -22,10 +22,9 @@ spec:
           type: RuntimeDefault
     controllers:
       hermes:
-        replicas: 0
         annotations:
           reloader.stakater.com/auto: "true"
-        replicas: 1
+        replicas: 0
         strategy: Recreate
         type: deployment
         initContainers:
