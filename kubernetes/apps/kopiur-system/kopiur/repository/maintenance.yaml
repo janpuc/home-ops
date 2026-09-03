@@ -13,6 +13,6 @@ spec:
     name: nas
   schedule:
     quick:
-      cron: "*/10 * * * *"
+      cron: H */6 * * *
     full:
-      cron: "*/30 * * * *"
+      cron: H 5 * * *

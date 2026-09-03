@@ -1,0 +1,66 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M1KGGR7V0MWV64W42CMTWRN0
+  created: "2026-09-03T11:29:57Z"
+spec:
+  target:
+    file: kubernetes/apps/kopiur-system/kopiur/repository/clusterrepository.yaml
+  type: gotcha
+  title: Full maintenance races concurrent restores — keep it rare and off-hours
+  body: |-
+    These are the operator-default cadences, made explicit after the 2026-09-03
+    index-backlog incident, plus takeoverPolicy Force which reclaimed the kopia
+    maintenance lease from a stale owner (claimed 08:27Z; consider reverting to
+    default once the lease has settled).
+
+    Do NOT crank the full cron hot again. During backlog burn-down the full run
+    was set to every 30 minutes; it compacted 2410 index blobs down to 596 in
+    one pass (09:39–09:43) — but the following runs then raced live
+    restores: 10 of 11 kopiur Restores failed terminally with kopia "content not
+    found" between 11:06 and 11:14, bracketing the 11:09 full run, while
+    restores in quiet windows (spoolman 10:51, autobrr 11:16) succeeded against
+    equally fresh snapshots. A racing full maintenance invalidates the reader's
+    index view mid-restore, and a failed Restore never retries, so each racy
+    window costs a manual Restore recreation per app.
+
+    Separate mechanism with the same error text: a compaction BACKLOG (stalled
+    maintenance, 2300+ blobs) also breaks reads of fresh content — that is
+    what broke restores on 2026-08-27→09-03. Both mechanisms are recorded
+    because both were initially misdiagnosed as one. If restores fail with
+    "content not found": check IndexBlobHealth first (backlog), then check
+    whether a maintenance run overlapped the mover (race); the epoch settings
+    above (see the parameters annotation) keep the steady-state backlog small
+    enough that hot maintenance should never be needed again.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        maintenance:
+          schedule:
+            quick:
+              cron: H */6 * * *
+            full:
+              cron: H 5 * * *
+          takeoverPolicy: Force
+    before: |2-
+            name: kopiur-nas-secret
+            namespace: kopiur-system
+            key: KOPIA_PASSWORD
+    after: |2-
+        parameters:
+          epoch:
+            minDuration: 6h
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 4347b2a3b428cb2ec4231c56c052e2f4b7f5cfaa
+    path: kubernetes/apps/kopiur-system/kopiur/repository/clusterrepository.yaml
+    line: 22
+status:
+  lastSeenLine: 22
+  resolution: ok
+  resolvedAt: "2026-09-03T11:29:57Z"
+  resolvedCommit: 4347b2a3b428cb2ec4231c56c052e2f4b7f5cfaa
