@@ -6,7 +6,6 @@ metadata:
   name: kavita
 spec:
   components:
-    - ../../../../components/zeroscaler
     - ../../../../components/kopiur/backup
   dependsOn:
     - name: pocket-id-instance

@@ -6,7 +6,6 @@ metadata:
   name: lidarr
 spec:
   components:
-    - ../../../../components/zeroscaler
     - ../../../../components/kopiur/backup
   dependsOn:
     - name: miroir-config

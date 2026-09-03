@@ -6,7 +6,6 @@ metadata:
   name: radarr
 spec:
   components:
-    - ../../../../components/zeroscaler
     - ../../../../components/kopiur/backup
   dependsOn:
     - name: miroir-config
