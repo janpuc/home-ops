@@ -10,7 +10,6 @@ spec:
   dependsOn:
     - name: miroir-config
       namespace: miroir-system
-  force: true
   interval: 1h
   path: ./kubernetes/apps/selfhosted/atuin/app
   postBuild:

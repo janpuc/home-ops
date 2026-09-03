@@ -12,7 +12,6 @@ spec:
   values:
     controllers:
       atuin:
-        replicas: 0
         containers:
           app:
             image:
