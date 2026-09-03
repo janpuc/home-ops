@@ -23,11 +23,14 @@ spec:
       kind: Dragonfly
       failed: status.phase != 'ready'
       current: status.phase == 'ready'
+  force: true
   interval: 1h
   path: ./kubernetes/apps/ai/open-webui/app
   postBuild:
     substitute:
       APP: open-webui
+      KOPIUR_COPYMETHOD: Direct
+      KOPIUR_STORAGECLASS: miroir-fast-local
   prune: true
   sourceRef:
     kind: GitRepository

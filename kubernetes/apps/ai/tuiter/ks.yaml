@@ -10,11 +10,14 @@ spec:
   dependsOn:
     - name: kopiur
       namespace: kopiur-system
+  force: true
   interval: 1h
   path: ./kubernetes/apps/ai/tuiter/app
   postBuild:
     substitute:
       APP: tuiter
+      KOPIUR_COPYMETHOD: Direct
+      KOPIUR_STORAGECLASS: miroir-fast-local
       KOPIUR_MOVER_UID: "1000"
       KOPIUR_MOVER_GID: "1000"
   prune: true

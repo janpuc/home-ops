@@ -13,11 +13,14 @@ spec:
   dependsOn:
     - name: hermes
       namespace: ai
+  force: true
   interval: 1h
   path: ./kubernetes/apps/ai/hermes-matrix/app
   postBuild:
     substitute:
       APP: hermes-matrix
+      KOPIUR_COPYMETHOD: Direct
+      KOPIUR_STORAGECLASS: miroir-fast-local
   prune: true
   sourceRef:
     kind: GitRepository
