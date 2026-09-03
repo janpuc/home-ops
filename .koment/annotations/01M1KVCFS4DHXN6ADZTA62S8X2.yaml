@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M1KVCFS4DHXN6ADZTA62S8X2
+  created: "2026-09-03T14:39:52Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/t3-code-operator/app/rbac-kopiarestore.yaml
+  type: why
+  title: User-approved delete grant for the terminal-Restore retry loop
+  body: |-
+    Granted by the user on 2026-09-03 during the local-storage migration, after
+    the fourth round of hand-run `kubectl delete kopiarestore` paste-blocks. On
+    this NFS-backed repository, roughly 40% of first-attempt kopiur restores
+    fail terminally with kopia "content not found" (mechanism never pinned down
+    — settle delays and maintenance-quiet windows were both tried and both
+    disproven), while a recreated Restore CR has succeeded 19 of 19 times. A
+    Failed Restore never retries, and Flux only recreates it after deletion, so
+    delete is the one verb the otherwise read-only t3-code ServiceAccount needs
+    to close the loop autonomously.
+
+    Deliberately a single-verb, single-resource ClusterRole: no create/patch/get
+    beyond what the SA already has cluster-wide. Revert by deleting this file
+    once the underlying restore flakiness is fixed (kopiur or the repo backend)
+    or the agent no longer operates the cluster.
+  anchor:
+    scope: excerpt
+    excerpt: |-
+      kind: ClusterRole
+      metadata:
+        name: t3-code-kopiarestore-delete
+    before: |-
+      ---
+      # yaml-language-server: $schema=https://k8s-schemas.home-operations.com/rbac.authorization.k8s.io/clusterrole_v1.json
+      apiVersion: rbac.authorization.k8s.io/v1
+    after: |-
+      rules:
+        - apiGroups:
+            - kopiur.home-operations.com
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+status:
+  lastSeenLine: 4
+  resolution: ok
+  resolvedAt: "2026-09-03T14:39:52Z"
+  resolvedCommit: 8e8eb5417ab7c5924907d769688a2dcf26e41e4c

@@ -1,0 +1,27 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/rbac.authorization.k8s.io/clusterrole_v1.json
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: t3-code-kopiarestore-delete
+rules:
+  - apiGroups:
+      - kopiur.home-operations.com
+    resources:
+      - restores
+    verbs:
+      - delete
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/rbac.authorization.k8s.io/clusterrolebinding_v1.json
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: t3-code-kopiarestore-delete
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: t3-code-kopiarestore-delete
+subjects:
+  - kind: ServiceAccount
+    name: t3-code
+    namespace: ai
