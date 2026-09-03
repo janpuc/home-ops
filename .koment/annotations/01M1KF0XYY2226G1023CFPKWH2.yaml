@@ -1,0 +1,58 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M1KF0XYY2226G1023CFPKWH2
+  created: "2026-09-03T11:03:50Z"
+spec:
+  target:
+    file: kubernetes/components/kopiur/backup/snapshotpolicy.yaml
+  type: gotcha
+  title: "Local-class sources need Direct: clone staging wedges on node affinity"
+  body: |-
+    Apps whose ${APP} PVC sits on a miroir *-local class (replicas: "1") must
+    set KOPIUR_COPYMETHOD: Direct in their ks postBuild. The default Snapshot
+    method stages a clone PVC from a CSI VolumeSnapshot, and miroir
+    0.11.23-janpuc.4 has a topology bug on that path for local volumes: the
+    WaitForFirstConsumer scheduler picks a node for the mover before
+    provisioning (observed selected-node k8s-0), then miroir creates the clone
+    PV correctly pinned to the SOURCE's node (miroir.home-operations.com/node In
+    [k8s-2], where the only copy of the data lives) instead of rejecting the
+    mismatched node. The mover pod then fails scheduling forever with "didn't
+    match PersistentVolume's node affinity" and the Snapshot CR settles
+    MoverPodWedged after 300s. Reproduced twice on 2026-09-03
+    (spoolman-local-proof, -proof2) during the local-storage migration.
+
+    Direct dodges the broken path: the mover mounts the LIVE source PVC, whose
+    already-bound PV forces correct same-node scheduling. The cost is
+    consistency — kopia reads files while the app can write, so for
+    write-heavy sqlite apps a captured backup can be torn. Calm config volumes
+    are acceptable; think before migrating busy databases to local classes until
+    the miroir bug is fixed (candidates: the upstream 0.12.0 CSI rewrite may
+    have changed this path — retest with a one-shot proof Snapshot before
+    trusting it, and prefer fixing miroir over living with Direct long-term).
+    Replicated-class sources are unaffected: their clones mount on any node.
+  anchor:
+    scope: excerpt
+    excerpt: "  copyMethod: ${KOPIUR_COPYMETHOD:=Snapshot}"
+    before: |2-
+        annotations:
+          kopiur.home-operations.com/allow-identity-change: "true"
+      spec:
+    after: |2-
+        errorHandling:
+          ignoreDirErrors: ${KOPIUR_IGNORE_DIR_ERRORS:=false}
+        repository:
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: ab07e9e79444d54c62de4999b82413c38139fbd8
+    path: kubernetes/components/kopiur/backup/snapshotpolicy.yaml
+    line: 10
+status:
+  lastSeenLine: 10
+  resolution: ok
+  resolvedAt: "2026-09-03T11:03:50Z"
+  resolvedCommit: ab07e9e79444d54c62de4999b82413c38139fbd8

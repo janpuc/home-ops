@@ -17,6 +17,7 @@ spec:
     substitute:
       APP: spoolman
       KOPIUR_CAPACITY: 1Gi
+      KOPIUR_COPYMETHOD: Direct
       KOPIUR_STORAGECLASS: miroir-fast-local
   prune: true
   sourceRef:
