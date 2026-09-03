@@ -8,7 +8,7 @@ spec:
   chartRef:
     kind: OCIRepository
     name: atuin
-  interval: 1h
+  interval: 30m
   values:
     controllers:
       atuin:

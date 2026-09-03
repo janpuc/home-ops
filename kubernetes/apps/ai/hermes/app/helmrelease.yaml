@@ -8,7 +8,7 @@ spec:
   chartRef:
     kind: OCIRepository
     name: hermes
-  interval: 15m
+  interval: 14m
   values:
     defaultPodOptions:
       automountServiceAccountToken: true
