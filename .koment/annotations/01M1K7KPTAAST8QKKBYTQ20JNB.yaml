@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M1K7KPTAAST8QKKBYTQ20JNB
+  created: "2026-09-03T08:54:17Z"
+spec:
+  target:
+    file: kubernetes/apps/kopiur-system/kopiur/repository/clusterrepository.yaml
+  type: why
+  title: 6h epochs so index compaction can keep up with 2h snapshot cadence
+  body: |-
+    The kopia default of 24h means an epoch stays open a full day before the
+    epoch manager may close it, and compaction only consolidates closed epochs.
+    This repository takes 2-hourly snapshots for ~41 apps (~500 index blobs a
+    day), so with the default there is a permanent same-day tail of hundreds of
+    uncompacted blobs, and after the 2026-08-27 maintenance stall the backlog
+    reached 2333 against the 1000-blob IndexBlobHealth threshold. 6h keeps at
+    most a few hours of tail while staying far above the epoch safety margins
+    (cleanupSafetyMargin 4h, refreshFrequency 20m). This is the second remedy
+    the operator's own TooManyIndexBlobs message prescribes, applied 2026-09-03
+    together with the maintenance lease Force-takeover.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        parameters:
+          epoch:
+            minDuration: 6h
+    before: |2-
+            key: KOPIA_PASSWORD
+        maintenance:
+          takeoverPolicy: Force
+    after: |2-
+        moverDefaults:
+          cache:
+            capacity: 10Gi
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 16ba23be691b5c20ef91cb3423fc597db3b59b07
+    path: kubernetes/apps/kopiur-system/kopiur/repository/clusterrepository.yaml
+    line: 24
+status:
+  lastSeenLine: 24
+  resolution: ok
+  resolvedAt: "2026-09-03T08:54:17Z"
+  resolvedCommit: 16ba23be691b5c20ef91cb3423fc597db3b59b07

@@ -21,6 +21,9 @@ spec:
       key: KOPIA_PASSWORD
   maintenance:
     takeoverPolicy: Force
+  parameters:
+    epoch:
+      minDuration: 6h
   moverDefaults:
     cache:
       capacity: 10Gi
