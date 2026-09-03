@@ -6,6 +6,7 @@ metadata:
   name: plex
 spec:
   components:
+    - ../../../../components/zeroscaler
     - ../../../../components/gpu
     - ../../../../components/kopiur/backup
   dependsOn:
@@ -13,7 +14,6 @@ spec:
       namespace: kube-system
     - name: miroir-config
       namespace: miroir-system
-  force: true
   interval: 1h
   path: ./kubernetes/apps/media/plex/app
   postBuild:
