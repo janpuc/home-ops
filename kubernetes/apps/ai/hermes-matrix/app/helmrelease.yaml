@@ -23,7 +23,7 @@ spec:
       hermes-matrix:
         annotations:
           reloader.stakater.com/auto: "true"
-        replicas: 0
+        replicas: 1
         strategy: Recreate
         type: deployment
         initContainers:

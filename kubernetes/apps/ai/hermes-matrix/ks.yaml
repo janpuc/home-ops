@@ -13,7 +13,6 @@ spec:
   dependsOn:
     - name: hermes
       namespace: ai
-  force: true
   interval: 1h
   path: ./kubernetes/apps/ai/hermes-matrix/app
   postBuild:

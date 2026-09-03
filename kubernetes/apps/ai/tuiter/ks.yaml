@@ -10,7 +10,6 @@ spec:
   dependsOn:
     - name: kopiur
       namespace: kopiur-system
-  force: true
   interval: 1h
   path: ./kubernetes/apps/ai/tuiter/app
   postBuild:

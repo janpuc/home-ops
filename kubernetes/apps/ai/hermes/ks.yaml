@@ -14,7 +14,6 @@ spec:
       namespace: ai
     - name: pocket-id-instance
       namespace: security
-  force: true
   interval: 1h
   path: ./kubernetes/apps/ai/hermes/app
   postBuild:

@@ -18,7 +18,6 @@ spec:
       tuiter:
         annotations:
           reloader.stakater.com/auto: "true"
-        replicas: 0
         strategy: Recreate
         type: deployment
         initContainers:
