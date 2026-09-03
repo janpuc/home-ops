@@ -7,7 +7,6 @@ metadata:
 spec:
   components:
     - ../../../../components/dragonfly
-    - ../../../../components/zeroscaler
     - ../../../../components/kopiur/backup
   dependsOn:
     - name: dragonfly-operator

@@ -6,13 +6,13 @@ metadata:
   name: &app renplay
 spec:
   components:
+    - ../../../../components/zeroscaler-http
     - ../../../../components/kopiur/backup
   dependsOn:
     - name: keda
       namespace: observability
     - name: miroir-config
       namespace: miroir-system
-  force: true
   interval: 1h
   path: ./kubernetes/apps/games/renplay/app
   postBuild:

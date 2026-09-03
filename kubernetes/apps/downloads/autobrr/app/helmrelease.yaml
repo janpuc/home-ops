@@ -12,6 +12,7 @@ spec:
   values:
     controllers:
       autobrr:
+        replicas: 0
         annotations:
           reloader.stakater.com/auto: "true"
         containers:

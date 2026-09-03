@@ -6,6 +6,7 @@ metadata:
   name: &app mealie
 spec:
   components:
+    - ../../../../components/zeroscaler-http
     - ../../../../components/kopiur/backup
   dependsOn:
     - name: keda
@@ -14,7 +15,6 @@ spec:
       namespace: security
     - name: miroir-config
       namespace: miroir-system
-  force: true
   interval: 1h
   path: ./kubernetes/apps/selfhosted/mealie/app
   postBuild:
