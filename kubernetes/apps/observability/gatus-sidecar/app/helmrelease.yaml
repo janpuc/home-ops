@@ -8,7 +8,7 @@ spec:
   chartRef:
     kind: OCIRepository
     name: gatus-sidecar
-  interval: 1h
+  interval: 59m
   values:
     deploymentAnnotations:
       reloader.stakater.com/auto: "true"
