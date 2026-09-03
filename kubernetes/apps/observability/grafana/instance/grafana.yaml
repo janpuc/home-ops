@@ -97,5 +97,5 @@ spec:
       resources:
         requests:
           storage: 10Gi
-      storageClassName: miroir-slow
+      storageClassName: miroir-slow-local
   disableDefaultSecurityContext: All

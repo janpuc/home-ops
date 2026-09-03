@@ -44,7 +44,7 @@ spec:
           path: config.yaml
     persistence:
       enabled: true
-      storageClass: miroir-slow
+      storageClass: miroir-slow-local
       accessMode: ReadWriteOnce
       size: 5Gi
     resources:

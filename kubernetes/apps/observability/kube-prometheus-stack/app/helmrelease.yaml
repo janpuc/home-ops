@@ -41,7 +41,7 @@ spec:
         storage:
           volumeClaimTemplate:
             spec:
-              storageClassName: miroir-slow
+              storageClassName: miroir-slow-local
               resources:
                 requests:
                   storage: 1Gi
@@ -88,7 +88,7 @@ spec:
         storageSpec:
           volumeClaimTemplate:
             spec:
-              storageClassName: miroir-slow
+              storageClassName: miroir-slow-local
               resources:
                 requests:
                   storage: 50Gi
