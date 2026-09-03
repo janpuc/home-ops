@@ -6,7 +6,6 @@ metadata:
   name: &app mealie
 spec:
   components:
-    - ../../../../components/zeroscaler-http
     - ../../../../components/kopiur/backup
   dependsOn:
     - name: keda
@@ -15,6 +14,7 @@ spec:
       namespace: security
     - name: miroir-config
       namespace: miroir-system
+  force: true
   interval: 1h
   path: ./kubernetes/apps/selfhosted/mealie/app
   postBuild:
@@ -25,6 +25,8 @@ spec:
       HTTP_HOST: recipes.janpuc.com
       HTTP_COOLDOWN: "3600"
       KOPIUR_CAPACITY: 20Gi
+      KOPIUR_COPYMETHOD: Direct
+      KOPIUR_STORAGECLASS: miroir-fast-local
   prune: true
   sourceRef:
     kind: GitRepository

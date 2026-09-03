@@ -12,6 +12,7 @@ spec:
   values:
     controllers:
       mealie:
+        replicas: 0
         containers:
           app:
             image:
