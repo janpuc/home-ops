@@ -1,0 +1,68 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M1JY4STFN1VCT7TXJJMM4P6F
+  created: "2026-09-03T06:08:51Z"
+spec:
+  target:
+    file: kubernetes/components/zeroscaler/scaledobject.yaml
+  type: gotcha
+  title: "Fails closed: no Prometheus data keeps the app parked at 0"
+  body: |-
+    This trigger cannot distinguish "NAS down" from "no metrics at all". When
+    the query returns an empty result, KEDA does not scale up, so an app already
+    parked at 0 stays at 0 indefinitely — there is no fallback configured.
+
+    Observed 2026-09-01→03: the k8s-2 storage wedge remounted Prometheus's
+    TSDB volume read-only at 17:30:43Z. The process kept running and looked
+    healthy — /targets showed every probe "up" with no lastError, because
+    scrape health does not reflect append failures — but every sample write
+    failed with "write to WAL: read-only file system", so instant queries
+    (including this one) returned empty vectors for 36 hours. All 26 zeroscaled
+    apps, parked legitimately mid-incident, never woke after the NAS returned.
+    User-visible symptom: envoy answered 503 on every zeroscaled vhost
+    (plex.janpuc.com etc.) while gateways, DNS and the NAS were all fine.
+
+    Debugging order that finds this quickly: (1) probe_success{job="nfs_probe"}
+    in Prometheus — if empty, (2) curl the blackbox exporter's /probe URL
+    directly — if that succeeds, the fault is Prometheus ingestion, not the
+    NAS; confirm with count(up) being empty and /api/v1/status/tsdb
+    headStats.maxTime frozen in the past. A target listed "up" in /targets is
+    NOT evidence that data is flowing. Remedy that worked: delete the prometheus
+    pod so CSI restages the volume read-write (it rescheduled off the wedged
+    node and replayed the WAL in ~30s).
+
+    If fail-open is ever preferred over fail-closed, the knobs are the scaler's
+    ignoreNullValues and the ScaledObject's spec.fallback — but fail-closed is
+    arguably correct here: these apps corrupt state when they run against a
+    half-dead NFS mount, and the price of fail-closed is availability, paid in
+    full during this incident.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+          - name: nas_health
+            type: prometheus
+            metadata:
+              serverAddress: http://prometheus-operated.observability.svc.cluster.local:9090
+              query: min(probe_success{job="${ZEROSCALER_JOB_NAME:=nfs_probe}"})
+    before: |2-
+        scaleTargetRef:
+          name: ${APP}
+        triggers:
+    after: |2-
+              threshold: "1"
+              activationThreshold: "0"
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: c1c1100026a311210649025bb6b9c1314a70ecd1
+    path: kubernetes/components/zeroscaler/scaledobject.yaml
+    line: 16
+status:
+  lastSeenLine: 16
+  resolution: ok
+  resolvedAt: "2026-09-03T06:08:51Z"
+  resolvedCommit: c1c1100026a311210649025bb6b9c1314a70ecd1

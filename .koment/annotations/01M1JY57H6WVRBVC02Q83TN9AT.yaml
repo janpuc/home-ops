@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M1JY57H6WVRBVC02Q83TN9AT
+  created: "2026-09-03T06:09:05Z"
+spec:
+  target:
+    file: kubernetes/components/zeroscaler-http/scaledobject.yaml
+  type: gotcha
+  title: Same fail-closed trap as the zeroscaler component
+  body: |-
+    This is the same nas_health trigger as in
+    kubernetes/components/zeroscaler/scaledobject.yaml, and it fails closed the
+    same way: an empty Prometheus result (ingestion dead, metric missing) keeps
+    the app parked at 0 with no fallback. The full failure story from the
+    2026-09-01→03 outage — a read-only TSDB volume making Prometheus look
+    healthy while every query returned empty — and the debugging order that
+    finds it are recorded on that file's trigger block; read it before
+    concluding the NAS or this component is broken.
+  anchor:
+    scope: excerpt
+    excerpt: '        query: min(probe_success{job="${ZEROSCALER_JOB_NAME:=nfs_probe}"})'
+    before: |2-
+            type: prometheus
+            metadata:
+              serverAddress: http://prometheus-operated.observability.svc.cluster.local:9090
+    after: |2-
+              threshold: "1"
+              activationThreshold: "0"
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: c1c1100026a311210649025bb6b9c1314a70ecd1
+    path: kubernetes/components/zeroscaler-http/scaledobject.yaml
+    line: 28
+status:
+  lastSeenLine: 28
+  resolution: ok
+  resolvedAt: "2026-09-03T06:09:05Z"
+  resolvedCommit: c1c1100026a311210649025bb6b9c1314a70ecd1
