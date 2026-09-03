@@ -40,7 +40,7 @@ spec:
       - name: t3-code-canary
         spec:
           image: ghcr.io/janpuc/t3-code-runtime@sha256:bdfa9d6ad467b7031c7307a617778a83850fb9a1b7a85996a230078ff1987cd1
-          serviceAccountName: t3-code
+          serviceAccountName: t3-code-agents
           resources:
             requests:
               cpu: 500m
@@ -123,6 +123,61 @@ spec:
             policy: WaitForIdle
             timeout: 10m
             timeoutAction: Force
+      - name: t3-code-primary
+        spec:
+          image: ghcr.io/janpuc/t3-code-runtime@sha256:bdfa9d6ad467b7031c7307a617778a83850fb9a1b7a85996a230078ff1987cd1
+          serviceAccountName: t3-code-agents
+          securityContext:
+            supplementalGroups:
+              - 3100
+          resources:
+            requests:
+              cpu: 500m
+              memory: 2Gi
+            limits:
+              memory: 8Gi
+          env:
+            - name: T3_AUTH_PROXY
+              value: "0"
+            - name: T3_GIT_REPOSITORY_SCAN_DEPTH
+              value: "4"
+            - name: TERM
+              value: xterm-256color
+            - name: NPM_CONFIG_CACHE
+              value: /data/npm-cache
+            - name: NPM_CONFIG_PREFIX
+              value: /data/npm-global
+          machineInfo:
+            prettyHostname: Cluster
+          storage:
+            data:
+              type: ExistingClaim
+              existingClaim:
+                name: t3-code
+            workspace:
+              type: NFS
+              nfs:
+                server: bigmouth.internal
+                exportPath: /mnt/Vault/Workspace
+          git:
+            userName: janpuc
+            userEmail: janpuc@proton.me
+            githubUser: janpuc
+            credentialSecretRef:
+              name: t3-code-config
+              key: GH_TOKEN
+            signingKeySecretRef:
+              name: t3-code-git-signing
+              privateKeyKey: id_signing
+              publicKeyKey: id_signing.pub
+          tools:
+            - name: koment
+              backend: github:koment-dev/koment
+              version: "3.2.0"
+          drain:
+            policy: WaitForIdle
+            timeout: 30m
+            timeoutAction: Block
     harnesses:
       - name: codex
         spec:
@@ -151,9 +206,10 @@ spec:
               - gpt-5.6-sol
           workstationRefs:
             - name: t3-code-canary
+            - name: t3-code-primary
       - name: claude
         spec:
-          instanceId: claude
+          instanceId: claudeAgent
           driver: claudeAgent
           displayName: Claude
           enabled: true
@@ -186,6 +242,7 @@ spec:
               theme: dark
           workstationRefs:
             - name: t3-code-canary
+            - name: t3-code-primary
       - name: cursor
         spec:
           instanceId: cursor
@@ -319,6 +376,7 @@ spec:
                 - "@koment/opencode-koment"
           workstationRefs:
             - name: t3-code-canary
+            - name: t3-code-primary
     extensions:
       - name: agent-kit
         spec:
@@ -585,6 +643,28 @@ spec:
                 - group: ""
                   kind: Service
                   name: t3-code-canary
+                  port: 3773
+              timeouts:
+                request: 0s
+                backendRequest: 0s
+      - apiVersion: gateway.networking.k8s.io/v1
+        kind: HTTPRoute
+        metadata:
+          name: t3-code-primary
+          namespace: "{{ .Release.Namespace }}"
+        spec:
+          hostnames:
+            - t3.janpuc.com
+          parentRefs:
+            - group: gateway.networking.k8s.io
+              kind: Gateway
+              name: envoy-internal
+              namespace: network
+          rules:
+            - backendRefs:
+                - group: ""
+                  kind: Service
+                  name: t3-code-primary
                   port: 3773
               timeouts:
                 request: 0s
