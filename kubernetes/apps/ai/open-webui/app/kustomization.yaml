@@ -7,4 +7,3 @@ resources:
   - ./helmrelease.yaml
   - ./ocirepository.yaml
   - ./pocketidoidcclient.yaml
-  - ./snapshot-migrate.yaml

@@ -7,4 +7,3 @@ resources:
   - ./grafanadashboard.yaml
   - ./ocirepository.yaml
   - ./helmrelease.yaml
-  - ./snapshot-migrate.yaml

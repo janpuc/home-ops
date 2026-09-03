@@ -6,7 +6,6 @@ resources:
   - ./externalsecret.yaml
   - ./helmrelease.yaml
   - ./ocirepository.yaml
-  - ./snapshot-migrate.yaml
 configMapGenerator:
   - name: sonarr-configmap
     files:

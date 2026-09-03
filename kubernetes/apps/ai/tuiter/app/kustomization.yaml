@@ -11,4 +11,3 @@ resources:
   - ./servicemonitor.yaml
   - ./grafanadashboard.yaml
   - ./dashboard/
-  - ./snapshot-migrate.yaml

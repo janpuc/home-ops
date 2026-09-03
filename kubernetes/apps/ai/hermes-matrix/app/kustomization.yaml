@@ -7,7 +7,6 @@ resources:
   - ./externalsecret.yaml
   - ./helmrelease.yaml
   - ./ocirepository.yaml
-  - ./snapshot-migrate.yaml
 patches:
   - target:
       kind: SnapshotPolicy
