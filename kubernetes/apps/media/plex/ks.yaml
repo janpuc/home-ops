@@ -15,19 +15,6 @@ spec:
     - name: miroir-config
       namespace: miroir-system
   interval: 1h
-  patches:
-    - target:
-        kind: Restore
-        name: plex
-      patch: |
-        - op: replace
-          path: /spec/source
-          value:
-            snapshotRef:
-              name: plex-20260903101700
-        - op: replace
-          path: /spec/policy/onMissingSnapshot
-          value: Fail
   path: ./kubernetes/apps/media/plex/app
   postBuild:
     substitute:

@@ -5,3 +5,16 @@ kind: Kustomization
 resources:
   - ./helmrelease.yaml
   - ./ocirepository.yaml
+patches:
+  - target:
+      kind: Restore
+      name: plex
+    patch: |
+      - op: replace
+        path: /spec/source
+        value:
+          snapshotRef:
+            name: plex-20260831221700
+      - op: replace
+        path: /spec/policy/onMissingSnapshot
+        value: Fail
