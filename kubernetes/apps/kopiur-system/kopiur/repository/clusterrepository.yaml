@@ -20,6 +20,11 @@ spec:
       namespace: kopiur-system
       key: KOPIA_PASSWORD
   maintenance:
+    schedule:
+      quick:
+        cron: "*/10 * * * *"
+      full:
+        cron: "*/30 * * * *"
     takeoverPolicy: Force
   parameters:
     epoch:

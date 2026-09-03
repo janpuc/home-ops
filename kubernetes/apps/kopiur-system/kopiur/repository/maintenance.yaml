@@ -15,4 +15,4 @@ spec:
     quick:
       cron: "*/10 * * * *"
     full:
-      cron: H 5 * * *
+      cron: "*/30 * * * *"
