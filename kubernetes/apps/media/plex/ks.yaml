@@ -7,7 +7,6 @@ metadata:
 spec:
   components:
     - ../../../../components/gpu
-    - ../../../../components/zeroscaler
     - ../../../../components/kopiur/backup
   dependsOn:
     - name: k8s-gpu-dra-driver

@@ -26,19 +26,15 @@ spec:
   anchor:
     scope: excerpt
     excerpt: |2-
-        components:
-          - ../../../../components/gpu
-          - ../../../../components/zeroscaler
-          - ../../../../components/kopiur/backup
         dependsOn:
           - name: k8s-gpu-dra-driver
             namespace: kube-system
           - name: miroir-config
             namespace: miroir-system
-    before: |-
-      metadata:
-        name: plex
-      spec:
+    before: |2-
+        components:
+          - ../../../../components/gpu
+          - ../../../../components/kopiur/backup
     after: |2-
         interval: 1h
         path: ./kubernetes/apps/media/plex/app
@@ -52,7 +48,7 @@ spec:
     path: kubernetes/apps/media/plex/ks.yaml
     line: 8
 status:
-  lastSeenLine: 8
+  lastSeenLine: 11
   resolution: ok
-  resolvedAt: "2026-08-07T10:59:33Z"
-  resolvedCommit: 243f83b580e458bc54e03196c64a5cff3124d713
+  resolvedAt: "2026-09-03T20:31:50Z"
+  resolvedCommit: 44264afa2773f2e6d962d6a9ad9f8cca2e9d65cc
