@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M1KYBXHRZC3DKV7BJJQXQS0Q
+  created: "2026-09-03T15:31:59Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/hermes/app/helmrelease.yaml
+  type: gotcha
+  title: "20m timeout: rebuilt PVC makes first startup outlast helm's wait"
+  body: |-
+    After the PVC was rebuilt from a kopia snapshot (2026-09-03 local-storage
+    migration), the first pod start ran long: the install-tools init container
+    re-derives whatever the snapshot did not carry byte-perfectly (go build
+    cache, npm trees), and the default helm wait expired while the Deployment
+    was still InProgress. helm-controller then ROLLED BACK, which deletes the
+    pod mid-initialization — and because each attempt makes some PVC-persisted
+    progress before being killed, the release loops rollback→retry (observed
+    v21→v27 in an hour) instead of ever finishing. A longer timeout lets one
+    attempt complete; after that the PVC caches make startup fast again. Keep
+    this ≥ the worst-case cold init (~10 min observed) or any future PVC
+    rebuild re-enters the loop.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        interval: 15m
+        timeout: 20m
+    before: |2-
+        chartRef:
+          kind: OCIRepository
+          name: hermes
+    after: |2-
+        values:
+          defaultPodOptions:
+            automountServiceAccountToken: true
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: bda61740b40521a9f4906f7bf0d72d9ba897e1c7
+    path: kubernetes/apps/ai/hermes/app/helmrelease.yaml
+    line: 11
+status:
+  lastSeenLine: 11
+  resolution: ok
+  resolvedAt: "2026-09-03T15:31:59Z"
+  resolvedCommit: bda61740b40521a9f4906f7bf0d72d9ba897e1c7
