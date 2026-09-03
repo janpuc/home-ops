@@ -10,12 +10,15 @@ spec:
   dependsOn:
     - name: miroir-config
       namespace: miroir-system
+  force: true
   interval: 1h
   path: ./kubernetes/apps/media/prowlarr/app
   postBuild:
     substitute:
       APP: prowlarr
       KOPIUR_CAPACITY: 1Gi
+      KOPIUR_COPYMETHOD: Direct
+      KOPIUR_STORAGECLASS: miroir-fast-local
   prune: true
   sourceRef:
     kind: GitRepository

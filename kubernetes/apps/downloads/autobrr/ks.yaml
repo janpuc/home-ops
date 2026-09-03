@@ -12,12 +12,15 @@ spec:
       namespace: security
     - name: miroir-config
       namespace: miroir-system
+  force: true
   interval: 1h
   path: ./kubernetes/apps/downloads/autobrr/app
   postBuild:
     substitute:
       APP: autobrr
       KOPIUR_CAPACITY: 5Gi
+      KOPIUR_COPYMETHOD: Direct
+      KOPIUR_STORAGECLASS: miroir-fast-local
   prune: true
   sourceRef:
     kind: GitRepository
