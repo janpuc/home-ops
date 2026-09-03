@@ -10,12 +10,15 @@ spec:
   dependsOn:
     - name: miroir-config
       namespace: miroir-system
+  force: true
   interval: 1h
   path: ./kubernetes/apps/media/stash/app
   postBuild:
     substitute:
       APP: stash
       KOPIUR_CAPACITY: 5Gi
+      KOPIUR_COPYMETHOD: Direct
+      KOPIUR_STORAGECLASS: miroir-fast-local
   prune: true
   sourceRef:
     kind: GitRepository
@@ -32,6 +35,7 @@ spec:
   dependsOn:
     - name: stash
       namespace: media
+  force: true
   interval: 1h
   path: ./kubernetes/apps/media/stash/tools
   prune: true
