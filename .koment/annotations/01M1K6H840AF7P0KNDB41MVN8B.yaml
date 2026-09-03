@@ -1,0 +1,59 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M1K6H840AF7P0KNDB41MVN8B
+  created: "2026-09-03T08:35:28Z"
+spec:
+  target:
+    file: kubernetes/apps/kopiur-system/kopiur/repository/maintenance.yaml
+  type: why
+  title: Explicit Maintenance added during the Aug-27 index backlog incident
+  body: |-
+    Added 2026-09-03 while IndexBlobHealth had been False since 2026-08-27
+    (2300+ index blobs vs threshold 1000) and a kopiur Restore had failed with
+    kopia "content not found" on a freshly written snapshot. Compaction had
+    stalled behind the mass-deletion breaker (322 held retention deletions,
+    acknowledged by the user the same day).
+
+    Honesty note: this CR was created on the theory that the operator's managed
+    Maintenance projection never materialized. That theory was NOT verified —
+    the t3-code ServiceAccount cannot list kopiamaint (every "empty" listing was
+    a swallowed RBAC Forbidden), so an operator-projected Maintenance may exist
+    alongside this one. If both exist, they may contend for the kopia
+    maintenance lease; once repository health is confirmed (IndexBlobHealth
+    True, restores working), check from an admin kubeconfig whether a projected
+    CR exists and delete this file if it duplicates one.
+
+    The quick cron is deliberately hot (*/10) to burn down the 2026-08/09 index
+    backlog; relax it to the default cadence (H */6 * * *) once IndexBlobHealth
+    clears. takeoverPolicy Force claims the kopia-side lease from whatever
+    identity held it; upstream onedr0p/home-ops defines no explicit Maintenance
+    at all.
+  anchor:
+    scope: excerpt
+    excerpt: |-
+      apiVersion: kopiur.home-operations.com/v1alpha1
+      kind: Maintenance
+      metadata:
+        name: nas
+    before: |-
+      ---
+      # yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kopiur.home-operations.com/maintenance_v1alpha1.json
+    after: |-
+      spec:
+        ownership:
+          owner: kopiur/nas
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 9f027ce789af1a00a9260c1ad54780a142e2a680
+    path: kubernetes/apps/kopiur-system/kopiur/repository/maintenance.yaml
+    line: 3
+status:
+  lastSeenLine: 3
+  resolution: ok
+  resolvedAt: "2026-09-03T08:35:28Z"
+  resolvedCommit: 9f027ce789af1a00a9260c1ad54780a142e2a680
