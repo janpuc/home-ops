@@ -6,6 +6,7 @@ metadata:
   name: browserr
 spec:
   components:
+    - ../../../../components/zeroscaler
     - ../../../../components/dragonfly
     - ../../../../components/kopiur/backup
   dependsOn:
@@ -18,7 +19,6 @@ spec:
       kind: Dragonfly
       failed: status.phase != 'ready'
       current: status.phase == 'ready'
-  force: true
   interval: 1h
   path: ./kubernetes/apps/media/browserr/app
   postBuild:
