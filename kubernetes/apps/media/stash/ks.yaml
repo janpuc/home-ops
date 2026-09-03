@@ -6,7 +6,6 @@ metadata:
   name: stash
 spec:
   components:
-    - ../../../../components/zeroscaler
     - ../../../../components/kopiur/backup
   dependsOn:
     - name: miroir-config

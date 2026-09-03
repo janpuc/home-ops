@@ -11,6 +11,7 @@ spec:
   values:
     controllers:
       qbittorrent:
+        replicas: 0
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
