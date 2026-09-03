@@ -5,11 +5,13 @@ kind: Restore
 metadata:
   name: ${APP}
 spec:
+  failurePolicy:
+    backoffLimit: ${KOPIUR_RESTORE_BACKOFF:=8}
   policy:
     onMissingSnapshot: Continue
   source:
     fromPolicy:
       name: ${APP}
-      offset: 0
+      offset: ${KOPIUR_RESTORE_OFFSET:=0}
   target:
     populator: {}

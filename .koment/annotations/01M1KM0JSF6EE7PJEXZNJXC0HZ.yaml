@@ -1,0 +1,58 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M1KM0JSF6EE7PJEXZNJXC0HZ
+  created: "2026-09-03T12:31:01Z"
+spec:
+  target:
+    file: kubernetes/components/kopiur/backup/restore.yaml
+  type: why
+  title: Backoff spans the repo's read-after-write lag; offset is the plex knob
+  body: |-
+    Without a failurePolicy the mover Job exhausts its few default retries in
+    minutes and the Restore goes terminal — and during the 2026-09-03
+    local-storage migration, restores of freshly written snapshots failed
+    intermittently with kopia "content not found" on this NFS-backed repository
+    (17 terminal failures across three batches), while every single recreation
+    that re-ran minutes later succeeded (12 of 12 at the time this was written). The mechanism was
+    never pinned down — index-compaction races and NFS/epoch-visibility lag
+    both fit some batches and neither fits all — but the empirical shape is
+    clear: reads of fresh writes can fail transiently, and a retry a few minutes
+    later lands. backoffLimit 8 gives the Job exponential backoff spanning
+    roughly 25 minutes, which converts the whole failure class from "terminal,
+    recreate the CR by hand" into a self-healing wait. Failed CRs from before
+    this knob still need manual deletion (a Failed Restore never retries).
+
+    KOPIUR_RESTORE_OFFSET exists for restoring an older snapshot than latest (0
+    = newest): set it in an app's ks postBuild when the newest snapshots are
+    known-bad — e.g. plex's Preferences.xml was found empty on 2026-09-03 and
+    its recovery needed a pre-damage restore point — and REMOVE the override
+    right after the restore completes, or every future PVC rebuild silently
+    resurrects old data.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        failurePolicy:
+          backoffLimit: ${KOPIUR_RESTORE_BACKOFF:=8}
+    before: |-
+      metadata:
+        name: ${APP}
+      spec:
+    after: |2-
+        policy:
+          onMissingSnapshot: Continue
+        source:
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: e8414f2fbd0da9efa9a64f5b58f85cd7761430a6
+    path: kubernetes/components/kopiur/backup/restore.yaml
+    line: 8
+status:
+  lastSeenLine: 8
+  resolution: ok
+  resolvedAt: "2026-09-03T12:31:02Z"
+  resolvedCommit: e8414f2fbd0da9efa9a64f5b58f85cd7761430a6
