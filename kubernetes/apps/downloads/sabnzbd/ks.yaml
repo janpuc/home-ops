@@ -10,11 +10,14 @@ spec:
   dependsOn:
     - name: miroir-config
       namespace: miroir-system
+  force: true
   interval: 1h
   path: ./kubernetes/apps/downloads/sabnzbd/app
   postBuild:
     substitute:
       APP: sabnzbd
+      KOPIUR_COPYMETHOD: Direct
+      KOPIUR_STORAGECLASS: miroir-fast-local
   prune: true
   sourceRef:
     kind: GitRepository
