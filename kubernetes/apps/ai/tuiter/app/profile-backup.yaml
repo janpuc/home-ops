@@ -60,3 +60,37 @@ spec:
   deletionPolicy: Retain
   policyRef:
     name: tuiter-poster-profile
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kopiur.home-operations.com/restore_v1alpha1.json
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: Restore
+metadata:
+  name: tuiter-reader-profile
+spec:
+  failurePolicy:
+    backoffLimit: 8
+  policy:
+    onMissingSnapshot: Continue
+  source:
+    fromPolicy:
+      name: tuiter-reader-profile
+      offset: 0
+  target:
+    populator: {}
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kopiur.home-operations.com/restore_v1alpha1.json
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: Restore
+metadata:
+  name: tuiter-poster-profile
+spec:
+  failurePolicy:
+    backoffLimit: 8
+  policy:
+    onMissingSnapshot: Continue
+  source:
+    fromPolicy:
+      name: tuiter-poster-profile
+      offset: 0
+  target:
+    populator: {}
