@@ -67,7 +67,7 @@ spec:
                 spec:
                   accessModes:
                     - ReadWriteOnce
-                  storageClassName: miroir-fast
+                  storageClassName: miroir-fast-local
                   resources:
                     requests:
                       storage: 30Gi
@@ -78,7 +78,7 @@ spec:
                 spec:
                   accessModes:
                     - ReadWriteOnce
-                  storageClassName: miroir-fast
+                  storageClassName: miroir-fast-local
                   resources:
                     requests:
                       storage: 50Gi

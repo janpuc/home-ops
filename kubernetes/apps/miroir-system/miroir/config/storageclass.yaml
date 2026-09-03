@@ -4,6 +4,8 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: miroir-fast-local
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
 provisioner: miroir.home-operations.com
 volumeBindingMode: WaitForFirstConsumer
 allowVolumeExpansion: true
@@ -17,8 +19,6 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: miroir-fast
-  annotations:
-    storageclass.kubernetes.io/is-default-class: "true"
 provisioner: miroir.home-operations.com
 volumeBindingMode: WaitForFirstConsumer
 allowVolumeExpansion: true

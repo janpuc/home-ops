@@ -1,0 +1,62 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kopiur.home-operations.com/snapshotpolicy_v1alpha1.json
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: SnapshotPolicy
+metadata:
+  name: tuiter-reader-profile
+  annotations:
+    kopiur.home-operations.com/allow-identity-change: "true"
+spec:
+  errorHandling:
+    ignoreFileErrors: true
+    ignoreDirErrors: true
+  repository:
+    kind: ClusterRepository
+    name: nas
+  retention:
+    keepDaily: 7
+  sources:
+    - pvc:
+        name: tuiter-reader-profile
+  copyMethod: Direct
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kopiur.home-operations.com/snapshotpolicy_v1alpha1.json
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: SnapshotPolicy
+metadata:
+  name: tuiter-poster-profile
+  annotations:
+    kopiur.home-operations.com/allow-identity-change: "true"
+spec:
+  errorHandling:
+    ignoreFileErrors: true
+    ignoreDirErrors: true
+  repository:
+    kind: ClusterRepository
+    name: nas
+  retention:
+    keepDaily: 7
+  sources:
+    - pvc:
+        name: tuiter-poster-profile
+  copyMethod: Direct
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kopiur.home-operations.com/snapshot_v1alpha1.json
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: Snapshot
+metadata:
+  name: tuiter-reader-profile-migrate
+spec:
+  deletionPolicy: Retain
+  policyRef:
+    name: tuiter-reader-profile
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kopiur.home-operations.com/snapshot_v1alpha1.json
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: Snapshot
+metadata:
+  name: tuiter-poster-profile-migrate
+spec:
+  deletionPolicy: Retain
+  policyRef:
+    name: tuiter-poster-profile

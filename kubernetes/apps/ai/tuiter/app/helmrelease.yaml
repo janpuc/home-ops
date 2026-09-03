@@ -108,7 +108,7 @@ spec:
       chrome-reader:
         annotations:
           reloader.stakater.com/auto: "true"
-        replicas: 1
+        replicas: 0
         strategy: Recreate
         type: deployment
         containers:
@@ -160,7 +160,7 @@ spec:
       chrome-poster:
         annotations:
           reloader.stakater.com/auto: "true"
-        replicas: 1
+        replicas: 0
         strategy: Recreate
         type: deployment
         containers:

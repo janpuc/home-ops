@@ -1,0 +1,48 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M1MCT5JAD69S0H365GJJH16T
+  created: "2026-09-03T19:44:26Z"
+spec:
+  target:
+    file: kubernetes/apps/miroir-system/miroir/config/storageclass.yaml
+  type: why
+  title: Default moved to the local class during the DRBD exodus
+  body: |-
+    Moved from miroir-fast on 2026-09-03 as part of the user-mandated migration
+    of every volume off DRBD-replicated classes ("until drbd fix let's move
+    all") after the 2026-09-01 wedge. Any PVC that names no class — operator
+    claim templates, ad-hoc claims, future apps — now lands on single-replica
+    local LVM instead of a 2-replica DRBD device. Move it back to miroir-fast
+    only together with the decision to trust DRBD again (upstream miroir 0.12.0
+    retest or a LINBIT/drbd#137 fix), and remember local volumes pin their pod
+    to one node — the memory-headroom constraints that shaped the migration
+    apply to anything new that lands here.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        name: miroir-fast-local
+        annotations:
+          storageclass.kubernetes.io/is-default-class: "true"
+    before: |-
+      apiVersion: storage.k8s.io/v1
+      kind: StorageClass
+      metadata:
+    after: |-
+      provisioner: miroir.home-operations.com
+      volumeBindingMode: WaitForFirstConsumer
+      allowVolumeExpansion: true
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 8537850d93a0332eafc14b022d4786380410d7ff
+    path: kubernetes/apps/miroir-system/miroir/config/storageclass.yaml
+    line: 6
+status:
+  lastSeenLine: 6
+  resolution: ok
+  resolvedAt: "2026-09-03T19:44:26Z"
+  resolvedCommit: 8537850d93a0332eafc14b022d4786380410d7ff
