@@ -16,6 +16,7 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
     controllers:
       tuiter:
+        replicas: 0
         annotations:
           reloader.stakater.com/auto: "true"
         replicas: 1
