@@ -1,0 +1,60 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M1K1HN4QDF4Y1J7Z3AT4FACW
+  created: "2026-09-03T07:08:18Z"
+spec:
+  target:
+    file: kubernetes/apps/kopiur-system/kopiur/repository/clusterrepository.yaml
+  type: why
+  title: Force reclaims the maintenance lease a stale owner never released
+  body: |-
+    Added 2026-09-03 while the repository carried 2235 uncompacted content-index
+    blobs (threshold 1000) and the IndexBlobHealth condition had been False
+    since 2026-08-27. With the default takeoverPolicy Never and the kopia-side
+    maintenance lease held by a stale owner identity, the operator never
+    projected its managed Maintenance CR at all — `kubectl get kopiamaint -A`
+    was empty despite maintenance.enabled defaulting to true — so index
+    compaction and blob reclamation had not run for a week.
+
+    The user-visible failure that surfaced it: a kopiur Restore (the volume
+    populator behind every `${APP}` PVC) failed terminally with kopia "content
+    not found: object not found" on a snapshot written minutes earlier and
+    reported Succeeded. With compaction stalled, freshly written contents can be
+    invisible to fresh reader connections, which silently breaks the
+    disaster-recovery path for every app while snapshots keep "succeeding".
+    Found during the spoolman local-storage migration pilot — the restore that
+    failed was a rehearsal, not real data loss.
+
+    If maintenance runs but IndexBlobHealth stays False, the next knob per the
+    operator's own health message is spec.parameters.epoch.minDuration (default
+    24h, e.g. 6h) — the epoch gate limits how fast blobs compact even with
+    maintenance healthy. Revisit whether Force should return to the default once
+    a run has succeeded and the lease is owned by the operator identity.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        maintenance:
+          takeoverPolicy: Force
+    before: |2-
+            name: kopiur-nas-secret
+            namespace: kopiur-system
+            key: KOPIA_PASSWORD
+    after: |2-
+        moverDefaults:
+          cache:
+            capacity: 10Gi
+  author:
+    name: claude-code
+    kind: agent
+    source: session
+  git:
+    commit: 35d15f074e59751b9bc29cd0b18e96aac32121cb
+    path: kubernetes/apps/kopiur-system/kopiur/repository/clusterrepository.yaml
+    line: 22
+status:
+  lastSeenLine: 22
+  resolution: ok
+  resolvedAt: "2026-09-03T07:08:18Z"
+  resolvedCommit: 35d15f074e59751b9bc29cd0b18e96aac32121cb
