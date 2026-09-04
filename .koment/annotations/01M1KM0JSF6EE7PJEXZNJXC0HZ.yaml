@@ -11,25 +11,31 @@ spec:
   title: Backoff spans the repo's read-after-write lag; offset is the plex knob
   body: |-
     Without a failurePolicy the mover Job exhausts its few default retries in
-    minutes and the Restore goes terminal — and during the 2026-09-03
-    local-storage migration, restores of freshly written snapshots failed
-    intermittently with kopia "content not found" on this NFS-backed repository
-    (17 terminal failures across three batches), while every single recreation
-    that re-ran minutes later succeeded (12 of 12 at the time this was written). The mechanism was
-    never pinned down — index-compaction races and NFS/epoch-visibility lag
-    both fit some batches and neither fits all — but the empirical shape is
-    clear: reads of fresh writes can fail transiently, and a retry a few minutes
-    later lands. backoffLimit 8 gives the Job exponential backoff spanning
-    roughly 25 minutes, which converts the whole failure class from "terminal,
-    recreate the CR by hand" into a self-healing wait. Failed CRs from before
-    this knob still need manual deletion (a Failed Restore never retries).
+    minutes and the Restore goes terminal. backoffLimit 8 gives the Job
+    exponential backoff spanning roughly 25 minutes, so a genuinely transient
+    read failure on this NFS-backed repository becomes a self-healing wait
+    instead of "terminal, recreate the CR by hand". A Failed Restore never
+    retries, so CRs that failed before this knob existed still need manual
+    deletion.
+
+    Correction, 2026-09-04. This knob was added during the 2026-09-03
+    local-storage migration on the theory that the kopia "content not found"
+    failures seen on first-attempt restores (17 across three batches, every
+    recreation succeeding) were transient reads of fresh writes. The failures
+    examined afterwards (qbittorrent, stash) were nothing of the kind: each
+    Restore had pinned its snapshot at admission weeks earlier and retention had
+    since pruned it, so no amount of retrying could find the content, while a
+    recreated CR re-resolved to a live snapshot and succeeded at once. See the
+    gotcha on `source:` below. Keep the backoff for real transients, but do not
+    expect it to rescue a stale Restore.
 
     KOPIUR_RESTORE_OFFSET exists for restoring an older snapshot than latest (0
     = newest): set it in an app's ks postBuild when the newest snapshots are
-    known-bad — e.g. plex's Preferences.xml was found empty on 2026-09-03 and
-    its recovery needed a pre-damage restore point — and REMOVE the override
-    right after the restore completes, or every future PVC rebuild silently
-    resurrects old data.
+    known-bad, as plex's recovery needed on 2026-09-03 when Preferences.xml was
+    found empty, and REMOVE the override right after the restore completes, or
+    every future PVC rebuild silently resurrects old data. Because the source is
+    pinned at admission, changing the offset on an existing Restore does
+    nothing; delete the CR so Flux recreates it with the new value.
   anchor:
     scope: excerpt
     excerpt: |2-

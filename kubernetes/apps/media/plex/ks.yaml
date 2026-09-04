@@ -21,7 +21,6 @@ spec:
       APP: plex
       KOPIUR_CAPACITY: 50Gi
       KOPIUR_COPYMETHOD: Direct
-      KOPIUR_RESTORE_OFFSET: "5"
       KOPIUR_STORAGECLASS: miroir-fast-local
   prune: true
   sourceRef:

@@ -1,0 +1,71 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M1NFBJ05BFN5T1AZK4W7RMPR
+  created: "2026-09-04T05:48:07Z"
+spec:
+  target:
+    file: kubernetes/components/kopiur/backup/restore.yaml
+  type: gotcha
+  title: A Restore pins its source at admission; recreate it before a PVC rebuild
+  body: |-
+    A Restore resolves its source once, at admission, and never again.
+    `status.resolved` pins the kopia snapshot ID (or the NoSnapshot verdict)
+    with a `pinnedAt` timestamp, and every PVC that later claims the same
+    Restore through `dataSourceRef` receives exactly that pinned result, however
+    old it is.
+
+    Two shapes of this bit during the 2026-09-03/04 local-storage migration:
+
+    - qbittorrent and stash. Their Restores dated from the first deploy on
+    2026-07-28 and had pinned that day's snapshot. When the PVCs were deleted
+    and recreated on miroir-fast-local, the populator tried to restore the
+    pinned ID, which retention had pruned weeks earlier, and failed terminally
+    with kopia `content <id> not found`. The Failed CR then held both PVCs in
+    Pending for ten hours. - t3-code. Its Restore had pinned `NoSnapshot` on
+    2026-08-25, the first deploy, when there was nothing to restore. The rebuilt
+    PVC claimed it on 2026-09-04 and got an empty volume although a fresh
+    `t3-code-migrate-local` snapshot existed. That is how the t3-code data was
+    wiped.
+
+    So before deleting any kopiur-backed PVC for a rebuild, delete the app's
+    Restore CR first and let Flux recreate it (`flux reconcile ks <app> -n
+    <namespace>`); the fresh CR resolves against the current snapshot list.
+    Doing it the other way round leaves a Pending PVC claiming a Failed or
+    stale-Completed Restore, and the only remedy is the same
+    delete-and-recreate.
+
+    This also reframes the "content not found" first-attempt failures seen
+    across the migration: the ones examined on 2026-09-04 were all
+    pinned-and-pruned snapshots, not repository flakiness, which is why every
+    recreated Restore succeeded. A Completed Restore left in place after its PVC
+    is bound is harmless until the next rebuild.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        source:
+          fromPolicy:
+            name: ${APP}
+            offset: ${KOPIUR_RESTORE_OFFSET:=0}
+    before: |2-
+          backoffLimit: ${KOPIUR_RESTORE_BACKOFF:=8}
+        policy:
+          onMissingSnapshot: Continue
+    after: |2-
+        target:
+          populator: {}
+  author:
+    name: janpuc
+    email: janpuc@proton.me
+    kind: agent
+    source: git-config
+  git:
+    commit: bbed433f955cfb86df751caa45763390b1a18377
+    path: kubernetes/components/kopiur/backup/restore.yaml
+    line: 12
+status:
+  lastSeenLine: 12
+  resolution: ok
+  resolvedAt: "2026-09-04T05:48:07Z"
+  resolvedCommit: bbed433f955cfb86df751caa45763390b1a18377
