@@ -6,20 +6,21 @@ metadata:
   created: "2026-08-25T10:17:07Z"
 spec:
   target:
-    file: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
+    file: kubernetes/apps/ai/t3-code-operator/app/helmrelease.yaml
   type: gotcha
   title: Pairing tokens are one-time and expire in 5 minutes
   body: |-
     Keeping the auth proxy off means every browser and phone must pair, and the
     startup banner is a trap for how that is done.
 
-    The token printed at boot is single-use. The first client consumes it — in
-    practice the T3 Code Desktop app — and every later attempt fails with "The
+    The token printed at boot is single-use. The first client consumes it, in
+    practice the T3 Code Desktop app, and every later attempt fails with "The
     one-time pairing token was already submitted." That reads like a broken
     deployment when it is just a spent token. `t3 auth session list` tells the
     two apart: an existing session proves pairing works.
 
-    Do not restart the pod to get a new banner. Mint one:
+    Do not restart the pod to get a new banner. Mint one from inside the runtime
+    container:
 
     t3 auth pairing create --ttl 2h --label Cluster --base-url
     https://t3.janpuc.com
@@ -32,22 +33,24 @@ spec:
 
     `--label` names the *client session*, not the environment. It shows up as
     the first field of `client:` in `t3 auth session list`. The environment name
-    the client displays comes from `PRETTY_HOSTNAME` in `/etc/machine-info`
-    instead — see the mount for that file.
+    the client displays comes from `machineInfo.prettyHostname` on this
+    Workstation instead.
 
-    Sessions are durable — 30 days, listed and revoked through `t3 auth
-    session`. Pairing is a per-device one-off, not a per-visit login.
+    Sessions are durable: 30 days, listed and revoked through `t3 auth session`.
+    Pairing is a per-device one-off, not a per-visit login.
   anchor:
     scope: excerpt
-    excerpt: '              T3_AUTH_PROXY: "0"'
+    excerpt: |2-
+                  - name: T3_AUTH_PROXY
+                    value: "0"
     before: |2-
-                    PATH: /data/home/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/data/home/.local/share/mise/shims
-                    T3CODE_CONFIG_PATH: /config/t3code.toml
-                    T3CODE_HOME: /data/t3
+                  limits:
+                    memory: 8Gi
+                env:
     after: |2-
-                    T3_GIT_REPOSITORY_SCAN_DEPTH: "4"
-                    T3_WORKDIR: /workspace
-                    TERM: xterm-256color
+                  - name: T3_GIT_REPOSITORY_SCAN_DEPTH
+                    value: "4"
+                  - name: TERM
   author:
     name: claude-code
     kind: agent
@@ -57,7 +60,7 @@ spec:
     path: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
     line: 126
 status:
-  lastSeenLine: 126
+  lastSeenLine: 51
   resolution: ok
-  resolvedAt: "2026-08-25T10:17:07Z"
-  resolvedCommit: b917d04c1e5de95d21a7a16f9d5e3e5368581647
+  resolvedAt: "2026-09-04T05:52:22Z"
+  resolvedCommit: 3cc849619416fd69c16a8360b726d522e3317d64

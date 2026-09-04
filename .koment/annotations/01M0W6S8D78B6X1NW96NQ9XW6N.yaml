@@ -6,49 +6,43 @@ metadata:
   created: "2026-08-25T10:17:18Z"
 spec:
   target:
-    file: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
+    file: kubernetes/apps/ai/t3-code-operator/app/helmrelease.yaml
   type: why
-  title: This file is the environment name clients display
+  title: This value is the environment name clients display
   body: |-
-    Without this mount the T3 client shows the pod name —
-    `t3-code-85dcd5fdbf-zrpqh` — which changes on every rollout, so the same
-    backend appears under a new name after each deploy.
+    Without it the T3 client shows the pod name, which changes on every rollout,
+    so the same backend appears under a new name after each deploy.
 
     T3 resolves its `ExecutionEnvironmentDescriptor.label` on Linux by reading
     `PRETTY_HOSTNAME` from `/etc/machine-info`, then falling back to
     `hostnamectl --pretty`, then the raw hostname. Neither of the first two
-    exists in this image, so it lands on the hostname, which Kubernetes sets to
-    the pod name.
+    exists in the runtime image, so without this it lands on the hostname, which
+    Kubernetes sets to the pod name. The operator renders this value into
+    `/etc/machine-info` for the runtime container.
 
-    Mounting rather than writing is deliberate. `/etc` is root-owned and the
-    container runs as uid 1000, so the init container cannot create this file. A
-    ConfigMap subPath mount installs it without root and keeps the value
-    declarative.
+    `PRETTY_HOSTNAME` is not a DNS label, so it accepts arbitrary casing. A pod
+    `hostname` would also stabilise the name but is restricted to a lowercase
+    DNS label and could not produce `Cluster`.
 
-    `PRETTY_HOSTNAME` is not a DNS label, so it accepts arbitrary casing.
-    `spec.hostname: cluster` would also stabilise the name but is restricted to
-    a lowercase DNS label and could not produce `Cluster`.
-
-    One failure mode to know: if the `machine-info` key is ever removed from the
-    ConfigMap while this mount stays, kubelet does not fail — it silently
-    creates an empty *directory* at `/etc/machine-info`. T3's existence check
-    then passes, the read fails, and it quietly falls back to the pod name.
-    Confirmed by hitting exactly that while testing. If the name reverts after a
-    change here, check that the key still exists before suspecting T3.
+    One failure mode carried over from the app-template deployment this
+    replaced: if `/etc/machine-info` ends up as an empty directory instead of a
+    file (a subPath mount whose source key vanished), T3's existence check
+    passes, the read fails, and it quietly falls back to the pod name. If the
+    name reverts after a change here, inspect the rendered file in the pod
+    before suspecting T3.
   anchor:
     scope: excerpt
     excerpt: |2-
-                    - path: /etc/machine-info
-                      subPath: machine-info
-                      readOnly: true
+                machineInfo:
+                  prettyHostname: Cluster
     before: |2-
-              advancedMounts:
-                t3-code:
-                  app:
+                    value: /data/npm-cache
+                  - name: NPM_CONFIG_PREFIX
+                    value: /data/npm-global
     after: |2-
-            tmp:
-              type: emptyDir
-              globalMounts:
+                storage:
+                  data:
+                    type: ClaimTemplate
   author:
     name: claude-code
     kind: agent
@@ -58,7 +52,7 @@ spec:
     path: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
     line: 221
 status:
-  lastSeenLine: 221
+  lastSeenLine: 61
   resolution: ok
-  resolvedAt: "2026-08-25T10:17:18Z"
-  resolvedCommit: b917d04c1e5de95d21a7a16f9d5e3e5368581647
+  resolvedAt: "2026-09-04T05:52:22Z"
+  resolvedCommit: 3cc849619416fd69c16a8360b726d522e3317d64

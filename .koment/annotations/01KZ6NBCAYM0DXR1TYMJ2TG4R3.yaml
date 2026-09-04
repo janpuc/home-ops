@@ -11,15 +11,20 @@ spec:
   title: Renovate must move every koment installation together
   body: |-
     One koment release appears as five Renovate updates: the action SHA, this
-    CLI input, the repository mise tool, t3-code's embedded mise tool, and the
-    in-cluster OCI chart. The Koment Group in .renovaterc.json5 waits for all
-    five updates and puts them in one PR. Its two custom managers cover this
-    input and the embedded t3-code input that native managers cannot extract.
+    CLI input, the repository mise tool, the koment tool pinned in the
+    t3-code-operator Workstation, and the in-cluster OCI chart. The Koment Group
+    in .renovaterc.json5 waits for all five updates and puts them in one PR. Its
+    two custom managers cover this input and the Workstation tool pin that
+    native managers cannot extract.
 
     Letting them drift means CI runs `koment check` on a different build than
     the one developers run locally, so a check can pass on a laptop and fail
     here for reasons nobody can reproduce. The five-way group also keeps the
-    deployed chart and t3-code tools on the same release.
+    deployed chart and the agents' koment binary on the same release.
+
+    Until 2026-09-04 the fifth member was the mise tool embedded in the
+    app-template t3-code ConfigMap; that deployment was decommissioned in favour
+    of the operator Workstation, whose `tools:` pin took its place in the group.
   anchor:
     scope: excerpt
     excerpt: "- name: Setup Koment"

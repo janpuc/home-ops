@@ -20,16 +20,6 @@
     },
     {
       customType: "regex",
-      description: "Update the koment CLI version embedded in t3-code",
-      managerFilePatterns: ["/^kubernetes\\/apps\\/ai\\/t3-code\\/app\\/configmap\\.yaml$/"],
-      matchStrings: ['"github:koment-dev/koment" = "(?<currentValue>v?\\d+\\.\\d+\\.\\d+)"'],
-      depNameTemplate: "koment-dev/koment",
-      packageNameTemplate: "koment-dev/koment",
-      datasourceTemplate: "github-releases",
-      versioningTemplate: "semver",
-    },
-    {
-      customType: "regex",
       description: "Update the koment tool pinned in t3-code-operator Workstations",
       managerFilePatterns: [
         "/^kubernetes\\/apps\\/ai\\/t3-code-operator\\/app\\/helmrelease\\.yaml$/",
@@ -41,16 +31,6 @@
       packageNameTemplate: "koment-dev/koment",
       datasourceTemplate: "github-releases",
       extractVersionTemplate: "^v(?<version>.+)$",
-      versioningTemplate: "semver",
-    },
-    {
-      customType: "regex",
-      description: "Update the agent-kit skill batch provisioned into t3-code",
-      managerFilePatterns: ["/^kubernetes\\/apps\\/ai\\/t3-code\\/app\\/helmrelease\\.yaml$/"],
-      matchStrings: ["AGENT_KIT_VERSION: (?<currentValue>v?\\d+\\.\\d+\\.\\d+)"],
-      depNameTemplate: "janpuc/agent-kit",
-      packageNameTemplate: "janpuc/agent-kit",
-      datasourceTemplate: "github-releases",
       versioningTemplate: "semver",
     },
   ],

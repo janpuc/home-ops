@@ -6,7 +6,7 @@ metadata:
   created: "2026-08-25T09:08:21Z"
 spec:
   target:
-    file: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
+    file: kubernetes/apps/ai/t3-code-operator/app/helmrelease.yaml
   type: why
   title: Internal gateway only; read this before moving to envoy-external
   body: |-
@@ -36,27 +36,25 @@ spec:
   anchor:
     scope: excerpt
     excerpt: |2-
-              parentRefs:
-                - name: envoy-internal
-                  namespace: network
-              rules:
-                - backendRefs:
-                    - identifier: app
-                      port: *port
+                parentRefs:
+                  - group: gateway.networking.k8s.io
+                    kind: Gateway
+                    name: envoy-internal
+                    namespace: network
     before: |2-
-            app:
-              hostnames:
-                - t3.janpuc.com
+              spec:
+                hostnames:
+                  - t3.janpuc.com
     after: |2-
-                  timeouts:
-                    request: "0s"
-                    backendRequest: "0s"
+                rules:
+                  - backendRefs:
+                      - group: ""
   author:
     name: claude-code
     kind: agent
     source: session
 status:
-  lastSeenLine: 181
+  lastSeenLine: 578
   resolution: ok
-  resolvedAt: "2026-08-25T09:08:21Z"
-  resolvedCommit: 33d13e31c4da1c176cf585cff284f9e23f5fe4bb
+  resolvedAt: "2026-09-04T05:52:22Z"
+  resolvedCommit: 3cc849619416fd69c16a8360b726d522e3317d64

@@ -12,11 +12,13 @@ spec:
   body: |-
     A koment release creates five Renovate updates. Native managers extract the
     GitHub Action SHA, the repository mise tool, and the OCI chart. Regex
-    managers extract the GitHub Pages CLI input and t3-code's embedded mise
-    tool.
+    managers extract the GitHub Pages CLI input and the koment tool pinned in
+    the t3-code-operator Workstation.
 
     `minimumGroupSize: 5` postpones branch creation until all five updates are
     available. This prevents a partial release from changing only one runtime.
+    If a member is added or removed, change this number with it: with six
+    members the group still opened at five, and with four it would never open.
 
     Keep this rule after the Mise Tools Group. Renovate applies later matching
     rules last, so this position moves the repository koment tool out of the

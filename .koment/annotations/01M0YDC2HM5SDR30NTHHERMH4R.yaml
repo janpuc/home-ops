@@ -6,47 +6,35 @@ metadata:
   created: "2026-08-26T06:50:55Z"
 spec:
   target:
-    file: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
+    file: kubernetes/apps/ai/t3-code-operator/app/helmrelease.yaml
   type: gotcha
   title: Codex needs the released local marketplace archive
   body: |-
     The koment repository root is not a Codex marketplace. Release packaging
     puts the required `.agents/plugins/marketplace.json` and `plugins/koment`
-    tree in `koment-plugin-codex_v<version>.tar.gz`, so adding
-    `koment-dev/koment` directly cannot discover this plugin.
+    tree in `koment-plugin-codex_v<version>.tar.gz`, so a Marketplace-type
+    extension pointing at `koment-dev/koment` cannot discover this plugin for
+    Codex. The Claude plugin does live at the repository root, which is why
+    `koment-claude` below is a Marketplace extension while this one is a GitHub
+    release asset: two extension types for one tool.
 
-    The pod reads the release tag from its managed mise configuration. This
-    keeps the Codex plugin on the exact release used by the koment binary.
-    Renovate updates that pin with every other koment installation. The pod
-    verifies the archive against the release checksum before it replaces the
-    stable local marketplace path. Codex treats a repeated add from that same
-    path as idempotent, and `codex plugin add` atomically refreshes the installed
-    version.
-
-    A GitHub lookup or download failure does not fail the pod. The previous
-    plugin cache remains installed, and the explicit koment MCP entry still
-    supplies the tools.
+    Unlike the `tools:` pin above, the tag, asset name and sha256 here have no
+    Renovate manager. Bump them by hand together with each Koment Group PR, or
+    the Codex plugin drifts from the koment binary the harnesses run.
   anchor:
     scope: excerpt
     excerpt: |2-
-                      koment_plugin_stage="$(mktemp -d)"
-                      koment_plugin_tag="$(
-                        awk -F '"' '$2 == "github:koment-dev/koment" { print $4; exit }' \
-                          /data/home/.config/mise/config.toml
-                      )"
-                      if [ -n "$koment_plugin_tag" ]; then
-                        koment_plugin_version="$(printf '%s' "$koment_plugin_tag" | sed 's/^v//')"
-                        koment_plugin_archive="koment-plugin-codex_$koment_plugin_tag.tar.gz"
-                        koment_plugin_checksums="$(
-                          printf 'koment-plugins_%s_checksums.txt' "$koment_plugin_version"
-                        )"
-    before: |2
-                      codex plugin add memini@memini \
-                        || echo "codex plugin install unavailable; memini reaches Codex over MCP"
+                  type: GitHubRelease
+                  githubRelease:
+                    repository: koment-dev/koment
+    before: |2-
+            - name: koment
+              spec:
+                source:
     after: |2-
-                        if gh release download "$koment_plugin_tag" \
-                          --repo koment-dev/koment \
-                          --pattern "$koment_plugin_archive" \
+                    tag: v3.2.0
+                    asset: koment-plugin-codex_v3.2.0.tar.gz
+                    sha256: a8b3dfe698339455072ae6009ec70b831ede689b73789b26033886b0157c7f48
   author:
     name: codex-mcp-client
     kind: agent
@@ -56,7 +44,7 @@ spec:
     path: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
     line: 89
 status:
-  lastSeenLine: 89
+  lastSeenLine: 364
   resolution: ok
-  resolvedAt: "2026-08-26T06:50:55Z"
-  resolvedCommit: 34165753104a3fc37ff7f7f5b051a005f1b31b1a
+  resolvedAt: "2026-09-04T05:52:22Z"
+  resolvedCommit: 3cc849619416fd69c16a8360b726d522e3317d64
