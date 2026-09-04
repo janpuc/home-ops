@@ -12,11 +12,14 @@ spec:
       namespace: ai
     - name: memini
       namespace: ai
+  force: true
   interval: 1h
   path: ./kubernetes/apps/ai/t3-code/app
   postBuild:
     substitute:
       APP: t3-code
+      KOPIUR_COPYMETHOD: Direct
+      KOPIUR_STORAGECLASS: miroir-fast-local
       KOPIUR_CAPACITY: 30Gi
   prune: true
   sourceRef:
