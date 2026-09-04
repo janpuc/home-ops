@@ -31,11 +31,14 @@ spec:
       namespace: miroir-system
     - name: kopiur
       namespace: kopiur-system
+  force: true
   interval: 1h
   path: ./kubernetes/apps/security/pocket-id-operator/instance
   postBuild:
     substitute:
       APP: pocket-id
+      KOPIUR_COPYMETHOD: Direct
+      KOPIUR_STORAGECLASS: miroir-fast-local
       KOPIUR_CAPACITY: 1Gi
       KOPIUR_IGNORE_DIR_ERRORS: "true"
   prune: true
