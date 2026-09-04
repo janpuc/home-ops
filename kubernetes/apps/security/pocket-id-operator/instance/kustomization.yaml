@@ -11,5 +11,6 @@ patches:
       kind: ScaledObject
     patch: |
       - op: add
-        path: /metadata/annotations/autoscaling.keda.sh~1paused-replicas
-        value: "0"
+        path: /metadata/annotations
+        value:
+          autoscaling.keda.sh/paused-replicas: "0"
