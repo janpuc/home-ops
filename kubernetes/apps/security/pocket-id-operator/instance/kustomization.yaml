@@ -5,3 +5,11 @@ kind: Kustomization
 resources:
   - ./externalsecret.yaml
   - ./pocketidinstance.yaml
+  - ./snapshot-migrate.yaml
+patches:
+  - target:
+      kind: ScaledObject
+    patch: |
+      - op: add
+        path: /metadata/annotations/autoscaling.keda.sh~1paused-replicas
+        value: "0"
