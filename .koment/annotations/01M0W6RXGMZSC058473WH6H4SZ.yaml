@@ -6,7 +6,7 @@ metadata:
   created: "2026-08-25T10:17:07Z"
 spec:
   target:
-    file: kubernetes/apps/ai/t3-code-operator/app/helmrelease.yaml
+    file: kubernetes/apps/ai/t3-code-operator/instance/workstation.yaml
   type: gotcha
   title: Pairing tokens are one-time and expire in 5 minutes
   body: |-
@@ -41,16 +41,16 @@ spec:
   anchor:
     scope: excerpt
     excerpt: |2-
-                  - name: T3_AUTH_PROXY
-                    value: "0"
+          - name: T3_AUTH_PROXY
+            value: "0"
     before: |2-
-                  limits:
-                    memory: 8Gi
-                env:
+          limits:
+            memory: 8Gi
+        env:
     after: |2-
-                  - name: T3_GIT_REPOSITORY_SCAN_DEPTH
-                    value: "4"
-                  - name: TERM
+          - name: T3_GIT_REPOSITORY_SCAN_DEPTH
+            value: "4"
+          - name: TERM
   author:
     name: claude-code
     kind: agent
@@ -60,7 +60,7 @@ spec:
     path: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
     line: 126
 status:
-  lastSeenLine: 51
+  lastSeenLine: 15
   resolution: ok
-  resolvedAt: "2026-09-04T05:52:22Z"
-  resolvedCommit: 3cc849619416fd69c16a8360b726d522e3317d64
+  resolvedAt: "2026-09-04T18:53:08Z"
+  resolvedCommit: f89ac2ed98b2dfd0b796ac02183c23a7dead46cf

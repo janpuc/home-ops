@@ -5,14 +5,34 @@ kind: Kustomization
 metadata:
   name: t3-code-operator
 spec:
-  dependsOn:
-    - name: litellm
-      namespace: ai
-    - name: memini
-      namespace: ai
   interval: 1h
   path: ./kubernetes/apps/ai/t3-code-operator/app
   prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: ai
+  wait: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: t3-code
+spec:
+  dependsOn:
+    - name: t3-code-operator
+    - name: litellm
+    - name: memini
+    - name: kopiur
+      namespace: kopiur-system
+    - name: onepassword-connect
+      namespace: external-secrets
+  interval: 1h
+  path: ./kubernetes/apps/ai/t3-code-operator/instance
+  prune: true
+  retryInterval: 2m
   sourceRef:
     kind: GitRepository
     name: flux-system

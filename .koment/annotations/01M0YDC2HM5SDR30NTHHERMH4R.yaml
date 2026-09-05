@@ -6,7 +6,7 @@ metadata:
   created: "2026-08-26T06:50:55Z"
 spec:
   target:
-    file: kubernetes/apps/ai/t3-code-operator/app/helmrelease.yaml
+    file: kubernetes/apps/ai/t3-code-operator/instance/extensions.yaml
   type: gotcha
   title: Codex needs the released local marketplace archive
   body: |-
@@ -24,17 +24,17 @@ spec:
   anchor:
     scope: excerpt
     excerpt: |2-
-                  type: GitHubRelease
-                  githubRelease:
-                    repository: koment-dev/koment
+          type: GitHubRelease
+          githubRelease:
+            repository: koment-dev/koment
     before: |2-
-            - name: koment
-              spec:
-                source:
+        name: koment
+      spec:
+        source:
     after: |2-
-                    tag: v3.2.0
-                    asset: koment-plugin-codex_v3.2.0.tar.gz
-                    sha256: a8b3dfe698339455072ae6009ec70b831ede689b73789b26033886b0157c7f48
+            tag: v3.2.0
+            asset: koment-plugin-codex_v3.2.0.tar.gz
+            sha256: a8b3dfe698339455072ae6009ec70b831ede689b73789b26033886b0157c7f48
   author:
     name: codex-mcp-client
     kind: agent
@@ -44,7 +44,7 @@ spec:
     path: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
     line: 89
 status:
-  lastSeenLine: 364
+  lastSeenLine: 47
   resolution: ok
-  resolvedAt: "2026-09-04T05:52:22Z"
-  resolvedCommit: 3cc849619416fd69c16a8360b726d522e3317d64
+  resolvedAt: "2026-09-04T18:53:08Z"
+  resolvedCommit: f89ac2ed98b2dfd0b796ac02183c23a7dead46cf

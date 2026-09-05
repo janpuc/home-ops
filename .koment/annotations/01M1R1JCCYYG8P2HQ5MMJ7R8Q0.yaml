@@ -1,0 +1,60 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M1R1JCCYYG8P2HQ5MMJ7R8Q0
+  created: "2026-09-05T05:44:54Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/t3-code-operator/instance/workstation.yaml
+  type: why
+  title: The data claim stays operator-managed; kopiur backs it up
+  body: |-
+    This keeps the live claim `t3-code-data`, which the operator created for
+    this Workstation with a Retain policy and which holds the Codex device
+    login, the Claude and OpenCode homes, the extension cache and the koment
+    tool install. The first draft of this cutover pointed `existingClaim` at a
+    kopiur-populated PVC named `t3-code`; the review showed that Restore would
+    resolve to nothing and hand back an empty volume, silently abandoning
+    `/data` while the retained old claim sat unreferenced.
+
+    The operator adopts a retained claim across Workstation recreation, so even
+    a delete-and-recreate of this object keeps the data. 30Gi and the class are
+    spelled out although both match the live claim and the class is the cluster
+    default: the size must not shrink below what exists, and a default class has
+    moved before in this cluster.
+
+    Backups come from `backup.yaml`, a SnapshotPolicy on the claim, instead of
+    the `kopiur/backup` component. The component wants to create the PVC itself
+    with a Restore populator, which would fight the operator for the claim; a
+    restore into this claim is therefore a manual Restore with a `pvcRef` target
+    while the Workstation is scaled away.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        storage:
+          data:
+            claimTemplate:
+              spec:
+                storageClassName: miroir-fast-local
+                resources:
+                  requests:
+                    storage: 30Gi
+    before: |2-
+          grok:
+            enabled: true
+            displayName: Grok (alpha)
+    after: |2-
+          workspace:
+            claimTemplate:
+              spec:
+  author:
+    name: janpuc
+    email: janpuc@proton.me
+    kind: agent
+    source: git-config
+status:
+  lastSeenLine: 171
+  resolution: ok
+  resolvedAt: "2026-09-05T05:44:54Z"
+  resolvedCommit: f89ac2ed98b2dfd0b796ac02183c23a7dead46cf

@@ -1,0 +1,102 @@
+---
+apiVersion: t3code.janpuc.com/v1alpha1
+kind: MCPServer
+metadata:
+  name: koment
+spec:
+  config:
+    command: koment
+    args:
+      - mcp
+      - --write
+---
+apiVersion: t3code.janpuc.com/v1alpha1
+kind: MCPServer
+metadata:
+  name: memini
+spec:
+  config:
+    url: http://memini.ai.svc.cluster.local:8080/mcp
+  bearerTokenSecretRef:
+    name: t3-code-config
+    key: MEMINI_API_KEY
+  headers:
+    - name: X-Memini-Home
+      value: personal/jan
+---
+apiVersion: t3code.janpuc.com/v1alpha1
+kind: MCPServer
+metadata:
+  name: kubectl
+spec:
+  config:
+    url: http://litellm.ai.svc.cluster.local:4000/mcp/kubectl/mcp
+  bearerTokenSecretRef:
+    name: t3-code-config
+    key: LITELLM_API_KEY
+---
+apiVersion: t3code.janpuc.com/v1alpha1
+kind: MCPServer
+metadata:
+  name: prometheus
+spec:
+  config:
+    url: http://litellm.ai.svc.cluster.local:4000/mcp/prometheus/mcp
+  bearerTokenSecretRef:
+    name: t3-code-config
+    key: LITELLM_API_KEY
+---
+apiVersion: t3code.janpuc.com/v1alpha1
+kind: MCPServer
+metadata:
+  name: victoria-logs
+spec:
+  config:
+    url: http://litellm.ai.svc.cluster.local:4000/mcp/victoria_logs/mcp
+  bearerTokenSecretRef:
+    name: t3-code-config
+    key: LITELLM_API_KEY
+---
+apiVersion: t3code.janpuc.com/v1alpha1
+kind: MCPServer
+metadata:
+  name: github
+spec:
+  config:
+    url: http://litellm.ai.svc.cluster.local:4000/mcp/github/mcp
+  bearerTokenSecretRef:
+    name: t3-code-config
+    key: LITELLM_API_KEY
+---
+apiVersion: t3code.janpuc.com/v1alpha1
+kind: MCPServer
+metadata:
+  name: context7
+spec:
+  config:
+    url: http://litellm.ai.svc.cluster.local:4000/mcp/context7/mcp
+  bearerTokenSecretRef:
+    name: t3-code-config
+    key: LITELLM_API_KEY
+---
+apiVersion: t3code.janpuc.com/v1alpha1
+kind: MCPServer
+metadata:
+  name: home-assistant
+spec:
+  config:
+    url: http://litellm.ai.svc.cluster.local:4000/mcp/ha/mcp
+  bearerTokenSecretRef:
+    name: t3-code-config
+    key: LITELLM_API_KEY
+---
+apiVersion: t3code.janpuc.com/v1alpha1
+kind: MCPServer
+metadata:
+  name: sidero
+spec:
+  config:
+    url: http://litellm.ai.svc.cluster.local:4000/mcp/sidero/mcp
+  bearerTokenSecretRef:
+    name: t3-code-config
+    key: LITELLM_API_KEY

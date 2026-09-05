@@ -6,7 +6,7 @@ metadata:
   created: "2026-08-25T10:32:02Z"
 spec:
   target:
-    file: kubernetes/apps/ai/t3-code-operator/app/helmrelease.yaml
+    file: kubernetes/apps/ai/t3-code-operator/instance/workstation.yaml
   type: invariant
   title: Agents here commit, sign and push as a real human identity
   body: |-
@@ -36,17 +36,17 @@ spec:
   anchor:
     scope: excerpt
     excerpt: |2-
-                git:
-                  userName: janpuc
-                  userEmail: janpuc@proton.me
+        git:
+          userName: janpuc
+          userEmail: janpuc@proton.me
     before: |2-
-                      annotations:
-                        lbipam.cilium.io/ips: 192.168.69.56
-                        external-dns.alpha.kubernetes.io/hostname: t3-smb.janpuc.com
+              annotations:
+                lbipam.cilium.io/ips: 192.168.69.56
+                external-dns.alpha.kubernetes.io/hostname: t3-smb.janpuc.com
     after: |2-
-                  githubUser: janpuc
-                  credentialSecretRef:
-                    name: t3-code-config
+          githubUser: janpuc
+          credentialSecretRef:
+            name: t3-code-config
   author:
     name: claude-code
     kind: agent
@@ -56,7 +56,7 @@ spec:
     path: kubernetes/apps/ai/t3-code/app/configmap.yaml
     line: 37
 status:
-  lastSeenLine: 107
+  lastSeenLine: 188
   resolution: ok
-  resolvedAt: "2026-09-04T05:52:22Z"
-  resolvedCommit: 3cc849619416fd69c16a8360b726d522e3317d64
+  resolvedAt: "2026-09-04T18:53:08Z"
+  resolvedCommit: f89ac2ed98b2dfd0b796ac02183c23a7dead46cf

@@ -1,0 +1,52 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M1R1JCF3Z7ND0K8MBRGQWPGX
+  created: "2026-09-05T05:44:54Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/t3-code-operator/ks.yaml
+  type: gotcha
+  title: The instance waits on a healthy operator so new CRDs validate it
+  body: |-
+    `wait: true` on the operator Kustomization is what makes `dependsOn` mean
+    anything for the instance. With `wait: false` the operator Kustomization is
+    Ready the moment the HelmRelease object exists, long before helm-controller
+    has upgraded the chart and replaced the CRDs, and kustomize-controller
+    server-side dry-runs every object in the instance against the CRDs of the
+    moment. On the 0.1.7 to 0.2.0 upgrade that dry-run would have rejected the
+    Workstation for its missing `spec.image` and every MCPServer for its missing
+    `transport`, and because the dry-run covers the whole stage nothing from
+    `instance/` would have been applied while Helm was already removing the old
+    copies. Waiting for the HelmRelease to report Ready puts the CRD upgrade
+    before the first apply. `retryInterval: 2m` on both keeps a transient
+    rejection from waiting the full hour.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        targetNamespace: ai
+        wait: true
+      ---
+    before: |2-
+          kind: GitRepository
+          name: flux-system
+          namespace: flux-system
+    after: |-
+      apiVersion: kustomize.toolkit.fluxcd.io/v1
+      kind: Kustomization
+      metadata:
+  author:
+    name: janpuc
+    email: janpuc@proton.me
+    kind: agent
+    source: git-config
+  git:
+    commit: f89ac2ed98b2dfd0b796ac02183c23a7dead46cf
+    path: kubernetes/apps/ai/t3-code-operator/ks.yaml
+    line: 16
+status:
+  lastSeenLine: 16
+  resolution: ok
+  resolvedAt: "2026-09-05T05:44:54Z"
+  resolvedCommit: f89ac2ed98b2dfd0b796ac02183c23a7dead46cf

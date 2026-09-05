@@ -1,0 +1,51 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/koment-dev/koment/main/schema/v1alpha/annotation.schema.json
+apiVersion: koment.dev/v1alpha
+kind: Annotation
+metadata:
+  id: 01M1R1JCHHD0WCSYXC79GFKA17
+  created: "2026-09-05T05:44:54Z"
+spec:
+  target:
+    file: kubernetes/apps/ai/t3-code-operator/app/helmrelease.yaml
+  type: why
+  title: The published chart pins the runtime image, not this repository
+  body: |-
+    Nothing in home-ops names the `t3-code-runtime` digest any more. The
+    published 0.2.0 chart carries it in `workstation.image.digest`, the operator
+    receives it as `--default-workstation-image`, and the Workstation in
+    `instance/` sets no `spec.image`. A chart bump therefore moves the runtime
+    together with the operator, which is the pairing the sidecar's upstream t3
+    version contract assumes, and Renovate's bump of `ocirepository.yaml` is the
+    single place the agent runtime changes. The cost is that the runtime digest
+    is not visible in a diff here; `kubectl get workstation t3-code -o
+    jsonpath='{.status.liveImage}'` shows what runs. Set `spec.image` on the
+    Workstation to follow the nightly track or to hold the runtime while the
+    chart moves.
+  anchor:
+    scope: excerpt
+    excerpt: |2-
+        chartRef:
+          kind: OCIRepository
+          name: t3-code-operator
+    before: |-
+      metadata:
+        name: t3-code-operator
+      spec:
+    after: |2-
+        interval: 15m
+        install:
+          crds: CreateReplace
+  author:
+    name: janpuc
+    email: janpuc@proton.me
+    kind: agent
+    source: git-config
+  git:
+    commit: f89ac2ed98b2dfd0b796ac02183c23a7dead46cf
+    path: kubernetes/apps/ai/t3-code-operator/app/helmrelease.yaml
+    line: 7
+status:
+  lastSeenLine: 7
+  resolution: ok
+  resolvedAt: "2026-09-05T05:44:54Z"
+  resolvedCommit: f89ac2ed98b2dfd0b796ac02183c23a7dead46cf

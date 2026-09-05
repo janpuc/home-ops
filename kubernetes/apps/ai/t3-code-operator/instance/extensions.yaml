@@ -1,0 +1,75 @@
+---
+apiVersion: t3code.janpuc.com/v1alpha1
+kind: Extension
+metadata:
+  name: agent-kit
+spec:
+  source:
+    type: Git
+    git:
+      url: https://github.com/janpuc/agent-kit.git
+      commit: 0024da86a0710cad9e289035d1721fe319ce2aa9
+      path: skills
+      credentialSecretRef:
+        name: t3-code-config
+        key: GH_TOKEN
+    include:
+      - codebase-design
+      - diagnosing-bugs
+      - karpathy-guidelines
+      - research
+      - tdd
+      - triage
+      - writing-for-agents
+---
+apiVersion: t3code.janpuc.com/v1alpha1
+kind: Extension
+metadata:
+  name: memini
+spec:
+  source:
+    type: Marketplace
+    marketplace:
+      marketplace: memini
+      extension: memini
+      repositoryUrl: https://github.com/eleboucher/memini.git
+      commit: 56346fe9372b1c444d61e835a357f985f6b28828
+      credentialSecretRef:
+        name: t3-code-config
+        key: GH_TOKEN
+---
+apiVersion: t3code.janpuc.com/v1alpha1
+kind: Extension
+metadata:
+  name: koment
+spec:
+  source:
+    type: GitHubRelease
+    githubRelease:
+      repository: koment-dev/koment
+      tag: v3.2.0
+      asset: koment-plugin-codex_v3.2.0.tar.gz
+      sha256: a8b3dfe698339455072ae6009ec70b831ede689b73789b26033886b0157c7f48
+      credentialSecretRef:
+        name: t3-code-config
+        key: GH_TOKEN
+  harnessRefs:
+    - name: codex
+---
+apiVersion: t3code.janpuc.com/v1alpha1
+kind: Extension
+metadata:
+  name: koment-claude
+spec:
+  source:
+    type: Marketplace
+    marketplace:
+      marketplace: koment-dev
+      extension: koment
+      repositoryUrl: https://github.com/koment-dev/koment.git
+      commit: c000b74a5b09c433f96a69fa102c5c8f6583dff0
+      credentialSecretRef:
+        name: t3-code-config
+        key: GH_TOKEN
+  harnessRefs:
+    - name: claude

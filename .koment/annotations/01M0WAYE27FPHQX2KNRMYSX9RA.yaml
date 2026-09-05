@@ -6,7 +6,7 @@ metadata:
   created: "2026-08-25T11:30:02Z"
 spec:
   target:
-    file: kubernetes/apps/ai/t3-code-operator/app/helmrelease.yaml
+    file: kubernetes/apps/ai/t3-code-operator/instance/mcpservers.yaml
   type: gotcha
   title: MEMINI_HOME in the environment does not scope an HTTP MCP client
   body: |-
@@ -32,16 +32,16 @@ spec:
   anchor:
     scope: excerpt
     excerpt: |2-
-                  - name: X-Memini-Home
-                    value: personal/jan
+          - name: X-Memini-Home
+            value: personal/jan
     before: |2-
-                      secretKeyRef:
-                        name: t3-code-config
-                        key: MEMINI_API_KEY
-    after: |2-
-                harnessRefs:
-                  - name: codex
-                  - name: claude
+          name: t3-code-config
+          key: MEMINI_API_KEY
+        headers:
+    after: |-
+      ---
+      apiVersion: t3code.janpuc.com/v1alpha1
+      kind: MCPServer
   author:
     name: janpuc
     email: janpuc@proton.me
@@ -52,7 +52,7 @@ spec:
     path: kubernetes/apps/ai/t3-code/app/configmap.yaml
     line: 242
 status:
-  lastSeenLine: 415
+  lastSeenLine: 24
   resolution: ok
-  resolvedAt: "2026-09-04T05:52:22Z"
-  resolvedCommit: 3cc849619416fd69c16a8360b726d522e3317d64
+  resolvedAt: "2026-09-04T18:53:08Z"
+  resolvedCommit: f89ac2ed98b2dfd0b796ac02183c23a7dead46cf

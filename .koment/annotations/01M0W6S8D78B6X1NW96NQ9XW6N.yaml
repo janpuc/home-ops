@@ -6,43 +6,41 @@ metadata:
   created: "2026-08-25T10:17:18Z"
 spec:
   target:
-    file: kubernetes/apps/ai/t3-code-operator/app/helmrelease.yaml
+    file: kubernetes/apps/ai/t3-code-operator/instance/workstation.yaml
   type: why
-  title: This value is the environment name clients display
+  title: This name is the environment label every T3 client displays
   body: |-
-    Without it the T3 client shows the pod name, which changes on every rollout,
-    so the same backend appears under a new name after each deploy.
+    The object name is the environment name. t3-code-operator 0.2.0 defaults
+    `machineInfo.prettyHostname` to the Workstation name, so this file no longer
+    sets it and the name in `kubectl get workstations` is the name in the T3
+    client picker. Renaming the object renames the environment.
 
-    T3 resolves its `ExecutionEnvironmentDescriptor.label` on Linux by reading
-    `PRETTY_HOSTNAME` from `/etc/machine-info`, then falling back to
-    `hostnamectl --pretty`, then the raw hostname. Neither of the first two
-    exists in the runtime image, so without this it lands on the hostname, which
-    Kubernetes sets to the pod name. The operator renders this value into
-    `/etc/machine-info` for the runtime container.
+    Without a value the client falls back to the pod name, which changes on
+    every rollout, so the same backend would appear under a new name after each
+    deploy. T3 resolves its `ExecutionEnvironmentDescriptor.label` on Linux by
+    reading `PRETTY_HOSTNAME` from `/etc/machine-info`, then `hostnamectl
+    --pretty`, then the raw hostname — verified against t3 0.0.38 on
+    2026-09-04, which still has no environment variable override. The operator
+    writes the label into `/data/t3-coded/machine-info`, which the runtime image
+    symlinks to `/etc/machine-info`.
 
-    `PRETTY_HOSTNAME` is not a DNS label, so it accepts arbitrary casing. A pod
-    `hostname` would also stabilise the name but is restricted to a lowercase
-    DNS label and could not produce `Cluster`.
-
-    One failure mode carried over from the app-template deployment this
-    replaced: if `/etc/machine-info` ends up as an empty directory instead of a
-    file (a subPath mount whose source key vanished), T3's existence check
-    passes, the read fails, and it quietly falls back to the pod name. If the
-    name reverts after a change here, inspect the rendered file in the pod
-    before suspecting T3.
+    Set `spec.machineInfo.prettyHostname` only to display something a DNS-label
+    object name cannot spell, such as mixed case or spaces. This deployment
+    deliberately does not: "Cluster" was the old app-template value, and
+    matching the Kubernetes object name is worth more than the prettier string.
   anchor:
     scope: excerpt
-    excerpt: |2-
-                machineInfo:
-                  prettyHostname: Cluster
-    before: |2-
-                    value: /data/npm-cache
-                  - name: NPM_CONFIG_PREFIX
-                    value: /data/npm-global
-    after: |2-
-                storage:
-                  data:
-                    type: ClaimTemplate
+    excerpt: |-
+      kind: Workstation
+      metadata:
+        name: t3-code
+    before: |-
+      ---
+      apiVersion: t3code.janpuc.com/v1alpha1
+    after: |-
+      spec:
+        serviceAccountName: t3-code
+        resources:
   author:
     name: claude-code
     kind: agent
@@ -52,7 +50,7 @@ spec:
     path: kubernetes/apps/ai/t3-code/app/helmrelease.yaml
     line: 221
 status:
-  lastSeenLine: 61
+  lastSeenLine: 3
   resolution: ok
-  resolvedAt: "2026-09-04T05:52:22Z"
-  resolvedCommit: 3cc849619416fd69c16a8360b726d522e3317d64
+  resolvedAt: "2026-09-04T18:53:08Z"
+  resolvedCommit: f89ac2ed98b2dfd0b796ac02183c23a7dead46cf

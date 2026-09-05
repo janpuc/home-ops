@@ -1,0 +1,215 @@
+---
+apiVersion: t3code.janpuc.com/v1alpha1
+kind: Workstation
+metadata:
+  name: t3-code
+spec:
+  serviceAccountName: t3-code
+  resources:
+    requests:
+      cpu: 500m
+      memory: 2Gi
+    limits:
+      memory: 8Gi
+  env:
+    - name: T3_AUTH_PROXY
+      value: "0"
+    - name: T3_GIT_REPOSITORY_SCAN_DEPTH
+      value: "4"
+    - name: TERM
+      value: xterm-256color
+    - name: NPM_CONFIG_CACHE
+      value: /data/npm-cache
+    - name: NPM_CONFIG_PREFIX
+      value: /data/npm-global
+  providers:
+    codex:
+      enabled: true
+      models:
+        - gpt-5.6-sol
+      environment: &gateway-and-memory
+        - name: LITELLM_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: t3-code-config
+              key: LITELLM_API_KEY
+        - name: MEMINI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: t3-code-config
+              key: MEMINI_API_KEY
+        - name: MEMINI_BASE_URL
+          value: http://memini.ai.svc.cluster.local:8080
+        - name: MEMINI_HOME
+          value: personal/jan
+    claude:
+      enabled: true
+      models:
+        - claude-opus-4-1
+      environment:
+        - name: CLAUDE_CODE_OAUTH_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: t3-code-config
+              key: CLAUDE_CODE_OAUTH_TOKEN
+        - name: LITELLM_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: t3-code-config
+              key: LITELLM_API_KEY
+        - name: MEMINI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: t3-code-config
+              key: MEMINI_API_KEY
+        - name: MEMINI_BASE_URL
+          value: http://memini.ai.svc.cluster.local:8080
+        - name: MEMINI_HOME
+          value: personal/jan
+      config:
+        file:
+          effortLevel: xhigh
+          theme: dark
+    opencode:
+      enabled: true
+      models:
+        - litellm/minimax/MiniMax-M3
+        - litellm/opencode-go/glm-5.3
+        - litellm/opencode-go/glm-5.2
+        - litellm/opencode-go/kimi-k3
+        - litellm/opencode-go/kimi-k2.7-code
+        - litellm/opencode-go/qwen3.8-max
+        - litellm/opencode-go/deepseek-v4-pro
+        - litellm/opencode-go/deepseek-v4-flash-vision-exp
+        - litellm/opencode-go/gpt-5.6-luna
+        - litellm/opencode-go/grok-4.5
+        - litellm/opencode-go/mimo-v2.5-pro
+        - litellm/opencode-go/hy3
+      environment: *gateway-and-memory
+      config:
+        file:
+          "$schema": https://opencode.ai/config.json
+          provider:
+            litellm:
+              npm: "@ai-sdk/openai-compatible"
+              name: LiteLLM
+              options:
+                baseURL: http://litellm.ai.svc.cluster.local:4000/v1
+                apiKey: "{env:LITELLM_API_KEY}"
+              models:
+                minimax/MiniMax-M3:
+                  name: MiniMax M3
+                  limit:
+                    context: 1000000
+                    output: 64000
+                opencode-go/glm-5.3:
+                  name: GLM 5.3
+                  limit:
+                    context: 1000000
+                    output: 64000
+                opencode-go/glm-5.2:
+                  name: GLM 5.2
+                  limit:
+                    context: 1000000
+                    output: 64000
+                opencode-go/kimi-k3:
+                  name: Kimi K3
+                  limit:
+                    context: 1048576
+                    output: 64000
+                opencode-go/kimi-k2.7-code:
+                  name: Kimi K2.7 Code
+                  limit:
+                    context: 262144
+                    output: 64000
+                opencode-go/qwen3.8-max:
+                  name: Qwen 3.8 Max
+                  limit:
+                    context: 1000000
+                    output: 64000
+                opencode-go/deepseek-v4-pro:
+                  name: DeepSeek V4 Pro
+                  limit:
+                    context: 1000000
+                    output: 64000
+                opencode-go/deepseek-v4-flash-vision-exp:
+                  name: DeepSeek V4 Flash Vision
+                  limit:
+                    context: 1000000
+                    output: 64000
+                opencode-go/gpt-5.6-luna:
+                  name: GPT 5.6 Luna
+                  limit:
+                    context: 1050000
+                    output: 64000
+                opencode-go/grok-4.5:
+                  name: Grok 4.5
+                  limit:
+                    context: 500000
+                    output: 64000
+                opencode-go/mimo-v2.5-pro:
+                  name: MiMo v2.5 Pro
+                  limit:
+                    context: 1048576
+                    output: 64000
+                opencode-go/hy3:
+                  name: HY3
+                  limit:
+                    context: 256000
+                    output: 32000
+          model: litellm/minimax/MiniMax-M3
+          small_model: litellm/opencode-go/hy3
+          plugin:
+            - "@eleboucher/opencode-memini"
+            - "@koment/opencode-koment"
+    cursor:
+      enabled: true
+      displayName: Cursor (alpha)
+    grok:
+      enabled: true
+      displayName: Grok (alpha)
+  storage:
+    data:
+      claimTemplate:
+        spec:
+          storageClassName: miroir-fast-local
+          resources:
+            requests:
+              storage: 30Gi
+    workspace:
+      claimTemplate:
+        spec:
+          storageClassName: miroir-fast-local
+  workspaceSharing:
+    smb:
+      resources:
+        requests:
+          cpu: 25m
+          memory: 64Mi
+        limits:
+          memory: 256Mi
+      service:
+        type: LoadBalancer
+        loadBalancerSourceRanges:
+          - 192.168.69.0/24
+        annotations:
+          lbipam.cilium.io/ips: 192.168.69.56
+          external-dns.alpha.kubernetes.io/hostname: t3-smb.janpuc.com
+  git:
+    userName: janpuc
+    userEmail: janpuc@proton.me
+    githubUser: janpuc
+    credentialSecretRef:
+      name: t3-code-config
+      key: GH_TOKEN
+    signingKeySecretRef:
+      name: t3-code-git-signing
+      privateKeyKey: id_signing
+      publicKeyKey: id_signing.pub
+  tools:
+    - name: koment
+      backend: github:koment-dev/koment
+      version: "3.2.0"
+  drain:
+    timeout: 10m
+    timeoutAction: Force
