@@ -24,7 +24,7 @@ spec:
       image:
         repository: ghcr.io/janpuc/t3-code-operator
         tag: ""
-        digest: sha256:b8a20942b44de0d549cbacfd15d64e8ad11aa55b723919835622a5baa8004bb0
+        digest: sha256:13770f1801e728c95ecddac1daa09348d524ef080fc1ee63bd3c6093a296a6b1
       resources:
         requests:
           cpu: 50m
@@ -35,7 +35,7 @@ spec:
       image:
         repository: ghcr.io/janpuc/t3-code-smbd
         tag: ""
-        digest: sha256:3efca7ed04e067221459a18a03a5f6581ba5fbcecd8728f60e532bdf957af209
+        digest: sha256:7ab81d952b6addf8042f305bc6784b365803ba986c502e8b35b22bebd7b49778
     rbac:
       secretResourceNames:
         - t3-code-config
