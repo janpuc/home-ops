@@ -7,33 +7,6 @@
     "github>home-operations/renovate-presets//apps/talosFactory.json5#8.1.0",
     ":timezone(Europe/Warsaw)",
   ],
-  customManagers: [
-    {
-      customType: "regex",
-      description: "Update the koment CLI version used by GitHub Pages",
-      managerFilePatterns: ["/^\\.github\\/workflows\\/koment-pages\\.yaml$/"],
-      matchStrings: ["version: (?<currentValue>v?\\d+\\.\\d+\\.\\d+)"],
-      depNameTemplate: "koment-dev/koment",
-      packageNameTemplate: "koment-dev/koment",
-      datasourceTemplate: "github-releases",
-      versioningTemplate: "semver",
-    },
-    {
-      customType: "regex",
-      description: "Update the koment tool pinned in t3-code-operator Workstations",
-      managerFilePatterns: [
-        "/^kubernetes\\/apps\\/ai\\/t3-code-operator\\/instance\\/workstation\\.yaml$/",
-      ],
-      matchStrings: [
-        'backend: github:koment-dev/koment\\s+version: "(?<currentValue>\\d+\\.\\d+\\.\\d+)"',
-      ],
-      depNameTemplate: "koment-dev/koment",
-      packageNameTemplate: "koment-dev/koment",
-      datasourceTemplate: "github-releases",
-      extractVersionTemplate: "^v(?<version>.+)$",
-      versioningTemplate: "semver",
-    },
-  ],
   lockFileMaintenance: {
     enabled: true,
     schedule: ["before 3am on the first day of the month"],
@@ -41,6 +14,7 @@
     additionalBranchPrefix: "{{manager}}-",
   },
   packageRules: [
+    // Auto-merge rules
     {
       description: "Auto-merge trusted OCI digests",
       matchDatasources: ["docker"],
@@ -77,6 +51,14 @@
       automerge: true,
       automergeType: "branch",
       minimumReleaseAge: "1 minute",
+      ignoreTests: true,
+    },
+    {
+      description: "Auto-merge Grafana dashboards",
+      matchDatasources: ["custom.grafana-dashboards"],
+      matchUpdateTypes: ["major"],
+      automerge: true,
+      automergeType: "branch",
       ignoreTests: true,
     },
     {
@@ -129,16 +111,8 @@
       groupName: "mise tools",
       groupSlug: "mise-tools",
     },
-    {
-      description: "Koment Group",
-      groupName: "koment",
-      groupSlug: "koment",
-      matchPackageNames: ["koment-dev/koment", "ghcr.io/koment-dev/charts/koment"],
-      group: {
-        commitMessageTopic: "{{{groupName}}} group",
-      },
-      minimumGroupSize: 5,
-    },
+    // After the mise tools catch-all so talos wins its own group; unites the
+    // mise pin, the factory installer image, and the tuppr upgrade version
     {
       description: "Talos Group",
       groupName: "talos",
@@ -149,11 +123,18 @@
       minimumGroupSize: 2,
     },
     {
+      description: "CoreDNS 1.14.3+ prefetch poisons autopath answers, hold until coredns/coredns#8390 is fixed",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["ghcr.io/coredns/charts/coredns"],
+      enabled: false,
+    },
+    {
       description: "1Password CLI is not resolvable on GitHub, bump manually",
       matchManagers: ["mise"],
       matchDepNames: ["1password-cli"],
       enabled: false,
     },
+    // Labeling rules
     {
       matchUpdateTypes: ["major"],
       addLabels: ["type/major"],
@@ -169,27 +150,6 @@
     {
       matchUpdateTypes: ["digest"],
       addLabels: ["type/digest"],
-    },
-    {
-      description: "Unattended freeze: high-blast-radius updates need dashboard approval",
-      matchPackageNames: [
-        "/kube-apiserver/",
-        "/kube-controller-manager/",
-        "/kube-proxy/",
-        "/kube-scheduler/",
-        "/kubelet/",
-        "siderolabs/talos",
-        "/flux-operator/",
-        "/flux-instance/",
-        "/charts/miroir/",
-        "/charts/kopiur/",
-        "/cilium/",
-        "koment-dev/koment",
-        "ghcr.io/koment-dev/charts/koment",
-        "docker.io/library/alpine",
-      ],
-      automerge: false,
-      dependencyDashboardApproval: true,
     },
   ],
 }
