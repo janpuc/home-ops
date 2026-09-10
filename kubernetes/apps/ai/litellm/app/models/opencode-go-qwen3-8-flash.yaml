@@ -2,12 +2,12 @@
 apiVersion: litellm.home-operations.com/v1alpha1
 kind: LiteLLMModel
 metadata:
-  name: opencode-go-deepseek-v4-pro
+  name: opencode-go-qwen3-8-flash
 spec:
-  modelName: opencode-go/deepseek-v4-pro
+  modelName: opencode-go/qwen3.8-flash
   params:
-    model: openai/deepseek-v4-pro
-    apiBase: https://opencode.ai/zen/go/v1
+    model: anthropic/qwen3.8-flash
+    apiBase: https://opencode.ai/zen/go
     apiKeyRef:
       name: litellm
       key: OPENCODE_GO_API_KEY
@@ -17,8 +17,9 @@ spec:
         x-opencode-session: litellm-janpuc-com
   info:
     maxInputTokens: 1000000
-    maxOutputTokens: 384000
+    maxOutputTokens: 131072
     supportsFunctionCalling: true
     supportsPromptCaching: true
+    supportsVision: true
     extra:
       supports_reasoning: true

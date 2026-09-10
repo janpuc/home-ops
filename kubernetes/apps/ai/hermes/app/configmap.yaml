@@ -17,6 +17,10 @@ data:
             context_length: 1000000
           opencode-go/glm-5.3:
             context_length: 1000000
+          opencode-go/glm-5.3-flash:
+            context_length: 1000000
+          opencode-go/deepseek-flash:
+            context_length: 1000000
           opencode-go/deepseek-v4-flash:
             context_length: 1000000
           opencode-go/deepseek-v4-flash-vision-exp:
@@ -27,6 +31,8 @@ data:
             context_length: 1000000
           opencode-go/kimi-k3:
             context_length: 1048576
+          opencode-go/longcat-2.0:
+            context_length: 1000000
           opencode-go/kimi-k2.7-code:
             context_length: 262144
           opencode-go/deepseek-v4-pro:
@@ -39,7 +45,7 @@ data:
             context_length: 1000000
           opencode-go/mimo-v2.5-pro:
             context_length: 1048576
-          opencode-go/grok-4.5:
+          opencode-go/grok-4.6:
             context_length: 500000
           opencode-go/minimax-m2.7:
             context_length: 204800
@@ -47,7 +53,11 @@ data:
             context_length: 1050000
           opencode-go/hy3:
             context_length: 256000
-          opencode-go/ox-alpha-free:
+          opencode-go/hy4-preview:
+            context_length: 1024000
+          opencode-go/omen-alpha:
+            context_length: 500000
+          opencode-go/qwen3.8-flash:
             context_length: 1000000
     model:
       default: minimax/MiniMax-M3
@@ -62,9 +72,6 @@ data:
         provider: custom:litellm
       glm:
         model: opencode-go/glm-5.2
-        provider: custom:litellm
-      alpha:
-        model: opencode-go/ox-alpha-free
         provider: custom:litellm
       luna:
         model: opencode-go/gpt-5.6-luna
@@ -91,7 +98,7 @@ data:
         model: opencode-go/deepseek-v4-flash-vision-exp
         provider: custom:litellm
       grok:
-        model: opencode-go/grok-4.5
+        model: opencode-go/grok-4.6
         provider: custom:litellm
       qwen-max:
         model: opencode-go/qwen3.8-max
@@ -395,10 +402,6 @@ data:
         url: http://litellm.ai:4000/mcp/context7/
         headers:
           Authorization: "Bearer $${LITELLM_API_KEY}"
-      koment:
-        url: http://koment.selfhosted.svc.cluster.local:8080/mcp
-        headers:
-          Authorization: "Bearer $${KOMENT_API_KEY}"
     web:
       search_backend: searxng
   env: |-
@@ -408,7 +411,6 @@ data:
     SUMMARY_LLM_API_KEY={{ .LITELLM_MASTER_KEY }}
     API_SERVER_KEY={{ .API_SERVER_KEY }}
     GATEWAY_ALLOWED_USERS={{ .GATEWAY_ALLOWED_USERS }}
-    KOMENT_API_KEY={{ .KOMENT_HERMES_TOKEN }}
   matrix-post.py: |-
     """Post a message into a named Hermes Matrix room.
 

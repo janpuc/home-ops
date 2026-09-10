@@ -2,11 +2,11 @@
 apiVersion: litellm.home-operations.com/v1alpha1
 kind: LiteLLMModel
 metadata:
-  name: opencode-go-deepseek-v4-pro
+  name: opencode-go-hy4-preview
 spec:
-  modelName: opencode-go/deepseek-v4-pro
+  modelName: opencode-go/hy4-preview
   params:
-    model: openai/deepseek-v4-pro
+    model: openai/hy4-preview
     apiBase: https://opencode.ai/zen/go/v1
     apiKeyRef:
       name: litellm
@@ -16,8 +16,8 @@ spec:
       extra_headers:
         x-opencode-session: litellm-janpuc-com
   info:
-    maxInputTokens: 1000000
-    maxOutputTokens: 384000
+    maxInputTokens: 1024000
+    maxOutputTokens: 64000
     supportsFunctionCalling: true
     supportsPromptCaching: true
     extra:

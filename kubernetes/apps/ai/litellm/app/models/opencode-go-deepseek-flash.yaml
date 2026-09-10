@@ -2,11 +2,11 @@
 apiVersion: litellm.home-operations.com/v1alpha1
 kind: LiteLLMModel
 metadata:
-  name: opencode-go-deepseek-v4-pro
+  name: opencode-go-deepseek-flash
 spec:
-  modelName: opencode-go/deepseek-v4-pro
+  modelName: opencode-go/deepseek-flash
   params:
-    model: openai/deepseek-v4-pro
+    model: openai/deepseek-flash
     apiBase: https://opencode.ai/zen/go/v1
     apiKeyRef:
       name: litellm
@@ -20,5 +20,6 @@ spec:
     maxOutputTokens: 384000
     supportsFunctionCalling: true
     supportsPromptCaching: true
+    supportsVision: true
     extra:
       supports_reasoning: true

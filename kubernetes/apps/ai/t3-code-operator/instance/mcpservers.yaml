@@ -2,17 +2,6 @@
 apiVersion: t3code.janpuc.com/v1alpha1
 kind: MCPServer
 metadata:
-  name: koment
-spec:
-  config:
-    command: koment
-    args:
-      - mcp
-      - --write
----
-apiVersion: t3code.janpuc.com/v1alpha1
-kind: MCPServer
-metadata:
   name: memini
 spec:
   config:

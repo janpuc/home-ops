@@ -75,16 +75,22 @@ spec:
       models:
         - litellm/minimax/MiniMax-M3
         - litellm/opencode-go/glm-5.3
+        - litellm/opencode-go/glm-5.3-flash
         - litellm/opencode-go/glm-5.2
         - litellm/opencode-go/kimi-k3
         - litellm/opencode-go/kimi-k2.7-code
         - litellm/opencode-go/qwen3.8-max
+        - litellm/opencode-go/qwen3.8-flash
+        - litellm/opencode-go/deepseek-flash
         - litellm/opencode-go/deepseek-v4-pro
         - litellm/opencode-go/deepseek-v4-flash-vision-exp
         - litellm/opencode-go/gpt-5.6-luna
-        - litellm/opencode-go/grok-4.5
+        - litellm/opencode-go/grok-4.6
         - litellm/opencode-go/mimo-v2.5-pro
+        - litellm/opencode-go/hy4-preview
         - litellm/opencode-go/hy3
+        - litellm/opencode-go/longcat-2.0
+        - litellm/opencode-go/omen-alpha
       environment: *gateway-and-memory
       config:
         file:
@@ -104,6 +110,11 @@ spec:
                     output: 64000
                 opencode-go/glm-5.3:
                   name: GLM 5.3
+                  limit:
+                    context: 1000000
+                    output: 64000
+                opencode-go/glm-5.3-flash:
+                  name: GLM 5.3 Flash
                   limit:
                     context: 1000000
                     output: 64000
@@ -127,6 +138,16 @@ spec:
                   limit:
                     context: 1000000
                     output: 64000
+                opencode-go/qwen3.8-flash:
+                  name: Qwen 3.8 Flash
+                  limit:
+                    context: 1000000
+                    output: 64000
+                opencode-go/deepseek-flash:
+                  name: DeepSeek V4.1 Flash
+                  limit:
+                    context: 1000000
+                    output: 64000
                 opencode-go/deepseek-v4-pro:
                   name: DeepSeek V4 Pro
                   limit:
@@ -142,8 +163,8 @@ spec:
                   limit:
                     context: 1050000
                     output: 64000
-                opencode-go/grok-4.5:
-                  name: Grok 4.5
+                opencode-go/grok-4.6:
+                  name: Grok 4.6
                   limit:
                     context: 500000
                     output: 64000
@@ -152,16 +173,30 @@ spec:
                   limit:
                     context: 1048576
                     output: 64000
+                opencode-go/hy4-preview:
+                  name: HY4 Preview
+                  limit:
+                    context: 1024000
+                    output: 64000
                 opencode-go/hy3:
                   name: HY3
                   limit:
                     context: 256000
                     output: 32000
+                opencode-go/longcat-2.0:
+                  name: LongCat 2.0
+                  limit:
+                    context: 1000000
+                    output: 64000
+                opencode-go/omen-alpha:
+                  name: Omen Alpha
+                  limit:
+                    context: 500000
+                    output: 64000
           model: litellm/minimax/MiniMax-M3
           small_model: litellm/opencode-go/hy3
           plugin:
             - "@eleboucher/opencode-memini"
-            - "@koment/opencode-koment"
     cursor:
       enabled: true
       displayName: Cursor (alpha)
@@ -206,10 +241,6 @@ spec:
       name: t3-code-git-signing
       privateKeyKey: id_signing
       publicKeyKey: id_signing.pub
-  tools:
-    - name: koment
-      backend: github:koment-dev/koment
-      version: "3.2.0"
   drain:
     timeout: 10m
     timeoutAction: Force
