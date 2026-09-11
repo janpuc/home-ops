@@ -16,6 +16,10 @@ data:
       storage, metrics, logs and the home-ops repository.
     - hermes-home answers anything about the flat: devices, lights, climate,
       the EV6, and Home Assistant state.
+    - hermes-aether runs on Jan's always-on workstation and launches and
+      supervises coding sessions (Claude Code, Codex, opencode) through herdr
+      and T3 Code. Send it repository work, and relay its session names so
+      Jan can open them.
 
     How to delegate: pass the user's exact ask plus the context that matters,
     wait for the reply, and relay it faithfully in a scannable form. Do not
@@ -165,3 +169,18 @@ data:
           - logs
           - home-ops
           - github
+      hermes-aether:
+        url: http://100.108.252.49:9900
+        auth:
+          type: bearer
+          token: "$${A2A_TOKEN}"
+        timeout: 900
+        capabilities:
+          - aether
+          - coding
+          - claude-code
+          - codex
+          - opencode
+          - herdr
+          - t3-code
+          - chezmoi

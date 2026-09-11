@@ -28,3 +28,11 @@ data:
           capture_turns: false
           session_digest: false
           recall_limit: 6
+      - name: hermes-aether
+        hash: "{{ index . "MEMINI_API_KEY_hermes-aether" | sha256sum }}"
+        home: personal/jan
+        default_namespace: homelab/aether
+        settings:
+          capture_turns: false
+          session_digest: false
+          recall_limit: 6
