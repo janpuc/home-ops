@@ -218,7 +218,7 @@ data:
         auth:
           type: bearer
           token: "$${A2A_TOKEN}"
-        timeout: 900
+        timeout: 3900
         capabilities:
           - aether
           - coding
