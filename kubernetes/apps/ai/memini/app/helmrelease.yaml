@@ -31,6 +31,7 @@ spec:
                   secretKeyRef:
                     name: memini-secret
                     key: MEMINI_API_KEY
+              MEMINI_API_KEYS_FILE: /config/keys.yaml
               MEMINI_BACKEND: sqlite
               MEMINI_DEFAULT_NAMESPACE: default
               MEMINI_CLIENT_DEFAULTS: '{"inject_briefing_pinned":10,"inject_briefing_max_tok":3000,"recall_limit":5,"inject_recall_max_tok":400}'
@@ -54,7 +55,7 @@ spec:
                     key: LITELLM_API_KEY
               MEMINI_TOMBSTONE_TTL: 720h
               MEMINI_WRITE_EMBED_TIMEOUT: "30s"
-              MEMINI_RECALL_EMBED_TIMEOUT: "10s"
+              MEMINI_RECALL_EMBED_TIMEOUT: "5s"
               MEMINI_RERANK: http://bge-reranker-v2-m3.ai.svc.cluster.local:8080/v1
               MEMINI_RERANK_MODEL: bge-reranker-v2-m3
               MEMINI_RERANK_POOL: "10"
@@ -89,6 +90,14 @@ spec:
     persistence:
       data:
         existingClaim: memini
+      keys:
+        type: secret
+        name: memini-keys
+        advancedMounts:
+          main:
+            main:
+              - path: /config/keys.yaml
+                subPath: keys.yaml
     route:
       ui:
         enabled: true

@@ -7,14 +7,7 @@ metadata:
 spec:
   format: gguf
   hardware:
-    accelerator: vulkan
-    gpu:
-      enabled: true
-      layers: 99
-      vendor: amd
-      resourceClaims:
-        - name: gpu
-          resourceClaimTemplateName: llmkube-models-gpu
+    accelerator: cpu
   quantization: Q8_0
   source: https://huggingface.co/gpustack/bge-m3-GGUF/resolve/main/bge-m3-Q8_0.gguf
 ---
@@ -26,7 +19,7 @@ metadata:
 spec:
   modelRef: bge-embedding-m3
   runtime: llamacpp
-  image: ghcr.io/ggml-org/llama.cpp:server-vulkan-b10868@sha256:c4643056a4e827af25cc92f988a57e73e6080ba8759aff2c7d01bd532634e0c8
+  image: ghcr.io/ggml-org/llama.cpp:server-b10868@sha256:17155a3ce4cc906728ec99a2814bf0b4eaffaf3b4872bad8c3affed310cdbc35
   replicas: 1
   contextSize: 8192
   parallelSlots: 2

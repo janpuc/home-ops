@@ -151,6 +151,8 @@ data:
       model: opencode-go/deepseek-v4-flash-vision-exp
       max_concurrent_children: 4
       max_spawn_depth: 1
+    kanban:
+      dispatch_in_gateway: false
     web:
       search_backend: searxng
   init.sh: |-

@@ -1,0 +1,30 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: memini-keys-template
+data:
+  keys.yaml: |-
+    keys:
+      - name: hermes-main
+        hash: "{{ index . "MEMINI_API_KEY_hermes-main" | sha256sum }}"
+        home: personal/jan
+        default_namespace: homelab/hermes
+        settings:
+          recall_limit: 8
+      - name: hermes-home
+        hash: "{{ index . "MEMINI_API_KEY_hermes-home" | sha256sum }}"
+        home: personal/jan
+        default_namespace: homelab/home-assistant
+        settings:
+          capture_turns: false
+          session_digest: false
+          recall_limit: 5
+      - name: hermes-k8s
+        hash: "{{ index . "MEMINI_API_KEY_hermes-k8s" | sha256sum }}"
+        home: personal/jan
+        default_namespace: homelab/home-ops
+        settings:
+          capture_turns: false
+          session_digest: false
+          recall_limit: 6

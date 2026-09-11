@@ -86,7 +86,6 @@ spec:
                     name: ${APP}-secret
                     key: MEMINI_API_KEY
               MEMINI_BASE_URL: http://memini.ai.svc.cluster.local:8080
-              MEMINI_HOME: personal/jan
               MEMINI_NAMESPACE: ${HERMES_MEMINI_NAMESPACE:=homelab}
               S6_KILL_GRACETIME: "90000"
               S6_SERVICES_GRACETIME: "90000"
@@ -121,6 +120,7 @@ spec:
                   httpGet:
                     path: /.well-known/agent-card.json
                     port: 9900
+                  initialDelaySeconds: 30
                   periodSeconds: 10
                   timeoutSeconds: 5
                   failureThreshold: 60
