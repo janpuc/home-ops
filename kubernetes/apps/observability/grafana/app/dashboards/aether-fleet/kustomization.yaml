@@ -1,0 +1,14 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+configMapGenerator:
+  - name: aether-fleet
+    files:
+      - aether-fleet-health.json
+      - aether-a2a-activity.json
+      - aether-harness-quota.json
+generatorOptions:
+  disableNameSuffixHash: true
+  annotations:
+    kustomize.toolkit.fluxcd.io/substitute: disabled

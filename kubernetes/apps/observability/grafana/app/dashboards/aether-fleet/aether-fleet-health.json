@@ -1,0 +1,776 @@
+{
+  "uid": "aether-fleet-health",
+  "title": "Aether Fleet Health",
+  "description": "Right-now fleet health: is everything up, and is the exporter itself even collecting? Read top row first \u2014 every other panel here (and on every other aether-* dashboard) is downstream of the exporter answering its scrape.",
+  "tags": ["aether", "fleet"],
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "graphTooltip": 1,
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "refresh": "30s",
+  "timezone": "browser",
+  "templating": {
+    "list": [
+      {
+        "name": "DS_PROMETHEUS",
+        "type": "datasource",
+        "query": "prometheus",
+        "current": {},
+        "hide": 0
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Exporter Liveness (Prometheus scrape)",
+      "description": "Prometheus's own verdict on whether it could scrape aether-fleet-exporter at all \u2014 upstream of every aether_* metric on every dashboard. Healthy = 1 (green, \"UP\"). Unhealthy = 0 (red, \"DOWN\") or no data at all (also styled red): if this is anything but a solid green 1, every other panel here is stale or empty and cannot be trusted, no matter what it shows.",
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "up{job=\"aether-fleet-exporter\"}",
+          "legendFormat": "exporter scrape",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "textMode": "value_and_name",
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "DOWN (no data)",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "DOWN"
+                }
+              }
+            },
+            {
+              "type": "value",
+              "options": {
+                "1": {
+                  "text": "UP"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 2,
+      "type": "state-timeline",
+      "title": "Per-Source Scrape Health",
+      "description": "Each collector's own scrape_ok flag, one row per source \u2014 healthy is a solid green bar (value 1) for the whole window; any red segment (0) or gap (collector didn't report) means that specific collector failed or the exporter itself was down. Covers a2a, t3, harness (per-harness) and quota collectors \u2014 herdr and litellm have no scrape_ok of their own, see the up/down stats below for those instead.",
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "aether_a2a_scrape_ok",
+          "legendFormat": "a2a ({{source}})",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "aether_t3_scrape_ok",
+          "legendFormat": "t3 ({{source}})",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "aether_harness_scrape_ok",
+          "legendFormat": "harness ({{harness}})",
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "aether_quota_scrape_ok",
+          "legendFormat": "quota ({{plan}})",
+          "refId": "D"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "FAILED",
+                  "color": "red"
+                }
+              }
+            },
+            {
+              "type": "value",
+              "options": {
+                "1": {
+                  "text": "ok",
+                  "color": "green"
+                }
+              }
+            }
+          ],
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "mergeValues": true,
+        "showValue": "never",
+        "rowHeight": 0.8
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "hermes A2A gateway up",
+      "description": "aether_a2a_up: 1 if the hermes A2A gateway answered its /metrics endpoint this scrape. This covers ONLY the A2A gateway \u2014 not T3, not herdr, not litellm. Healthy = green 1. Red 0 or no data = the gateway did not answer.",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 11
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "aether_a2a_up{source=\"a2a\"}",
+          "legendFormat": "a2a",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value_and_name",
+        "justifyMode": "center"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "no data",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "DOWN"
+                }
+              }
+            },
+            {
+              "type": "value",
+              "options": {
+                "1": {
+                  "text": "UP"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "T3 Code up",
+      "description": "aether_t3_up: 1 if T3 Code answered its orchestration snapshot this scrape. This covers ONLY T3 \u2014 not herdr, not the A2A gateway, not litellm. Healthy = green 1. Red 0 or no data = T3 did not answer.",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 11
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "aether_t3_up{source=\"t3\"}",
+          "legendFormat": "t3",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value_and_name",
+        "justifyMode": "center"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "no data",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "DOWN"
+                }
+              }
+            },
+            {
+              "type": "value",
+              "options": {
+                "1": {
+                  "text": "UP"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "herdr up",
+      "description": "aether_herdr_up: 1 if the herdr server answered `herdr agent list` this scrape. This covers ONLY herdr \u2014 not T3, not the A2A gateway, not litellm. Note herdr only ever sees herdr-attached panes; a harness run outside herdr (bare ssh, cron, a T3 thread) is invisible to it, but that blind spot doesn't affect this up/down check itself. Healthy = green 1. Red 0 or no data = herdr did not answer.",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 11
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "aether_herdr_up{source=\"herdr\"}",
+          "legendFormat": "herdr",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value_and_name",
+        "justifyMode": "center"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "no data",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "DOWN"
+                }
+              }
+            },
+            {
+              "type": "value",
+              "options": {
+                "1": {
+                  "text": "UP"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "litellm up",
+      "description": "aether_litellm_up: 1 if litellm answered GET /v1/models this scrape. This covers ONLY litellm \u2014 not T3, not herdr, not the A2A gateway. Healthy = green 1. Red 0 or no data = litellm did not answer.",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 11
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "aether_litellm_up{source=\"litellm\"}",
+          "legendFormat": "litellm",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value_and_name",
+        "justifyMode": "center"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "no data",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "DOWN"
+                }
+              }
+            },
+            {
+              "type": "value",
+              "options": {
+                "1": {
+                  "text": "UP"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "Gateway Restart Cadence (24h)",
+      "description": "Hourly increase of aether_hermes_gateway_restarts_total, a durable count of lines in gateway-starts.log that survives gateway restarts itself. Healthy is flat-to-occasional (a handful of bars across the day, e.g. planned deploys). A rising staircase or frequent bars means the hermes gateway is crash-looping.",
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 15
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "increase(aether_hermes_gateway_restarts_total[1h])",
+          "legendFormat": "restarts/hour",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 60
+          },
+          "min": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      }
+    },
+    {
+      "id": 8,
+      "type": "table",
+      "title": "Quota Buckets \u2265 0.9 Used",
+      "description": "aether_quota_used_ratio filtered to buckets at or above 90% used (already a 0..1 fraction, shown as percent). Healthy = empty table. Any row here means that plan/bucket is close to being throttled or already active (cross-check aether_quota_active) \u2014 e.g. Fable's weekly bucket sitting at 99% is exactly the kind of thing this table exists to surface.",
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 12,
+        "y": 15
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "aether_quota_used_ratio >= 0.9",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true
+            },
+            "indexByName": {},
+            "renameByName": {
+              "Value": "used_ratio"
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "custom": {
+            "align": "auto",
+            "displayMode": "color-background"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "orange",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 0.95
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "plan"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "color-text"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bucket"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "color-text"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "model"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "color-text"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "displayName": "used_ratio",
+            "desc": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "type": "timeseries",
+      "title": "Exporter Per-Source Scrape Duration",
+      "description": "aether_exporter_scrape_duration_seconds per collector (a2a, t3, harness, litellm, herdr, quota). Healthy is low and flat (litellm is normally the slowest, ~0.1\u20130.2s, since it makes a real HTTP call). A step up or an outlier source means that collector is struggling (slow dependency, timeout creeping in) even while scrape_ok still reads 1.",
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 22
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "aether_exporter_scrape_duration_seconds",
+          "legendFormat": "{{source}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "showPoints": "never"
+          },
+          "min": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "Tracked Unrotated File Sizes",
+      "description": "aether_exporter_tracked_file_bytes: current size of logs the exporter tails that nothing rotates (gateway_starts_log, a2a_audit_log, herdr_server_log). Healthy is slow, bounded growth. A steep or accelerating climb on any one file means it's heading toward filling the disk with nothing to stop it \u2014 investigate rotation for that file specifically.",
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 12,
+        "y": 22
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "aether_exporter_tracked_file_bytes",
+          "legendFormat": "{{file}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "showPoints": "never"
+          },
+          "min": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "text",
+      "title": "Logs \u2014 in VictoriaLogs, not here",
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 28
+      },
+      "id": 11,
+      "options": {
+        "mode": "markdown",
+        "content": "### Logs\n\nThe fleet's journal ships to **VictoriaLogs** and is queryable at [vlogs.janpuc.com](https://vlogs.janpuc.com):\n\n```\nhost:aether AND unit:hermes-aether AND _time:1h\nhost:aether AND level:(error OR warning) AND _time:1h\n```\n\nFields on every record: `host`, `unit`, `level`, `pid`, `ident`.\n\nThere is no VictoriaLogs panel here because Grafana has no such datasource: it would need the `victoriametrics-logs-datasource` plugin, and this Grafana runs with a read-only root filesystem and `plugin_admin_enabled: false`. Adding it is a separate change to the Grafana deployment.\n\nTo read one A2A conversation rather than a log stream, use `a2a-threads show <context>` on aether."
+      },
+      "transparent": false
+    }
+  ]
+}

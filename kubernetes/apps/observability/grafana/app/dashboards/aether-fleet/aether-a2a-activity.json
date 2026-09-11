@@ -1,0 +1,519 @@
+{
+  "uid": "aether-a2a-activity",
+  "title": "Aether A2A Activity",
+  "description": "What A2A traffic is running right now on aether's hermes gateway, what failed, and how long turns take. Every panel here is fed by aether-fleet-exporter's aether_a2a_* families; if the exporter-liveness stat at top-left is not green, every other panel on this page is stale or empty, not actually healthy.",
+  "tags": ["aether", "fleet"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "graphTooltip": 1,
+  "refresh": "30s",
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": ["10s", "30s", "1m", "5m", "15m", "30m", "1h"]
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "DS_PROMETHEUS",
+        "type": "datasource",
+        "query": "prometheus",
+        "current": {},
+        "hide": 0,
+        "label": "Prometheus"
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Exporter liveness",
+      "description": "Prometheus's own up{job=\"aether-fleet-exporter\"} \u2014 this is scraper health, not any aether_* series. Healthy: 1 (green). Unhealthy: 0 or no data (red/grey) \u2014 when this is not 1, every other panel on this dashboard is frozen at its last scraped value or blank, not actually reporting current state. Check this FIRST before reading anything else here.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "up{job=\"aether-fleet-exporter\"}",
+          "legendFormat": "exporter up",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "DOWN",
+                  "color": "red"
+                }
+              }
+            },
+            {
+              "type": "value",
+              "options": {
+                "1": {
+                  "text": "UP",
+                  "color": "green"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "noValue": "NO DATA"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto"
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "In-flight tasks",
+      "description": "aether_a2a_tasks_active \u2014 inbound audit-log tasks with no matching outbound line yet. Healthy: a small number that drains to 0 between bursts. Unhealthy: a number that only grows \u2014 a stuck or hung task. Blind spot: rejected/orphaned inbound tasks that never get an outbound line at all will not show here or anywhere else in this metric.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "aether_a2a_tasks_active",
+          "legendFormat": "active",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 3
+              },
+              {
+                "color": "red",
+                "value": 8
+              }
+            ]
+          },
+          "noValue": "NO DATA"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto"
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Time since last A2A activity",
+      "description": "time() - aether_a2a_last_activity_timestamp_seconds, the age of the newest audit-log event the exporter has seen. Healthy: small and matches how chatty A2A traffic normally is (minutes to low hours between exchanges). Unhealthy: growing for far longer than usual \u2014 either nothing is happening, or the audit log/gateway stopped being written to. This is a timestamp gauge (unix seconds), never read the raw value as a duration.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "time() - aether_a2a_last_activity_timestamp_seconds",
+          "legendFormat": "age",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 3600
+              },
+              {
+                "color": "red",
+                "value": 86400
+              }
+            ]
+          },
+          "noValue": "NO DATA"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto"
+      }
+    },
+    {
+      "id": 4,
+      "type": "text",
+      "title": "Reading a single conversation",
+      "description": "None of the panels on this dashboard show conversation content \u2014 they are all counts and timings, not transcripts. This panel just documents where the transcript actually lives.",
+      "gridPos": {
+        "h": 4,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "**A transcript is not a metric.** This dashboard only shows volume, outcomes and timing for A2A traffic \u2014 none of it is per-conversation content.\n\nTo read one specific A2A conversation, on `aether` run:\n\n```\na2a-threads show <context>\n```\n\nwhere `<context>` is the task/context id you want. Use the peer and timing panels below to find *when* something interesting happened, then use this command to see *what actually happened* in that exchange."
+      }
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Inbound vs outbound event rate",
+      "description": "rate() of aether_a2a_events_total by direction \u2014 audit-log events per second, durable across gateway restarts (this counter is not reset by a restart, unlike task outcomes below). Healthy: inbound and outbound roughly track each other over time, since most inbound events eventually pair with an outbound one. Unhealthy: inbound rising with outbound flat \u2014 tasks are coming in and not completing.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 4
+      },
+      "targets": [
+        {
+          "expr": "sum by (direction) (rate(aether_a2a_events_total[$__rate_interval]))",
+          "legendFormat": "{{direction}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "spanNulls": true,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Task outcomes vs gateway uptime",
+      "description": "aether_a2a_task_outcomes_total (completed/failed) plotted with aether_a2a_uptime_seconds on the right axis. IMPORTANT: task_outcomes_total RESETS to 0 on every gateway restart \u2014 a sudden drop to zero in completed/failed is a restart, not a stoppage, and is only distinguishable from real silence by watching uptime fall to 0 at the same instant. Healthy: completed climbs, failed stays low and flat, uptime climbs steadily between restarts. Unhealthy: failed climbing relative to completed, or uptime cycling every few minutes (crash-looping).",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 4
+      },
+      "targets": [
+        {
+          "expr": "sum by (outcome) (aether_a2a_task_outcomes_total)",
+          "legendFormat": "{{outcome}}",
+          "refId": "A"
+        },
+        {
+          "expr": "aether_a2a_uptime_seconds",
+          "legendFormat": "gateway uptime",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 5,
+            "spanNulls": true,
+            "showPoints": "never"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [10, 5],
+                  "fill": "dash"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "purple"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 7,
+      "type": "heatmap",
+      "title": "Task duration heatmap",
+      "description": "aether_a2a_task_duration_seconds (outbound.ts - inbound.ts for matched task_ids), bucketed. Healthy: most mass in the lower buckets (under 60s), a stable band over time. Unhealthy: mass drifting into the upper buckets (300s+), or a new column appearing at +Inf-adjacent buckets \u2014 long-running or hung turns.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 12
+      },
+      "targets": [
+        {
+          "expr": "sum by (le) (increase(aether_a2a_task_duration_seconds_bucket[$__rate_interval]))",
+          "format": "heatmap",
+          "legendFormat": "{{le}}",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "calculate": false,
+        "yAxis": {
+          "unit": "s",
+          "axisPlacement": "left"
+        },
+        "color": {
+          "mode": "scheme",
+          "scheme": "Turbo",
+          "steps": 64
+        },
+        "tooltip": {
+          "mode": "single",
+          "showColorScale": true
+        }
+      }
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "Task duration p95",
+      "description": "histogram_quantile(0.95, ...) over aether_a2a_task_duration_seconds_bucket. Healthy: flat, low line consistent with normal turn length. Unhealthy: a rising or spiky p95 \u2014 a tail of slow turns growing, worth cross-checking against the heatmap to its left and the outcomes panel above for correlated failures. With only a handful of samples in the underlying histogram (single digits to low tens per scrape window), treat small step changes as noise, not signal.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 12
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(aether_a2a_task_duration_seconds_bucket[$__rate_interval])))",
+          "legendFormat": "p95",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "spanNulls": true,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 9,
+      "type": "timeseries",
+      "title": "Per-peer event volume",
+      "description": "rate() of aether_a2a_peer_events_total by peer and direction. Peers appear as ip:<address>: the cluster node that runs the orchestrator, and aether itself for locally-issued probes. Healthy: volume distributed the way you expect for who is actually talking to hermes right now. Unhealthy: a peer going silent that shouldn't be, or an unfamiliar peer appearing (would show as a new series/legend entry, worth investigating).",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 20
+      },
+      "targets": [
+        {
+          "expr": "sum by (peer, direction) (rate(aether_a2a_peer_events_total[$__rate_interval]))",
+          "legendFormat": "{{peer}} / {{direction}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "spanNulls": true,
+            "showPoints": "never",
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": ["mean", "max"]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "text",
+      "title": "Logs \u2014 in VictoriaLogs, not here",
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 28
+      },
+      "id": 10,
+      "options": {
+        "mode": "markdown",
+        "content": "### Logs\n\nThe fleet's journal ships to **VictoriaLogs** and is queryable at [vlogs.janpuc.com](https://vlogs.janpuc.com):\n\n```\nhost:aether AND unit:hermes-aether AND _time:1h\nhost:aether AND level:(error OR warning) AND _time:1h\n```\n\nFields on every record: `host`, `unit`, `level`, `pid`, `ident`.\n\nThere is no VictoriaLogs panel here because Grafana has no such datasource: it would need the `victoriametrics-logs-datasource` plugin, and this Grafana runs with a read-only root filesystem and `plugin_admin_enabled: false`. Adding it is a separate change to the Grafana deployment.\n\nTo read one A2A conversation rather than a log stream, use `a2a-threads show <context>` on aether."
+      },
+      "transparent": false
+    }
+  ]
+}

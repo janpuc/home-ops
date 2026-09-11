@@ -1,0 +1,720 @@
+{
+  "uid": "aether-harness-quota",
+  "title": "Aether Harnesses & Plan Quota",
+  "description": "Which subscription is about to run out, and is every harness usable right now? Every panel here is fed by aether-fleet-exporter's aether_quota_*, aether_harness_*, aether_t3_* and aether_herdr_agents families; if the exporter-liveness stat at top is not a solid green 1, every other panel on this page is stale or empty, not actually healthy. Read per-model/per-bucket rows individually \u2014 the canonical failure this dashboard exists to catch is one narrow bucket (e.g. a single model's weekly allowance) pinned near 100% while the account-wide bucket still reads comfortably low, so nothing here is pre-averaged across bucket or model.",
+  "tags": ["aether", "fleet"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "graphTooltip": 1,
+  "refresh": "1m",
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": ["10s", "30s", "1m", "5m", "15m", "30m", "1h"]
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "DS_PROMETHEUS",
+        "type": "datasource",
+        "query": "prometheus",
+        "current": {},
+        "hide": 0,
+        "label": "Prometheus"
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Exporter Liveness (Prometheus scrape)",
+      "description": "Prometheus's own verdict on whether it could scrape aether-fleet-exporter at all \u2014 upstream of every aether_* metric on this dashboard. Healthy = 1 (green, \"UP\"). Unhealthy = 0 (red, \"DOWN\") or no data at all (also styled red): if this is anything but a solid green 1, every quota and harness panel below is stale or empty and cannot be trusted, no matter what it shows.",
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "up{job=\"aether-fleet-exporter\"}",
+          "legendFormat": "exporter scrape",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "textMode": "value_and_name",
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "DOWN (no data)",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "DOWN"
+                }
+              }
+            },
+            {
+              "type": "value",
+              "options": {
+                "1": {
+                  "text": "UP"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 2,
+      "type": "bargauge",
+      "title": "Quota Used, by Plan / Bucket / Model",
+      "description": "aether_quota_used_ratio, one bar per plan+bucket+model combination \u2014 never summed or averaged across buckets, so a single model's own allowance (e.g. Fable's weekly bucket) stays visible even while the account-wide bucket for the same plan reads low. Already a 0..1 fraction, shown as percent. Healthy = green, under 75%. Amber (75-90%) = watch it. Red (90%+) = about to be throttled or already is \u2014 cross-check the \"Buckets Active Now\" table below to see if it has actually started throttling.",
+      "gridPos": {
+        "h": 12,
+        "w": 24,
+        "x": 0,
+        "y": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "aether_quota_used_ratio",
+          "legendFormat": "{{plan}} \u2014 {{bucket}} [{{model}}]",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "valueMode": "color",
+        "showUnfilled": true,
+        "minVizHeight": 10,
+        "minVizWidth": 0
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.75
+              },
+              {
+                "color": "red",
+                "value": 0.9
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 3,
+      "type": "table",
+      "title": "Buckets Active Now (throttling)",
+      "description": "aether_quota_active == 1: buckets where the provider itself currently reports the limit is in effect right now, not just close. Healthy = empty table (nothing throttling). Any row here means that harness/plan is actually rate-limited at this moment \u2014 cross-check the used-ratio bargauge above for how close its siblings are to joining it.",
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "aether_quota_active == 1",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true
+            },
+            "indexByName": {},
+            "renameByName": {
+              "Value": "active"
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "align": "auto",
+            "displayMode": "color-background"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "1": {
+                  "text": "THROTTLING",
+                  "color": "red"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true
+      }
+    },
+    {
+      "id": 4,
+      "type": "table",
+      "title": "Time to Reset, by Bucket",
+      "description": "aether_quota_reset_timestamp_seconds minus time(), i.e. how long until each bucket's window rolls over. Healthy = plenty of runway relative to how full the bucket is (compare against the used-ratio bargauge \u2014 a bucket at 99% with days left is worse than one at 99% resetting in an hour). A near-zero or negative value alongside a still-high used_ratio and stale=0 above means a reading that has not refreshed since the actual reset.",
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "aether_quota_reset_timestamp_seconds - time()",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true
+            },
+            "indexByName": {},
+            "renameByName": {
+              "Value": "time_to_reset"
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "dtdurations",
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "displayName": "time_to_reset",
+            "desc": false
+          }
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "type": "table",
+      "title": "Quota Reading Freshness",
+      "description": "aether_quota_cache_age_seconds (how long since this plan's quota figure was last refreshed) joined with aether_quota_stale (the exporter's own too-old verdict). claude and chatgpt readings only refresh when that harness actually runs a turn \u2014 there is no independent poller \u2014 so a large cache age on those two plans is expected between runs and does NOT by itself mean something is broken; opencode-go and minimax poll on their own schedule so age should stay low continuously. Read any used_ratio above as a floor, not a live figure, whenever its cache age is large. Unhealthy = stale=1 (STALE, red) on a plan whose harness has run recently.",
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 23
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "aether_quota_cache_age_seconds",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "aether_quota_stale",
+          "format": "table",
+          "instant": true,
+          "refId": "B"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true
+            },
+            "indexByName": {},
+            "renameByName": {
+              "Value #A": "cache_age",
+              "Value #B": "stale"
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "displayMode": "color-background"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "cache_age"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "stale"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "fresh",
+                        "color": "green"
+                      }
+                    }
+                  },
+                  {
+                    "type": "value",
+                    "options": {
+                      "1": {
+                        "text": "STALE",
+                        "color": "red"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "unit",
+                "value": "short"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true
+      }
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Harness Usability",
+      "description": "aether_harness_up, one box per harness (claude, claudel, codex, opencode). Healthy = every box a solid green 1 (\"UP\"). Red 0 or no data on any one box means that specific harness cannot currently be used \u2014 this reflects only whether the harness itself answered, independent of any plan/quota state shown elsewhere on this page.",
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 12,
+        "y": 23
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "aether_harness_up",
+          "legendFormat": "{{harness}}",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "textMode": "value_and_name",
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "DOWN (no data)",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "DOWN"
+                }
+              }
+            },
+            {
+              "type": "value",
+              "options": {
+                "1": {
+                  "text": "UP"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 7,
+      "type": "table",
+      "title": "T3 Threads by Instance & Session State",
+      "description": "aether_t3_threads broken down by instance (claude, claudeAgent, claudel, codex, opencode), session state (ready/stopped/error/absent) and turn_state (completed/interrupted/absent). Healthy = every instance has at least one \"ready\" row and no \"error\" rows. An \"error\" session or a row stuck on turn_state=interrupted is a thread that needs attention; \"absent\" rows are instances T3 currently has no live session for, which is expected for instances not in active use.",
+      "gridPos": {
+        "h": 9,
+        "w": 14,
+        "x": 0,
+        "y": 30
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "aether_t3_threads",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true
+            },
+            "indexByName": {},
+            "renameByName": {
+              "Value": "count"
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "session"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "color-text"
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "ready": {
+                        "color": "green"
+                      }
+                    }
+                  },
+                  {
+                    "type": "value",
+                    "options": {
+                      "stopped": {
+                        "color": "text"
+                      }
+                    }
+                  },
+                  {
+                    "type": "value",
+                    "options": {
+                      "error": {
+                        "color": "red"
+                      }
+                    }
+                  },
+                  {
+                    "type": "value",
+                    "options": {
+                      "absent": {
+                        "color": "text"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "displayName": "instance",
+            "desc": false
+          }
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "type": "stat",
+      "title": "T3 Threads Settled",
+      "description": "aether_t3_threads_settled: count of T3 threads currently in a settled (non-transitional) state. Healthy is this tracking close to the total thread count across all instances in the table to the left \u2014 a growing gap means threads are stuck mid-transition. No inherent good/bad number on its own; read it alongside the breakdown table.",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 14,
+        "y": 30
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "aether_t3_threads_settled",
+          "legendFormat": "settled",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "textMode": "value_and_name",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 9,
+      "type": "bargauge",
+      "title": "Herdr Agents by Status",
+      "description": "aether_herdr_agents by status, straight from `herdr agent list`. IMPORTANT BLIND SPOT: herdr only ever sees herdr-attached panes \u2014 a harness run outside herdr (bare ssh, cron, or a T3 thread) is completely invisible here, so this panel can read all-quiet while agents are actively running elsewhere. Use it only to see what herdr itself is managing, never as a fleet-wide \"is anything running\" check; cross-check T3 threads and aether_harness_up for that. Healthy is whatever mix of statuses matches what you expect to be herdr-attached right now.",
+      "gridPos": {
+        "h": 9,
+        "w": 6,
+        "x": 18,
+        "y": 30
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "aether_herdr_agents",
+          "legendFormat": "{{status}}",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "valueMode": "color",
+        "showUnfilled": true
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      }
+    }
+  ]
+}

@@ -28,3 +28,27 @@ spec:
     - action: replace
       targetLabel: job
       replacement: smartctl-exporter
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/monitoring.coreos.com/scrapeconfig_v1alpha1.json
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: ScrapeConfig
+metadata:
+  name: aether-fleet-exporter
+spec:
+  staticConfigs:
+    - targets:
+        # aether is the workstation outside the cluster; it has no LAN address, so this
+        # name resolves to its Tailscale address via the UniFi resolver that CoreDNS
+        # forwards to -- the same path that makes bigmouth.internal work above. Keeping
+        # the address in DNS rather than here also keeps it out of a public repo.
+        - aether.internal:9877
+  metricsPath: /metrics
+  # A full scrape takes ~1.3s (31 metric families, 128 series); 30s/10s leaves a wide
+  # margin without lagging the dashboards, matching the interval/timeout this repo
+  # already uses for comparable exporters (see litellm's ServiceMonitor).
+  scrapeInterval: 30s
+  scrapeTimeout: 10s
+  relabelings:
+    - action: replace
+      targetLabel: job
+      replacement: aether-fleet-exporter
