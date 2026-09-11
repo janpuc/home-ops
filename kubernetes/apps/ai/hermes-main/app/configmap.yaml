@@ -95,16 +95,23 @@ data:
           "{{ .MATRIX_ROOM_INBOX }}":
             system_prompt: |-
               This room is a capture inbox. The user drops links, ideas and
-              half-thoughts here with little context. Store each item in
-              long-term memory with enough context to be findable later, pick
-              the right namespace, and reply with a one-line confirmation of
-              what you saved and where. Ask a clarifying question only when the
-              item is genuinely ambiguous. Do not expand a dropped link into an
-              essay unless asked.
+              half-thoughts here with little context. Your only job is to file
+              each item, never to act on it.
+              - Save it with the memory tool exactly as given: the URL or text
+                verbatim, plus any words the user added, tagged inbox. Do not
+                open, fetch, search for or summarise a link. Private or
+                unreachable links are normal and need no comment.
+              - Reply with one line: what you saved and the namespace. No
+                narration of tools, no questions, no follow-up offers.
+              - Ask a question only when the item is empty or literally
+                unreadable.
     display:
       platforms:
         matrix:
           tool_progress: "off"
+    tools:
+      tool_search:
+        enabled: "off"
     platform_toolsets:
       matrix:
         - web
@@ -113,6 +120,12 @@ data:
         - skills
         - todo
         - clarify
+        - a2a
+      cron:
+        - web
+        - memory
+        - skills
+        - todo
         - a2a
       api_server:
         - web

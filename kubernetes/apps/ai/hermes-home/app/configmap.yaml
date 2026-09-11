@@ -19,6 +19,9 @@ data:
       a2a:
         - memory
         - a2a
+    tools:
+      tool_search:
+        enabled: "off"
     mcp_servers:
       ha:
         url: http://litellm.ai:4000/mcp/ha/
