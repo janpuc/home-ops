@@ -9,6 +9,8 @@ data:
       - provider: custom:litellm
         model: opencode-go/deepseek-v4-pro
       - provider: custom:litellm
+        model: opencode-go/kimi-k3
+      - provider: custom:litellm
         model: opencode-go/glm-5.3
     platform_toolsets:
       a2a:
