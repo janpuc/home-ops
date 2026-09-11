@@ -57,12 +57,12 @@ spec:
               - run
             env:
               A2A_AGENT_NAME: ${APP}
-              A2A_HOST: 0.0.0.0
-              A2A_PEER_TOKENS:
+              A2A_BEARER_TOKEN:
                 valueFrom:
                   secretKeyRef:
                     name: ${APP}-secret
-                    key: A2A_PEER_TOKENS
+                    key: A2A_TOKEN
+              A2A_HOST: 0.0.0.0
               A2A_PORT: "9900"
               A2A_PUBLIC_URL: http://${APP}.ai.svc.cluster.local:9900
               A2A_TOKEN:
@@ -138,6 +138,7 @@ spec:
                   - DAC_OVERRIDE
                   - FOWNER
                   - FSETID
+                  - KILL
                   - SETGID
                   - SETUID
                 drop:

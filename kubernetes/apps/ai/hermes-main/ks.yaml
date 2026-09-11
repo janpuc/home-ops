@@ -20,7 +20,6 @@ spec:
   postBuild:
     substitute:
       APP: hermes-main
-      HERMES_AGENT_ID: MAIN
       HERMES_MEMINI_NAMESPACE: homelab
       KOPIUR_COPYMETHOD: Direct
       KOPIUR_STORAGECLASS: miroir-fast-local

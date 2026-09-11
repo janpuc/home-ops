@@ -40,6 +40,10 @@ data:
     platforms:
       matrix:
         enabled: true
+        extra:
+          require_mention: false
+          auto_thread: false
+          dm_mention_threads: false
         channel_overrides:
           "{{ .MATRIX_ROOM_CLUSTER }}":
             system_prompt: |-
@@ -97,10 +101,6 @@ data:
               what you saved and where. Ask a clarifying question only when the
               item is genuinely ambiguous. Do not expand a dropped link into an
               essay unless asked.
-    matrix:
-      require_mention: false
-      auto_thread: false
-      dm_mention_threads: false
     display:
       platforms:
         matrix:

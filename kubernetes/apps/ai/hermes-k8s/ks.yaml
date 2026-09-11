@@ -18,7 +18,6 @@ spec:
   postBuild:
     substitute:
       APP: hermes-k8s
-      HERMES_AGENT_ID: K8S
       HERMES_MEMINI_NAMESPACE: homelab/home-ops
       KOPIUR_COPYMETHOD: Direct
       KOPIUR_STORAGECLASS: miroir-fast-local
