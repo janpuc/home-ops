@@ -214,7 +214,7 @@ data:
           - home-ops
           - github
       hermes-aether:
-        url: http://100.108.252.49:9900
+        url: http://aether.internal:9900
         auth:
           type: bearer
           token: "$${A2A_TOKEN}"

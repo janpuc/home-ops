@@ -31,3 +31,25 @@ spec:
     jsonData:
       implementation: prometheus
     url: http://alertmanager-operated.observability.svc.cluster.local:9093
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/grafana.integreatly.org/grafanadatasource_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: victoria-logs
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  # The datasource type is not built into Grafana, so the plugin is declared here and the
+  # operator folds it into the deployment's GF_INSTALL_PLUGINS. That works despite
+  # readOnlyRootFilesystem because Grafana installs plugins under /var/lib/grafana, which is
+  # the PVC, not the image.
+  plugins:
+    - name: victoriametrics-logs-datasource
+      version: 0.32.0
+  datasource:
+    type: victoriametrics-logs-datasource
+    name: victoria-logs
+    access: proxy
+    url: http://victoria-logs.observability.svc.cluster.local:9428

@@ -25,6 +25,13 @@
         "current": {},
         "hide": 0,
         "label": "Prometheus"
+      },
+      {
+        "name": "DS_VICTORIA_LOGS",
+        "type": "datasource",
+        "query": "victoriametrics-logs-datasource",
+        "current": {},
+        "hide": 0
       }
     ]
   },
@@ -500,8 +507,12 @@
       }
     },
     {
-      "type": "text",
-      "title": "Logs \u2014 in VictoriaLogs, not here",
+      "type": "logs",
+      "title": "hermes-aether logs",
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${DS_VICTORIA_LOGS}"
+      },
       "gridPos": {
         "h": 10,
         "w": 24,
@@ -509,11 +520,26 @@
         "y": 28
       },
       "id": 10,
+      "description": "hermes-aether's own journal for this window. Pair it with the task panels above: when an outcome flips to failed, the reason is here. Note these are the gateway's lines, not the conversation \u2014 for what a peer actually asked and what came back, use `a2a-threads show <context>` on aether.",
       "options": {
-        "mode": "markdown",
-        "content": "### Logs\n\nThe fleet's journal ships to **VictoriaLogs** and is queryable at [vlogs.janpuc.com](https://vlogs.janpuc.com):\n\n```\nhost:aether AND unit:hermes-aether AND _time:1h\nhost:aether AND level:(error OR warning) AND _time:1h\n```\n\nFields on every record: `host`, `unit`, `level`, `pid`, `ident`.\n\nThere is no VictoriaLogs panel here because Grafana has no such datasource: it would need the `victoriametrics-logs-datasource` plugin, and this Grafana runs with a read-only root filesystem and `plugin_admin_enabled: false`. Adding it is a separate change to the Grafana deployment.\n\nTo read one A2A conversation rather than a log stream, use `a2a-threads show <context>` on aether."
+        "showTime": true,
+        "wrapLogMessage": true,
+        "sortOrder": "Descending",
+        "enableLogDetails": true,
+        "dedupStrategy": "none",
+        "prettifyLogMessage": false
       },
-      "transparent": false
+      "targets": [
+        {
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${DS_VICTORIA_LOGS}"
+          },
+          "refId": "A",
+          "expr": "host:aether AND unit:hermes-aether AND _time:$__range",
+          "queryType": "instant"
+        }
+      ]
     }
   ]
 }

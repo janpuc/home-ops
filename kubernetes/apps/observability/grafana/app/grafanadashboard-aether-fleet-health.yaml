@@ -12,6 +12,8 @@ spec:
   datasources:
     - datasourceName: prometheus
       inputName: DS_PROMETHEUS
+    - datasourceName: victoria-logs
+      inputName: DS_VICTORIA_LOGS
   configMapRef:
     name: aether-fleet
     key: aether-fleet-health.json
