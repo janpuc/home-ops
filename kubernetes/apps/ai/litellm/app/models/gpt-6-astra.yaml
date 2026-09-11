@@ -1,0 +1,19 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmmodel_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: gpt-6-astra
+spec:
+  modelName: gpt-6-astra # public alias T3 / opencode / codex hit
+  params:
+    model: openai/gpt-6-astra
+    apiKeyRef:
+      name: litellm
+      key: OPENAI_API_KEY # CRITICAL-tier (OpenAI Preparedness Framework); refuses PoC-exploit requests
+    dropParams: true
+  info:
+    # Critical-tier under OpenAI Preparedness Framework — harder reasoning to monitor
+    # than GPT-5.6 Sol. Refuses PoC-exploit requests.
+    # Sources: openai.com/index/gpt-6-astra/, bymachine.news/openai-gpt-6-astra-frontier-model,
+    # edtechinnovationhub.com/openai-rolls-out-gpt-6-astra-...
