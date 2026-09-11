@@ -3,21 +3,25 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: hermes-matrix
+  name: hermes-main
 spec:
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: hermes-matrix
   components:
     - ../../../../components/kopiur/backup
+    - ../../../../components/hermes-agent
   dependsOn:
-    - name: hermes
+    - name: litellm
       namespace: ai
+    - name: memini
+      namespace: ai
+    - name: pocket-id-instance
+      namespace: security
   interval: 1h
-  path: ./kubernetes/apps/ai/hermes-matrix/app
+  path: ./kubernetes/apps/ai/hermes-main/app
   postBuild:
     substitute:
-      APP: hermes-matrix
+      APP: hermes-main
+      HERMES_AGENT_ID: MAIN
+      HERMES_MEMINI_NAMESPACE: homelab
       KOPIUR_COPYMETHOD: Direct
       KOPIUR_STORAGECLASS: miroir-fast-local
   prune: true

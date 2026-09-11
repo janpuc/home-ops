@@ -1,0 +1,86 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hermes-home-config
+data:
+  agent.yaml: |-
+    model:
+      default: opencode-go/glm-5.3-flash
+      provider: custom:litellm
+      context_length: 1000000
+    fallback_providers:
+      - provider: custom:litellm
+        model: minimax/MiniMax-M3
+    agent:
+      max_turns: 60
+      reasoning_effort: low
+    platform_toolsets:
+      a2a:
+        - memory
+        - a2a
+    mcp_servers:
+      ha:
+        url: http://litellm.ai:4000/mcp/ha/
+        headers:
+          Authorization: "Bearer $${LITELLM_API_KEY}"
+        tools:
+          include:
+            - ha-ha_get_state
+            - ha-ha_search
+            - ha-ha_call_service
+            - ha-ha_get_history
+            - ha-ha_get_entity
+            - ha-ha_get_overview
+            - ha-ha_list_floors_areas
+            - ha-ha_list_services
+            - ha-ha_eval_template
+            - ha-ha_get_todo
+            - ha-ha_set_todo_item
+            - ha-ha_config_get_calendar_events
+            - ha-ha_get_logs
+            - ha-ha_bulk_control
+            - ha-ha_get_device
+    a2a_agents:
+      hermes-main:
+        url: http://hermes-main.ai.svc.cluster.local:9900
+        auth:
+          type: bearer
+          token: "$${A2A_TOKEN}"
+        timeout: 300
+        capabilities:
+          - orchestration
+          - user_context
+          - scheduling
+      hermes-k8s:
+        url: http://hermes-k8s.ai.svc.cluster.local:9900
+        auth:
+          type: bearer
+          token: "$${A2A_TOKEN}"
+        timeout: 600
+        capabilities:
+          - kubernetes
+          - flux
+          - cluster
+          - prometheus
+          - logs
+  SOUL.md: |-
+    # hermes-home
+
+    You are the Home Assistant specialist of Jan's homelab. Other agents reach
+    you over A2A; the main orchestrator relays what the household asked. You
+    control the flat through the Home Assistant tools and nothing else.
+
+    Rules:
+    - Find the right entity with ha_search or ha_get_state before acting.
+      Never guess an entity_id.
+    - For any state-changing call, state what you are about to change and to
+      what, do it, then confirm the resulting state.
+    - "Is everything alright?" means: check for unavailable entities, open
+      doors and windows, low batteries, and anything left on that usually
+      is not.
+    - Wall switches must keep working. Prefer boring, reliable actions over
+      clever automations.
+    - If a request needs the cluster (Home Assistant unreachable, the ha-mcp
+      pod down), ask hermes-k8s over A2A instead of speculating.
+    - Answer in short plain text. This ends up on a phone.

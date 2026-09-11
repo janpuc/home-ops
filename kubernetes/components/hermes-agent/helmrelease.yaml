@@ -1,0 +1,200 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ${APP}
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: ${APP}
+  interval: 15m
+  timeout: 20m
+  values:
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 120
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        runAsGroup: 1000
+        runAsUser: 1000
+        seccompProfile:
+          type: RuntimeDefault
+    controllers:
+      ${APP}:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        strategy: Recreate
+        type: deployment
+        initContainers:
+          init:
+            image:
+              repository: nousresearch/hermes-agent
+              tag: v2026.9.7@sha256:63bfb6d732f49a55d453e801057273785cc61e0f6ee43db3fa2f2a79846301b7
+            command:
+              - /bin/sh
+              - /run/base/init.sh
+            env:
+              HERMES_HOME: /opt/data
+              # renovate: datasource=github-tags depName=eleboucher/memini
+              MEMINI_PLUGIN_VERSION: v0.7.24
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                  - ALL
+              runAsGroup: 1000
+              runAsNonRoot: true
+              runAsUser: 1000
+        containers:
+          app:
+            image:
+              repository: nousresearch/hermes-agent
+              tag: v2026.9.7@sha256:63bfb6d732f49a55d453e801057273785cc61e0f6ee43db3fa2f2a79846301b7
+            args:
+              - gateway
+              - run
+            env:
+              A2A_AGENT_NAME: ${APP}
+              A2A_HOST: 0.0.0.0
+              A2A_PEER_TOKENS:
+                valueFrom:
+                  secretKeyRef:
+                    name: ${APP}-secret
+                    key: A2A_PEER_TOKENS
+              A2A_PORT: "9900"
+              A2A_PUBLIC_URL: http://${APP}.ai.svc.cluster.local:9900
+              A2A_TOKEN:
+                valueFrom:
+                  secretKeyRef:
+                    name: ${APP}-secret
+                    key: A2A_TOKEN
+              HERMES_CRON_TIMEOUT: "0"
+              HERMES_GID: "1000"
+              HERMES_HOME: /opt/data
+              HERMES_UID: "1000"
+              HOME: /opt/data
+              LITELLM_API_KEY:
+                valueFrom:
+                  secretKeyRef:
+                    name: ${APP}-secret
+                    key: LITELLM_API_KEY
+              MEMINI_API_KEY:
+                valueFrom:
+                  secretKeyRef:
+                    name: ${APP}-secret
+                    key: MEMINI_API_KEY
+              MEMINI_BASE_URL: http://memini.ai.svc.cluster.local:8080
+              MEMINI_HOME: personal/jan
+              MEMINI_NAMESPACE: ${HERMES_MEMINI_NAMESPACE:=homelab}
+              S6_KILL_GRACETIME: "90000"
+              S6_SERVICES_GRACETIME: "90000"
+              SEARXNG_URL: http://searxng.selfhosted.svc.cluster.local:8080
+              TERM: xterm-256color
+              TERMINAL_MAX_FOREGROUND_TIMEOUT: "1800"
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /.well-known/agent-card.json
+                    port: 9900
+                  periodSeconds: 60
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /.well-known/agent-card.json
+                    port: 9900
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /.well-known/agent-card.json
+                    port: 9900
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 60
+            resources:
+              requests:
+                cpu: 250m
+                memory: 512Mi
+              limits:
+                memory: 2Gi
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                add:
+                  - CHOWN
+                  - DAC_OVERRIDE
+                  - FOWNER
+                  - FSETID
+                  - SETGID
+                  - SETUID
+                drop:
+                  - ALL
+              readOnlyRootFilesystem: false
+              runAsGroup: 0
+              runAsNonRoot: false
+              runAsUser: 0
+    service:
+      app:
+        controller: ${APP}
+        ipFamilies:
+          - IPv4
+        ports:
+          a2a:
+            port: 9900
+    persistence:
+      data:
+        existingClaim: ${APP}
+        advancedMounts:
+          ${APP}:
+            init:
+              - path: /opt/data
+            app:
+              - path: /opt/data
+      base:
+        type: configMap
+        name: ${APP}-base
+        advancedMounts:
+          ${APP}:
+            init:
+              - path: /run/base
+      agent-config:
+        type: configMap
+        name: ${APP}-config
+        advancedMounts:
+          ${APP}:
+            init:
+              - path: /run/agent
+      agent-config-secret:
+        type: custom
+        volumeSpec:
+          secret:
+            secretName: ${APP}-config-secret
+            optional: true
+            defaultMode: 256
+        advancedMounts:
+          ${APP}:
+            init:
+              - path: /run/agent-secret
+      run:
+        type: emptyDir
+        advancedMounts:
+          ${APP}:
+            app:
+              - path: /run
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp

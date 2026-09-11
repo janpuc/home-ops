@@ -1,0 +1,101 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ${APP}
+spec:
+  values:
+    controllers:
+      ${APP}:
+        containers:
+          app:
+            env:
+              API_SERVER_ENABLED: "true"
+              API_SERVER_HOST: 0.0.0.0
+              API_SERVER_KEY:
+                valueFrom:
+                  secretKeyRef:
+                    name: ${APP}-matrix
+                    key: API_SERVER_KEY
+              HERMES_DASHBOARD: "1"
+              HERMES_DASHBOARD_OIDC_ISSUER: https://id.janpuc.com
+              HERMES_DASHBOARD_PUBLIC_URL: https://hermes.janpuc.com
+              MATRIX_E2EE_MODE: optional
+            envFrom:
+              - secretRef:
+                  name: ${APP}-matrix
+              - secretRef:
+                  name: ${APP}-oidc-credentials
+            resources:
+              requests:
+                cpu: 500m
+                memory: 1Gi
+              limits:
+                memory: 4Gi
+          codeserver:
+            image:
+              repository: ghcr.io/coder/code-server
+              tag: 4.136.2@sha256:c5124f5066506cfff7ac2dfa6bab254ea55062dd24aac9a3693bb3d9caa9b90e
+            args:
+              - --auth
+              - none
+              - --user-data-dir
+              - /opt/data/.vscode
+              - --extensions-dir
+              - /opt/data/.vscode
+              - --port
+              - "12321"
+              - /opt/data
+            env:
+              GH_TOKEN:
+                valueFrom:
+                  secretKeyRef:
+                    name: ${APP}-matrix
+                    key: GH_TOKEN
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 1Gi
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                  - ALL
+    service:
+      app:
+        ports:
+          api:
+            port: 8642
+          codeserver:
+            port: 12321
+          dashboard:
+            port: 9119
+    route:
+      app:
+        hostnames:
+          - hermes.janpuc.com
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: 9119
+      codeserver:
+        hostnames:
+          - hermes-code.janpuc.com
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: 12321
+    persistence:
+      data:
+        advancedMounts:
+          ${APP}:
+            codeserver:
+              - path: /opt/data

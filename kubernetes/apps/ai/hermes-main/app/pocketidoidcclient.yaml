@@ -2,7 +2,7 @@
 apiVersion: pocketid.internal/v1alpha1
 kind: PocketIDOIDCClient
 metadata:
-  name: hermes
+  name: hermes-main
 spec:
   name: Hermes Agent
   callbackUrls:
@@ -11,7 +11,7 @@ spec:
     - name: id-admin
       namespace: security
   secret:
-    name: hermes-oidc-credentials
+    name: hermes-main-oidc-credentials
     keys:
       clientID: HERMES_DASHBOARD_OIDC_CLIENT_ID
       clientSecret: HERMES_DASHBOARD_OIDC_CLIENT_SECRET

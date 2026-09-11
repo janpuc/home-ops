@@ -3,22 +3,23 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: hermes
+  name: hermes-home
 spec:
   components:
     - ../../../../components/kopiur/backup
+    - ../../../../components/hermes-agent
   dependsOn:
     - name: litellm
       namespace: ai
     - name: memini
       namespace: ai
-    - name: pocket-id-instance
-      namespace: security
   interval: 1h
-  path: ./kubernetes/apps/ai/hermes/app
+  path: ./kubernetes/apps/ai/hermes-home/app
   postBuild:
     substitute:
-      APP: hermes
+      APP: hermes-home
+      HERMES_AGENT_ID: HOME
+      HERMES_MEMINI_NAMESPACE: homelab/home-assistant
       KOPIUR_COPYMETHOD: Direct
       KOPIUR_STORAGECLASS: miroir-fast-local
   prune: true

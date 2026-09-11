@@ -1,0 +1,207 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${APP}-base
+data:
+  base.yaml: |-
+    _config_version: 37
+    custom_providers:
+      - name: litellm
+        base_url: http://litellm.ai:4000/v1
+        key_env: LITELLM_API_KEY
+        models:
+          minimax/MiniMax-M3:
+            context_length: 1000000
+          opencode-go/minimax-m3:
+            context_length: 1000000
+          opencode-go/glm-5.3:
+            context_length: 1000000
+          opencode-go/glm-5.3-flash:
+            context_length: 1000000
+          opencode-go/deepseek-v4-flash-vision-exp:
+            context_length: 1000000
+          opencode-go/deepseek-v4-pro:
+            context_length: 1000000
+          opencode-go/kimi-k2.7-code:
+            context_length: 262144
+          opencode-go/qwen3.7-max:
+            context_length: 1000000
+          opencode-go/hy3:
+            context_length: 256000
+    model:
+      default: minimax/MiniMax-M3
+      provider: custom:litellm
+      context_length: 1000000
+    model_aliases:
+      minimax:
+        model: minimax/MiniMax-M3
+        provider: custom:litellm
+      glm:
+        model: opencode-go/glm-5.3
+        provider: custom:litellm
+      glm-flash:
+        model: opencode-go/glm-5.3-flash
+        provider: custom:litellm
+      flash:
+        model: opencode-go/deepseek-v4-flash-vision-exp
+        provider: custom:litellm
+      deepseek:
+        model: opencode-go/deepseek-v4-pro
+        provider: custom:litellm
+      kimi-code:
+        model: opencode-go/kimi-k2.7-code
+        provider: custom:litellm
+      qwen-max:
+        model: opencode-go/qwen3.7-max
+        provider: custom:litellm
+    fallback_providers:
+      - provider: custom:litellm
+        model: opencode-go/minimax-m3
+      - provider: custom:litellm
+        model: opencode-go/glm-5.3
+    auxiliary:
+      approval:
+        provider: custom:litellm
+        model: minimax/MiniMax-M3
+        timeout: 60
+      compression:
+        provider: custom:litellm
+        model: minimax/MiniMax-M3
+      web_extract:
+        provider: custom:litellm
+        model: opencode-go/hy3
+      session_search:
+        provider: custom:litellm
+        model: opencode-go/hy3
+      vision:
+        provider: custom:litellm
+        model: minimax/MiniMax-M3
+      title_generation:
+        provider: custom:litellm
+        model: opencode-go/hy3
+    memory:
+      provider: memini
+    plugins:
+      enabled:
+        - memini
+        - a2a-platform
+    platforms:
+      a2a:
+        enabled: true
+        extra:
+          port: 9900
+    terminal:
+      backend: local
+      cwd: /opt/data/workspace
+      timeout: 900
+      lifetime_seconds: 1800
+      persistent_shell: true
+    compression:
+      enabled: true
+      protect_last_n: 20
+      threshold: 0.5
+    streaming:
+      enabled: false
+    approvals:
+      mode: smart
+      timeout: 60
+      cron_mode: approve
+      deny:
+        - "*talosctl*reset*"
+        - "*talosctl*wipe*"
+        - "*talosctl*upgrade*"
+        - "git push*--force*"
+        - "git push*-f *"
+        - "git reset --hard*"
+        - "git clean*-*f*"
+        - "git filter-branch*"
+        - "*flux uninstall*"
+        - "*helm uninstall*"
+        - "*helm delete*"
+        - "*kubectl delete*--all*"
+        - "*kubectl delete ns*"
+        - "*kubectl delete namespace*"
+        - "*kubectl delete pvc*"
+        - "*kubectl delete pv *"
+        - "*mkfs*"
+        - "*rm -rf /*"
+        - "*dd if=*of=/dev/*"
+        - "*wipefs*"
+        - "*curl*|*sh*"
+        - "*wget*|*sh*"
+    hooks_auto_accept: true
+    security:
+      redact_secrets: true
+      website_blocklist:
+        enabled: true
+        domains:
+          - "169.254.169.254"
+          - "metadata.google.internal"
+    privacy:
+      redact_pii: true
+    agent:
+      max_turns: 150
+      gateway_timeout: 1800
+      gateway_timeout_warning: 900
+      restart_drain_timeout: 60
+      api_max_retries: 3
+      reasoning_effort: medium
+    delegation:
+      model: opencode-go/deepseek-v4-flash-vision-exp
+      max_concurrent_children: 4
+      max_spawn_depth: 1
+    web:
+      search_backend: searxng
+  init.sh: |-
+    #!/bin/sh
+    set -eu
+    export HOME=/opt/data
+    mkdir -p /opt/data/workspace /opt/data/hook-scripts /opt/data/plugins
+    /opt/hermes/.venv/bin/python3 /run/base/merge.py \
+      /run/base/base.yaml /run/agent/agent.yaml /run/agent-secret/agent.yaml \
+      > /opt/data/config.yaml.new
+    chmod 600 /opt/data/config.yaml.new
+    mv /opt/data/config.yaml.new /opt/data/config.yaml
+    if [ -f /run/agent/SOUL.md ]; then
+      cp /run/agent/SOUL.md /opt/data/SOUL.md
+    else
+      rm -f /opt/data/SOUL.md
+    fi
+    rm -f /opt/data/hook-scripts/*
+    for f in /run/agent/hook-*; do
+      [ -e "$f" ] || continue
+      cp "$f" "/opt/data/hook-scripts/$(basename "$f" | sed 's/^hook-//')"
+    done
+    rm -rf /tmp/memini /opt/data/plugins/memini
+    git clone --quiet --depth 1 --branch "$MEMINI_PLUGIN_VERSION" \
+      https://github.com/eleboucher/memini /tmp/memini
+    cp -r /tmp/memini/integrations/hermes/plugin/memini /opt/data/plugins/memini
+    rm -rf /tmp/memini
+    if [ -f /run/agent/bootstrap.sh ]; then
+      sh /run/agent/bootstrap.sh
+    fi
+  merge.py: |-
+    import sys
+
+    import yaml
+
+
+    def merge(base, overlay):
+        if isinstance(base, dict) and isinstance(overlay, dict):
+            out = dict(base)
+            for key, value in overlay.items():
+                out[key] = merge(base[key], value) if key in base else value
+            return out
+        return overlay
+
+
+    result = {}
+    for path in sys.argv[1:]:
+        try:
+            with open(path) as fh:
+                data = yaml.safe_load(fh) or {}
+        except FileNotFoundError:
+            continue
+        result = merge(result, data)
+    yaml.safe_dump(result, sys.stdout, sort_keys=False, allow_unicode=True, width=1000)

@@ -10,8 +10,9 @@ components:
 
 resources:
   - ./namespace.yaml
-  - ./hermes/ks.yaml
-  - ./hermes-matrix/ks.yaml
+  - ./hermes-home/ks.yaml
+  - ./hermes-k8s/ks.yaml
+  - ./hermes-main/ks.yaml
   - ./litellm/ks.yaml
   - ./litellm-operator/ks.yaml
   - ./llmkube/ks.yaml
