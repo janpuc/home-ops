@@ -11,6 +11,11 @@ spec:
         containers:
           app:
             env:
+              # The component advertises the ClusterIP name, which only pods can dial. Point
+              # peers at the internal-gateway route instead: hermes-aether lives outside the
+              # cluster and the A2A client follows the agent card's transport over whatever
+              # URL it was configured with, so the card has to carry a reachable address.
+              A2A_PUBLIC_URL: https://hermes-a2a.janpuc.com
               API_SERVER_ENABLED: "true"
               API_SERVER_HOST: 0.0.0.0
               API_SERVER_KEY:
