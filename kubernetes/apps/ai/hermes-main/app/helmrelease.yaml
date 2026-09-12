@@ -83,6 +83,16 @@ spec:
           - backendRefs:
               - identifier: app
                 port: 9119
+      a2a:
+        hostnames:
+          - hermes-a2a.janpuc.com
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: 9900
       codeserver:
         hostnames:
           - hermes-code.janpuc.com
