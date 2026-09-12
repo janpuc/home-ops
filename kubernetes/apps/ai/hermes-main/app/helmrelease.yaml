@@ -23,6 +23,7 @@ spec:
                   secretKeyRef:
                     name: ${APP}-matrix
                     key: API_SERVER_KEY
+              HERMES_CONCURRENT_TOOL_TIMEOUT_S: "3600"
               HERMES_DASHBOARD: "1"
               HERMES_DASHBOARD_OIDC_ISSUER: https://id.janpuc.com
               HERMES_DASHBOARD_PUBLIC_URL: https://hermes.janpuc.com
