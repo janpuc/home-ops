@@ -52,6 +52,25 @@ metadata:
   name: hermes-main-config-template
 data:
   agent.yaml: |-
+    # The orchestrator carries every Matrix room's history into each turn, so its
+    # model is metered on context, not on the length of its short answers. DeepSeek
+    # V4.1 Flash is the strongest model on the Go plan at flash pricing ($0.15/$0.60
+    # per M tokens against the plan's $60/month); Kimi K3 leads agentic benchmarks but
+    # meters at $3/$15 and stays the explicit escalation (`kimi` alias), not a default.
+    # MiniMax M3 sits on its own plan, so it keeps the orchestrator talking when the Go
+    # allowance is spent. It was the default until 2026-09-13 and invented "operator
+    # authority" claims and deny-bypass ladders in relays (home-ops #1379).
+    model:
+      default: opencode-go/deepseek-v4.1-flash
+      provider: custom:litellm
+      context_length: 1000000
+    fallback_providers:
+      - provider: custom:litellm
+        model: opencode-go/deepseek-v4-pro
+      - provider: custom:litellm
+        model: minimax/MiniMax-M3
+      - provider: custom:litellm
+        model: opencode-go/glm-5.3-flash
     plugins:
       enabled:
         - memini
@@ -146,7 +165,7 @@ data:
                 persist and can be continued from any device) or in herdr (a
                 terminal Jan can watch or attach to with `herdr --remote
                 aether`). One session lives in one place.
-              - Tiers: routine = claudel (Claude Code on MiniMax M3) or opencode;
+              - Tiers: routine = claudel (Claude Code on DeepSeek V4.1 Flash) or opencode;
                 standard = Claude Code on Opus or Codex on GPT-5.6; hard =
                 Claude Code on Fable, herdr only. hermes-aether picks the tier
                 from the task and escalates one tier on failure; an explicit

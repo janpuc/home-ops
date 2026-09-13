@@ -5,13 +5,28 @@ metadata:
   name: hermes-k8s-config
 data:
   agent.yaml: |-
+    # Long investigations with many tool calls: the cheapest strong model on the Go
+    # plan, which also leads Terminal Bench and DeepSWE. Kimi K3 ($3/$15 per M tokens)
+    # is left to the `kimi` alias for an explicit escalation; MiniMax M3 is on its own
+    # plan and is the fallback when the Go allowance is spent.
+    model:
+      default: opencode-go/deepseek-v4.1-flash
+      provider: custom:litellm
+      context_length: 1000000
     fallback_providers:
       - provider: custom:litellm
         model: opencode-go/deepseek-v4-pro
       - provider: custom:litellm
-        model: opencode-go/kimi-k3
+        model: minimax/MiniMax-M3
       - provider: custom:litellm
         model: opencode-go/glm-5.3
+    # Every session here is an A2A task with nobody on the other end of an approval
+    # prompt: in `smart` mode a flagged command hangs for approvals.timeout and then
+    # fails as "the user has NOT consented". The deny list and the home-ops guard hook
+    # below are checked before this bypass and stay the floor (same change as
+    # hermes-aether, janpuc/aether 4c2d206).
+    approvals:
+      mode: "off"
     platform_toolsets:
       a2a:
         - terminal
