@@ -371,7 +371,7 @@ data:
                 persist and can be continued from any device) or in herdr (a
                 terminal Jan can watch or attach to with `herdr --remote
                 aether`). One session lives in one place.
-              - Tiers: routine = claudel (Claude Code on DeepSeek V4.1 Flash) or opencode;
+              - Tiers: routine = claudel (Claude Code on Qwen3.8 Flash) or opencode;
                 standard = Claude Code on Opus or Codex on GPT-5.6; hard =
                 Claude Code on Fable, herdr only. hermes-aether picks the tier
                 from the task and escalates one tier on failure; an explicit
