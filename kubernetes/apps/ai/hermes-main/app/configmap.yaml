@@ -419,6 +419,9 @@ data:
         - web
         - memory
         - a2a
+      # 'a2a' is provided by the a2a-platform plugin (enabled below); the
+      # alertmanager route dispatches to hermes-k8s/hermes-aether with a2a_call,
+      # so keep it. The pod's "unknown toolset 'a2a'" warning is a validation-ordering artifact.
       webhook:
         - web
         - memory
