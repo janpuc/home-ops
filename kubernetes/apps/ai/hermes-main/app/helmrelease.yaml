@@ -23,6 +23,7 @@ spec:
                   secretKeyRef:
                     name: ${APP}-matrix
                     key: API_SERVER_KEY
+              # remove after nousresearch/hermes-agent#109089 lands in the running image
               HERMES_CONCURRENT_TOOL_TIMEOUT_S: "3600"
               HERMES_DASHBOARD: "1"
               HERMES_DASHBOARD_OIDC_ISSUER: https://id.janpuc.com
