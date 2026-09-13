@@ -1,0 +1,17 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/grafana.integreatly.org/grafanadashboard_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: aether-fleet-conversations
+spec:
+  allowCrossNamespaceImport: true
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasources:
+    - datasourceName: victoria-logs
+      inputName: DS_VICTORIA_LOGS
+  configMapRef:
+    name: aether-fleet
+    key: aether-fleet-conversations.json

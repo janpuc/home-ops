@@ -7,6 +7,7 @@ resources:
   - ./externalsecret.yaml
   - ./grafanadashboard-aether-a2a-activity.yaml
   - ./grafanadashboard-aether-fleet-health.yaml
+  - ./grafanadashboard-aether-fleet-conversations.yaml
   - ./grafanadashboard-aether-harness-quota.yaml
   - ./grafanadashboard.yaml
   - ./helmrelease.yaml
