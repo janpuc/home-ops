@@ -1,0 +1,401 @@
+{
+  "uid": "aether-fleet-conversations",
+  "title": "Aether Fleet Conversations",
+  "description": "What the agent fleet is saying and doing: every Hermes session, T3 turn, A2A hop, approval and herdr state change in one stream, shipped by aether-fleet-feed.",
+  "tags": ["aether", "hermes", "fleet"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "graphTooltip": 1,
+  "refresh": "30s",
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "templating": {
+    "list": [
+      {
+        "name": "DS_VICTORIA_LOGS",
+        "type": "datasource",
+        "query": "victoriametrics-logs-datasource",
+        "current": {},
+        "hide": 0
+      },
+      {
+        "name": "source",
+        "type": "custom",
+        "label": "source",
+        "query": "hermes,t3,a2a,approver,herdr",
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "options": [
+          {
+            "text": "All",
+            "value": "$__all",
+            "selected": true
+          },
+          {
+            "text": "hermes",
+            "value": "hermes",
+            "selected": false
+          },
+          {
+            "text": "t3",
+            "value": "t3",
+            "selected": false
+          },
+          {
+            "text": "a2a",
+            "value": "a2a",
+            "selected": false
+          },
+          {
+            "text": "approver",
+            "value": "approver",
+            "selected": false
+          },
+          {
+            "text": "herdr",
+            "value": "herdr",
+            "selected": false
+          }
+        ]
+      },
+      {
+        "name": "agent",
+        "type": "custom",
+        "label": "agent",
+        "query": "hermes-main,hermes-k8s,hermes-home,hermes-aether,t3,herdr",
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "options": [
+          {
+            "text": "All",
+            "value": "$__all",
+            "selected": true
+          },
+          {
+            "text": "hermes-main",
+            "value": "hermes-main",
+            "selected": false
+          },
+          {
+            "text": "hermes-k8s",
+            "value": "hermes-k8s",
+            "selected": false
+          },
+          {
+            "text": "hermes-home",
+            "value": "hermes-home",
+            "selected": false
+          },
+          {
+            "text": "hermes-aether",
+            "value": "hermes-aether",
+            "selected": false
+          },
+          {
+            "text": "t3",
+            "value": "t3",
+            "selected": false
+          },
+          {
+            "text": "herdr",
+            "value": "herdr",
+            "selected": false
+          }
+        ]
+      },
+      {
+        "name": "search",
+        "type": "textbox",
+        "label": "search (LogsQL word filter, * for all)",
+        "query": "*",
+        "current": {
+          "text": "*",
+          "value": "*"
+        },
+        "options": [
+          {
+            "text": "*",
+            "value": "*",
+            "selected": true
+          }
+        ]
+      }
+    ]
+  },
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Events by source",
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${DS_VICTORIA_LOGS}"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 0,
+        "y": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${DS_VICTORIA_LOGS}"
+          },
+          "refId": "A",
+          "expr": "_stream:{source=~\"${source:regex}\", agent=~\"${agent:regex}\"} AND ${search:raw} AND _time:$__range | stats by (source) count() events",
+          "queryType": "instant"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": true
+        },
+        "orientation": "horizontal",
+        "textMode": "value_and_name",
+        "colorMode": "none",
+        "graphMode": "none"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Events by agent",
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${DS_VICTORIA_LOGS}"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 8,
+        "y": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${DS_VICTORIA_LOGS}"
+          },
+          "refId": "A",
+          "expr": "_stream:{source=~\"${source:regex}\", agent=~\"${agent:regex}\"} AND ${search:raw} AND _time:$__range | stats by (agent) count() events",
+          "queryType": "instant"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": true
+        },
+        "orientation": "horizontal",
+        "textMode": "value_and_name",
+        "colorMode": "none",
+        "graphMode": "none"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Approvals: allowed / denied / escalated",
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${DS_VICTORIA_LOGS}"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 16,
+        "y": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${DS_VICTORIA_LOGS}"
+          },
+          "refId": "A",
+          "expr": "_stream:{source=\"approver\"} AND _time:$__range | stats by (decision) count() n",
+          "queryType": "instant"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": true
+        },
+        "orientation": "horizontal",
+        "textMode": "value_and_name",
+        "colorMode": "none",
+        "graphMode": "none"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Activity over time (events per 5 min, by agent)",
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${DS_VICTORIA_LOGS}"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 5
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${DS_VICTORIA_LOGS}"
+          },
+          "refId": "A",
+          "expr": "_stream:{source=~\"${source:regex}\", agent=~\"${agent:regex}\"} AND ${search:raw} AND _time:$__range | stats by (_time:5m, agent) count() events",
+          "queryType": "stats_range"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 60,
+            "stacking": {
+              "mode": "normal"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "logs",
+      "title": "Conversation feed (oldest at the bottom; click a line for every field: session, tools, thread, model)",
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${DS_VICTORIA_LOGS}"
+      },
+      "gridPos": {
+        "h": 26,
+        "w": 24,
+        "x": 0,
+        "y": 12
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${DS_VICTORIA_LOGS}"
+          },
+          "refId": "A",
+          "expr": "_stream:{source=~\"${source:regex}\", agent=~\"${agent:regex}\"} AND ${search:raw} AND _time:$__range | sort by (_time) desc | limit 2000",
+          "queryType": "instant"
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "wrapLogMessage": true,
+        "sortOrder": "Descending",
+        "enableLogDetails": true,
+        "dedupStrategy": "none",
+        "prettifyLogMessage": false,
+        "showLabels": false
+      }
+    },
+    {
+      "type": "logs",
+      "title": "Waiting on Jan: approval requests not yet resolved, escalations",
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "${DS_VICTORIA_LOGS}"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 38
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "${DS_VICTORIA_LOGS}"
+          },
+          "refId": "A",
+          "expr": "_stream:{source=~\"approver|t3\"} AND kind:in(\"escalated\", \"escalation_pending\", \"approval.requested\") AND _time:$__range | sort by (_time) desc | limit 200",
+          "queryType": "instant"
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "wrapLogMessage": true,
+        "sortOrder": "Descending",
+        "enableLogDetails": true,
+        "dedupStrategy": "none",
+        "prettifyLogMessage": false
+      }
+    },
+    {
+      "type": "text",
+      "title": "Reading the feed",
+      "gridPos": {
+        "h": 6,
+        "w": 24,
+        "x": 0,
+        "y": 46
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "Sources: **hermes** = every agent's session store (user, assistant, tool calls `\u21e2`, tool results `\u21b3`; the *chat* field is the Matrix room, the A2A peer, the webhook route or the cron job) \u00b7 **t3** = T3 Code thread messages and tool/approval activities \u00b7 **a2a** = hermes-aether's inbound/outbound audit \u00b7 **approver** = t3-approver decisions \u00b7 **herdr** = agent state transitions on aether.\n\nSame stream in a terminal on aether: `aether-fleet-feed tail --since 2h [--agent hermes-main] [--source t3] [--grep text] [--follow] [--full]`.\n\nPer-line fields worth opening: `session`, `title`, `thread`, `url`, `tools`, `model`, `request_id`, `decision`, `peer`."
+      }
+    }
+  ]
+}

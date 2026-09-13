@@ -8,6 +8,7 @@ configMapGenerator:
       - aether-fleet-health.json
       - aether-a2a-activity.json
       - aether-harness-quota.json
+      - aether-fleet-conversations.json
 generatorOptions:
   disableNameSuffixHash: true
   annotations:
