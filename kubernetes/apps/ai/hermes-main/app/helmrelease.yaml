@@ -40,6 +40,47 @@ spec:
                 memory: 1Gi
               limits:
                 memory: 4Gi
+          # Alertmanager -> Hermes bridge; see alert-relay.py in the configmap. Same bearer
+          # token Alertmanager holds, same secret the webhook route checks.
+          alertrelay:
+            image:
+              repository: docker.io/library/python
+              tag: 3.13-alpine@sha256:7415fbc3c9e4979cc717d92377ab2bc7b2b4a2af1ac03cc52b5f3f88efedaf3a
+            command:
+              - python3
+              - /run/agent/alert-relay.py
+            env:
+              RELAY_TOKEN:
+                valueFrom:
+                  secretKeyRef:
+                    name: ${APP}-secret
+                    key: A2A_TOKEN
+              WEBHOOK_SECRET:
+                valueFrom:
+                  secretKeyRef:
+                    name: ${APP}-secret
+                    key: A2A_TOKEN
+            probes:
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: 8645
+                  periodSeconds: 30
+            resources:
+              requests:
+                cpu: 5m
+                memory: 32Mi
+              limits:
+                memory: 64Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                  - ALL
+              readOnlyRootFilesystem: true
           codeserver:
             image:
               repository: ghcr.io/coder/code-server
@@ -79,6 +120,8 @@ spec:
             port: 12321
           dashboard:
             port: 9119
+          alertrelay:
+            port: 8645
     route:
       app:
         hostnames:
@@ -111,6 +154,11 @@ spec:
               - identifier: app
                 port: 12321
     persistence:
+      agent-config:
+        advancedMounts:
+          ${APP}:
+            alertrelay:
+              - path: /run/agent
       data:
         advancedMounts:
           ${APP}:
