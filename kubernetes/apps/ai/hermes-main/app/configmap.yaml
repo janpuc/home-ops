@@ -247,8 +247,8 @@ data:
           routes:
             alertmanager:
               # Rendered by ESO like the room ids below: the gateway reads platform
-              # settings without the ${VAR} expansion the rest of config.yaml gets, so a
-              # placeholder here is compared literally and every signature fails.
+              # settings without the dollar-brace expansion the rest of config.yaml gets,
+              # so a placeholder here is compared literally and every signature fails.
               secret: "{{ .A2A_TOKEN }}"
               deliver: matrix
               deliver_extra:
