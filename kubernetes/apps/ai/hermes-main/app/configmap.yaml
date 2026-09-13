@@ -249,7 +249,9 @@ data:
               # Rendered by ESO like the room ids below: the gateway reads platform
               # settings without the dollar-brace expansion the rest of config.yaml gets,
               # so a placeholder here is compared literally and every signature fails.
-              secret: "{{ .A2A_TOKEN }}"
+              # Its own field, not the A2A token the peers below carry: Alertmanager and
+              # the relay read the same one, so the webhook rotates on its own.
+              secret: "{{ .HERMES_WEBHOOK_TOKEN }}"
               deliver: matrix
               deliver_extra:
                 chat_id: "{{ .MATRIX_ROOM_ALERTS }}"
