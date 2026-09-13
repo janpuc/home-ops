@@ -5,7 +5,7 @@
   "tags": ["aether", "hermes", "fleet"],
   "timezone": "browser",
   "schemaVersion": 39,
-  "version": 2,
+  "version": 3,
   "editable": true,
   "graphTooltip": 1,
   "refresh": "30s",
@@ -30,7 +30,7 @@
         "query": "hermes,t3,a2a,approver,herdr",
         "multi": true,
         "includeAll": true,
-        "allValue": ".*",
+        "allValue": ".+",
         "current": {
           "text": "All",
           "value": "$__all"
@@ -75,7 +75,7 @@
         "query": "hermes-main,hermes-k8s,hermes-home,hermes-aether,t3,herdr",
         "multi": true,
         "includeAll": true,
-        "allValue": ".*",
+        "allValue": ".+",
         "current": {
           "text": "All",
           "value": "$__all"
