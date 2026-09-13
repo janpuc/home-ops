@@ -10,6 +10,7 @@ components:
 
 resources:
   - ./namespace.yaml
+  - ./aether-fleet/ks.yaml
   - ./hermes-home/ks.yaml
   - ./hermes-k8s/ks.yaml
   - ./hermes-main/ks.yaml

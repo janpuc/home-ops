@@ -2,6 +2,11 @@
 # yaml-language-server: $schema=https://json.schemastore.org/kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+resources:
+  - ./grafanadashboard-aether-fleet-health.yaml
+  - ./grafanadashboard-aether-a2a-activity.yaml
+  - ./grafanadashboard-aether-harness-quota.yaml
+  - ./grafanadashboard-aether-fleet-conversations.yaml
 configMapGenerator:
   - name: aether-fleet
     files:
