@@ -134,6 +134,18 @@ spec:
           - backendRefs:
               - identifier: app
                 port: 9119
+      # The webhook relay for callers outside the cluster: aether's t3-approver posts its
+      # escalations to /hook/t3-approval here, bearer-checked and HMAC-signed by the relay.
+      hooks:
+        hostnames:
+          - hermes-hooks.janpuc.com
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: 8645
       a2a:
         hostnames:
           - hermes-a2a.janpuc.com
