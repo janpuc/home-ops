@@ -5,7 +5,7 @@
   "tags": ["aether", "hermes", "fleet"],
   "timezone": "browser",
   "schemaVersion": 39,
-  "version": 1,
+  "version": 2,
   "editable": true,
   "graphTooltip": 1,
   "refresh": "30s",
@@ -159,7 +159,7 @@
           },
           "refId": "A",
           "expr": "_stream:{source=~\"${source:regex}\", agent=~\"${agent:regex}\"} AND ${search:raw} AND _time:$__range | stats by (source) count() events",
-          "queryType": "instant"
+          "queryType": "stats"
         }
       ],
       "options": {
@@ -203,7 +203,7 @@
           },
           "refId": "A",
           "expr": "_stream:{source=~\"${source:regex}\", agent=~\"${agent:regex}\"} AND ${search:raw} AND _time:$__range | stats by (agent) count() events",
-          "queryType": "instant"
+          "queryType": "stats"
         }
       ],
       "options": {
@@ -247,7 +247,7 @@
           },
           "refId": "A",
           "expr": "_stream:{source=\"approver\"} AND _time:$__range | stats by (decision) count() n",
-          "queryType": "instant"
+          "queryType": "stats"
         }
       ],
       "options": {
@@ -290,8 +290,10 @@
             "uid": "${DS_VICTORIA_LOGS}"
           },
           "refId": "A",
-          "expr": "_stream:{source=~\"${source:regex}\", agent=~\"${agent:regex}\"} AND ${search:raw} AND _time:$__range | stats by (_time:5m, agent) count() events",
-          "queryType": "stats_range"
+          "expr": "_stream:{source=~\"${source:regex}\", agent=~\"${agent:regex}\"} AND ${search:raw} AND _time:$__range | stats by (agent) count() events",
+          "queryType": "statsRange",
+          "step": "5m",
+          "legendFormat": "{{agent}}"
         }
       ],
       "fieldConfig": {
@@ -337,7 +339,8 @@
           },
           "refId": "A",
           "expr": "_stream:{source=~\"${source:regex}\", agent=~\"${agent:regex}\"} AND ${search:raw} AND _time:$__range | sort by (_time) desc | limit 2000",
-          "queryType": "instant"
+          "queryType": "instant",
+          "maxLines": 2000
         }
       ],
       "options": {
@@ -371,7 +374,8 @@
           },
           "refId": "A",
           "expr": "_stream:{source=~\"approver|t3\"} AND kind:in(\"escalated\", \"escalation_pending\", \"approval.requested\") AND _time:$__range | sort by (_time) desc | limit 200",
-          "queryType": "instant"
+          "queryType": "instant",
+          "maxLines": 2000
         }
       ],
       "options": {
