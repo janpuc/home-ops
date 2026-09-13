@@ -40,8 +40,9 @@ spec:
                 memory: 1Gi
               limits:
                 memory: 4Gi
-          # Alertmanager -> Hermes bridge; see alert-relay.py in the configmap. Same bearer
-          # token Alertmanager holds, same secret the webhook route checks.
+          # Alertmanager -> Hermes bridge; see alert-relay.py in the configmap. The bearer
+          # Alertmanager holds, the key this signs with and the secret the webhook route
+          # checks are all one field, so no end can be rotated out from under the others.
           alertrelay:
             image:
               repository: docker.io/library/python
@@ -53,13 +54,13 @@ spec:
               RELAY_TOKEN:
                 valueFrom:
                   secretKeyRef:
-                    name: ${APP}-secret
-                    key: A2A_TOKEN
+                    name: ${APP}-webhook
+                    key: HERMES_WEBHOOK_TOKEN
               WEBHOOK_SECRET:
                 valueFrom:
                   secretKeyRef:
-                    name: ${APP}-secret
-                    key: A2A_TOKEN
+                    name: ${APP}-webhook
+                    key: HERMES_WEBHOOK_TOKEN
             probes:
               readiness:
                 enabled: true
