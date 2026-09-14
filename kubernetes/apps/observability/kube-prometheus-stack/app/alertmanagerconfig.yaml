@@ -19,15 +19,6 @@ spec:
           - name: alertname
             value: InfoInhibitor
             matchType: =
-      # Fan every real alert out to hermes-main as well (continue keeps the Pushover paging
-      # path below intact); a still-firing group is re-sent to the agents once a day.
-      - receiver: hermes
-        continue: true
-        repeatInterval: 24h
-        matchers:
-          - name: alertname
-            value: Watchdog|InfoInhibitor
-            matchType: "!~"
       - receiver: pushover
         matchers:
           - name: severity
@@ -56,16 +47,6 @@ spec:
 
   receivers:
     - name: blackhole
-    - name: hermes
-      webhookConfigs:
-        - url: http://hermes-main.ai.svc.cluster.local:8645/alert
-          sendResolved: false
-          httpConfig:
-            authorization:
-              type: Bearer
-              credentials:
-                name: alertmanager-secret
-                key: HERMES_WEBHOOK_TOKEN
     - name: pushover
       pushoverConfigs:
         - html: true
