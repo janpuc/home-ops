@@ -26,7 +26,7 @@ metadata:
 spec:
   modelRef: bge-reranker-v2-m3
   runtime: llamacpp
-  image: ghcr.io/ggml-org/llama.cpp:server-vulkan-b10902@sha256:d02976f3ab959dc5fef26a889a438c3da8f8db6713428db28e4d86d94ea62569
+  image: ghcr.io/ggml-org/llama.cpp:server-vulkan-b10975@sha256:063e88aef1c168cf4a0a4b3a7983604561f96870a3c4953bd1fad908b4e41716
   replicas: 1
   contextSize: 4096
   parallelSlots: 2
