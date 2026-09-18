@@ -11,12 +11,24 @@ spec:
         - alert: SmartDeviceHighTemperature
           expr: |-
             smartctl_device_temperature{temperature_type="current"} > 65
+            unless on (instance, device) smartctl_device_nvme_capacity_bytes
           for: 5m
           annotations:
             summary: >-
               Mounted drive {{ $labels.device }} on device {{ $labels.instance }} has a temperature higher than 65°C
           labels:
             severity: critical
+
+        - alert: SmartDeviceHighTemperatureNvme
+          expr: |-
+            smartctl_device_temperature{temperature_type="current"} > 80
+            and on (instance, device) smartctl_device_nvme_capacity_bytes
+          for: 20m
+          annotations:
+            summary: >-
+              Mounted drive {{ $labels.device }} on device {{ $labels.instance }} has a temperature higher than 80°C
+          labels:
+            severity: warning
 
         - alert: SmartDeviceTestFailed
           expr: |-
