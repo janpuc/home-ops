@@ -1,0 +1,56 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kubernetes-cronjob.json
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: tuiter-chrome-reader-recycle
+  labels:
+    app.kubernetes.io/instance: tuiter
+    app.kubernetes.io/name: tuiter
+spec:
+  # The reader's Chromium grows ~120-220 MiB/h against its memory limit and
+  # OOM-kills roughly every 27 h; restart well inside that window.
+  schedule: "0 */12 * * *"
+  concurrencyPolicy: Forbid
+  ttlSecondsAfterFinished: 300
+  jobTemplate:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: tuiter
+        app.kubernetes.io/name: tuiter
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 300
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/instance: tuiter
+            app.kubernetes.io/name: tuiter
+        spec:
+          restartPolicy: Never
+          serviceAccountName: tuiter
+          containers:
+            - name: recycle
+              image: bitnami/kubectl:latest
+              command:
+                - kubectl
+                - rollout
+                - restart
+                - deployment/tuiter-chrome-reader
+                - -n
+                - ai
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  memory: 64Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                runAsNonRoot: true
+                capabilities:
+                  drop:
+                    - ALL
+                seccompProfile:
+                  type: RuntimeDefault

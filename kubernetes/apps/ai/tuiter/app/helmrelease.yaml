@@ -130,9 +130,9 @@ spec:
             resources:
               requests:
                 cpu: 100m
-                memory: 1Gi
+                memory: 1536Mi
               limits:
-                memory: 4Gi
+                memory: 6Gi
             securityContext: &chromeSecurity
               seccompProfile:
                 type: Unconfined
