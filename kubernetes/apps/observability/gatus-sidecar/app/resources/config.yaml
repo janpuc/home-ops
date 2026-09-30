@@ -40,6 +40,13 @@ endpoints:
     conditions:
       - "[CONNECTED] == true"
 
+  - name: home-assistant-lan
+    group: lan
+    url: http://hass.janpuc.internal:8123/
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+
 metrics: true
 
 storage:
