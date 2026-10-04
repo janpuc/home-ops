@@ -9,11 +9,6 @@ spec:
     kind: OCIRepository
     name: cilium
   interval: 1h
-  # TEMPORARY, with updateStrategy OnDelete below: Helm's kstatus wait counts an
-  # OnDelete DaemonSet as InProgress until every pod is replaced, which never
-  # happens on its own, so each upgrade timed out and was rolled back.
-  upgrade:
-    disableWait: true
   values:
     autoDirectNodeRoutes: true
     bandwidthManager:
@@ -110,9 +105,3 @@ spec:
     socketLB:
       enabled: true
       hostNamespaceOnly: true
-    # TEMPORARY, for the netkit -> veth migration: agents pick up the new
-    # datapath only when their pod is deleted, node by node. Back to the chart's
-    # RollingUpdate once every node runs veth.
-    updateStrategy:
-      type: OnDelete
-      rollingUpdate: null
