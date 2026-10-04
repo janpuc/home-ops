@@ -10,11 +10,24 @@ spec:
       rules:
         - alert: GatusEndpointDown
           expr: |-
-            gatus_results_endpoint_success{group=~"external|services|lan"} == 0
+            gatus_results_endpoint_success{group=~"external|services"} == 0
           for: 5m
           annotations:
             summary: >-
               The {{ $labels.name }} endpoint is down
+          labels:
+            severity: critical
+
+        # Fires a minute before GatusEndpointDown for the external probe of the
+        # same name, so the Alertmanager inhibit (equal: name) already holds
+        # when that alert is first sent: one outage, one page.
+        - alert: GatusLanEndpointDown
+          expr: |-
+            gatus_results_endpoint_success{group="lan"} == 0
+          for: 4m
+          annotations:
+            summary: >-
+              The {{ $labels.name }} endpoint is down on the LAN
           labels:
             severity: critical
 

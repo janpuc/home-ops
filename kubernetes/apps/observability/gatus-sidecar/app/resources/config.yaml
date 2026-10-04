@@ -40,7 +40,10 @@ endpoints:
     conditions:
       - "[CONNECTED] == true"
 
-  - name: home-assistant-lan
+  # Same name as the HTTPRoute-generated external_home-assistant probe: while
+  # GatusLanEndpointDown fires for this one, Alertmanager inhibits the
+  # external one's GatusEndpointDown (equal: name).
+  - name: home-assistant
     group: lan
     url: http://hass.janpuc.internal:8123/
     interval: 1m
