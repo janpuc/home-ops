@@ -19,3 +19,16 @@ spec:
           memory: 48Mi
         limits:
           memory: 96Mi
+  # TEMPORARY park for the move to replicated miroir-fast; revert at unpark.
+  # The operator server-side-applies pocket-id's replicas and undoes the KEDA
+  # pause; the chart schema rejects operator.replicas: 0, hence a post-renderer.
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: pocket-id-operator
+            patch: |
+              - op: replace
+                path: /spec/replicas
+                value: 0
