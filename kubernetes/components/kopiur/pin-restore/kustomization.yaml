@@ -1,0 +1,23 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+# Temporary, per app, for the change that rebuilds its PVC: the Restore restores
+# exactly the Snapshot `${APP}-migrate` taken while the app was parked, and fails
+# closed if it can't (onMissingSnapshot: Fail), so the PVC stays Pending instead
+# of provisioning an empty volume. A Restore pins its source at admission and
+# never re-resolves, so delete the existing Restore before this lands and again
+# before removing this component.
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+patches:
+  - target:
+      group: kopiur.home-operations.com
+      kind: Restore
+    patch: |-
+      - op: replace
+        path: /spec/source
+        value:
+          snapshotRef:
+            name: ${APP}-migrate
+      - op: add
+        path: /spec/policy/onMissingSnapshot
+        value: Fail
