@@ -10,11 +10,13 @@ spec:
     - ../../../../components/gpu
     - ../../../../components/kopiur/backup
     - ../../../../components/kopiur/park
+    - ../../../../components/kopiur/pin-restore
   dependsOn:
     - name: k8s-gpu-dra-driver
       namespace: kube-system
     - name: miroir-config
       namespace: miroir-system
+  force: true
   interval: 1h
   path: ./kubernetes/apps/media/plex/app
   postBuild:
@@ -22,7 +24,6 @@ spec:
       APP: plex
       KOPIUR_CAPACITY: 50Gi
       KOPIUR_COPYMETHOD: Direct
-      KOPIUR_STORAGECLASS: miroir-fast-local
   prune: true
   sourceRef:
     kind: GitRepository
