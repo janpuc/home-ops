@@ -9,6 +9,7 @@ spec:
     - ../../../../components/zeroscaler
     - ../../../../components/gpu
     - ../../../../components/kopiur/backup
+    - ../../../../components/kopiur/park
   dependsOn:
     - name: k8s-gpu-dra-driver
       namespace: kube-system
