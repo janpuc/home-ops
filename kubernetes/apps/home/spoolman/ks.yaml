@@ -8,12 +8,9 @@ spec:
   components:
     - ../../../../components/zeroscaler
     - ../../../../components/kopiur/backup
-    - ../../../../components/kopiur/park
-    - ../../../../components/kopiur/pin-restore
   dependsOn:
     - name: miroir-config
       namespace: miroir-system
-  force: true
   interval: 1h
   path: ./kubernetes/apps/home/spoolman/app
   postBuild:
