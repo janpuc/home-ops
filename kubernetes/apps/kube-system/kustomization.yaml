@@ -13,6 +13,7 @@ resources:
   - ./coredns/ks.yaml
   - ./descheduler/ks.yaml
   - ./etcd-defrag/ks.yaml
+  - ./gvisor/ks.yaml
   - ./k8s-gpu-dra-driver/ks.yaml
   - ./k8tz/ks.yaml
   - ./metrics-server/ks.yaml
