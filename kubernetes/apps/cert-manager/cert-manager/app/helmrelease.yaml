@@ -32,6 +32,9 @@ spec:
       limits:
         memory: 96Mi
     webhook:
+      replicaCount: 2
+      podDisruptionBudget:
+        enabled: true
       resources:
         requests:
           cpu: 10m
