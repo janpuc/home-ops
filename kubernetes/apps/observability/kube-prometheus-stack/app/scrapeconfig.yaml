@@ -8,6 +8,7 @@ spec:
   staticConfigs:
     - targets:
         - bigmouth.internal:9100
+        - bc250.internal:9100
   metricsPath: /metrics
   relabelings:
     - action: replace
