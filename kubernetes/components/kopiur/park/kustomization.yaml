@@ -1,0 +1,29 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+# Temporary, per app, while its volume is rebuilt (e.g. a storage-class move):
+# - KEDA holds the zeroscaler ScaledObject at 0 replicas, so the app can't run
+#   until the rebuilt volume has been verified;
+# - the SnapshotSchedule is suspended, so no scheduled backup can capture an
+#   empty or half-restored volume and become the "latest" a later restore uses
+#   (it happened during the 2026-09-03 migration).
+# Remove it only after the new volume is verified.
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+patches:
+  - target:
+      group: keda.sh
+      kind: ScaledObject
+    patch: |-
+      apiVersion: keda.sh/v1alpha1
+      kind: ScaledObject
+      metadata:
+        name: _
+        annotations:
+          autoscaling.keda.sh/paused-replicas: "0"
+  - target:
+      group: kopiur.home-operations.com
+      kind: SnapshotSchedule
+    patch: |-
+      - op: add
+        path: /spec/schedule/suspend
+        value: true

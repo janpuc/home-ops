@@ -8,6 +8,7 @@ spec:
   components:
     - ../../../../components/zeroscaler
     - ../../../../components/kopiur/backup
+    - ../../../../components/kopiur/park
   dependsOn:
     - name: pocket-id-instance
       namespace: security
