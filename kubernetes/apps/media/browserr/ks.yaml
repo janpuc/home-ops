@@ -9,8 +9,6 @@ spec:
     - ../../../../components/zeroscaler
     - ../../../../components/dragonfly
     - ../../../../components/kopiur/backup
-    - ../../../../components/kopiur/park
-    - ../../../../components/kopiur/pin-restore
   dependsOn:
     - name: dragonfly-operator
       namespace: database
@@ -21,7 +19,6 @@ spec:
       kind: Dragonfly
       failed: status.phase != 'ready'
       current: status.phase == 'ready'
-  force: true
   interval: 1h
   path: ./kubernetes/apps/media/browserr/app
   postBuild:
