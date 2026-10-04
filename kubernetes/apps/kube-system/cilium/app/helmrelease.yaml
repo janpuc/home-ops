@@ -9,6 +9,11 @@ spec:
     kind: OCIRepository
     name: cilium
   interval: 1h
+  # TEMPORARY, with updateStrategy OnDelete below: Helm's kstatus wait counts an
+  # OnDelete DaemonSet as InProgress until every pod is replaced, which never
+  # happens on its own, so each upgrade timed out and was rolled back.
+  upgrade:
+    disableWait: true
   values:
     autoDirectNodeRoutes: true
     bandwidthManager:
