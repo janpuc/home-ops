@@ -46,7 +46,7 @@ spec:
           alertrelay:
             image:
               repository: docker.io/library/python
-              tag: 3.13-alpine@sha256:7415fbc3c9e4979cc717d92377ab2bc7b2b4a2af1ac03cc52b5f3f88efedaf3a
+              tag: 3.13-alpine@sha256:2d9aefe2fef018a7eb2c13064c89c71929800fd2e5dccdbf52ea5da5bb8d929a
             command:
               - python3
               - /run/agent/alert-relay.py
