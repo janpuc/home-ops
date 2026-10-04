@@ -55,7 +55,10 @@ spec:
                 cpu: 10m
                 memory: 64Mi
               limits:
-                memory: 1Gi
+                # `flate diff images` peaks at ~1.8 GB on a cold render of the
+                # cluster; at 1Gi the runner is OOM-killed (exit 137) and GitHub
+                # reports "The self-hosted runner lost communication".
+                memory: 3Gi
             volumeMounts:
               - mountPath: /var/run/secrets/talos.dev
                 name: talos
