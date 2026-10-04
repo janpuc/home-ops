@@ -12,8 +12,6 @@ spec:
   upgrade:
     disableWait: true
   values:
-    agent:
-      peerFence: true
     autoEvictAfter: 1h
     autoDiskfulAfter: 72h
     drbd:
