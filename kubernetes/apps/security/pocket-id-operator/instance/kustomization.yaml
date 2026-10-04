@@ -5,3 +5,16 @@ kind: Kustomization
 resources:
   - ./externalsecret.yaml
   - ./pocketidinstance.yaml
+patches:
+  # pocket-id runs as 65534 and creates uploads/ as 65534:65534 0770; the mover
+  # has to stay 1000 for the NAS repository, so give it the group to read it.
+  - target:
+      group: kopiur.home-operations.com
+      kind: SnapshotPolicy
+    patch: |-
+      - op: add
+        path: /spec/mover
+        value:
+          podSecurityContext:
+            supplementalGroups:
+              - 65534
