@@ -22,13 +22,13 @@ spec:
   maintenance:
     schedule:
       quick:
-        cron: H */6 * * *
+        cron: H * * * *
       full:
         cron: H 5 * * *
     takeoverPolicy: Force
   parameters:
     epoch:
-      minDuration: 6h
+      minDuration: 1h
   moverDefaults:
     cache:
       capacity: 10Gi

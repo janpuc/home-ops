@@ -21,6 +21,7 @@ spec:
         cpu: 10m
         memory: 48Mi
     k8sAppLabelOverride: kube-dns
+    priorityClassName: system-cluster-critical
     serviceAccount:
       create: true
     service:
@@ -51,6 +52,7 @@ spec:
             configBlock: |-
               prefetch 20
               serve_stale
+              servfail 0
           - name: loop
           - name: reload
           - name: loadbalance
