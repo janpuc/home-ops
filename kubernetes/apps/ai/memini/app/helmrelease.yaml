@@ -13,8 +13,7 @@ spec:
     controllers:
       main:
         type: deployment
-        # TEMPORARY park for the move to replicated miroir-fast; revert at unpark.
-        replicas: 0
+        replicas: 1
         annotations:
           reloader.stakater.com/auto: "true"
         pod:
@@ -79,8 +78,6 @@ spec:
       fsck:
         enabled: true
         cronjob:
-          # TEMPORARY park: the fsck job mounts the data volume; revert at unpark.
-          suspend: true
           schedule: "0 5 * * *"
         containers:
           fsck:

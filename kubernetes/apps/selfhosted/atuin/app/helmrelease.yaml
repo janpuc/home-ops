@@ -12,8 +12,6 @@ spec:
   values:
     controllers:
       atuin:
-        # TEMPORARY park for the move to replicated miroir-fast; revert at unpark.
-        replicas: 0
         containers:
           app:
             image:
