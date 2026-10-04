@@ -6,7 +6,7 @@ metadata:
   name: nas
 spec:
   ownership:
-    owner: kopiur/nas
+    owner: kopiur/clusterrepository/nas
     takeoverPolicy: Force
   repository:
     kind: ClusterRepository

@@ -7,7 +7,9 @@ metadata:
   annotations:
     kopiur.home-operations.com/allow-identity-change: "true"
 spec:
-  copyMethod: ${KOPIUR_COPYMETHOD:=Snapshot}
+  compression:
+    compressor: zstd
+  copyMethod: ${KOPIUR_COPYMETHOD:=Direct}
   errorHandling:
     ignoreDirErrors: ${KOPIUR_IGNORE_DIR_ERRORS:=false}
   repository:
