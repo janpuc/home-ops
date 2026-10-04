@@ -4,14 +4,6 @@ machine:
   ca:
     crt: op://Kubernetes/talos/MACHINE_CA_CRT
     key: op://Kubernetes/talos/MACHINE_CA_KEY
-  features:
-    kubernetesTalosAPIAccess:
-      enabled: true
-      allowedKubernetesNamespaces:
-        - actions-runner-system
-        - system-upgrade
-      allowedRoles:
-        - os:admin
 cluster:
   ca:
     crt: op://Kubernetes/talos/CLUSTER_CA_CRT
@@ -29,11 +21,6 @@ cluster:
       listen-metrics-urls: http://0.0.0.0:2381
   serviceAccount:
     key: op://Kubernetes/talos/CLUSTER_SERVICEACCOUNT_KEY
----
-apiVersion: v1alpha1
-kind: WatchdogTimerConfig
-device: /dev/watchdog0
-timeout: 5m0s
 ---
 apiVersion: v1alpha1
 kind: KubeNodeConfig
@@ -145,3 +132,11 @@ resources:
     memory: 64Mi
   limits:
     memory: 256Mi
+---
+apiVersion: v1alpha1
+kind: KubeTalosAPIAccessConfig
+allowedRoles:
+  - os:admin
+allowedKubernetesNamespaces:
+  - actions-runner-system
+  - system-upgrade
