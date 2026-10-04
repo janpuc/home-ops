@@ -1,0 +1,16 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/cilium.io/ciliumnodeconfig_v2.json
+# TEMPORARY, for the netkit -> veth migration. Nodes labelled
+# cilium.io/datapath=netkit keep netkit until they are drained, unlabelled and
+# their pods recreated: Cilium can't switch device types in place and a node
+# must not run both. Remove once every node runs veth.
+apiVersion: cilium.io/v2
+kind: CiliumNodeConfig
+metadata:
+  name: datapath-netkit-hold
+spec:
+  nodeSelector:
+    matchLabels:
+      cilium.io/datapath: netkit
+  defaults:
+    datapath-mode: netkit
