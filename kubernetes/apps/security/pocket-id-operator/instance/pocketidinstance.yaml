@@ -87,6 +87,17 @@ spec:
   persistence:
     enabled: true
     existingClaim: *app
+    # The root filesystem is read-only, so geoip.dbPath needs a writable /tmp.
+    # Disk-backed on purpose: tmpfs would count the ~60 MB database (twice,
+    # mid-refresh) against the 96Mi memory limit.
+    extraVolumeMounts:
+      - name: tmp
+        mountPath: /tmp
+  podTemplate:
+    spec:
+      volumes:
+        - name: tmp
+          emptyDir: {}
   resources:
     requests:
       cpu: 10m
