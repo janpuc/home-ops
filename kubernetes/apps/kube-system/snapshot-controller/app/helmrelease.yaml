@@ -18,6 +18,6 @@ spec:
         limits:
           memory: 96Mi
       serviceMonitor:
-        enabled: true
+        create: true
     webhook:
       enabled: false
