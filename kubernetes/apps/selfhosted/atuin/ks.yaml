@@ -7,10 +7,21 @@ metadata:
 spec:
   components:
     - ../../../../components/kopiur/backup
+    - ../../../../components/kopiur/park
   dependsOn:
     - name: miroir-config
       namespace: miroir-system
   interval: 1h
+  # Temporary park while the PVC moves storage class (no zeroscaler here):
+  # the app stays at 0 replicas until its rebuilt volume is verified.
+  patches:
+    - target:
+        kind: HelmRelease
+        name: atuin
+      patch: |-
+        - op: add
+          path: /spec/values/controllers/atuin/replicas
+          value: 0
   path: ./kubernetes/apps/selfhosted/atuin/app
   postBuild:
     substitute:
