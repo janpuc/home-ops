@@ -23,6 +23,7 @@ spec:
   components:
     - ../../../../components/zeroscaler
     - ../../../../components/kopiur/backup
+    - ../../../../components/kopiur/park
   dependsOn:
     - name: onepassword-connect
       namespace: external-secrets
