@@ -23,8 +23,6 @@ spec:
   components:
     - ../../../../components/zeroscaler
     - ../../../../components/kopiur/backup
-    - ../../../../components/kopiur/park
-    - ../../../../components/kopiur/pin-restore
   dependsOn:
     - name: onepassword-connect
       namespace: external-secrets
@@ -33,7 +31,6 @@ spec:
       namespace: miroir-system
     - name: kopiur
       namespace: kopiur-system
-  force: true
   interval: 1h
   path: ./kubernetes/apps/security/pocket-id-operator/instance
   postBuild:
@@ -41,8 +38,6 @@ spec:
       APP: pocket-id
       KOPIUR_COPYMETHOD: Direct
       KOPIUR_CAPACITY: 1Gi
-      # TEMPORARY: the full snapshot, taken with uploads/ readable; revert at unpark.
-      KOPIUR_MIGRATE_SNAPSHOT: pocket-id-migrate-full
   prune: true
   sourceRef:
     kind: GitRepository
