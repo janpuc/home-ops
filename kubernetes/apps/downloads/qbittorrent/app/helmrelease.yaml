@@ -131,18 +131,6 @@ spec:
             port: *port
     route:
       app:
-        annotations:
-          gethomepage.dev/enabled: "true"
-          gethomepage.dev/description: qBittorrent Download Client
-          gethomepage.dev/group: Downloads
-          gethomepage.dev/icon: si-qbittorrent
-          gethomepage.dev/name: qBittorrent
-          gethomepage.dev/widget.type: qbittorrent
-          gethomepage.dev/widget.url: "http://qbittorrent.downloads.svc.cluster.local"
-          gethomepage.dev/widget.enableLeechProgress: "true"
-          gethomepage.dev/widget.enableLeechSize: "true"
-          gethomepage.dev/pod-selector: app.kubernetes.io/name=qbittorrent
-          gethomepage.dev/weight: "40"
         hostnames:
           - "{{ .Release.Name }}.janpuc.com"
         parentRefs:

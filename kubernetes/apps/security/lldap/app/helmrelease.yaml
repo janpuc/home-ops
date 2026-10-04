@@ -76,14 +76,6 @@ spec:
             port: *ldapPort
     route:
       app:
-        annotations:
-          gethomepage.dev/enabled: "true"
-          gethomepage.dev/description: Lightweight LDAP server
-          gethomepage.dev/group: Security
-          gethomepage.dev/icon: mdi-lock-open
-          gethomepage.dev/name: LLDAP
-          gethomepage.dev/pod-selector: app.kubernetes.io/name=lldap
-          gethomepage.dev/weight: "20"
         hostnames:
           - "{{ .Release.Name }}.janpuc.com"
         parentRefs:

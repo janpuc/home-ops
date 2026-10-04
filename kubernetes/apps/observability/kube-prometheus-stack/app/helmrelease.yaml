@@ -14,14 +14,6 @@ spec:
     alertmanager:
       route:
         main:
-          annotations:
-            gethomepage.dev/enabled: "true"
-            gethomepage.dev/description: Alertmanager for Prometheus alerts
-            gethomepage.dev/group: Observability
-            gethomepage.dev/icon: mdi-alert-octagram
-            gethomepage.dev/name: Alertmanager
-            gethomepage.dev/pod-selector: app.kubernetes.io/name=alertmanager
-            gethomepage.dev/weight: "10"
           enabled: true
           hostnames:
             - alertmanager.janpuc.com
@@ -54,16 +46,6 @@ spec:
     prometheus:
       route:
         main:
-          annotations:
-            gethomepage.dev/enabled: "true"
-            gethomepage.dev/description: Prometheus monitoring system
-            gethomepage.dev/group: Observability
-            gethomepage.dev/icon: si-prometheus
-            gethomepage.dev/name: Prometheus
-            gethomepage.dev/widget.type: prometheus
-            gethomepage.dev/widget.url: "http://prometheus-operated.observability.svc.cluster.local:9090"
-            gethomepage.dev/pod-selector: app.kubernetes.io/name=prometheus
-            gethomepage.dev/weight: "10"
           enabled: true
           hostnames:
             - prometheus.janpuc.com
