@@ -15,7 +15,11 @@ spec:
       enabled: true
       bbr: true
     bpf:
-      datapathMode: netkit
+      # netkit gives gVisor pods a zero-MAC device, so runsc sends frames with
+      # no Ethernet header ("Unsupported L3 protocol" drops), and with
+      # socketLB.hostNamespaceOnly it drops same-node ClusterIP replies into
+      # ingress-policed pods (cilium/cilium#47913). onedr0p moved to veth too.
+      datapathMode: veth
       masquerade: true
       preallocateMaps: true
     bpfClockProbe: true
@@ -101,3 +105,9 @@ spec:
     socketLB:
       enabled: true
       hostNamespaceOnly: true
+    # TEMPORARY, for the netkit -> veth migration: agents pick up the new
+    # datapath only when their pod is deleted, node by node. Back to the chart's
+    # RollingUpdate once every node runs veth.
+    updateStrategy:
+      type: OnDelete
+      rollingUpdate: null
