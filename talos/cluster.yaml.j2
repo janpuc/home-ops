@@ -18,6 +18,12 @@ cluster:
 ---
 apiVersion: v1alpha1
 kind: ResolverConfig
+# UniFi's DHCP hands out the domain name "internal"; Talos turns it into a
+# search domain that kubelet appends to every pod's search list (and CoreDNS
+# autopath to every lookup). An explicit empty list drops DHCP search domains
+# (Talos >= 1.14) while keeping the DHCP nameserver.
+searchDomains:
+  domains: []
 hostDNS:
   enabled: true
   forwardKubeDNSToHost: true
