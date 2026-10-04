@@ -32,6 +32,12 @@ spec:
   moverDefaults:
     cache:
       capacity: 10Gi
+      # Kopia's own defaults are 5000 MiB per budget, and the metadata budget
+      # applies twice (kopia caps the index-blobs cache at the same size), so
+      # left alone the caches can grow to ~15000 MiB - more than the 10Gi cache
+      # volume, which then fills up before the sweeper ever trims it.
+      contentCacheSizeMb: 512
+      metadataCacheSizeMb: 1024
       mode: Ephemeral
       storageClassName: miroir-fast-local
     podSecurityContext:
