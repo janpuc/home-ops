@@ -12,19 +12,6 @@ spec:
     - name: kopiur
       namespace: kopiur-system
   interval: 1h
-  # Temporary park while the PVC moves storage class (no zeroscaler here):
-  # main stays at 0 and the daily fsck CronJob (which mounts the data volume) is suspended until the rebuilt volume is verified.
-  patches:
-    - target:
-        kind: HelmRelease
-        name: memini
-      patch: |-
-        - op: replace
-          path: /spec/values/controllers/main/replicas
-          value: 0
-        - op: add
-          path: /spec/values/controllers/fsck/cronjob/suspend
-          value: true
   path: ./kubernetes/apps/ai/memini/app
   postBuild:
     substitute:

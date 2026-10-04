@@ -12,6 +12,8 @@ spec:
   values:
     controllers:
       open-webui:
+        # TEMPORARY park for the move to replicated miroir-fast; revert at unpark.
+        replicas: 0
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
