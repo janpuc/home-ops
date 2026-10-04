@@ -13,7 +13,7 @@ spec:
     disableWait: true
   values:
     autoEvictAfter: 1h
-    autoDiskfulAfter: 72h
+    autoDiskfulAfter: 1h
     drbd:
       alExtents: 6007
     groupSnapshots:
