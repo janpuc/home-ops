@@ -11,6 +11,7 @@ spec:
   components:
     - ../../../../components/dragonfly
     - ../../../../components/kopiur/backup
+    - ../../../../components/kopiur/park
   dependsOn:
     - name: kopiur
       namespace: kopiur-system
@@ -24,6 +25,16 @@ spec:
       failed: status.phase != 'ready'
       current: status.phase == 'ready'
   interval: 1h
+  # Temporary park while the PVC moves storage class (no zeroscaler here):
+  # the app stays at 0 replicas until its rebuilt volume is verified.
+  patches:
+    - target:
+        kind: HelmRelease
+        name: open-webui
+      patch: |-
+        - op: add
+          path: /spec/values/controllers/open-webui/replicas
+          value: 0
   path: ./kubernetes/apps/ai/open-webui/app
   postBuild:
     substitute:
