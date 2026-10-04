@@ -5,7 +5,7 @@
 # closed if it can't (onMissingSnapshot: Fail), so the PVC stays Pending instead
 # of provisioning an empty volume. A Restore pins its source at admission and
 # never re-resolves, so delete the existing Restore before this lands and again
-# before removing this component.
+# before removing this component. KOPIUR_MIGRATE_SNAPSHOT overrides the name.
 apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
 patches:
@@ -17,7 +17,7 @@ patches:
         path: /spec/source
         value:
           snapshotRef:
-            name: ${APP}-migrate
+            name: ${KOPIUR_MIGRATE_SNAPSHOT:=${APP}-migrate}
       - op: add
         path: /spec/policy/onMissingSnapshot
         value: Fail
