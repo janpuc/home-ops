@@ -17,7 +17,9 @@ spec:
           annotations:
             summary: "Miroir pool past 60% allocated on {{ $labels.node }} ({{ $labels.pool }})"
             description: >-
-              Every volume is provisioned with three diskful replicas, so each
-              node carries a full copy and the thin pool grows on all three at
-              once. Watch for the chart's MiroirPoolUsageHigh (80%, 15m) to fire
-              next. Current usage: {{ $value | humanizePercentage }}.
+              This node's thin pool backs every volume replica placed on it:
+              single-replica (-local) volumes grow only the pool of the node
+              they live on, while replicated volumes grow the pool on each of
+              their diskful nodes at once. Watch for the chart's
+              MiroirPoolUsageHigh (80%, 15m) to fire next. Current usage:
+              {{ $value | humanizePercentage }}.

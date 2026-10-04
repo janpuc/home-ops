@@ -27,3 +27,17 @@ spec:
               Flux instance {{ $labels.name }} is not ready
           labels:
             severity: critical
+
+        - alert: FluxResourceNotReady
+          expr: |-
+            flux_resource_info{kind=~"HelmRelease|Kustomization", ready="False", suspended="False"} == 1
+          for: 15m
+          annotations:
+            summary: >-
+              {{ $labels.kind }} {{ $labels.exported_namespace }}/{{ $labels.name }} is not ready
+            description: >-
+              {{ $labels.kind }} {{ $labels.exported_namespace }}/{{ $labels.name }} has been
+              not Ready for more than 15 minutes (reason: {{ $labels.reason }}). A reason of
+              DependencyNotReady points at an upstream Flux resource that is failing too.
+          labels:
+            severity: critical
