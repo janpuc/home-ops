@@ -18,6 +18,10 @@ data:
       - name: aether
         hash: "{{ index . "MEMINI_API_KEY_aether" | sha256sum }}"
         home: personal/jan
+      # Open WebUI's memini integration: non-admin.
+      - name: open-webui
+        hash: "{{ index . "MEMINI_API_KEY_open-webui" | sha256sum }}"
+        home: personal/jan
       # Unattended agents: non-admin.
       - name: hermes-main
         hash: "{{ index . "MEMINI_API_KEY_hermes-main" | sha256sum }}"
