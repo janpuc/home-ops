@@ -10,13 +10,28 @@ spec:
       rules:
         - alert: SmartDeviceHighTemperature
           expr: |-
-            smartctl_device_temperature{temperature_type="current"} > 65
+            smartctl_device_temperature{temperature_type="current", device!~"nvme.*"} > 65
           for: 5m
           annotations:
             summary: >-
               Mounted drive {{ $labels.device }} on device {{ $labels.instance }} has a temperature higher than 65°C
           labels:
             severity: critical
+
+        # bigmouth's nvme0 (the Vault special vdev) sits at 74-80°C for 10-65m
+        # most nights while kopiur's quick verification runs (03:00 local), so
+        # only heat lasting well past that window pages here. A drive past its
+        # own over-temperature threshold sets critical_warning, and
+        # SmartDeviceCriticalWarning pages that within 5m.
+        - alert: SmartDeviceHighTemperatureNvme
+          expr: |-
+            smartctl_device_temperature{temperature_type="current", device=~"nvme.*"} > 70
+          for: 2h
+          annotations:
+            summary: >-
+              NVMe drive {{ $labels.device }} on device {{ $labels.instance }} has been above 70°C for 2 hours
+          labels:
+            severity: warning
 
         - alert: SmartDeviceTestFailed
           expr: |-
