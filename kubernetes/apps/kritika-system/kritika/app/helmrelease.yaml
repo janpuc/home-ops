@@ -45,10 +45,12 @@ spec:
         similarFloor: 0.7
       egress:
         allowHosts: [raw.githubusercontent.com]
+      # Reviews run on MiniMax M3 (its own plan, with room to spare) instead of the
+      # shared OpenCode Go allowance; Kimi K2.7 Code on Go is the fallback.
       defaults:
         models:
-          review: litellm/opencode-go/kimi-k2.7-code
-          fallback: litellm/opencode-go/glm-5.3
+          review: litellm/minimax/MiniMax-M3
+          fallback: litellm/opencode-go/kimi-k2.7-code
         agent: { commands: [gh, curl, jq, yq, rg, fd] }
     envFrom:
       - secretRef:
