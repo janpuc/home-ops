@@ -2,11 +2,11 @@
 apiVersion: litellm.home-operations.com/v1alpha1
 kind: LiteLLMModel
 metadata:
-  name: opencode-go-mimo-v2-5-pro
+  name: opencode-go-gpt-6-luna
 spec:
-  modelName: opencode-go/mimo-v2.5-pro
+  modelName: opencode-go/gpt-6-luna
   params:
-    model: openai/mimo-v2.5-pro
+    model: openai/responses/gpt-6-luna
     apiBase: https://opencode.ai/zen/go/v1
     apiKeyRef:
       name: litellm
@@ -16,9 +16,10 @@ spec:
       extra_headers:
         x-opencode-session: litellm-janpuc-com
   info:
-    maxInputTokens: 1048576
+    maxInputTokens: 922000
     maxOutputTokens: 128000
     supportsFunctionCalling: true
     supportsPromptCaching: true
+    supportsVision: true
     extra:
       supports_reasoning: true

@@ -2,11 +2,11 @@
 apiVersion: litellm.home-operations.com/v1alpha1
 kind: LiteLLMModel
 metadata:
-  name: opencode-go-kimi-k2-6
+  name: opencode-go-mimo-v2-6-flash
 spec:
-  modelName: opencode-go/kimi-k2.6
+  modelName: opencode-go/mimo-v2.6-flash
   params:
-    model: openai/kimi-k2.6
+    model: openai/mimo-v2.6-flash
     apiBase: https://opencode.ai/zen/go/v1
     apiKeyRef:
       name: litellm
@@ -16,8 +16,8 @@ spec:
       extra_headers:
         x-opencode-session: litellm-janpuc-com
   info:
-    maxInputTokens: 262144
-    maxOutputTokens: 65536
+    maxInputTokens: 1048576
+    maxOutputTokens: 131072
     supportsFunctionCalling: true
     supportsPromptCaching: true
     supportsVision: true

@@ -1,22 +1,23 @@
+---
 # yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmmodel_v1alpha1.json
 apiVersion: litellm.home-operations.com/v1alpha1
 kind: LiteLLMModel
 metadata:
-  name: opencode-go-omen-alpha
+  name: minimax-m3-1-flash-preview
 spec:
-  modelName: opencode-go/omen-alpha
+  modelName: minimax/MiniMax-M3.1-Flash-Preview
   params:
-    model: openai/omen-alpha
-    apiBase: https://opencode.ai/zen/go/v1
+    model: minimax/MiniMax-M3.1-Flash-Preview
+    apiBase: https://api.minimax.io/v1
     apiKeyRef:
       name: litellm
-      key: OPENCODE_GO_API_KEY
-    dropParams: true
+      key: MINIMAX_API_KEY
     additional:
-      extra_headers:
-        x-opencode-session: litellm-janpuc-com
+      extra_body:
+        reasoning_split: true
   info:
-    maxInputTokens: 500000
+    maxTokens: 1000000
+    maxInputTokens: 1000000
     maxOutputTokens: 128000
     supportsFunctionCalling: true
     supportsPromptCaching: true

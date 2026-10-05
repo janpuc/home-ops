@@ -30,7 +30,10 @@ spec:
               OPENID_REDIRECT_URI: https://chat.janpuc.com/oauth/oidc/callback
               ENABLE_LOGIN_FORM: false
               ENABLE_OLLAMA_API: false
-              ENABLE_OPENAI_API: false
+              # Both only seed the config: values already saved in the database
+              # (Admin Settings) win over these on every start.
+              ENABLE_OPENAI_API: true
+              TASK_MODEL_EXTERNAL: opencode-go/glm-5.3-flash
               ENABLE_RAG_WEB_SEARCH: true
               ENABLE_SEARCH_QUERY: true
               ENABLE_SIGNUP: false
