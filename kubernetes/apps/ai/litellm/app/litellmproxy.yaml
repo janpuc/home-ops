@@ -17,10 +17,52 @@ spec:
     num_retries: 3
     timeout: 600
     # A 429 from OpenCode Go is almost always the plan's usage limit (GoUsageLimitError,
-    # "resets in N days"), which no retry fixes: go straight to the fallbacks below.
-    # Other errors keep num_retries.
-    retry_policy:
-      RateLimitErrorRetries: 0
+    # "resets in N days"), which no retry fixes: those groups go straight to the
+    # fallbacks below. Scoped per model group so MiniMax and anything else still
+    # retry transient 429s (num_retries); other errors keep num_retries everywhere.
+    model_group_retry_policy:
+      opencode-go/deepseek-v4-flash:
+        RateLimitErrorRetries: 0
+      opencode-go/deepseek-v4-flash-vision-exp:
+        RateLimitErrorRetries: 0
+      opencode-go/deepseek-v4-pro:
+        RateLimitErrorRetries: 0
+      opencode-go/deepseek-v4.1-flash:
+        RateLimitErrorRetries: 0
+      opencode-go/glm-5.2:
+        RateLimitErrorRetries: 0
+      opencode-go/glm-5.3:
+        RateLimitErrorRetries: 0
+      opencode-go/glm-5.3-flash:
+        RateLimitErrorRetries: 0
+      opencode-go/gpt-6-luna:
+        RateLimitErrorRetries: 0
+      opencode-go/grok-4.7:
+        RateLimitErrorRetries: 0
+      opencode-go/hy3:
+        RateLimitErrorRetries: 0
+      opencode-go/hy4-preview:
+        RateLimitErrorRetries: 0
+      opencode-go/kimi-k2.7-code:
+        RateLimitErrorRetries: 0
+      opencode-go/kimi-k3:
+        RateLimitErrorRetries: 0
+      opencode-go/longcat-2.0:
+        RateLimitErrorRetries: 0
+      opencode-go/mimo-v2.6-flash:
+        RateLimitErrorRetries: 0
+      opencode-go/mimo-v2.6-pro:
+        RateLimitErrorRetries: 0
+      opencode-go/minimax-m2.7:
+        RateLimitErrorRetries: 0
+      opencode-go/minimax-m3:
+        RateLimitErrorRetries: 0
+      opencode-go/qwen3.7-plus:
+        RateLimitErrorRetries: 0
+      opencode-go/qwen3.8-flash:
+        RateLimitErrorRetries: 0
+      opencode-go/qwen3.8-max:
+        RateLimitErrorRetries: 0
     # Every Go model shares one weighted allowance, so all of them fail over to
     # MiniMax M3 on its own plan, and MiniMax M3 to its Go-hosted copy. Fallbacks
     # chain (a fallback's own fallbacks are tried) and LiteLLM skips a model group it
