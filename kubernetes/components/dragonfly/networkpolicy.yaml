@@ -1,0 +1,45 @@
+---
+# All ingress the Dragonfly pods accept. dragonfly-operator v1.7.0 no longer
+# generates a NetworkPolicy, so its v1.6 rules live here, plus Prometheus.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ${APP}-dragonfly-ingress
+spec:
+  podSelector:
+    matchLabels:
+      app: ${APP}-dragonfly
+      app.kubernetes.io/name: dragonfly
+      app.kubernetes.io/part-of: dragonfly
+  policyTypes:
+    - Ingress
+  ingress:
+    # Redis clients: any pod in the app's namespace.
+    - from:
+        - podSelector: {}
+      ports:
+        - protocol: TCP
+          port: 6379
+    # Admin port: the operator (role checks, SLAVEOF), the instance's own
+    # pods (replicas sync from the master's admin port) and Prometheus.
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: database
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: dragonfly-operator
+        - podSelector:
+            matchLabels:
+              app: ${APP}-dragonfly
+              app.kubernetes.io/name: dragonfly
+              app.kubernetes.io/part-of: dragonfly
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: observability
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: prometheus
+      ports:
+        - protocol: TCP
+          port: 9999
