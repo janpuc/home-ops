@@ -18,6 +18,19 @@ spec:
           labels:
             severity: critical
 
+        # Fires a minute before GatusEndpointDown for the external probe of the
+        # same name, so the Alertmanager inhibit (equal: name) already holds
+        # when that alert is first sent: one outage, one page.
+        - alert: GatusLanEndpointDown
+          expr: |-
+            gatus_results_endpoint_success{group="lan"} == 0
+          for: 4m
+          annotations:
+            summary: >-
+              The {{ $labels.name }} endpoint is down on the LAN
+          labels:
+            severity: critical
+
         - alert: GatusEndpointExposed
           expr: |-
             gatus_results_endpoint_success{group="internal"} == 0
