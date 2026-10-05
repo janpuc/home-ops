@@ -6,6 +6,19 @@ metadata:
 data:
   keys.yaml: |-
     keys:
+      # Humans: one admin key per person (memini docs: guides/access-control.md).
+      # Interactive clients on the laptop (Claude Code, Codex, opencode) and the
+      # UI. The tool is recorded per memory by the plugins (metadata.source).
+      - name: jan
+        hash: "{{ index . "MEMINI_API_KEY_jan" | sha256sum }}"
+        home: personal/jan
+        admin: true
+      # Always-on workstation running agent sessions: non-admin, revocable on
+      # its own without touching the laptop's key.
+      - name: aether
+        hash: "{{ index . "MEMINI_API_KEY_aether" | sha256sum }}"
+        home: personal/jan
+      # Unattended agents: non-admin.
       - name: hermes-main
         hash: "{{ index . "MEMINI_API_KEY_hermes-main" | sha256sum }}"
         home: personal/jan
