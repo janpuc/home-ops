@@ -21,6 +21,11 @@ spec:
       name: "*"
     - kind: OCIRepository
       name: "*"
+  # The dial.* entries drop whole failed fetches, not harmless noise: Go only
+  # returns a dial error after every address it tried has failed. An IPv6
+  # "network is unreachable" means no IPv4 connection was made either. One-off
+  # blips heal on the next retry. A source that keeps failing is paged by
+  # FluxResourceNotReady (flux-instance PrometheusRule) after 15m.
   exclusionList:
     - error.*lookup.*github
     - dial.*tcp.*timeout

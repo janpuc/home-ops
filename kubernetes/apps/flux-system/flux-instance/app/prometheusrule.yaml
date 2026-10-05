@@ -30,7 +30,7 @@ spec:
 
         - alert: FluxResourceNotReady
           expr: |-
-            flux_resource_info{kind=~"HelmRelease|Kustomization", ready="False", suspended="False"} == 1
+            flux_resource_info{kind=~"HelmRelease|Kustomization|GitRepository|HelmRepository|OCIRepository", ready="False", suspended="False"} == 1
           for: 15m
           annotations:
             summary: >-
