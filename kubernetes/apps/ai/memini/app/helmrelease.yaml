@@ -47,7 +47,11 @@ spec:
               MEMINI_LOG_FORMAT: json
               MEMINI_LLM_API: openai
               MEMINI_LLM_BASE_URL: http://litellm.ai.svc.cluster.local:4000/v1
-              MEMINI_LLM_MODEL: opencode-go/glm-5.2
+              # Fast and cheap on the Go plan; LiteLLM falls back to MiniMax M3 when the
+              # Go allowance is spent. Reasoning eats into the completion budget, so the
+              # client default of 4096 cut JSON answers short (finish_reason=length).
+              MEMINI_LLM_MODEL: opencode-go/deepseek-v4.1-flash
+              MEMINI_LLM_MAX_TOKENS: "8192"
               MEMINI_LLM_API_KEY:
                 valueFrom:
                   secretKeyRef:

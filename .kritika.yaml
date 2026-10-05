@@ -5,10 +5,16 @@ rules:
     whenExpr: pr.headRef.startsWith("renovate/")
     rule: >-
       This is a Renovate dependency update. Find what changed between the old
-      and new versions from upstream's release notes, changelog or compare
-      view, fetching them with gh when the body does not include them. Then
-      check how this repository uses the package (its HelmRelease values,
-      OCIRepository, overrides and CRDs) and report each breaking change,
-      deprecation, removed or renamed value, or changed default that affects
-      it. Start the summary with a verdict, safe to merge or not, and name
-      the sources you read.
+      and new versions, and only between them: the release notes or changelog
+      entries for the versions in that range. Use the notes in the body when
+      it has them. Otherwise fetch them with gh, at most three fetches in all:
+      the range's releases, or only the range's entries of a changelog file;
+      use a compare view only when neither exists, and read its commit
+      messages, not its diff. Never read older releases or unrelated upstream
+      files, and stop reading as soon as you know whether the range has
+      breaking changes, deprecations, removed or renamed values, or changed
+      defaults. Then check how this repository uses the package (its
+      HelmRelease values, OCIRepository, overrides and CRDs) and report each
+      of those that affects it. Start the summary with a verdict, safe to
+      merge or not, and name the sources you read, saying so when the notes
+      were missing or incomplete.
