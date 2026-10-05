@@ -14,7 +14,10 @@ spec:
       etcd-defrag:
         type: cronjob
         cronjob:
-          schedule: "@daily"
+          # Hourly, gated by --defrag-rule below: it only defragments a member once
+          # >100MiB is free, which here regrows ~15MB/h (about every 6-7 hours).
+          # @daily let the free space pass etcdDatabaseHighFragmentationRatio (<50%).
+          schedule: "@hourly"
           concurrencyPolicy: Forbid
           successfulJobsHistory: 1
           failedJobsHistory: 1
