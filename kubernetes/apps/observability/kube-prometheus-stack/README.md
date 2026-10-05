@@ -28,11 +28,14 @@ services:
 
 ### smartctl-exporter
 
+No `--smartctl.device-exclude`/`--smartctl.device-include`: kernel names (`sdX`)
+change between boots. The original `--smartctl.device-exclude=sdc` hid the boot
+SSD, but after the 2026-09-18 reboot `sdc` was a Vault mirror disk, which then went
+unmonitored. The boot SSD reads cleanly, so nothing needs excluding.
+
 ```yaml
 services:
     smartctl-exporter:
-        command:
-            - "--smartctl.device-exclude=sdc"
         image: quay.io/prometheuscommunity/smartctl-exporter:v0.13.0
         ports:
             - "9633:9633"
