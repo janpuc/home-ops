@@ -1,0 +1,48 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tuiter-reader-profile
+spec:
+  accessModes:
+    - ReadWriteOnce
+  dataSourceRef:
+    apiGroup: kopiur.home-operations.com
+    kind: Restore
+    name: tuiter-reader-profile
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: miroir-fast-local
+---
+# The same poster account as before, so restoring its profile restores the
+# logged-in session. The handle in 1Password pins publishing to that account.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tuiter-poster-profile
+spec:
+  accessModes:
+    - ReadWriteOnce
+  dataSourceRef:
+    apiGroup: kopiur.home-operations.com
+    kind: Restore
+    name: tuiter-poster-profile
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: miroir-fast-local
+---
+# Audio, transcripts, chat and rendered clips. Everything here is rebuildable
+# from Twitch and YouTube, so it is not backed up.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tuiter-work
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 30Gi
+  storageClassName: miroir-fast-local
