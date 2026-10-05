@@ -94,6 +94,15 @@ spec:
     persistence:
       data:
         existingClaim: memini
+      # SQLite spills large operations (e.g. DELETE /v1/namespaces) to temp
+      # files; with a read-only root filesystem they failed with
+      # "sqlite3: disk I/O error".
+      tmp:
+        type: emptyDir
+        advancedMounts:
+          main:
+            main:
+              - path: /tmp
       keys:
         type: secret
         name: memini-keys
