@@ -7,7 +7,17 @@ metadata:
 spec:
   format: gguf
   hardware:
-    accelerator: cpu
+    # Back on the iGPU (k8s-0's is the free one; k8s-1 has Plex, k8s-2 the
+    # reranker): on CPU it managed ~100 tokens/s, so kritika's bulk indexing
+    # starved memini's 5s recall-embed budget and recall fell back to keyword-only.
+    accelerator: vulkan
+    gpu:
+      enabled: true
+      layers: 99
+      vendor: amd
+      resourceClaims:
+        - name: gpu
+          resourceClaimTemplateName: llmkube-models-gpu
   quantization: Q8_0
   source: https://huggingface.co/gpustack/bge-m3-GGUF/resolve/main/bge-m3-Q8_0.gguf
 ---
@@ -19,7 +29,7 @@ metadata:
 spec:
   modelRef: bge-embedding-m3
   runtime: llamacpp
-  image: ghcr.io/ggml-org/llama.cpp:server-b10868@sha256:17155a3ce4cc906728ec99a2814bf0b4eaffaf3b4872bad8c3affed310cdbc35
+  image: ghcr.io/ggml-org/llama.cpp:server-vulkan-b11382@sha256:431561ee79ee67b3980a02ff47ed9dc19496127643b75671d9789ef693ca57f9
   replicas: 1
   contextSize: 8192
   parallelSlots: 2
