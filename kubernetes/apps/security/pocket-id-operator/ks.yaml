@@ -21,7 +21,6 @@ metadata:
   name: pocket-id-instance
 spec:
   components:
-    - ../../../../components/zeroscaler
     - ../../../../components/kopiur/backup
   dependsOn:
     - name: onepassword-connect
