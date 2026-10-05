@@ -51,7 +51,7 @@ spec:
               limits:
                 memory: 2Gi
             securityContext:
-              allowPrivilegeEscalation: true
+              allowPrivilegeEscalation: false
               readOnlyRootFilesystem: false
               capabilities: { drop: ["ALL"] }
           gluetun:
@@ -118,12 +118,17 @@ spec:
               runAsNonRoot: false
               capabilities: { drop: ["ALL"] }
     defaultPodOptions:
+      # qBittorrent talks to arbitrary peers, so it runs as 1000. gluetun
+      # (NET_ADMIN) and port-forward keep root on their own containers.
       securityContext:
-        runAsNonRoot: false
-        runAsUser: 0
-        runAsGroup: 0
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
         fsGroup: 1000
-        fsGroupChangePolicy: OnRootMismatch
+        # Always, not OnRootMismatch: files qBittorrent wrote while it ran as
+        # root (qBittorrent.conf 0:1000 644, ...) need group write, and /config's
+        # root already matches fsGroup. The NFS /media mount is never re-grouped.
+        fsGroupChangePolicy: Always
     service:
       app:
         ports:
