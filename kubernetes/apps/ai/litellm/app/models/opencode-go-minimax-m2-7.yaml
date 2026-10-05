@@ -6,8 +6,8 @@ metadata:
 spec:
   modelName: opencode-go/minimax-m2.7
   params:
-    model: openai/minimax-m2.7
-    apiBase: https://opencode.ai/zen/go/v1
+    model: anthropic/minimax-m2.7
+    apiBase: https://opencode.ai/zen/go
     apiKeyRef:
       name: litellm
       key: OPENCODE_GO_API_KEY

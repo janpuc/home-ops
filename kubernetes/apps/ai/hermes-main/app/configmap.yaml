@@ -235,9 +235,9 @@ data:
       context_length: 1000000
     fallback_providers:
       - provider: custom:litellm
-        model: opencode-go/deepseek-v4-pro
-      - provider: custom:litellm
         model: minimax/MiniMax-M3
+      - provider: custom:litellm
+        model: opencode-go/deepseek-v4-pro
       - provider: custom:litellm
         model: opencode-go/glm-5.3-flash
     plugins:

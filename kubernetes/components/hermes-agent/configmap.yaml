@@ -15,6 +15,8 @@ data:
             context_length: 1000000
           minimax/MiniMax-M2-7:
             context_length: 204800
+          minimax/MiniMax-M3.1-Flash-Preview:
+            context_length: 1000000
           opencode-go/minimax-m3:
             context_length: 1000000
           opencode-go/minimax-m2.7:
@@ -22,8 +24,6 @@ data:
           opencode-go/kimi-k3:
             context_length: 1048576
           opencode-go/kimi-k2.7-code:
-            context_length: 262144
-          opencode-go/kimi-k2.6:
             context_length: 262144
           opencode-go/glm-5.3:
             context_length: 1000000
@@ -39,34 +39,26 @@ data:
             context_length: 1000000
           opencode-go/deepseek-v4-flash-vision-exp:
             context_length: 1000000
-          opencode-go/deepseek-flash:
-            context_length: 1000000
           opencode-go/qwen3.8-max:
             context_length: 1000000
           opencode-go/qwen3.8-flash:
             context_length: 1000000
-          opencode-go/qwen3.7-max:
-            context_length: 1000000
           opencode-go/qwen3.7-plus:
-            context_length: 1000000
-          opencode-go/qwen3.6-plus:
             context_length: 1000000
           opencode-go/hy4-preview:
             context_length: 1024000
           opencode-go/hy3:
-            context_length: 256000
-          opencode-go/mimo-v2.5-pro:
+            context_length: 192000
+          opencode-go/mimo-v2.6-pro:
             context_length: 1048576
-          opencode-go/mimo-v2.5:
-            context_length: 1000000
-          opencode-go/gpt-5.6-luna:
+          opencode-go/mimo-v2.6-flash:
+            context_length: 1048576
+          opencode-go/gpt-6-luna:
             context_length: 922000
-          opencode-go/grok-4.6:
+          opencode-go/grok-4.7:
             context_length: 500000
           opencode-go/longcat-2.0:
             context_length: 1000000
-          opencode-go/omen-alpha:
-            context_length: 500000
     model:
       default: minimax/MiniMax-M3
       provider: custom:litellm
@@ -106,13 +98,13 @@ data:
         model: opencode-go/hy4-preview
         provider: custom:litellm
       mimo:
-        model: opencode-go/mimo-v2.5-pro
+        model: opencode-go/mimo-v2.6-pro
         provider: custom:litellm
       grok:
-        model: opencode-go/grok-4.6
+        model: opencode-go/grok-4.7
         provider: custom:litellm
       luna:
-        model: opencode-go/gpt-5.6-luna
+        model: opencode-go/gpt-6-luna
         provider: custom:litellm
     fallback_providers:
       - provider: custom:litellm

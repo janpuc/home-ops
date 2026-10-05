@@ -16,7 +16,7 @@ spec:
       extra_headers:
         x-opencode-session: litellm-janpuc-com
   info:
-    maxInputTokens: 256000
+    maxInputTokens: 192000
     maxOutputTokens: 64000
     supportsFunctionCalling: true
     supportsPromptCaching: true
