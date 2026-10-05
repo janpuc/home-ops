@@ -44,8 +44,9 @@ spec:
         - name: severity
           value: warning
           matchType: =
-    # A Gatus LAN probe that is down (e.g. lan_home-assistant) explains the
-    # failing external probe of the same name, so one outage pages once.
+    # A Gatus LAN probe that is down (e.g. name `home-assistant`, group `lan`)
+    # explains the failing external probe of the same name, so one outage
+    # pages once.
     - equal:
         - name
       sourceMatch:

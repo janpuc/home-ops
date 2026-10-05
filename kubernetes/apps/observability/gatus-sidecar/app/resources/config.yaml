@@ -40,7 +40,8 @@ endpoints:
     conditions:
       - "[CONNECTED] == true"
 
-  # Same name as the HTTPRoute-generated external_home-assistant probe: while
+  # Same name as the HTTPRoute-generated `home-assistant` probe (group
+  # `external`, Gatus key external_home-assistant): while
   # GatusLanEndpointDown fires for this one, Alertmanager inhibits the
   # external one's GatusEndpointDown (equal: name).
   - name: home-assistant
