@@ -51,7 +51,14 @@ spec:
         models:
           review: litellm/minimax/MiniMax-M3
           fallback: litellm/opencode-go/kimi-k2.7-code
-        agent: { commands: [gh, curl, jq, yq, rg, fd] }
+        # kritika's built-in limits are 60 steps / 4M tokens; infra PRs that read a lot
+        # of cluster config ran out of steps before submitting (#1477, #1512, #1515)
+        # and #1462 hit the token budget. Reviews run on MiniMax's own plan, so the
+        # extra headroom is cheap.
+        agent:
+          commands: [gh, curl, jq, yq, rg, fd]
+          maxSteps: 100
+          maxTokens: 6000000
     envFrom:
       - secretRef:
           name: kritika-secret
