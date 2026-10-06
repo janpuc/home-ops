@@ -1,0 +1,34 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmmodel_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: bc250-qwen3-6-35b-a3b
+spec:
+  # The living-room BC250 (janpuc/BC250, ai/). A gaming machine first: llama-server
+  # refuses connections while a game runs, so this alias falls back to MiniMax M3
+  # (routerSettings.fallbacks). Private material goes to bc250-local/ instead.
+  modelName: bc250/qwen3.6-35b-a3b
+  params:
+    # Must match LLAMA_ARG_ALIAS on the box.
+    model: openai/qwen3.6-35b-a3b
+    # The Ethernet reservation only: the box answers on .251 (Wi-Fi) or via
+    # bc250.internal when it is at the desk, and that means someone is gaming.
+    apiBase: http://192.168.69.250:8090/v1
+    apiKeyRef:
+      name: litellm
+      key: BC250_API_KEY
+    dropParams: true
+  info:
+    # 32768 context, split as the box advises; llama-server does not enforce it.
+    maxTokens: 32768
+    maxInputTokens: 24576
+    maxOutputTokens: 8192
+    supportsFunctionCalling: true
+    extra:
+      supports_reasoning: true
+      # Polling would keep the model loaded (11.4 GiB of the shared 16 GB) instead of
+      # letting it unload after 10 idle minutes, and refusals are its normal state.
+      disable_background_health_check: true
+      # An on-demand /health may hit the ~21 s reload after idle.
+      health_check_timeout: 90
