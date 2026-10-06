@@ -63,6 +63,13 @@ spec:
         RateLimitErrorRetries: 0
       opencode-go/qwen3.8-max:
         RateLimitErrorRetries: 0
+      # The BC250 refuses connections whenever a game runs, and its one slot would
+      # queue a retried timeout behind itself: one attempt, then the fallback or
+      # the error. Covers APIConnectionError, which has no per-type entry.
+      bc250/qwen3.6-35b-a3b:
+        DefaultRetries: 0
+      bc250-local/qwen3.6-35b-a3b:
+        DefaultRetries: 0
     # Every Go model shares one weighted allowance, so all of them fail over to
     # MiniMax M3 on its own plan, and MiniMax M3 to its Go-hosted copy. Fallbacks
     # chain (a fallback's own fallbacks are tried) and LiteLLM skips a model group it
@@ -91,6 +98,11 @@ spec:
       - opencode-go/qwen3.8-max: ["minimax/MiniMax-M3"]
       - minimax/MiniMax-M3: ["opencode-go/minimax-m3"]
       - minimax/MiniMax-M3.1-Flash-Preview: ["minimax/MiniMax-M3"]
+      # Ordinary chat on the BC250 moves to the cloud while someone games.
+      # bc250-local/qwen3.6-35b-a3b is deliberately absent here and from
+      # context_window_fallbacks: it carries private material and must fail
+      # instead. Keep it that way, and keep default_fallbacks unset.
+      - bc250/qwen3.6-35b-a3b: ["minimax/MiniMax-M3"]
     # Only where the target has a larger context window: a request that overflows a
     # 1M model overflows the 1M target too. While this list is set, a context error
     # on a model not listed here is returned as-is, not sent to the fallbacks above.
@@ -102,6 +114,7 @@ spec:
       - opencode-go/minimax-m2.7: ["minimax/MiniMax-M3"]
       - minimax/MiniMax-M2-7: ["minimax/MiniMax-M3"]
       - minimax/MiniMax-M2-7-anthropic: ["minimax/MiniMax-M3"]
+      - bc250/qwen3.6-35b-a3b: ["minimax/MiniMax-M3"]
   litellmSettings:
     success_callback:
       - prometheus

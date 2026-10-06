@@ -1,0 +1,28 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmmodel_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: bc250-local-qwen3-6-35b-a3b
+spec:
+  # The same BC250 endpoint with no fallback of any kind, for infrastructure
+  # findings and private material: while the box is busy or away a request fails
+  # instead of leaving the LAN. Never add this alias to routerSettings.fallbacks or
+  # context_window_fallbacks, and keep default_fallbacks unset.
+  modelName: bc250-local/qwen3.6-35b-a3b
+  params:
+    model: openai/qwen3.6-35b-a3b
+    apiBase: http://192.168.69.250:8090/v1
+    apiKeyRef:
+      name: litellm
+      key: BC250_API_KEY
+    dropParams: true
+  info:
+    maxTokens: 32768
+    maxInputTokens: 24576
+    maxOutputTokens: 8192
+    supportsFunctionCalling: true
+    extra:
+      supports_reasoning: true
+      disable_background_health_check: true
+      health_check_timeout: 90
