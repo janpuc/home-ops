@@ -72,7 +72,7 @@ spec:
               TUITER_LEGACY_ENABLED: "true"
               TUITER_LEGACY_MIN_AGE_DAYS: "60"
               TUITER_LEGACY_PER_DAY: "6"
-              # Posting: off until the review queue has proven itself. The
+              # Posting: on in review mode, so only approved clips post. The
               # poster is pinned to TUITER_POSTER_HANDLE from the secret.
               TUITER_PUBLISHING_ENABLED: "true"
               TUITER_MODE: review
