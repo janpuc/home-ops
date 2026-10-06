@@ -432,13 +432,12 @@
         "type": "prometheus",
         "uid": "${datasource}"
       },
-      "description": "LiteLLM spend recorded this calendar month.",
+      "description": "How long since the automation last published. Climbs when publishing is paused, blocked or out of slots.",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
-          "decimals": 2,
           "noValue": "No data",
           "thresholds": {
             "mode": "absolute",
@@ -446,10 +445,18 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "orange",
+                "value": 10800
+              },
+              {
+                "color": "red",
+                "value": 28800
               }
             ]
           },
-          "unit": "currencyUSD"
+          "unit": "s"
         },
         "overrides": []
       },
@@ -480,14 +487,14 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "max(tuiter_month_spend_usd)",
+          "expr": "time() - max(max_over_time(tuiter_last_publish_timestamp_seconds[7d]))",
           "instant": true,
           "legendFormat": "",
           "range": false,
           "refId": "A"
         }
       ],
-      "title": "Model spend · month",
+      "title": "Since last post",
       "type": "stat"
     },
     {
