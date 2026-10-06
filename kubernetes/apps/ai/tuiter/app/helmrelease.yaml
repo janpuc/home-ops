@@ -24,7 +24,7 @@ spec:
           migrate:
             image: &image
               repository: ghcr.io/janpuc/tuiter
-              tag: 1.0.2@sha256:541f7b558e8e1fb617de8942e57e3477a6cf5f5af6f4a0787785f59611da4b88
+              tag: 1.0.3@sha256:5cb84a6e670f9f51a5ec8602382bced20604c126177819a2336cf3e6d5739f45
             command:
               - python
               - /app/migrations/migrate.py
@@ -43,7 +43,7 @@ spec:
           app:
             image: *image
             env:
-              TUITER_VERSION: "1.0.2"
+              TUITER_VERSION: "1.0.3"
               TUITER_DB_PATH: /data/tuiter.db
               TUITER_WORK_DIR: /work
               TUITER_LITELLM_BASE_URL: http://litellm.ai.svc.cluster.local:4000
@@ -72,9 +72,9 @@ spec:
               TUITER_LEGACY_ENABLED: "true"
               TUITER_LEGACY_MIN_AGE_DAYS: "60"
               TUITER_LEGACY_PER_DAY: "6"
-              # Posting: off until the review queue has proven itself. The
+              # Posting: on in review mode, so only approved clips post. The
               # poster is pinned to TUITER_POSTER_HANDLE from the secret.
-              TUITER_PUBLISHING_ENABLED: "false"
+              TUITER_PUBLISHING_ENABLED: "true"
               TUITER_MODE: review
               TUITER_AUTO_THRESHOLD: "0.45"
               TUITER_POST_WINDOW_START: "13:00"
