@@ -44,6 +44,9 @@ spec:
               MEMINI_EMBED_MODEL: bge-m3
               MEMINI_EMBED_DIMS: "1024"
               MEMINI_EMBED_MAX_CONCURRENCY: "2"
+              # bge-embedding-m3 runs with a 1024-token ubatch; dense text tokenises
+              # at ~2.5 chars/token, so the 8000 default overflowed it.
+              MEMINI_EMBED_MAX_ITEM_CHARS: "2500"
               MEMINI_LOG_FORMAT: json
               MEMINI_LLM_API: openai
               MEMINI_LLM_BASE_URL: http://litellm.ai.svc.cluster.local:4000/v1

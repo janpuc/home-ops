@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: memini
+spec:
+  groups:
+    - name: memini.rules
+      rules:
+        - alert: MeminiEmbedErrors
+          expr: |-
+            sum(increase(memini_embed_errors_total[15m])) > 10
+          for: 15m
+          annotations:
+            summary: >-
+              memini embeds are failing ({{ $value | humanize }} errors in 15m)
+            description: >-
+              Check bge-embedding-m3 logs for ErrorDeviceLost or "too large to process".
+              New memories are stored without vectors until it recovers.
+          labels:
+            severity: warning
+        - alert: MeminiRecallDegraded
+          expr: |-
+            sum(increase(memini_recall_degraded_total[30m])) > 5
+          for: 10m
+          annotations:
+            summary: >-
+              memini recall is falling back to keyword-only search
+          labels:
+            severity: warning

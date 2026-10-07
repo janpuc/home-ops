@@ -33,8 +33,12 @@ spec:
   replicas: 1
   contextSize: 8192
   parallelSlots: 2
-  batchSize: 2048
-  uBatchSize: 2048
+  # An embedding input must fit in one ubatch, and the non-causal attention
+  # buffer grows with ubatch²: at 2048 it pushed the iGPU past its 2 GiB GTT cap
+  # (amdgpu "Not enough memory for command submission" -> ErrorDeviceLost).
+  # memini's MEMINI_EMBED_MAX_ITEM_CHARS keeps its inputs under 1024 tokens.
+  batchSize: 1024
+  uBatchSize: 1024
   resources:
     cpu: 100m
     memory: 3Gi
@@ -62,12 +66,21 @@ spec:
         port: 8080
       periodSeconds: 10
       failureThreshold: 60
+    # /health stays green after the Vulkan device is lost, so run a real embed.
+    # Skipped while the model sleeps, and the period is longer than
+    # --sleep-idle-seconds so the probe alone never keeps it awake.
     liveness:
-      httpGet:
-        path: /health
-        port: 8080
-      periodSeconds: 30
-      failureThreshold: 3
+      exec:
+        command:
+          - sh
+          - -c
+          - >-
+            curl -sf -m 5 http://localhost:8080/props | grep -q '"is_sleeping":true' ||
+            curl -sf -m 15 -o /dev/null -H 'Content-Type: application/json'
+            -d '{"input":"ok"}' http://localhost:8080/v1/embeddings
+      periodSeconds: 420
+      timeoutSeconds: 25
+      failureThreshold: 2
     readiness:
       httpGet:
         path: /health
