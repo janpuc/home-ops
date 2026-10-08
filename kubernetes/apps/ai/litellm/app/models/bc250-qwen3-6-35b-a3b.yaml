@@ -20,10 +20,10 @@ spec:
       key: BC250_API_KEY
     dropParams: true
   info:
-    # 32768 context, split as the box advises; llama-server does not enforce it.
-    maxTokens: 32768
-    maxInputTokens: 24576
-    maxOutputTokens: 8192
+    # 131072 context, split as the box advises; llama-server does not enforce it.
+    maxTokens: 131072
+    maxInputTokens: 114688
+    maxOutputTokens: 16384
     supportsFunctionCalling: true
     extra:
       supports_reasoning: true
