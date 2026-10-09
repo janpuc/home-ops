@@ -144,9 +144,10 @@ data:
     if __name__ == "__main__":
         ThreadingHTTPServer(("0.0.0.0", PORT), Handler).serve_forever()
   # Cron watchdog for the OpenCode Go plan. Runs under `hermes cron` with --script, so its
-  # stdout is the agent's prompt: nothing printed means no agent run and no message. The
-  # numbers come from Prometheus, where aether's fleet exporter already publishes every
-  # subscription bucket; a crossing is reported once per billing period per level.
+  # stdout is the agent's prompt: nothing printed means no agent run and no message.
+  # aether_quota_* metrics are retired: the exporter was removed on 2026-10-07,
+  # so this script currently has no data. A crossing is reported once per billing period
+  # per level when metrics are available.
   script-go-plan-watch.py: |-
     #!/usr/bin/env python3
     import json
