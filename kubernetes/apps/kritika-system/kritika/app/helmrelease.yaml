@@ -44,21 +44,20 @@ spec:
         maxItemChars: 4000
         similarFloor: 0.7
       egress:
-        allowHosts: [raw.githubusercontent.com]
+        allow: [raw.githubusercontent.com]
       # Reviews run on MiniMax M3 (its own plan, with room to spare) instead of the
       # shared OpenCode Go allowance; Kimi K2.7 Code on Go is the fallback.
-      defaults:
-        models:
-          review: litellm/minimax/MiniMax-M3
-          fallback: litellm/opencode-go/kimi-k2.7-code
-        # kritika's built-in limits are 60 steps / 4M tokens; infra PRs that read a lot
-        # of cluster config ran out of steps before submitting (#1477, #1512, #1515)
-        # and #1462 hit the token budget. Reviews run on MiniMax's own plan, so the
-        # extra headroom is cheap.
-        agent:
-          commands: [gh, curl, jq, yq, rg, fd]
-          maxSteps: 100
-          maxTokens: 6000000
+      review:
+        model: litellm/minimax/MiniMax-M3
+        fallback: litellm/opencode-go/kimi-k2.7-code
+      # kritika's built-in limits are 60 steps / 4M tokens; infra PRs that read a lot
+      # of cluster config ran out of steps before submitting (#1477, #1512, #1515)
+      # and #1462 hit the token budget. Reviews run on MiniMax's own plan, so the
+      # extra headroom is cheap.
+      agent:
+        commands: [gh, curl, jq, yq, rg, fd]
+        steps: 100
+        tokens: 6000000
     envFrom:
       - secretRef:
           name: kritika-secret
