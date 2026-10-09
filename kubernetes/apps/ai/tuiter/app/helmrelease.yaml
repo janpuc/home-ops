@@ -127,7 +127,7 @@ spec:
           app:
             image: &chrome
               repository: ghcr.io/linuxserver/chromium
-              tag: latest@sha256:2d32e1b2b28aa92973aa0f58c433c0b045db6e1224d7001eeaa9cde1a474ce13
+              tag: latest@sha256:063590d5cd1f57d0a9257f098ca509d4498750c91b55953c247aabfe611ece0f
             env: &chromeEnv
               PUID: "1000"
               PGID: "1000"
