@@ -43,8 +43,13 @@ spec:
         maxBatchChars: 16000
         maxItemChars: 4000
         similarFloor: 0.7
+      # The gateway refuses private addresses unless an allow address covers them;
+      # models and the embedder are reached through kritika serve, not this list.
       egress:
-        allow: [raw.githubusercontent.com]
+        allow: ["*"]
+        deny: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, "*.internal"]
+      trigger:
+        exclude: [{ name: forks, expr: pr.fork }]
       # Reviews run on MiniMax M3 (its own plan, with room to spare) instead of the
       # shared OpenCode Go allowance; Kimi K2.7 Code on Go is the fallback.
       review:
@@ -55,7 +60,7 @@ spec:
       # and #1462 hit the token budget. Reviews run on MiniMax's own plan, so the
       # extra headroom is cheap.
       agent:
-        commands: [gh, curl, jq, yq, rg, fd]
+        commands: [gh, curl, jq, yq, rg, fd, flate]
         steps: 100
         tokens: 6000000
     envFrom:
@@ -69,12 +74,16 @@ spec:
       runner:
         existingSecret: kritika-postgres-runner
     runner:
+      tools:
+        - name: flate
+          image: ghcr.io/home-operations/flate:0.6.5@sha256:e0e2d2de97539b3141977e8bb3bbb50ea5c5afe89477950e5fa972c9862478da
+      # flate renders charts in the runner and needs more than the reviews alone
       resources:
         requests:
           cpu: 10m
-          memory: 128Mi
+          memory: 512Mi
         limits:
-          memory: 1Gi
+          memory: 2Gi
     httpRoute:
       enabled: true
       annotations:
