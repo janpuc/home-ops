@@ -19,4 +19,5 @@ resources:
   - ./llmkube/ks.yaml
   - ./memini/ks.yaml
   - ./open-webui/ks.yaml
+  - ./pi-pocket/ks.yaml
   # - ./tuiter/ks.yaml
