@@ -51,10 +51,15 @@ spec:
       trigger:
         exclude: [{ name: forks, expr: pr.fork }]
       # Reviews run on MiniMax M3 (its own plan, with room to spare) instead of the
-      # shared OpenCode Go allowance; Kimi K2.7 Code on Go is the fallback.
+      # shared OpenCode Go allowance; Kimi K3 on Go is the fallback.
       review:
         model: litellm/minimax/MiniMax-M3
-        fallback: litellm/opencode-go/kimi-k2.7-code
+        fallback: litellm/opencode-go/kimi-k3
+      # A second opinion from another vendor scores each review 0-5 and rates its
+      # risk; the commit status reports it without gating, and nothing is approved.
+      confidence:
+        model: litellm/opencode-go/deepseek-v4.1-flash
+        fallback: litellm/minimax/MiniMax-M3
       # kritika's built-in limits are 60 steps / 4M tokens; infra PRs that read a lot
       # of cluster config ran out of steps before submitting (#1477, #1512, #1515)
       # and #1462 hit the token budget. Reviews run on MiniMax's own plan, so the
