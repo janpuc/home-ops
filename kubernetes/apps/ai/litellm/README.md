@@ -19,6 +19,23 @@ connection is the normal state, not an incident. Always use `192.168.69.250` (Et
 - 32768 context: keep input ≤ 24576 and output ≤ 8192, including reasoning. Reasoning is capped at 2048 server-side.
 - Vendor sampling for coding: `temperature 0.6`, `top_p 0.95`, `top_k 20`.
 
+## M3 Pro (`sisyphus`, `janpuc/mac-models`)
+
+An always-on worker for small delegated tasks: file reads, bash, edits. It never unloads its
+model and never pauses for games, so a refused connection means something is wrong. Address
+`192.168.69.238` until the `.249` reservation takes effect (#1572). Model: Qwen3.6-35B-A3B
+Heretic IQ2_M, an uncensored build chosen for security analysis.
+
+| Alias                         | While the box is down              | Use for                                   |
+| ----------------------------- | ---------------------------------- | ----------------------------------------- |
+| `m3pro/qwen3.6-35b-a3b`       | falls back to `minimax/MiniMax-M3` | ordinary worker tasks                     |
+| `m3pro-local/qwen3.6-35b-a3b` | fails, never leaves the LAN        | infrastructure findings, private material |
+
+- One slot: requests are served one at a time; bound orchestrator concurrency.
+- 131072 context: keep input ≤ 114688 and output ≤ 16384. Prompts are read at about 157 tok/s, so the router's 600 s timeout caps a single request at roughly 80K tokens of input.
+- Thinking is off server-side (`--reasoning-budget 0`). With thinking on, the model emits invalid tool-call JSON and the server answers 500.
+- Vendor sampling for coding: `temperature 0.6`, `top_p 0.95`, `top_k 20`.
+
 ### Images: A1111 API on the LAN only, not behind LiteLLM
 
 `sd-server` (stable-diffusion.cpp) at `http://192.168.69.250:8091`, `POST /sdapi/v1/txt2img`,

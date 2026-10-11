@@ -70,10 +70,17 @@ spec:
         DefaultRetries: 0
       bc250-local/qwen3.6-35b-a3b:
         DefaultRetries: 0
+      # The always-on M3 Pro (sisyphus) also has one slot: no retries.
+      m3pro/qwen3.6-35b-a3b:
+        DefaultRetries: 0
+      m3pro-local/qwen3.6-35b-a3b:
+        DefaultRetries: 0
     # Every Go model shares one weighted allowance, so all of them fail over to
     # MiniMax M3 on its own plan, and MiniMax M3 to its Go-hosted copy. Fallbacks
     # chain (a fallback's own fallbacks are tried) and LiteLLM skips a model group it
-    # has already tried for the request, so the M3 pair cannot loop.
+    # has already tried for the request, so MiniMax M3 and its Go copy cannot loop.
+    # The LAN aliases (bc250/, m3pro/) fall back one way to MiniMax M3, never to
+    # each other.
     fallbacks:
       - opencode-go/deepseek-v4-flash: ["minimax/MiniMax-M3"]
       - opencode-go/deepseek-v4-flash-vision-exp: ["minimax/MiniMax-M3"]
@@ -103,6 +110,8 @@ spec:
       # context_window_fallbacks: it carries private material and must fail
       # instead. Keep it that way, and keep default_fallbacks unset.
       - bc250/qwen3.6-35b-a3b: ["minimax/MiniMax-M3"]
+      # Same rule for the M3 Pro: m3pro-local/ stays out of both lists.
+      - m3pro/qwen3.6-35b-a3b: ["minimax/MiniMax-M3"]
     # Only where the target has a larger context window: a request that overflows a
     # 1M model overflows the 1M target too. While this list is set, a context error
     # on a model not listed here is returned as-is, not sent to the fallbacks above.
@@ -115,6 +124,7 @@ spec:
       - minimax/MiniMax-M2-7: ["minimax/MiniMax-M3"]
       - minimax/MiniMax-M2-7-anthropic: ["minimax/MiniMax-M3"]
       - bc250/qwen3.6-35b-a3b: ["minimax/MiniMax-M3"]
+      - m3pro/qwen3.6-35b-a3b: ["minimax/MiniMax-M3"]
   litellmSettings:
     success_callback:
       - prometheus
