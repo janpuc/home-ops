@@ -1,0 +1,32 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmmodel_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: m3pro-local-qwen3-6-35b-a3b
+spec:
+  # The same M3 Pro endpoint, fail closed for private material. Never add this
+  # alias to routerSettings.fallbacks or context_window_fallbacks, and keep
+  # default_fallbacks unset. Test both outage and context-overflow paths.
+  modelName: m3pro-local/qwen3.6-35b-a3b
+  params:
+    model: openai/qwen3.6-35b-a3b
+    # sisyphus (janpuc/mac-models). .238 is its current DHCP lease; move to the
+    # .249 reservation once it takes effect.
+    apiBase: http://192.168.69.238:8090/v1
+    apiKeyRef:
+      name: litellm
+      key: M3PRO_API_KEY
+    dropParams: true
+  info:
+    # 131072 context, split as the box advises; llama-server does not enforce it.
+    maxTokens: 131072
+    maxInputTokens: 114688
+    maxOutputTokens: 16384
+    supportsFunctionCalling: true
+    extra:
+      # The box runs --reasoning-budget 0: with thinking on, Qwen3.6 emits invalid
+      # tool-call JSON and llama-server answers 500.
+      supports_reasoning: false
+      disable_background_health_check: false
+      health_check_timeout: 90
