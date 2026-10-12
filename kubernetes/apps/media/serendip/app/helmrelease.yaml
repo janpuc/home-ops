@@ -20,7 +20,7 @@ spec:
           migrate:
             image: &image
               repository: ghcr.io/janpuc/serendip
-              tag: 0.1.0@sha256:7eb44e7efabaafda4d1f49abd8f479ac21ceb43e529401e4e817fa81294a352d
+              tag: 0.2.0@sha256:8f4877d99631e8df1c8aecc3f3c39a94d07d64ac7c47b5c0d68e0f636aace06d
             command: ["python", "-m", "serendip", "migrate"]
             env:
               SERENDIP_DB_PATH: &db /data/serendip.db
@@ -40,6 +40,12 @@ spec:
               SERENDIP_YATTEE_URL: http://yattee-server.media.svc.cluster.local:8085
               # Custom User-Agents set per device in Yattee's Advanced settings.
               SERENDIP_DEVICE_UA_MAP: serendip-tv=tv,serendip-phone=phone
+              # Related videos from follow-ups through yattee-server, which fetches them signed
+              # in to its account; `off` serves subscriptions only.
+              SERENDIP_RELATED_SOURCE: followup
+              # Items the pinned Home section shows (Yattee's Home settings, 5 by default).
+              SERENDIP_HEAD_SIZE: "5"
+              SERENDIP_TIMEZONE: Europe/Warsaw
             envFrom:
               - secretRef:
                   name: "{{ .Release.Name }}-secret"
@@ -85,7 +91,7 @@ spec:
       # Requests that carry signals go to Yattee Server as before, and Envoy sends serendip a
       # fire-and-forget copy. These path matches are longer than yattee-server's own route
       # for the same hostname, so they take precedence; everything else stays on that route.
-      # Removing serendip removes these rules with it.
+      # Removing serendip removes these rules with it, and Popular goes back to yattee-server.
       mirror:
         annotations:
           # Only mirror rules on yattee-server's hostname; that route's check covers it.
@@ -96,6 +102,15 @@ spec:
           - name: envoy-external
             namespace: network
         rules:
+          # The discover feed answers Yattee's Popular section.
+          - matches:
+              - path:
+                  type: Exact
+                  value: /api/v1/popular
+                method: GET
+            backendRefs:
+              - identifier: app
+                port: *apiPort
           - matches:
               - path:
                   type: PathPrefix
