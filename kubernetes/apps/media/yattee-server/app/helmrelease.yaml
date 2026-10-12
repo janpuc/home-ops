@@ -65,6 +65,11 @@ spec:
             port: *port
     route:
       app:
+        annotations:
+          # Everything else needs Basic Auth and answers 401.
+          gatus.home-operations.com/endpoint: |-
+            conditions: ["[STATUS] == 200"]
+            path: /health
         hostnames:
           - yattee.janpuc.com
         parentRefs:

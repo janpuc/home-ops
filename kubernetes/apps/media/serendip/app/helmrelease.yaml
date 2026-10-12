@@ -87,6 +87,9 @@ spec:
       # for the same hostname, so they take precedence; everything else stays on that route.
       # Removing serendip removes these rules with it.
       mirror:
+        annotations:
+          # Only mirror rules on yattee-server's hostname; that route's check covers it.
+          gatus.home-operations.com/enabled: "false"
         hostnames:
           - yattee.janpuc.com
         parentRefs:
