@@ -24,3 +24,4 @@ resources:
   - ./stash/ks.yaml
   - ./suwayomi/ks.yaml
   - ./whisparr/ks.yaml
+  - ./yattee-server/ks.yaml

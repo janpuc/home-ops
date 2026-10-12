@@ -1,0 +1,82 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: yattee-server
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: yattee-server
+  interval: 1h
+  values:
+    controllers:
+      yattee-server:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: docker.io/yattee/yattee-server
+              tag: 1.0.9@sha256:b0b27ef2068b0dd897d1597d3d472855d8f91c62a1c9b7c3eee2ae0c8251fe39
+            env:
+              PORT: &port 8085
+              SECURE_COOKIES: "true"
+              YT_POT_ENABLED: "true"
+            envFrom:
+              - secretRef:
+                  name: yattee-server-secret
+            probes:
+              liveness: &probe
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: *port
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness: *probe
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            resources:
+              requests:
+                cpu: 50m
+                memory: 512Mi
+              limits:
+                memory: 2Gi
+            # The image installs deno under /root and runs as root
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities: { drop: ["ALL"] }
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: false
+        runAsUser: 0
+        runAsGroup: 0
+    service:
+      app:
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        hostnames:
+          - yattee.janpuc.com
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+    persistence:
+      data:
+        existingClaim: "{{ .Release.Name }}"
+        globalMounts:
+          - path: /app/data
+      downloads:
+        type: emptyDir
+        sizeLimit: 30Gi
+        globalMounts:
+          - path: /downloads
