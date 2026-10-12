@@ -20,6 +20,7 @@ resources:
   - ./prowlarr/ks.yaml
   - ./radarr/ks.yaml
   - ./seerr/ks.yaml
+  - ./serendip/ks.yaml
   - ./sonarr/ks.yaml
   - ./stash/ks.yaml
   - ./suwayomi/ks.yaml

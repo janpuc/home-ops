@@ -1,0 +1,133 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: serendip
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: serendip
+  interval: 1h
+  values:
+    controllers:
+      serendip:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        # One writer on the SQLite volume.
+        strategy: Recreate
+        initContainers:
+          migrate:
+            image: &image
+              repository: ghcr.io/janpuc/serendip
+              tag: 0.1.0@sha256:7eb44e7efabaafda4d1f49abd8f479ac21ceb43e529401e4e817fa81294a352d
+            command: ["python", "-m", "serendip", "migrate"]
+            env:
+              SERENDIP_DB_PATH: &db /data/serendip.db
+            securityContext: &securityContext
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+        containers:
+          app:
+            image: *image
+            env:
+              SERENDIP_DB_PATH: *db
+              SERENDIP_API_PORT: &apiPort 8080
+              SERENDIP_INGEST_PORT: &ingestPort 8081
+              # Stage (b) calls Yattee Server in-cluster, never through the public hostname,
+              # so serendip's own requests are not mirrored back to it.
+              SERENDIP_YATTEE_URL: http://yattee-server.media.svc.cluster.local:8085
+              # Custom User-Agents set per device in Yattee's Advanced settings.
+              SERENDIP_DEVICE_UA_MAP: serendip-tv=tv,serendip-phone=phone
+            envFrom:
+              - secretRef:
+                  name: "{{ .Release.Name }}-secret"
+            probes:
+              liveness: &probe
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: *apiPort
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness: *probe
+            resources:
+              requests:
+                cpu: 10m
+                memory: 64Mi
+              limits:
+                memory: 256Mi
+            securityContext: *securityContext
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      app:
+        ports:
+          http:
+            port: *apiPort
+          ingest:
+            port: *ingestPort
+    serviceMonitor:
+      app:
+        endpoints:
+          - port: http
+            path: /metrics
+    route:
+      # Requests that carry signals go to Yattee Server as before, and Envoy sends serendip a
+      # fire-and-forget copy. These path matches are longer than yattee-server's own route
+      # for the same hostname, so they take precedence; everything else stays on that route.
+      # Removing serendip removes these rules with it.
+      mirror:
+        hostnames:
+          - yattee.janpuc.com
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+        rules:
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /api/v1/videos
+                method: GET
+            backendRefs: &yattee
+              - name: yattee-server
+                port: 8085
+            filters: &mirror
+              - type: RequestMirror
+                requestMirror:
+                  backendRef:
+                    # Literal: app-template copies filters verbatim, without templating.
+                    name: serendip
+                    port: *ingestPort
+          - matches:
+              - path:
+                  type: Exact
+                  value: /api/v1/feed
+                method: POST
+            backendRefs: *yattee
+            filters: *mirror
+          - matches:
+              - path:
+                  type: Exact
+                  value: /api/v1/search
+                method: GET
+            backendRefs: *yattee
+            filters: *mirror
+    persistence:
+      data:
+        existingClaim: "{{ .Release.Name }}"
+        globalMounts:
+          - path: /data
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
