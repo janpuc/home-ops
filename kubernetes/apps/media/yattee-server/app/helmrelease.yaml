@@ -14,13 +14,31 @@ spec:
       yattee-server:
         annotations:
           reloader.stakater.com/auto: "true"
-        containers:
-          app:
-            image:
+        initContainers:
+          # yt-dlp needs curl_cffi to impersonate a browser; without it Patreon (Cloudflare) answers 403
+          # even with valid cookies. The ytdlp-config ConfigMap below turns impersonation on for every run.
+          # The image doesn't ship it, so install it next to the app and expose it via PYTHONPATH
+          # (--no-deps: its deps cffi and certifi already come with the image).
+          python-extras:
+            image: &image
               repository: docker.io/yattee/yattee-server
               tag: 1.0.9@sha256:b0b27ef2068b0dd897d1597d3d472855d8f91c62a1c9b7c3eee2ae0c8251fe39
+            command:
+              - /bin/sh
+              - -c
+              - pip install --no-cache-dir --no-deps --disable-pip-version-check --target /opt/python-extras "curl_cffi==$CURL_CFFI_VERSION"
+            env:
+              # renovate: datasource=pypi depName=curl_cffi
+              CURL_CFFI_VERSION: 0.14.0
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities: { drop: ["ALL"] }
+        containers:
+          app:
+            image: *image
             env:
               PORT: &port 8085
+              PYTHONPATH: /opt/python-extras
               SECURE_COOKIES: "true"
               YT_POT_ENABLED: "true"
             envFrom:
@@ -58,6 +76,12 @@ spec:
         runAsNonRoot: false
         runAsUser: 0
         runAsGroup: 0
+    configMaps:
+      ytdlp-config:
+        data:
+          # yt-dlp reads /etc/yt-dlp.conf on every run; Yattee Server has no setting for --impersonate.
+          yt-dlp.conf: |
+            --impersonate chrome
     service:
       app:
         ports:
@@ -80,6 +104,19 @@ spec:
         existingClaim: "{{ .Release.Name }}"
         globalMounts:
           - path: /app/data
+      ytdlp-config:
+        type: configMap
+        identifier: ytdlp-config
+        advancedMounts:
+          yattee-server:
+            app:
+              - path: /etc/yt-dlp.conf
+                subPath: yt-dlp.conf
+                readOnly: true
+      python-extras:
+        type: emptyDir
+        globalMounts:
+          - path: /opt/python-extras
       downloads:
         type: emptyDir
         sizeLimit: 30Gi
