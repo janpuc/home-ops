@@ -29,7 +29,7 @@ spec:
               - pip install --no-cache-dir --no-deps --disable-pip-version-check --target /opt/python-extras "curl_cffi==$CURL_CFFI_VERSION"
             env:
               # renovate: datasource=pypi depName=curl_cffi
-              CURL_CFFI_VERSION: 0.14.0
+              CURL_CFFI_VERSION: 0.16.3
             securityContext:
               allowPrivilegeEscalation: false
               capabilities: { drop: ["ALL"] }
