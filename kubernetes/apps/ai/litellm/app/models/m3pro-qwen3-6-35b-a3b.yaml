@@ -11,9 +11,7 @@ spec:
   params:
     # Must match LLAMA_ARG_ALIAS on the box.
     model: openai/qwen3.6-35b-a3b
-    # sisyphus (janpuc/mac-models). .238 is its current DHCP lease; move to the
-    # .249 reservation once it takes effect (#1572).
-    apiBase: http://192.168.69.238:8090/v1
+    apiBase: http://192.168.69.249:8090/v1
     apiKeyRef:
       name: litellm
       key: M3PRO_API_KEY
