@@ -3,28 +3,33 @@
 apiVersion: litellm.home-operations.com/v1alpha1
 kind: LiteLLMModel
 metadata:
-  name: m3pro-qwen3-6-35b-a3b
+  name: m3pro-qwen3-8-27b
 spec:
-  # Always-on M3 Pro worker. Ordinary tasks can fall back to MiniMax M3
+  # Always-on M3 Pro worker: Qwen3.8-27B UD-IQ3_XXS, slow but strong (about 9 tok/s writing,
+  # 70 tok/s prompt reading). Ordinary tasks can fall back to MiniMax M3
   # (routerSettings.fallbacks). Private material goes to m3pro-local/ instead.
-  modelName: m3pro/qwen3.6-35b-a3b
+  modelName: m3pro/qwen3.8-27b
   params:
     # Must match LLAMA_ARG_ALIAS on the box.
-    model: openai/qwen3.6-35b-a3b
+    model: openai/qwen3.8-27b
     apiBase: http://192.168.69.249:8090/v1
     apiKeyRef:
       name: litellm
       key: M3PRO_API_KEY
     dropParams: true
+    additional:
+      # A fresh 57K-token prompt takes about 14 minutes to read; the router's 600 s
+      # would cut it off.
+      timeout: 1800
+      stream_timeout: 1800
   info:
-    # 131072 context, split as the box advises; llama-server does not enforce it.
-    maxTokens: 131072
-    maxInputTokens: 114688
-    maxOutputTokens: 16384
+    # 65536 context, split 7:1 as before; llama-server does not enforce the split.
+    maxTokens: 65536
+    maxInputTokens: 57344
+    maxOutputTokens: 8192
     supportsFunctionCalling: true
     extra:
-      # The box runs --reasoning-budget 0: with thinking on, Qwen3.6 emits invalid
-      # tool-call JSON and llama-server answers 500.
+      # The box runs --reasoning-budget 0: thinking at 9 tok/s stalls tool turns for minutes.
       supports_reasoning: false
       # Always on, no idle unload: polling is useful, unlike the gaming BC250.
       disable_background_health_check: false
