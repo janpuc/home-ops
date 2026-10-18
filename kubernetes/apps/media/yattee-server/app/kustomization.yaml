@@ -6,3 +6,15 @@ resources:
   - ./externalsecret.yaml
   - ./helmrelease.yaml
   - ./ocirepository.yaml
+patches:
+  # temp/ holds short-lived decrypted credential files the app writes as 0600;
+  # the mover (uid 1000) can't read them and they shouldn't be backed up anyway.
+  - target:
+      group: kopiur.home-operations.com
+      kind: SnapshotPolicy
+    patch: |-
+      - op: add
+        path: /spec/files
+        value:
+          ignoreRules:
+            - /temp/

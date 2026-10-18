@@ -33,6 +33,18 @@ spec:
             securityContext:
               allowPrivilegeEscalation: false
               capabilities: { drop: ["ALL"] }
+          # The app (root) creates its key files as 0600; the kopiur mover reads as uid 1000
+          # and the files are already group 1000 (setgid data dir), so give the group read.
+          # The app only sets 0600 when it first creates a file, so this sticks.
+          data-permissions:
+            image: *image
+            command:
+              - /bin/sh
+              - -c
+              - for f in /app/data/.encryption_key /app/data/.stream_token_secret; do [ -f "$f" ] && chmod 0640 "$f"; done; true
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities: { drop: ["ALL"] }
         containers:
           app:
             image: *image
