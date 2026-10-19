@@ -71,9 +71,9 @@ spec:
       bc250-local/qwen3.6-35b-a3b:
         DefaultRetries: 0
       # The always-on M3 Pro (sisyphus) also has one slot: no retries.
-      m3pro/qwen3.8-27b:
+      m3pro/huihui-qwen3.8-27b:
         DefaultRetries: 0
-      m3pro-local/qwen3.8-27b:
+      m3pro-local/huihui-qwen3.8-27b:
         DefaultRetries: 0
     # Every Go model shares one weighted allowance, so all of them fail over to
     # MiniMax M3 on its own plan, and MiniMax M3 to its Go-hosted copy. Fallbacks
@@ -111,7 +111,7 @@ spec:
       # instead. Keep it that way, and keep default_fallbacks unset.
       - bc250/qwen3.6-35b-a3b: ["minimax/MiniMax-M3"]
       # Same rule for the M3 Pro: m3pro-local/ stays out of both lists.
-      - m3pro/qwen3.8-27b: ["minimax/MiniMax-M3"]
+      - m3pro/huihui-qwen3.8-27b: ["minimax/MiniMax-M3"]
     # Only where the target has a larger context window: a request that overflows a
     # 1M model overflows the 1M target too. While this list is set, a context error
     # on a model not listed here is returned as-is, not sent to the fallbacks above.
@@ -124,7 +124,7 @@ spec:
       - minimax/MiniMax-M2-7: ["minimax/MiniMax-M3"]
       - minimax/MiniMax-M2-7-anthropic: ["minimax/MiniMax-M3"]
       - bc250/qwen3.6-35b-a3b: ["minimax/MiniMax-M3"]
-      - m3pro/qwen3.8-27b: ["minimax/MiniMax-M3"]
+      - m3pro/huihui-qwen3.8-27b: ["minimax/MiniMax-M3"]
   litellmSettings:
     success_callback:
       - prometheus
