@@ -7,6 +7,8 @@ resources:
   - bc250-qwen3-6-35b-a3b.yaml
   - m3pro-huihui-qwen3-8-27b.yaml
   - m3pro-local-huihui-qwen3-8-27b.yaml
+  - m3pro-lustify-v2.yaml
+  - m3pro-noobai-xl-1-1.yaml
   - minimax-m2-7-anthropic.yaml
   - minimax-m2-7.yaml
   - minimax-m3-1-flash-preview.yaml

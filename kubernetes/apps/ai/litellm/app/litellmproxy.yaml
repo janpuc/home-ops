@@ -75,6 +75,11 @@ spec:
         DefaultRetries: 0
       m3pro-local/huihui-qwen3.8-27b:
         DefaultRetries: 0
+      # Image jobs run minutes on the same single box: a retry would only queue behind itself.
+      m3pro/lustify-v2:
+        DefaultRetries: 0
+      m3pro/noobai-xl-1.1:
+        DefaultRetries: 0
     # Every Go model shares one weighted allowance, so all of them fail over to
     # MiniMax M3 on its own plan, and MiniMax M3 to its Go-hosted copy. Fallbacks
     # chain (a fallback's own fallbacks are tried) and LiteLLM skips a model group it

@@ -1,0 +1,29 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmmodel_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: m3pro-lustify-v2
+spec:
+  # Image generation on the M3 Pro (sisyphus): Lustify v2 (SDXL, photoreal, explicit-capable), stable-diffusion.cpp
+  # behind llama-swap. A request unloads the LLM there; the image model unloads after
+  # 10 idle minutes. About 3.5 minutes per 832x1216 image. Fictional adults only.
+  # Size via "size" (SDXL: 832x1216, 1024x1024, 1216x832); negative prompt and steps via
+  # <sd_cpp_extra_args>{...}</sd_cpp_extra_args> inside the prompt (sd-server API).
+  modelName: m3pro/lustify-v2
+  params:
+    # Must match the llama-swap model ID on the box.
+    model: openai/lustify-v2
+    apiBase: http://192.168.69.249:8090/v1
+    apiKeyRef:
+      name: litellm
+      key: M3PRO_API_KEY
+    dropParams: true
+    additional:
+      # Up to two images back to back plus a model swap; the router's 600 s is too short.
+      timeout: 1200
+  info:
+    mode: image_generation
+    extra:
+      # A health check would load this model and evict the LLM. No polling.
+      disable_background_health_check: true

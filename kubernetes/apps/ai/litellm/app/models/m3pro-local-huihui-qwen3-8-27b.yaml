@@ -31,5 +31,6 @@ spec:
     extra:
       # The box runs --reasoning-budget 0: thinking at 9 tok/s delays replies by minutes.
       supports_reasoning: false
-      disable_background_health_check: false
-      health_check_timeout: 90
+      # llama-swap on the box starts whichever model a request names, so a health
+      # check would load this model and evict an image model mid-job. No polling.
+      disable_background_health_check: true

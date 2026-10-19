@@ -5,8 +5,9 @@ kind: LiteLLMModel
 metadata:
   name: m3pro-huihui-qwen3-8-27b
 spec:
-  # Always-on M3 Pro (sisyphus): Huihui Qwen3.8-27B abliterated, uncensored, with vision.
-  # Slow (about 9 tok/s writing, 70 tok/s prompt reading). Ordinary tasks can fall back to
+  # M3 Pro (sisyphus) behind llama-swap: Huihui Qwen3.8-27B abliterated, uncensored, with
+  # vision, the default model there. Slow (about 9 tok/s writing, 70 tok/s prompt reading); after
+  # an image request the first chat waits about 10 s while the LLM loads again. Ordinary tasks can fall back to
   # MiniMax M3 (routerSettings.fallbacks). Private material goes to m3pro-local/ instead.
   modelName: m3pro/huihui-qwen3.8-27b
   params:
@@ -32,7 +33,6 @@ spec:
     extra:
       # The box runs --reasoning-budget 0: thinking at 9 tok/s delays replies by minutes.
       supports_reasoning: false
-      # Always on, no idle unload: polling is useful, unlike the gaming BC250.
-      disable_background_health_check: false
-      # Keep the mirrored timeout while cold model loading remains unmeasured.
-      health_check_timeout: 90
+      # llama-swap on the box starts whichever model a request names, so a health
+      # check would load this model and evict an image model mid-job. No polling.
+      disable_background_health_check: true
