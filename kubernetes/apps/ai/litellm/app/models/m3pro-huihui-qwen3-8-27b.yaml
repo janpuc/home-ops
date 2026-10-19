@@ -1,0 +1,38 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmmodel_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: m3pro-huihui-qwen3-8-27b
+spec:
+  # Always-on M3 Pro (sisyphus): Huihui Qwen3.8-27B abliterated, uncensored, with vision.
+  # Slow (about 9 tok/s writing, 70 tok/s prompt reading). Ordinary tasks can fall back to
+  # MiniMax M3 (routerSettings.fallbacks). Private material goes to m3pro-local/ instead.
+  modelName: m3pro/huihui-qwen3.8-27b
+  params:
+    # Must match LLAMA_ARG_ALIAS on the box.
+    model: openai/huihui-qwen3.8-27b
+    apiBase: http://192.168.69.249:8090/v1
+    apiKeyRef:
+      name: litellm
+      key: M3PRO_API_KEY
+    dropParams: true
+    additional:
+      # A full 28K-token prompt takes about 7 minutes to read at ~70 tok/s, plus image
+      # encoding and writing at ~9 tok/s; the router's 600 s is too short.
+      timeout: 1800
+      stream_timeout: 1800
+  info:
+    # 32768 context, split 7:1; llama-server does not enforce the split.
+    maxTokens: 32768
+    maxInputTokens: 28672
+    maxOutputTokens: 4096
+    supportsFunctionCalling: true
+    supportsVision: true
+    extra:
+      # The box runs --reasoning-budget 0: thinking at 9 tok/s delays replies by minutes.
+      supports_reasoning: false
+      # Always on, no idle unload: polling is useful, unlike the gaming BC250.
+      disable_background_health_check: false
+      # Keep the mirrored timeout while cold model loading remains unmeasured.
+      health_check_timeout: 90

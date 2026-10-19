@@ -1,0 +1,35 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmmodel_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: m3pro-local-huihui-qwen3-8-27b
+spec:
+  # The same M3 Pro endpoint, fail closed for private material. Never add this
+  # alias to routerSettings.fallbacks or context_window_fallbacks, and keep
+  # default_fallbacks unset. Test both outage and context-overflow paths.
+  modelName: m3pro-local/huihui-qwen3.8-27b
+  params:
+    model: openai/huihui-qwen3.8-27b
+    apiBase: http://192.168.69.249:8090/v1
+    apiKeyRef:
+      name: litellm
+      key: M3PRO_API_KEY
+    dropParams: true
+    additional:
+      # A full 28K-token prompt takes about 7 minutes to read at ~70 tok/s, plus image
+      # encoding and writing at ~9 tok/s; the router's 600 s is too short.
+      timeout: 1800
+      stream_timeout: 1800
+  info:
+    # 32768 context, split 7:1; llama-server does not enforce the split.
+    maxTokens: 32768
+    maxInputTokens: 28672
+    maxOutputTokens: 4096
+    supportsFunctionCalling: true
+    supportsVision: true
+    extra:
+      # The box runs --reasoning-budget 0: thinking at 9 tok/s delays replies by minutes.
+      supports_reasoning: false
+      disable_background_health_check: false
+      health_check_timeout: 90
