@@ -27,8 +27,7 @@ spec:
           app:
             image:
               repository: ghcr.io/janpuc/austerity-watcher
-              # Renovate adds the digest once the image is public.
-              tag: 0.1.1
+              tag: 0.1.2@sha256:7c543c695d894ce10ce74b6b9c531910541cb64069a4ac737824d6ca15a57f09
             args:
               - serve
             env:
