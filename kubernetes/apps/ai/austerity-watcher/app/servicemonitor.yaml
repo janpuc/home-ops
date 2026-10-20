@@ -1,0 +1,24 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/monitoring.coreos.com/servicemonitor_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: austerity-watcher
+  labels:
+    app.kubernetes.io/instance: austerity-watcher
+    app.kubernetes.io/name: austerity-watcher
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/service: austerity-watcher-app
+  namespaceSelector:
+    matchNames:
+      - ai
+  targetLabels:
+    - app.kubernetes.io/instance
+    - app.kubernetes.io/name
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 60s
+      scrapeTimeout: 15s

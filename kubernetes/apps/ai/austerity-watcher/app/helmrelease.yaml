@@ -1,0 +1,245 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: austerity-watcher
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: austerity-watcher
+  interval: 15m
+  values:
+    defaultPodOptions:
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    controllers:
+      # Reads X through the reader browser and organisers' public channels, and
+      # commits one export a day to the watch branch of janpuc/austerity-watch.
+      # It never posts. No web UI: metrics only.
+      austerity-watcher:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        strategy: Recreate
+        type: deployment
+        containers:
+          app:
+            image:
+              repository: ghcr.io/janpuc/austerity-watcher
+              # Renovate adds the digest once the image is public.
+              tag: 0.1.1
+            args:
+              - serve
+            env:
+              WATCHER_DATA_DIR: /data
+              WATCHER_TIMEZONE: Europe/Warsaw
+              WATCHER_CDP_URL: http://austerity-watcher-chrome-reader.ai.svc.cluster.local:9223
+              WATCHER_READER_ACCOUNT_ID_FILE: /secrets/READER_ACCOUNT_ID
+              # Instagram reads organisers' profiles through its own browser and account,
+              # so a challenge on one platform never touches the other.
+              WATCHER_INSTAGRAM_ENABLED: "false"
+              WATCHER_INSTAGRAM_CDP_URL: http://austerity-watcher-chrome-instagram.ai.svc.cluster.local:9223
+              WATCHER_INSTAGRAM_ACCOUNT_ID_FILE: /secrets/INSTAGRAM_ACCOUNT_ID
+              # Searches per day across all cities, paced with jitter.
+              WATCHER_SEARCH_BUDGET: "120"
+              WATCHER_TELEGRAM_ENABLED: "true"
+              WATCHER_BLUESKY_ENABLED: "false"
+              # Configuration (cities, queries, organisers) is read from main each day,
+              # so editing data/watch in the repo needs no image rebuild.
+              WATCHER_CONFIG_REPO: janpuc/austerity-watch
+              WATCHER_CONFIG_REF: main
+              # The day's export lands just after midnight UTC, before the site's
+              # daily build at 00:23 UTC ingests it.
+              WATCHER_EXPORT_REPO: janpuc/austerity-watch
+              WATCHER_EXPORT_BRANCH: watch
+              WATCHER_EXPORT_TIME_UTC: "00:05"
+              WATCHER_GITHUB_TOKEN_FILE: /secrets/GITHUB_TOKEN
+              WATCHER_TEXT_RETENTION_DAYS: "30"
+              WATCHER_METRICS_PORT: "9090"
+            probes:
+              liveness: &probe
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /metrics
+                    port: 9090
+                  initialDelaySeconds: 15
+                  periodSeconds: 60
+                  timeoutSeconds: 5
+              readiness: *probe
+            resources:
+              requests:
+                cpu: 20m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              runAsUser: 1000
+              runAsGroup: 1000
+              capabilities:
+                drop:
+                  - ALL
+      chrome-reader:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        replicas: 1
+        strategy: Recreate
+        type: deployment
+        containers:
+          app:
+            image: &chrome
+              repository: ghcr.io/linuxserver/chromium
+              tag: latest@sha256:ab3cb0bfa2862e19dbfde4466b8c5f138e5acd946ba8ccc12a07fbb2d7da45bb
+            env: &chromeEnv
+              PUID: "1000"
+              PGID: "1000"
+              TZ: Europe/Warsaw
+              CHROME_CLI: >-
+                --remote-debugging-port=9222
+                --remote-debugging-address=0.0.0.0
+                --remote-allow-origins=*
+                --no-first-run
+                --no-default-browser-check
+                --disable-features=Translate
+            resources: &chromeResources
+              requests:
+                cpu: 100m
+                memory: 1Gi
+              limits:
+                memory: 4Gi
+            securityContext: &chromeSecurity
+              seccompProfile:
+                type: Unconfined
+          # Chrome binds DevTools to 127.0.0.1 whatever the flags say, so socat
+          # exposes it to the watcher pod (see tuiter's cdp.py).
+          cdp-forward:
+            image: &socat
+              repository: docker.io/alpine/socat
+              tag: 1.8.1.3@sha256:fb3862c949af7c79996d0e514ee96128644d840835ed5368eeecb14a869de361
+            args: &socatArgs
+              - TCP-LISTEN:9223,fork,reuseaddr
+              - TCP:127.0.0.1:9222
+            resources: &socatResources
+              requests:
+                cpu: 10m
+                memory: 16Mi
+              limits:
+                memory: 64Mi
+            securityContext: &socatSecurity
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              runAsNonRoot: true
+              runAsUser: 65534
+              capabilities:
+                drop:
+                  - ALL
+      chrome-instagram:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        replicas: 1
+        strategy: Recreate
+        type: deployment
+        containers:
+          app:
+            image: *chrome
+            env: *chromeEnv
+            resources: *chromeResources
+            securityContext: *chromeSecurity
+          cdp-forward:
+            image: *socat
+            args: *socatArgs
+            resources: *socatResources
+            securityContext: *socatSecurity
+
+    service:
+      app:
+        controller: austerity-watcher
+        ipFamilies:
+          - IPv4
+        ports:
+          metrics:
+            port: 9090
+      chrome-reader:
+        controller: chrome-reader
+        ports:
+          http:
+            port: &kasm 3000
+          cdp:
+            port: &cdp 9223
+      chrome-instagram:
+        controller: chrome-instagram
+        ports:
+          http:
+            port: *kasm
+          cdp:
+            port: *cdp
+    route:
+      # The reader's desktop, for logging in and for checking on challenges.
+      chrome-reader:
+        hostnames:
+          - austerity-reader.janpuc.com
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - identifier: chrome-reader
+                port: *kasm
+      chrome-instagram:
+        hostnames:
+          - austerity-instagram.janpuc.com
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - identifier: chrome-instagram
+                port: *kasm
+    persistence:
+      data:
+        existingClaim: austerity-watcher
+        advancedMounts:
+          austerity-watcher:
+            app:
+              - path: /data
+      secrets:
+        type: secret
+        name: austerity-watcher-secret
+        advancedMounts:
+          austerity-watcher:
+            app:
+              - path: /secrets
+                readOnly: true
+      tmp:
+        type: emptyDir
+        advancedMounts:
+          austerity-watcher:
+            app:
+              - path: /tmp
+      reader-profile:
+        existingClaim: austerity-watcher-reader-profile
+        advancedMounts:
+          chrome-reader:
+            app:
+              - path: /config
+      instagram-profile:
+        existingClaim: austerity-watcher-instagram-profile
+        advancedMounts:
+          chrome-instagram:
+            app:
+              - path: /config
+      dshm:
+        type: emptyDir
+        medium: Memory
+        sizeLimit: 2Gi
+        advancedMounts:
+          chrome-reader:
+            app:
+              - path: /dev/shm
+          chrome-instagram:
+            app:
+              - path: /dev/shm

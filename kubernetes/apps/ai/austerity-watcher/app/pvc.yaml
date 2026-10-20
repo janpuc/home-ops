@@ -1,0 +1,36 @@
+---
+# The reader's Chromium profile, which holds the logged-in X session. Log in once
+# through austerity-reader.janpuc.com (internal); the profile is backed up daily so
+# a reschedule or a restore keeps the session.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: austerity-watcher-reader-profile
+spec:
+  accessModes:
+    - ReadWriteOnce
+  dataSourceRef:
+    apiGroup: kopiur.home-operations.com
+    kind: Restore
+    name: austerity-watcher-reader-profile
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: miroir-fast-local
+---
+# The Instagram reader's profile, logged in once through austerity-instagram.janpuc.com.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: austerity-watcher-instagram-profile
+spec:
+  accessModes:
+    - ReadWriteOnce
+  dataSourceRef:
+    apiGroup: kopiur.home-operations.com
+    kind: Restore
+    name: austerity-watcher-instagram-profile
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: miroir-fast-local

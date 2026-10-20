@@ -1,0 +1,36 @@
+---
+# CDP is unauthenticated remote control of a logged-in browser: only the watcher may
+# reach it. The KasmVNC desktop (3000) is reachable only through the internal gateway.
+# yaml-language-server: $schema=https://json.schemastore.org/kubernetes-networkpolicy.json
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: austerity-watcher-chrome
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: austerity-watcher
+    matchExpressions:
+      - key: app.kubernetes.io/controller
+        operator: In
+        values:
+          - chrome-reader
+          - chrome-instagram
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: austerity-watcher
+              app.kubernetes.io/controller: austerity-watcher
+      ports:
+        - protocol: TCP
+          port: 9223
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: network
+      ports:
+        - protocol: TCP
+          port: 3000
