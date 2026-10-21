@@ -13,7 +13,7 @@ spec:
   modelName: m3pro/qwen3.6-35b-a3b-heretic
   params:
     # Must match the llama-swap model ID on the box.
-    model: openai/qwen3.6-35b-a3b
+    model: openai/qwen3.6-35b-a3b-heretic
     apiBase: http://192.168.69.249:8090/v1
     apiKeyRef:
       name: litellm

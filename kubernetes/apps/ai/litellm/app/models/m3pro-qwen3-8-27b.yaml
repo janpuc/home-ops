@@ -6,7 +6,7 @@ metadata:
   name: m3pro-qwen3-8-27b
 spec:
   # M3 Pro (sisyphus) behind llama-swap: Stock Qwen3.8-27B UD-IQ3_XXS: the best local coder and tool caller (on-box eval
-  # 2026-10-14: coding 15/16, tool-call JSON 32/32). Not uncensored, no vision. Slow (about
+  # 2026-10-14: coding 15/16, tool-call JSON 32/32). Not uncensored, no vision, 96K. Slow (about
   # 9 tok/s writing, 70 tok/s prompt reading).
   # A request loads it there (about 10-15 s if another model is in); ordinary tasks can fall
   # back to MiniMax M3 (routerSettings.fallbacks). Private material goes to m3pro-local/ instead.
@@ -20,15 +20,15 @@ spec:
       key: M3PRO_API_KEY
     dropParams: true
     additional:
-      # A long prompt plus a model swap on the box can take many minutes; the router's 600 s
-      # is too short.
-      timeout: 1800
-      stream_timeout: 1800
+      # A full 86K prompt reads in about 20 minutes at ~70 tok/s; the router's 600 s is too short.
+      timeout: 3600
+      stream_timeout: 3600
   info:
-    # 65536 context, split 7:1; llama-server does not enforce the split.
-    maxTokens: 65536
-    maxInputTokens: 57344
-    maxOutputTokens: 8192
+    # 98304 context (96K: 128K left too little memory on the box), split 7:1; llama-server does
+    # not enforce the split.
+    maxTokens: 98304
+    maxInputTokens: 86016
+    maxOutputTokens: 12288
     supportsFunctionCalling: true
     supportsVision: false
     extra:
