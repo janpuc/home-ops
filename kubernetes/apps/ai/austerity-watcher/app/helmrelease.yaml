@@ -27,7 +27,7 @@ spec:
           app:
             image:
               repository: ghcr.io/janpuc/austerity-watcher
-              tag: 0.2.1@sha256:106d6222df8fdee072c5698da8a42aa8942afc078fa0b4d357cdeda7a90b8720
+              tag: 0.2.2@sha256:9303d65637e66a2bb0d377a064be2aa8f94b7455b5af092f17b83c23f18d8666
             args:
               - serve
             env:
