@@ -1,0 +1,39 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmmodel_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: m3pro-qwen3-6-35b-a3b-heretic
+spec:
+  # M3 Pro (sisyphus) behind llama-swap: Qwen3.6-35B-A3B Heretic IQ2_M: uncensored, text only, the faster local model
+  # (about 42 tok/s writing, 157 tok/s prompt reading; eval 2026-10-11: coding 11/16, tool-call
+  # JSON 32/32).
+  # A request loads it there (about 10-15 s if another model is in); ordinary tasks can fall
+  # back to MiniMax M3 (routerSettings.fallbacks). Private material goes to m3pro-local/ instead.
+  modelName: m3pro/qwen3.6-35b-a3b-heretic
+  params:
+    # Must match the llama-swap model ID on the box.
+    model: openai/qwen3.6-35b-a3b
+    apiBase: http://192.168.69.249:8090/v1
+    apiKeyRef:
+      name: litellm
+      key: M3PRO_API_KEY
+    dropParams: true
+    additional:
+      # A long prompt plus a model swap on the box can take many minutes; the router's 600 s
+      # is too short.
+      timeout: 1800
+      stream_timeout: 1800
+  info:
+    # 131072 context, split as the box advises; llama-server does not enforce the split.
+    maxTokens: 131072
+    maxInputTokens: 114688
+    maxOutputTokens: 16384
+    supportsFunctionCalling: true
+    supportsVision: false
+    extra:
+      # The box runs --reasoning-budget 0: thinking is off for reliable tool calls.
+      supports_reasoning: false
+      # llama-swap on the box starts whichever model a request names, so a health
+      # check would load this model and evict the one working. No polling.
+      disable_background_health_check: true
