@@ -5,7 +5,9 @@ kind: Kustomization
 resources:
   - bc250-local-qwen3-6-35b-a3b.yaml
   - bc250-qwen3-6-35b-a3b.yaml
+  - m3pro-huihui-qwen3-8-27b-text.yaml
   - m3pro-huihui-qwen3-8-27b.yaml
+  - m3pro-local-huihui-qwen3-8-27b-text.yaml
   - m3pro-local-huihui-qwen3-8-27b.yaml
   - m3pro-local-qwen3-6-35b-a3b-heretic.yaml
   - m3pro-local-qwen3-8-27b.yaml
