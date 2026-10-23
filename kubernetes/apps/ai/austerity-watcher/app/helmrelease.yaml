@@ -71,7 +71,9 @@ spec:
               ADMIN_PORT: "8080"
               ADMIN_PUBLIC_URL: https://austerity-admin.janpuc.com
               ADMIN_OIDC_ISSUER: https://id.janpuc.com
-              ADMIN_REQUIRED_GROUP: id-admin
+              # The group's name in the token is Pocket ID's (synced from LLDAP), not the
+              # PocketIDUserGroup object's name (id-admin).
+              ADMIN_REQUIRED_GROUP: ID-Admin
               ADMIN_OIDC_CLIENT_ID:
                 valueFrom:
                   secretKeyRef:
