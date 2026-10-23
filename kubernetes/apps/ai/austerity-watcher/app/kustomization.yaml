@@ -7,6 +7,7 @@ resources:
   - ./pvc.yaml
   - ./profile-backup.yaml
   - ./networkpolicy.yaml
+  - ./pocketidoidcclient.yaml
   - ./ocirepository.yaml
   - ./helmrelease.yaml
   - ./servicemonitor.yaml

@@ -10,6 +10,8 @@ spec:
   dependsOn:
     - name: kopiur
       namespace: kopiur-system
+    - name: pocket-id-instance
+      namespace: security
   interval: 1h
   path: ./kubernetes/apps/ai/austerity-watcher/app
   postBuild:

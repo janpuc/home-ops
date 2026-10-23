@@ -34,3 +34,33 @@ spec:
       ports:
         - protocol: TCP
           port: 3000
+---
+# The watcher itself: the admin (8080) only through the internal gateway, metrics (9090) only
+# for Prometheus. Kubelet probes come from the node and are not affected.
+# yaml-language-server: $schema=https://json.schemastore.org/kubernetes-networkpolicy.json
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: austerity-watcher-app
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: austerity-watcher
+      app.kubernetes.io/controller: austerity-watcher
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: network
+      ports:
+        - protocol: TCP
+          port: 8080
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: observability
+      ports:
+        - protocol: TCP
+          port: 9090

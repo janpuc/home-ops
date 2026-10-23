@@ -1,0 +1,19 @@
+---
+# Login for the austerity.watch admin (Queue and Due). Only the id-admin group may sign in;
+# the admin checks the groups claim again itself.
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: austerity-admin
+spec:
+  name: austerity.watch admin
+  callbackUrls:
+    - https://austerity-admin.janpuc.com/auth/callback
+  pkceEnabled: true
+  allowedUserGroups:
+    - name: id-admin
+      namespace: security
+  secret:
+    keys:
+      clientID: ADMIN_OIDC_CLIENT_ID
+      clientSecret: ADMIN_OIDC_CLIENT_SECRET

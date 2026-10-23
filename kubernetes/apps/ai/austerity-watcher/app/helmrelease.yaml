@@ -17,7 +17,7 @@ spec:
     controllers:
       # Reads X through the reader browser and organisers' public channels, and
       # commits one export a day to the watch branch of janpuc/austerity-watch.
-      # It never posts. No web UI: metrics only.
+      # It never posts. Its admin (Queue and Due) is internal-only, behind Pocket ID.
       austerity-watcher:
         annotations:
           reloader.stakater.com/auto: "true"
@@ -66,6 +66,32 @@ spec:
               WATCHER_ENRICH_CAP: "40"
               WATCHER_LITELLM_BASE_URL: http://litellm.ai.svc.cluster.local:4000/v1
               WATCHER_LITELLM_KEY_FILE: /secrets/LITELLM_API_KEY
+              # The admin site (docs/admin.md): internal gateway only, Pocket ID login for id-admin.
+              ADMIN_ENABLED: "true"
+              ADMIN_PORT: "8080"
+              ADMIN_PUBLIC_URL: https://austerity-admin.janpuc.com
+              ADMIN_OIDC_ISSUER: https://id.janpuc.com
+              ADMIN_REQUIRED_GROUP: id-admin
+              ADMIN_OIDC_CLIENT_ID:
+                valueFrom:
+                  secretKeyRef:
+                    name: austerity-admin-oidc-credentials
+                    key: ADMIN_OIDC_CLIENT_ID
+              ADMIN_OIDC_CLIENT_SECRET:
+                valueFrom:
+                  secretKeyRef:
+                    name: austerity-admin-oidc-credentials
+                    key: ADMIN_OIDC_CLIENT_SECRET
+              ADMIN_SESSION_SECRET:
+                valueFrom:
+                  secretKeyRef:
+                    name: austerity-watcher-secret
+                    key: ADMIN_SESSION_SECRET
+              ADMIN_API_TOKEN:
+                valueFrom:
+                  secretKeyRef:
+                    name: austerity-watcher-secret
+                    key: ADMIN_API_TOKEN
             probes:
               liveness: &probe
                 enabled: true
@@ -172,6 +198,8 @@ spec:
         ports:
           metrics:
             port: 9090
+          admin:
+            port: 8080
       chrome-reader:
         controller: chrome-reader
         ports:
@@ -187,6 +215,17 @@ spec:
           cdp:
             port: *cdp
     route:
+      # The admin: Queue and Due, behind Pocket ID (id-admin).
+      admin:
+        hostnames:
+          - austerity-admin.janpuc.com
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: 8080
       # The reader's desktop, for logging in and for checking on challenges.
       chrome-reader:
         hostnames:
