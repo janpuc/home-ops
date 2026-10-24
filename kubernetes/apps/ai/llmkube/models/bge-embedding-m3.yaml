@@ -29,7 +29,7 @@ metadata:
 spec:
   modelRef: bge-embedding-m3
   runtime: llamacpp
-  image: ghcr.io/ggml-org/llama.cpp:server-vulkan-b11515@sha256:b7ac2b757dd43ab04fdc236b9e96a0020ba8566d0b8c33839add482e93c80f3b
+  image: ghcr.io/ggml-org/llama.cpp:server-vulkan-b11854@sha256:2716be5463dcecd02ace322f77fa0ea10b7168c5c8f0e45458b303541fca6632
   replicas: 1
   contextSize: 8192
   parallelSlots: 2
