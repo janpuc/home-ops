@@ -14,4 +14,5 @@ resources:
   - ./flaresolverr/ks.yaml
   - ./mealie/ks.yaml
   - ./medibrowserr/ks.yaml
+  - ./polished/ks.yaml
   - ./searxng/ks.yaml
