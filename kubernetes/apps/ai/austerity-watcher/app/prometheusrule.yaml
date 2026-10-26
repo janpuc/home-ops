@@ -20,12 +20,13 @@ spec:
               Check watcher session_blocked logs first; verify the reader account with watcher whoami and restore its browser login.
           labels:
             severity: critical
-        # Thresholds allow quiet periods; five minutes avoids scrape-boundary noise.
+        # Thresholds allow quiet periods; five minutes avoids scrape-boundary noise. A timestamp of 0
+        # means "not seen since the watcher started", not "failed": it never fires on its own.
         - alert: AusteritySourceSilent
           expr: |-
-            ((time() - austerity_watcher_last_success_timestamp_seconds{source="x_search"} > 12 * 3600) and on(source) (austerity_watcher_source_enabled == 1)) or
-            ((time() - austerity_watcher_last_success_timestamp_seconds{source="x_timeline"} > 24 * 3600) and on(source) (austerity_watcher_source_enabled == 1)) or
-            ((time() - austerity_watcher_last_success_timestamp_seconds{source="telegram"} > 12 * 3600) and on(source) (austerity_watcher_source_enabled == 1))
+            ((time() - austerity_watcher_last_success_timestamp_seconds{source="x_search"} > 12 * 3600) and on(source) (austerity_watcher_last_success_timestamp_seconds > 0) and on(source) (austerity_watcher_source_enabled == 1)) or
+            ((time() - austerity_watcher_last_success_timestamp_seconds{source="x_timeline"} > 24 * 3600) and on(source) (austerity_watcher_last_success_timestamp_seconds > 0) and on(source) (austerity_watcher_source_enabled == 1)) or
+            ((time() - austerity_watcher_last_success_timestamp_seconds{source="telegram"} > 12 * 3600) and on(source) (austerity_watcher_last_success_timestamp_seconds > 0) and on(source) (austerity_watcher_source_enabled == 1))
           for: 5m
           annotations:
             summary: >-
@@ -49,7 +50,7 @@ spec:
         # Eight hours tolerates two three-hour slots and the 75-minute run budget.
         - alert: AusterityAnalystStalled
           expr: |-
-            (time() - austerity_watcher_analyst_last_run_completed_timestamp_seconds > 8 * 3600) and (austerity_watcher_analyst_enabled == 1)
+            (time() - austerity_watcher_analyst_last_run_completed_timestamp_seconds > 8 * 3600) and (austerity_watcher_analyst_last_run_completed_timestamp_seconds > 0) and (austerity_watcher_analyst_enabled == 1)
           for: 5m
           annotations:
             summary: >-
@@ -61,7 +62,7 @@ spec:
         # Six hours covers two scheduled runs; 15 minutes avoids a transient scrape skew.
         - alert: AusterityAnalystLLMErrors
           expr: |-
-            sum(increase(watcher_analyst_llm_errors_total{kind=~"invalid_json|timeout"}[6h])) / sum(increase(austerity_watcher_analyst_llm_calls_total[6h])) > 0.5
+            (sum(increase(watcher_analyst_llm_errors_total{kind=~"invalid_json|timeout"}[6h])) / sum(increase(austerity_watcher_analyst_llm_calls_total[6h])) > 0.5) and (sum(increase(austerity_watcher_analyst_llm_calls_total[6h])) > 20)
           for: 15m
           annotations:
             summary: >-
