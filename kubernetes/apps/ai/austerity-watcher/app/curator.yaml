@@ -76,7 +76,7 @@ spec:
               type: RuntimeDefault
           containers:
             - name: curator
-              image: ghcr.io/janpuc/austerity-curator:0.1.0@sha256:90ca082d472633f08e1b0387a20f1bf7a3859000731cbf104c611e3ba25c217f
+              image: ghcr.io/janpuc/austerity-curator:0.1.1@sha256:89c13b23d960e620596fbc388f9bf152fcd1d409169e14a4a7c07cacf6be22d2
               securityContext:
                 allowPrivilegeEscalation: false
                 readOnlyRootFilesystem: true
