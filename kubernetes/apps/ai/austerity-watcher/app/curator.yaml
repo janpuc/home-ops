@@ -21,7 +21,7 @@ spec:
         property: CURATOR_PUSHOVER_TOKEN
     - secretKey: PUSHOVER_USER
       remoteRef:
-        key: alertmanager
+        key: pushover
         property: PUSHOVER_USER_KEY
 ---
 # Holds the Codex CLI's ChatGPT login so it can refresh itself. Not backed up: a lost volume
@@ -45,8 +45,10 @@ metadata:
   name: austerity-curator
 spec:
   suspend: true
-  schedule: "0 1,13 * * *"
-  timeZone: Etc/UTC
+  # k8tz sets every CronJob to Europe/Warsaw, so the schedule is in Warsaw time: twice a day,
+  # well after the watcher's 00:05 UTC export.
+  schedule: "0 3,15 * * *"
+  timeZone: Europe/Warsaw
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 1800
   successfulJobsHistoryLimit: 2
