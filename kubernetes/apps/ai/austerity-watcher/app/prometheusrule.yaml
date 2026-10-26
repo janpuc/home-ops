@@ -188,7 +188,8 @@ spec:
         # Twice daily; two hours of grace beyond the twelve-hour cadence.
         - alert: AusterityCuratorStale
           expr: |-
-            time() - austerity_watcher_curator_last_success_timestamp_seconds > 14 * 3600
+            (time() - austerity_watcher_curator_last_success_timestamp_seconds > 14 * 3600)
+              and (austerity_watcher_curator_last_success_timestamp_seconds > 0)
           for: 5m
           annotations:
             summary: The curator has not succeeded in fourteen hours
