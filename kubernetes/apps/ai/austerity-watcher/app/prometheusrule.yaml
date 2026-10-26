@@ -185,3 +185,31 @@ spec:
               Check the Indicators workflow on GitHub first (schedule and last run), then any open "Indicators" pull request waiting to be merged.
           labels:
             severity: warning
+        # Twice daily; two hours of grace beyond the twelve-hour cadence.
+        - alert: AusterityCuratorStale
+          expr: |-
+            time() - austerity_watcher_curator_last_success_timestamp_seconds > 14 * 3600
+          for: 5m
+          annotations:
+            summary: The curator has not succeeded in fourteen hours
+            description: Check the austerity-curator CronJob and last JSON report first, then Codex login and admin API reachability. Restore login with docs/curator.md.
+          labels:
+            severity: warning
+        - alert: AusterityCuratorFailed
+          expr: |-
+            austerity_watcher_curator_last_run_status == 0
+          for: 5m
+          annotations:
+            summary: The last curator run failed
+            description: Check the curator Job logs for the short failure reason first, then Codex authentication, admin API and Pushover credentials. No source text should be logged.
+          labels:
+            severity: warning
+        - alert: AusterityQuarantineWaiting
+          expr: |-
+            austerity_watcher_admin_quarantine_oldest_age_seconds > 24 * 3600
+          for: 5m
+          annotations:
+            summary: A curator hold has waited more than twenty-four hours
+            description: Open the admin Queue with decided items visible first and review needs_human decisions; Due holds use due event paths. A subsequent decision resolves a hold without deleting its history.
+          labels:
+            severity: warning

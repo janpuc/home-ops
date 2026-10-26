@@ -1,0 +1,123 @@
+---
+# The curator bot (janpuc/austerity-watch docs/curator.md): twice a day it reads the admin's
+# queue, researches each lead with Sol through the Codex CLI, and writes through the admin API.
+# Its PRs merge themselves only when every check passes. Suspended until the one-time login.
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/external-secrets.io/externalsecret_v1.json
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: austerity-curator
+spec:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: onepassword-connect
+  target:
+    name: austerity-curator
+  data:
+    # Its own Pushover application ("austerity.watch curator"), and Jan's user key.
+    - secretKey: PUSHOVER_TOKEN
+      remoteRef:
+        key: austerity-watcher
+        property: CURATOR_PUSHOVER_TOKEN
+    - secretKey: PUSHOVER_USER
+      remoteRef:
+        key: alertmanager
+        property: PUSHOVER_USER_KEY
+---
+# Holds the Codex CLI's ChatGPT login so it can refresh itself. Not backed up: a lost volume
+# means one new device login.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: austerity-curator-codex
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: miroir-fast-local
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/batch/cronjob_v1.json
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: austerity-curator
+spec:
+  suspend: true
+  schedule: "0 1,13 * * *"
+  timeZone: Etc/UTC
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 1800
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 4500
+      ttlSecondsAfterFinished: 172800
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: austerity-curator
+        spec:
+          restartPolicy: Never
+          automountServiceAccountToken: false
+          terminationGracePeriodSeconds: 30
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
+            fsGroup: 10001
+            fsGroupChangePolicy: OnRootMismatch
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: curator
+              image: ghcr.io/janpuc/austerity-curator:0.1.0@sha256:90ca082d472633f08e1b0387a20f1bf7a3859000731cbf104c611e3ba25c217f
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop:
+                    - ALL
+              resources:
+                requests:
+                  cpu: 250m
+                  memory: 512Mi
+                limits:
+                  memory: 2Gi
+              env:
+                - name: ADMIN_API_BASE_URL
+                  value: http://austerity-watcher-app.ai.svc.cluster.local:8080
+                - name: ADMIN_API_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: austerity-watcher-secret
+                      key: ADMIN_API_TOKEN
+                - name: CURATOR_MODEL
+                  value: gpt-6.1-sol
+                - name: CURATOR_SAFETY_MODEL
+                  value: gpt-6.1-sol
+                - name: PUSHOVER_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: austerity-curator
+                      key: PUSHOVER_TOKEN
+                - name: PUSHOVER_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: austerity-curator
+                      key: PUSHOVER_USER
+              volumeMounts:
+                - name: codex
+                  mountPath: /home/curator/.codex
+                - name: tmp
+                  mountPath: /tmp
+          volumes:
+            - name: codex
+              persistentVolumeClaim:
+                claimName: austerity-curator-codex
+            - name: tmp
+              emptyDir:
+                sizeLimit: 256Mi

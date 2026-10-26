@@ -64,3 +64,87 @@ spec:
       ports:
         - protocol: TCP
           port: 9090
+---
+# The curator reaches the admin API inside the cluster (8080); nothing else may.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: austerity-watcher-admin-from-curator
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: austerity-watcher
+      app.kubernetes.io/controller: austerity-watcher
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: austerity-curator
+      ports:
+        - protocol: TCP
+          port: 8080
+---
+# The curator may reach cluster DNS, the watcher's admin port, and the public web on 80/443.
+# Every private range is excluded, so a planted link cannot reach anything inside the homelab.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: austerity-curator-egress
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: austerity-curator
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: austerity-watcher
+              app.kubernetes.io/controller: austerity-watcher
+      ports:
+        - protocol: TCP
+          port: 8080
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 0.0.0.0/8
+              - 10.0.0.0/8
+              - 100.64.0.0/10
+              - 127.0.0.0/8
+              - 169.254.0.0/16
+              - 172.16.0.0/12
+              - 192.0.0.0/16
+              - 192.88.99.0/24
+              - 192.168.0.0/16
+              - 198.18.0.0/15
+              - 198.51.100.0/24
+              - 203.0.113.0/24
+              - 224.0.0.0/3
+        - ipBlock:
+            cidr: 2000::/3
+            except:
+              - 2001::/23
+              - 2001:db8::/32
+              - 2002::/16
+              - 3fff::/16
+      ports:
+        - protocol: TCP
+          port: 80
+        - protocol: TCP
+          port: 443
