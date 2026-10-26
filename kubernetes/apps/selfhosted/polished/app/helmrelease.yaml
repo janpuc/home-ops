@@ -22,7 +22,7 @@ spec:
           migrate:
             image: &image
               repository: ghcr.io/janpuc/polished
-              tag: 0.3.0@sha256:c17fda0a0699f8e472c321bfb92b7c452e76b79d23b085fbc0ac05095ba3de0a
+              tag: 0.4.0@sha256:6704bfe11fb33316164d9e395ad6af6e1debc6ddc54d2e737c708d8c62684e0a
             command: ["python", "-m", "polished", "migrate"]
             env:
               POLISHED_DB_PATH: &db /data/polished.db
