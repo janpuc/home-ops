@@ -22,7 +22,7 @@ spec:
           migrate:
             image: &image
               repository: ghcr.io/janpuc/polished
-              tag: 0.4.0@sha256:6704bfe11fb33316164d9e395ad6af6e1debc6ddc54d2e737c708d8c62684e0a
+              tag: 0.5.0@sha256:0a0f342a21c6476773fea6a6a2223491eb72184ce53888094af0fb7008258e2f
             command: ["python", "-m", "polished", "migrate"]
             env:
               POLISHED_DB_PATH: &db /data/polished.db
@@ -50,6 +50,9 @@ spec:
               POLISHED_OIDC_ALLOWED_GROUPS: ID-Users,ID-Admin
               POLISHED_TIMEZONE: Europe/Warsaw
               POLISHED_SYNC_ENABLED: "true"
+              # The native app's team: serves /.well-known/apple-app-site-association so NFC tags,
+              # QR codes and links open the app (applinks) and its sign-in can return to it (webcredentials).
+              POLISHED_APPLE_TEAM_ID: RW5T9P5A59
             envFrom: *envFrom
             probes:
               liveness: &probe
