@@ -59,10 +59,11 @@ spec:
               Check analyst.done, analyst.failed and already_running logs first, then LiteLLM and the started timestamp.
           labels:
             severity: warning
-        # Six hours covers two scheduled runs; 15 minutes avoids a transient scrape skew.
+        # Six hours covers two scheduled runs; 15 minutes avoids a transient scrape skew. Per pod, so a
+        # previous pod's errors are never divided by a new pod's calls after a restart.
         - alert: AusterityAnalystLLMErrors
           expr: |-
-            (sum(increase(watcher_analyst_llm_errors_total{kind=~"invalid_json|timeout"}[6h])) / sum(increase(austerity_watcher_analyst_llm_calls_total[6h])) > 0.5) and (sum(increase(austerity_watcher_analyst_llm_calls_total[6h])) > 20)
+            (sum by (pod) (increase(watcher_analyst_llm_errors_total{kind=~"invalid_json|timeout"}[6h])) / sum by (pod) (increase(austerity_watcher_analyst_llm_calls_total[6h])) > 0.5) and on(pod) (sum by (pod) (increase(austerity_watcher_analyst_llm_calls_total[6h])) > 20)
           for: 15m
           annotations:
             summary: >-
