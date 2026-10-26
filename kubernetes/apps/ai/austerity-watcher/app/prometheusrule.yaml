@@ -1,0 +1,185 @@
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/monitoring.coreos.com/prometheusrule_v1.json
+# Source of truth: janpuc/austerity-watch watcher/deploy/prometheusrule.yaml (tested with promtool there).
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: austerity-watcher
+spec:
+  groups:
+    - name: austerity-watcher.rules
+      rules:
+        # Allow a brief browser restart or login challenge before paging.
+        - alert: AusterityReaderLoggedOut
+          expr: |-
+            watcher_session_ok == 0
+          for: 30m
+          annotations:
+            summary: >-
+              The watcher reader is logged out
+            description: >-
+              Check watcher session_blocked logs first; verify the reader account with watcher whoami and restore its browser login.
+          labels:
+            severity: critical
+        # Thresholds allow quiet periods; five minutes avoids scrape-boundary noise.
+        - alert: AusteritySourceSilent
+          expr: |-
+            ((time() - austerity_watcher_last_success_timestamp_seconds{source="x_search"} > 12 * 3600) and on(source) (austerity_watcher_source_enabled == 1)) or
+            ((time() - austerity_watcher_last_success_timestamp_seconds{source="x_timeline"} > 24 * 3600) and on(source) (austerity_watcher_source_enabled == 1)) or
+            ((time() - austerity_watcher_last_success_timestamp_seconds{source="telegram"} > 12 * 3600) and on(source) (austerity_watcher_source_enabled == 1))
+          for: 5m
+          annotations:
+            summary: >-
+              A watcher source has stopped returning parsed items
+            description: >-
+              Check harvest and parser logs first, then session and source configuration. Empty responses do not count as success.
+          labels:
+            severity: warning
+        # Page immediately on parser drift; normal empty instruction lists do not count.
+        - alert: AusterityParserMissing
+          expr: |-
+            increase(austerity_watcher_parse_missing_total[1h]) > 0
+          for: 0m
+          annotations:
+            summary: >-
+              An expected X operation or response shape is missing
+            description: >-
+              Check x_read and GraphQL operation names first; compare a response structure without logging source text or tokens.
+          labels:
+            severity: critical
+        # Eight hours tolerates two three-hour slots and the 75-minute run budget.
+        - alert: AusterityAnalystStalled
+          expr: |-
+            (time() - austerity_watcher_analyst_last_run_completed_timestamp_seconds > 8 * 3600) and (austerity_watcher_analyst_enabled == 1)
+          for: 5m
+          annotations:
+            summary: >-
+              The analyst has not completed a run in eight hours
+            description: >-
+              Check analyst.done, analyst.failed and already_running logs first, then LiteLLM and the started timestamp.
+          labels:
+            severity: warning
+        # Six hours covers two scheduled runs; 15 minutes avoids a transient scrape skew.
+        - alert: AusterityAnalystLLMErrors
+          expr: |-
+            sum(increase(watcher_analyst_llm_errors_total{kind=~"invalid_json|timeout"}[6h])) / sum(increase(austerity_watcher_analyst_llm_calls_total[6h])) > 0.5
+          for: 15m
+          annotations:
+            summary: >-
+              Most local model calls are returning invalid JSON or timing out
+            description: >-
+              Check analyst.llm_error kind and stage first, then local model availability and strict JSON schema support. Never print prompts or responses.
+          labels:
+            severity: warning
+        # Two hours of grace beyond the daily export; pending delivery is covered separately.
+        - alert: AusterityReviewOverdue
+          expr: |-
+            time() - austerity_watcher_review_last_delivered_timestamp_seconds > 26 * 3600
+          for: 5m
+          annotations:
+            summary: >-
+              The daily review export is overdue
+            description: >-
+              Check export.failed logs and GitHub watch branch writes first, then the Review queue workflow for issue delivery.
+          labels:
+            reason: delivery_age
+            severity: warning
+        # Persisted deliveries normally complete within minutes; allow two hours for GitHub recovery.
+        - alert: AusterityReviewOverdue
+          expr: |-
+            austerity_watcher_review_pending == 1
+          for: 2h
+          annotations:
+            summary: >-
+              A stored review has not been published for two hours
+            description: >-
+              Check export.failed logs and watch branch permissions first; retry the persisted review rather than rebuilding it.
+          labels:
+            reason: pending
+            severity: warning
+        # Daily builds run at 00:23 UTC; two hours of grace cover normal Actions delays.
+        - alert: AusteritySiteStale
+          expr: |-
+            (time() - austerity_watcher_site_build_timestamp_seconds > 26 * 3600) and (austerity_watcher_site_build_timestamp_seconds > 0)
+          for: 5m
+          annotations:
+            summary: >-
+              The public site build is more than 26 hours old
+            description: >-
+              Check the latest Build and deploy run first, then compare public meta.json git_sha with the intended main revision.
+          labels:
+            reason: build_age
+            severity: critical
+        # Two hours means multiple hourly probes have failed, not a single transient fetch.
+        - alert: AusteritySiteStale
+          expr: |-
+            austerity_watcher_site_fetch_ok == 0
+          for: 2h
+          annotations:
+            summary: >-
+              The watcher cannot fetch public site metadata
+            description: >-
+              Check health.site_failed logs first, then DNS, egress and Cloudflare; use the documented named User-Agent.
+          labels:
+            reason: fetch
+            severity: critical
+        # Hourly polling, then five minutes to avoid scrape churn; a new success clears the failure.
+        - alert: AusterityWorkflowFailed
+          expr: |-
+            austerity_watcher_github_workflow_last_conclusion{conclusion="failure",workflow!="Build and deploy"} == 1
+          for: 5m
+          annotations:
+            summary: >-
+              A GitHub workflow latest completed run failed
+            description: >-
+              Check the named workflow on GitHub first; a reachable homepage may still be an older deployment. Check Actions read permissions if probe logs fail.
+          labels:
+            severity: warning
+        # Hourly polling, then five minutes to avoid scrape churn; a new success clears the failure.
+        - alert: AusterityWorkflowFailed
+          expr: |-
+            austerity_watcher_github_workflow_last_conclusion{conclusion="failure",workflow="Build and deploy"} == 1
+          for: 5m
+          annotations:
+            summary: >-
+              A GitHub workflow latest completed run failed
+            description: >-
+              Check the named workflow on GitHub first; a reachable homepage may still be an older deployment. Check Actions read permissions if probe logs fail.
+          labels:
+            severity: critical
+        # Allow 15 minutes for rollout and configuration recovery.
+        - alert: AusterityAdminDown
+          expr: |-
+            (austerity_watcher_admin_up == 0) and (austerity_watcher_admin_enabled == 1)
+          for: 15m
+          annotations:
+            summary: >-
+              The enabled admin server is not serving
+            description: >-
+              Check admin.misconfigured and admin.failed logs first, then port binding and required OIDC settings.
+          labels:
+            severity: warning
+        # Normal journal entries resolve in seconds; 30 minutes catches interrupted writes.
+        - alert: AusterityAdminPendingOperation
+          expr: |-
+            austerity_watcher_admin_pending_operations > 0
+          for: 30m
+          annotations:
+            summary: >-
+              An admin operation is still pending
+            description: >-
+              Check admin GitHub write failures first, then retry the original action to recover its durable operation; do not delete the journal.
+          labels:
+            severity: warning
+        # The refresh runs every Monday. Eurostat's own "updated" dates are no use here: the annual
+        # debt and deficit series change only in April and October. Eight days is one missed run.
+        - alert: AusterityIndicatorsStale
+          expr: |-
+            time() - austerity_watcher_github_workflow_last_completed_timestamp_seconds{workflow="Indicators"} > 8 * 86400
+          for: 15m
+          annotations:
+            summary: >-
+              The weekly indicators refresh has not completed in eight days
+            description: >-
+              Check the Indicators workflow on GitHub first (schedule and last run), then any open "Indicators" pull request waiting to be merged.
+          labels:
+            severity: warning
