@@ -35,10 +35,12 @@ spec:
               Check harvest and parser logs first, then session and source configuration. Empty responses do not count as success.
           labels:
             severity: warning
-        # Page immediately on parser drift; normal empty instruction lists do not count.
+        # Parser drift: the expected operation is missing AND the source has had no parsed success
+        # for 3 h. One protected or departed account (SUD Education left X) is not drift.
         - alert: AusterityParserMissing
           expr: |-
-            increase(austerity_watcher_parse_missing_total[1h]) > 0
+            (increase(austerity_watcher_parse_missing_total[1h]) > 0)
+              and on(source) ((time() - austerity_watcher_last_success_timestamp_seconds) > 3 * 3600)
           for: 0m
           annotations:
             summary: >-
