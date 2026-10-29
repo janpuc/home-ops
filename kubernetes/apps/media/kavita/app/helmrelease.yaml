@@ -42,7 +42,11 @@ spec:
             resources:
               requests:
                 cpu: 50m
-                memory: 1024Mi
+                # The request is the scheduler's reservation, not a cap: the limit stays
+                # 1536Mi. Kavita peaked at 299 MiB in seven days, so 512Mi leaves room on
+                # the node for the workloads that cannot move, such as a CloudNativePG
+                # instance whose volume is local to that node.
+                memory: 512Mi
               limits:
                 memory: 1536Mi
             securityContext:
