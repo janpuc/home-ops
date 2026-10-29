@@ -6,7 +6,7 @@ metadata:
   name: alertmanager
 spec:
   route:
-    receiver: pushover
+    receiver: blackhole
     repeatInterval: 12h
     routes:
       - receiver: blackhole
@@ -19,12 +19,21 @@ spec:
           - name: alertname
             value: InfoInhibitor
             matchType: =
+      # Everything else goes to the agent, which triages it. `continue` keeps
+      # the critical route below reachable, so criticals reach both the agent
+      # and Pushover. Grouping by alertname + namespace keeps the same alert
+      # in two namespaces in two webhooks.
+      - receiver: agent
+        continue: true
+        repeatInterval: 24h
+        groupBy:
+          - alertname
+          - namespace
       - receiver: pushover
         matchers:
           - name: severity
             value: critical
             matchType: =
-      - receiver: pushover
     groupBy:
       - alertname
       - cluster
@@ -63,6 +72,15 @@ spec:
 
   receivers:
     - name: blackhole
+    # Pi Pocket, Jan's agent on aether. The hook URL (with its own token)
+    # stays in the secret, so nothing lands in git.
+    - name: agent
+      webhookConfigs:
+        - maxAlerts: 20
+          sendResolved: true
+          urlSecret:
+            name: alertmanager-secret
+            key: PI_POCKET_HOOK_URL
     - name: pushover
       pushoverConfigs:
         - html: true

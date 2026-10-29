@@ -10,7 +10,6 @@ components:
 
 resources:
   - ./namespace.yaml
-  - ./aether-fleet/ks.yaml
   - ./austerity-watcher/ks.yaml
   - ./litellm/ks.yaml
   - ./litellm-operator/ks.yaml
