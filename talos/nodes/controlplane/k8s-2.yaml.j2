@@ -7,3 +7,11 @@ apiVersion: v1alpha1
 kind: KubeNodeConfig
 labels:
   topology.kubernetes.io/zone: m
+---
+machine:
+  kernel:
+    modules:
+      - name: amdgpu
+        parameters:
+          # The media cap. The reranker on this node takes about 1.55 GiB of GTT.
+          - gttsize=2048

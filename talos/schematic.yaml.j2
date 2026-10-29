@@ -3,7 +3,10 @@ customization:
   extraKernelArgs:
     - amd_iommu=on
     - iommu=pt
-    - amdgpu.gttsize=2048
+    # The GTT aperture is per node: talos/nodes/controlplane/k8s-*.yaml.j2 sets
+    # gttsize for each node. k8s-0 runs the embedding model and gets the 3 GiB
+    # AI cap, the media nodes get 2 GiB. The AmdGttCapMismatch rule expects
+    # exactly those two values.
   systemExtensions:
     officialExtensions:
       - siderolabs/amd-ucode

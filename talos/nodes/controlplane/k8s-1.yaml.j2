@@ -7,3 +7,11 @@ apiVersion: v1alpha1
 kind: KubeNodeConfig
 labels:
   topology.kubernetes.io/zone: m
+---
+machine:
+  kernel:
+    modules:
+      - name: amdgpu
+        parameters:
+          # The media cap. Plex transcodes here.
+          - gttsize=2048

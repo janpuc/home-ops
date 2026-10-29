@@ -7,3 +7,13 @@ apiVersion: v1alpha1
 kind: KubeNodeConfig
 labels:
   topology.kubernetes.io/zone: m
+---
+machine:
+  kernel:
+    modules:
+      - name: amdgpu
+        parameters:
+          # The AI cap. The embedding model on this node takes about 1.65 GiB of
+          # GTT, which is 80 % of the 2 GiB media cap, and it warns every time
+          # the model is loaded.
+          - gttsize=3072
