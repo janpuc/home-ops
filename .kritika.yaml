@@ -4,3 +4,16 @@ skills:
   scope:
     renovate-review:
       when: [{ expr: pr.headRef.startsWith("renovate/") }]
+tools:
+  # The runner image carries curl, find, gh, grep and jq. The other commands
+  # the reviews used come from the aqua registry: flate renders the charts a
+  # review needs, the other three are the search and query tools the old
+  # agent command list named.
+  # renovate: datasource=github-releases depName=home-operations/flate
+  aqua:home-operations/flate: v0.6.5
+  # renovate: datasource=github-releases depName=sharkdp/fd
+  aqua:sharkdp/fd: v10.5.0
+  # renovate: datasource=github-releases depName=BurntSushi/ripgrep
+  aqua:BurntSushi/ripgrep: 15.2.0
+  # renovate: datasource=github-releases depName=mikefarah/yq
+  aqua:mikefarah/yq: v4.54.1
