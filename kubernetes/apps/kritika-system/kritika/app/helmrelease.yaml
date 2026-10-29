@@ -12,11 +12,11 @@ spec:
   values:
     replicas: 2
     deploymentAnnotations:
-      reloader.stakater.com/auto: "true"
+      # Only a secret change restarts the pods: the chart rolls them on a
+      # config change itself, so a ConfigMap change would restart them twice.
+      secret.reloader.stakater.com/auto: "true"
     config:
       webUrl: https://{{ .Release.Name }}.janpuc.com
-      runnerRuntimeClass: gvisor
-    configFile:
       apps:
         github:
           accounts: [janpuc]
@@ -65,7 +65,6 @@ spec:
       # and #1462 hit the token budget. Reviews run on MiniMax's own plan, so the
       # extra headroom is cheap.
       agent:
-        commands: [gh, curl, jq, yq, rg, fd, flate]
         steps: 100
         tokens: 6000000
     envFrom:
@@ -79,16 +78,18 @@ spec:
       runner:
         existingSecret: kritika-postgres-runner
     runner:
-      tools:
-        - name: flate
-          image: ghcr.io/home-operations/flate:0.6.5@sha256:e0e2d2de97539b3141977e8bb3bbb50ea5c5afe89477950e5fa972c9862478da
-      # flate renders charts in the runner and needs more than the reviews alone
-      resources:
-        requests:
-          cpu: 10m
-          memory: 512Mi
-        limits:
-          memory: 2Gi
+      # The runner pods run under gVisor and get the room flate needs to render
+      # charts, which is more than the reviews alone. The commands themselves
+      # come from the runner image and the tools in .kritika.yaml.
+      podTemplate:
+        spec:
+          runtimeClassName: gvisor
+          resources:
+            requests:
+              cpu: 10m
+              memory: 512Mi
+            limits:
+              memory: 2Gi
     httpRoute:
       enabled: true
       annotations:
@@ -113,11 +114,18 @@ spec:
         enabled: true
     networkPolicy:
       enabled: true
+      # The plain NetworkPolicy flavour, as before: the Cilium one needs the
+      # L7 proxy for its DNS rules.
+      type: default
       # LiteLLM (4000) and the bge-m3 llama.cpp server (8080) on top of the forges
       egressPorts:
         - 443
         - 4000
         - 8080
+      # Only the pods of the PostgreSQL cluster, not every pod in the namespace.
+      postgres:
+        podSelector:
+          cnpg.io/cluster: kritika-postgres
     resources:
       requests:
         cpu: 10m

@@ -4,3 +4,8 @@ skills:
   scope:
     renovate-review:
       when: [{ expr: pr.headRef.startsWith("renovate/") }]
+tools:
+  # The runner image carries curl, find, gh, grep and jq; flate renders the
+  # charts a review needs, so it comes from the aqua registry.
+  # renovate: datasource=github-releases depName=home-operations/flate
+  aqua:home-operations/flate: v0.6.5
