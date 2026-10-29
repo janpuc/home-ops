@@ -1,0 +1,6 @@
+---
+# actionlint's built-in runner list predates GitHub's ubuntu-26.04 image, which the
+# workflows use (as upstream onedr0p/home-ops does); declare it so the label check passes.
+self-hosted-runner:
+  labels:
+    - ubuntu-26.04
