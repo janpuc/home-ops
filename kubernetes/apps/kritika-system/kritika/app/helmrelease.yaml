@@ -63,11 +63,13 @@ spec:
       # kritika's built-in limits are 60 steps / 4M tokens; infra PRs that read a lot
       # of cluster config ran out of steps before submitting (#1477, #1512, #1515)
       # and #1462 hit the token budget. Reviews run on MiniMax's own plan, so the
-      # extra headroom is cheap.
+      # extra headroom is cheap. MiniMax takes about 30 s a step, so the default 20m
+      # wall time cancelled #1654 after 44 steps; 45m fits the 100 steps.
       agent:
         commands: [gh, curl, jq, yq, rg, fd, flate]
         steps: 100
         tokens: 6000000
+        timeout: 45m
     envFrom:
       - secretRef:
           name: kritika-secret
