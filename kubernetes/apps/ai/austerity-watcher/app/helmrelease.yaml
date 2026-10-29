@@ -145,7 +145,10 @@ spec:
             resources: &chromeResources
               requests:
                 cpu: 100m
-                memory: 1Gi
+                # The request is the scheduler's reservation, not a cap: the limit stays 4Gi.
+                # Half of it leaves room on the node for the workloads that cannot move,
+                # such as a CloudNativePG instance whose volume is local to that node.
+                memory: 512Mi
               limits:
                 memory: 4Gi
             securityContext: &chromeSecurity
