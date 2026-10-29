@@ -134,11 +134,11 @@ spec:
                   (
                     node:amd_gtt_free_bytes
                       / on(instance) node_drm_memory_gtt_size_bytes
-                  ) < 0.20
+                  ) < 0.15
                 for: 2m
                 labels: { severity: warning }
                 annotations:
-                  summary: "AMD iGPU GTT free < 20 % of cap on {{ $labels.instance }}"
+                  summary: "AMD iGPU GTT free < 15 % of cap on {{ $labels.instance }}"
                   description: |
                     Only {{ $value | humanizePercentage }} of the configured GTT
                     aperture is free on {{ $labels.instance }} (cap =
@@ -147,6 +147,8 @@ spec:
                     further allocations may fail or, if the kernel has not yet
                     enforced the cap, starve other workloads of memory kubelet
                     cannot see.
+                    The embedding model on k8s-0 peaks at 18.6 % free, so this
+                    fires when a workload wants more than the model does.
               - alert: AmdGttCritical
                 expr: |
                   (
