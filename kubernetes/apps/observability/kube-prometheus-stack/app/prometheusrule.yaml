@@ -1,0 +1,46 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: alertmanager-rules
+spec:
+  groups:
+    - name: alertmanager.rules
+      rules:
+        # The agent receiver (the webhook to Pi Pocket on aether) is where
+        # every alert goes to be triaged. If the deliveries fail and none
+        # of them lands, the receiver is down and the alerts are lost.
+        #
+        # alertmanager_notifications_total counts every attempted
+        # notification run, the failed ones included, so the successful
+        # deliveries are total - failed (see notify/retry_stage.go in
+        # alertmanager v0.34.1: the total is incremented once per run
+        # before the attempts, the failed counter once per run that ended
+        # in an error).
+        #
+        # The rule asks for a failure and no successful delivery in the
+        # same window: one failed run among successful ones is a blip, a
+        # receiver that takes nothing is an outage. The failure count comes
+        # first, so a non-empty result carries the number of failed
+        # deliveries as its value.
+        - alert: AlertmanagerAgentDeliveryFailing
+          expr: |-
+            sum(increase(alertmanager_notifications_failed_total{integration="webhook"}[15m])) > 0
+            and
+            (
+              sum(increase(alertmanager_notifications_total{integration="webhook"}[15m]))
+              - sum(increase(alertmanager_notifications_failed_total{integration="webhook"}[15m]))
+            ) == 0
+          for: 10m
+          labels:
+            severity: critical
+            scope: agent
+          annotations:
+            summary: |-
+              Alertmanager cannot deliver alerts to the agent receiver
+            description: |-
+              A delivery to the agent receiver (Pi Pocket on aether) failed
+              in the last 15 minutes and no delivery to it has succeeded
+              since. The alerts are going nowhere, so only the Pushover
+              route reaches Jan.

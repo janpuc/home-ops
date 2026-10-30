@@ -3,6 +3,32 @@
 apiVersion: monitoring.coreos.com/v1
 kind: Probe
 metadata:
+  name: aether
+spec:
+  # Pi Pocket, Jan's agent, runs on aether, outside the cluster. The
+  # Alertmanager already delivers every alert to the agent receiver there,
+  # so the cluster resolves and reaches this name. This probe watches the
+  # other direction: when aether or Pi Pocket is down, the agent receiver
+  # stops taking alerts and nothing inside the cluster notices.
+  module: http_2xx
+  prober:
+    url: blackbox-exporter-lan.observability.svc.cluster.local:9115
+  targets:
+    staticConfig:
+      static:
+        - https://aether.tail17d532.ts.net/
+  # Its own service label, so the LAN rule (LanProbeFailed, service
+  # blackbox-exporter-lan) does not also fire for this target and page
+  # twice for one outage.
+  metricRelabelings:
+    - targetLabel: service
+      replacement: blackbox-exporter-aether
+      action: replace
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/monitoring.coreos.com/probe_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
   name: lan-icmp
 spec:
   module: icmp

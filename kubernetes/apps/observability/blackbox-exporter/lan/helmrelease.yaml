@@ -54,3 +54,22 @@ spec:
           annotations:
             summary: |-
               The probe targeting {{ $labels.instance }} is currently having connectivity issues
+        # aether runs Pi Pocket, the agent that triages the alerts the
+        # Alertmanager sends to the agent receiver. If aether or Pi Pocket
+        # is down, every alert goes into the void and the only thing that
+        # still works is the Pushover route, so this one pages.
+        - alert: AgentHostDown
+          expr: |-
+            probe_success{service="blackbox-exporter-aether"} == 0
+          for: 10m
+          labels:
+            severity: critical
+            scope: agent
+          annotations:
+            summary: |-
+              Pi Pocket on aether is not answering
+            description: |-
+              The probe of {{ $labels.instance }} from inside the cluster has
+              failed for 10 minutes. Pi Pocket is the agent receiver, so
+              alerts that should be triaged there are not being picked up,
+              and aether carries the sessions that act on the cluster.
