@@ -21,6 +21,12 @@ spec:
       failed: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'False')
       current: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'True')
   interval: 1h
+  # The ClusterSecretStore health check is what failed on 2026-10-30, when
+  # the Talos upgrade restarted the connect server while the controller
+  # validated the store. Without this, a failed reconciliation is retried
+  # after the whole interval, so one transient store failure held this
+  # Kustomization, and the seven that depend on it, not Ready for an hour.
+  retryInterval: 5m
   path: ./kubernetes/apps/external-secrets/onepassword-connect/app
   prune: true
   sourceRef:
