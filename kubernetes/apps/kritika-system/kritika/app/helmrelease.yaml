@@ -41,16 +41,19 @@ spec:
           apiKey: { env: KRITIKA_BGE_API_KEY }
       # bge-m3 runs with a 1024-token ubatch (llmkube/models/bge-embedding-m3.yaml):
       # the server refuses a request whose inputs do not fit in one physical
-      # batch, so both an input and a request have to stay under it. 2500
-      # characters is what memini uses for the same model to stay under 1024
-      # tokens. The model is general-purpose rather than code-tuned, hence the
-      # higher similarity floor the docs suggest.
+      # batch, so both an input and a request have to stay under it. The dense
+      # text measured against that model tokenises at 2.33-2.37 chars/token,
+      # so 2500 characters became 1055-1073 tokens and every such request
+      # failed. 1800 characters stays at 760-770 tokens and holds up for
+      # content as dense as 1.76 chars/token. The model is general-purpose
+      # rather than code-tuned, hence the higher similarity floor the docs
+      # suggest.
       embedding:
         model: bge/bge-m3
         dims: 1024
         maxBatch: 8
-        maxBatchChars: 2500
-        maxItemChars: 2500
+        maxBatchChars: 1800
+        maxItemChars: 1800
         similarFloor: 0.7
       # The gateway refuses private addresses unless an allow address covers them;
       # models and the embedder are reached through kritika serve, not this list.
