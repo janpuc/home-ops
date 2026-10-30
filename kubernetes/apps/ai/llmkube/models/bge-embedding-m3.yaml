@@ -39,9 +39,15 @@ spec:
   # memini's MEMINI_EMBED_MAX_ITEM_CHARS keeps its inputs under 1024 tokens.
   batchSize: 1024
   uBatchSize: 1024
+  # The request is the scheduler's reservation. The model lives in the iGPU,
+  # not in RAM: the pod's working set peaks at 273 MiB and its usage peaks at
+  # 890 MiB (the page cache of the mapped weights), so 3 GiB reserved 3 GiB
+  # from k8s-0, the node that has the least room. memoryLimit keeps the
+  # ceiling where it was, so the workload can still burst.
   resources:
     cpu: 100m
-    memory: 3Gi
+    memory: 1Gi
+    memoryLimit: 3Gi
   extraArgs:
     - --embedding
     - --pooling
