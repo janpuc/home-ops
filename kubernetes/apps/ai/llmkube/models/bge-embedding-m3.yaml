@@ -36,7 +36,11 @@ spec:
   # An embedding input must fit in one ubatch, and the non-causal attention
   # buffer grows with ubatch²: at 2048 it pushed the iGPU past its 2 GiB GTT cap
   # (amdgpu "Not enough memory for command submission" -> ErrorDeviceLost).
-  # memini's MEMINI_EMBED_MAX_ITEM_CHARS keeps its inputs under 1024 tokens.
+  # The dense text measured against this model tokenises at 2.33-2.37
+  # chars/token, so a client bound of 2500 chars was 1055-1073 tokens and the
+  # server refused it ("input (1055 tokens) is too large to process"). memini's
+  # MEMINI_EMBED_MAX_ITEM_CHARS and kritika's maxItemChars/maxBatchChars are
+  # kept at 1800 chars, which is 760-770 tokens here.
   batchSize: 1024
   uBatchSize: 1024
   # The request is the scheduler's reservation. The model lives in the iGPU,
