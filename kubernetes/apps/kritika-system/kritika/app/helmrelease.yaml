@@ -39,15 +39,18 @@ spec:
           type: openai
           baseUrl: http://bge-embedding-m3.ai.svc.cluster.local:8080/v1
           apiKey: { env: KRITIKA_BGE_API_KEY }
-      # bge-m3 runs with a 2048-token ubatch (llmkube/models/bge-embedding-m3.yaml),
-      # so each input must stay well under it; it is general-purpose rather than
-      # code-tuned, hence the higher similarity floor the docs suggest.
+      # bge-m3 runs with a 1024-token ubatch (llmkube/models/bge-embedding-m3.yaml):
+      # the server refuses a request whose inputs do not fit in one physical
+      # batch, so both an input and a request have to stay under it. 2500
+      # characters is what memini uses for the same model to stay under 1024
+      # tokens. The model is general-purpose rather than code-tuned, hence the
+      # higher similarity floor the docs suggest.
       embedding:
         model: bge/bge-m3
         dims: 1024
         maxBatch: 8
-        maxBatchChars: 16000
-        maxItemChars: 4000
+        maxBatchChars: 2500
+        maxItemChars: 2500
         similarFloor: 0.7
       # The gateway refuses private addresses unless an allow address covers them;
       # models and the embedder are reached through kritika serve, not this list.
