@@ -23,8 +23,14 @@ spec:
       # the critical route below reachable, so criticals reach both the agent
       # and Pushover. Grouping by alertname + namespace keeps the same alert
       # in two namespaces in two webhooks.
+      # Only warnings and criticals reach the agent: severity info (e.g. CPUThrottlingHigh
+      # during a burst of reconciles) is noise that cost quota and once a needless fix.
       - receiver: agent
         continue: true
+        matchers:
+          - name: severity
+            value: warning|critical
+            matchType: =~
         repeatInterval: 24h
         groupBy:
           - alertname
