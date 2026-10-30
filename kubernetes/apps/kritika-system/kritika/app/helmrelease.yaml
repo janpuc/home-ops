@@ -56,11 +56,14 @@ spec:
         deny: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, "*.internal"]
       trigger:
         exclude: [{ name: forks, expr: pr.fork }]
-      # Reviews run on MiniMax M3 (its own plan, with room to spare) instead of the
-      # shared OpenCode Go allowance; Kimi K3 on Go is the fallback.
+      # Reviews run on MiniMax M3.1 Flash, the MiniMax plan's default text model: a
+      # quarter of M3's list price (an eighth for cached input) and about three times
+      # faster. Reviews were the plan's biggest user on M3 (~460M input tokens a week),
+      # and kept hitting the agent timeout. M3 on the same plan is the fallback; the
+      # OpenCode Go allowance stays out of it.
       review:
-        model: litellm/minimax/MiniMax-M3
-        fallback: litellm/opencode-go/kimi-k3
+        model: litellm/minimax/MiniMax-M3.1-Flash
+        fallback: litellm/minimax/MiniMax-M3
       # A second opinion from another vendor scores each review 0-5 and rates its
       # risk; the commit status reports it without gating, and nothing is approved.
       confidence:
