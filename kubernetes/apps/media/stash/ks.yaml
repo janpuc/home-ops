@@ -16,7 +16,10 @@ spec:
   postBuild:
     substitute:
       APP: stash
-      KOPIUR_CAPACITY: 5Gi
+      # The Stash data volume (config, blobs, generated) filled 4.16 GiB of
+      # its 5 GiB on 2026-10-30 and grows about 9 MiB a day with the
+      # generated files, so it would have been full in about 11 weeks.
+      KOPIUR_CAPACITY: 10Gi
       KOPIUR_COPYMETHOD: Direct
   prune: true
   sourceRef:
