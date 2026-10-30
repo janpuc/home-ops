@@ -17,6 +17,12 @@ spec:
       secret.reloader.stakater.com/auto: "true"
     config:
       webUrl: https://{{ .Release.Name }}.janpuc.com
+      # Since 0.0.110 the dashboard refuses to start without a sign-in method; the
+      # admin password was picked up from the environment by 0.0.54 and must now be
+      # named here (as upstream onedr0p/home-ops does).
+      auth:
+        admin:
+          password: { env: KRITIKA_AUTH_ADMIN_PASSWORD }
       apps:
         github:
           accounts: [janpuc]
