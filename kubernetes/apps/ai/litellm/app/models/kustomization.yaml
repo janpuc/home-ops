@@ -20,6 +20,7 @@ resources:
   - minimax-m2-7-anthropic.yaml
   - minimax-m2-7.yaml
   - minimax-m3-1-flash-preview.yaml
+  - minimax-m3-1-flash.yaml
   - minimax-m3-anthropic.yaml
   - minimax-m3.yaml
   - opencode-go-deepseek-v4-1-flash.yaml

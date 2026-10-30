@@ -126,6 +126,7 @@ spec:
       - opencode-go/qwen3.8-max: ["minimax/MiniMax-M3"]
       - minimax/MiniMax-M3: ["opencode-go/minimax-m3"]
       - minimax/MiniMax-M3.1-Flash-Preview: ["minimax/MiniMax-M3"]
+      - minimax/MiniMax-M3.1-Flash: ["minimax/MiniMax-M3"]
       # Ordinary chat on the BC250 moves to the cloud while someone games.
       # bc250-local/qwen3.6-35b-a3b is deliberately absent here and from
       # context_window_fallbacks: it carries private material and must fail
