@@ -17,16 +17,21 @@ permissions:
   contents: read
 
 env:
-  # renovate: datasource=github-releases depName=home-operations/flate
-  FLATE_VERSION: "0.6.5"
   # renovate: datasource=custom.talos-factory depName=siderolabs/talos
   TALOS_VERSION: v1.14.2
 
 jobs:
+  # Extract on the in-cluster runner with only flate installed, as before: on a hosted
+  # runner `mise exec` locks this repository's whole .mise toolset (its pins stay here
+  # for local use, unlike upstream) and the 1password-cli plugin fails there.
   image-pull-extract:
-    if: ${{ github.event_name == 'pull_request' }}
+    if: >-
+      ${{
+        github.event_name == 'pull_request' &&
+        github.event.pull_request.head.repo.full_name == github.repository
+      }}
     name: Image Pull - Extract Images
-    runs-on: ubuntu-26.04
+    runs-on: ${{ github.event.repository.name }}-runner
     permissions:
       contents: read
     outputs:
@@ -42,16 +47,14 @@ jobs:
         uses: jdx/mise-action@82a612c5ab8bcda7cc5db6b7e81a8e7584c3dc6e # v5.2.3
         with:
           cache: false
-          install: false
+          install_args: github:home-operations/flate
 
       - name: Extract Images
         id: extract
-        env:
-          MISE_GITHUB_TOKEN: ${{ github.token }}
         run: |
           {
             echo 'images<<EOF'
-            mise exec "github:home-operations/flate@${FLATE_VERSION}" -- flate diff images -p ./kubernetes/flux/cluster -o json
+            flate diff images -p ./kubernetes/flux/cluster -o json
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
 
