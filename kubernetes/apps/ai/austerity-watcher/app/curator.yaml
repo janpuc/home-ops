@@ -56,7 +56,14 @@ spec:
   jobTemplate:
     spec:
       backoffLimit: 0
-      activeDeadlineSeconds: 4500
+      # The curator stops starting new work at its own 65 minute budget, but an
+      # item already running can take longer: each Codex call is capped at 8
+      # minutes and a research item runs research, facts, evidence and safety,
+      # with the evidence check retried once. That is up to about 50 minutes for
+      # the last item, so the deadline has to sit above 65 + 50 plus the
+      # summary write. At 75 minutes Kubernetes killed the run of 2026-10-30
+      # mid-item, which deleted the pod, lost the logs and left no summary.
+      activeDeadlineSeconds: 6000
       ttlSecondsAfterFinished: 172800
       template:
         metadata:
