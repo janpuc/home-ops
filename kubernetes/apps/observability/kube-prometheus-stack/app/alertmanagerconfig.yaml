@@ -69,6 +69,19 @@ spec:
         - name: group
           value: external
           matchType: =
+    # aether down explains why the deliveries to the agent receiver fail,
+    # so one outage pages once. The other way round (the host answers but
+    # the receiver does not take alerts) still pages the delivery alert.
+    - equal:
+        - scope
+      sourceMatch:
+        - name: alertname
+          value: AgentHostDown
+          matchType: =
+      targetMatch:
+        - name: alertname
+          value: AlertmanagerAgentDeliveryFailing
+          matchType: =
 
   receivers:
     - name: blackhole
