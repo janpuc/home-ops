@@ -7,7 +7,7 @@ metadata:
 spec:
   talos:
     # renovate: datasource=custom.talos-factory depName=siderolabs/talos
-    version: v1.14.2
+    version: v1.14.5
   policy:
     # Flux helm-controller and Prometheus take up to 600s to stop; talosctl's 5m
     # default failed the first k8s-0 attempt on 2026-10-04.
