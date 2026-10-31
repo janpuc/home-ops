@@ -10,12 +10,6 @@ spec:
     name: spegel
   interval: 1h
   values:
-    grafanaDashboard:
-      enabled: true
-      mode: GrafanaOperator
-      grafanaOperator:
-        matchLabels:
-          dashboards: grafana
     resources:
       requests:
         cpu: 25m
@@ -24,7 +18,7 @@ spec:
         memory: 96Mi
     service:
       registry:
-        hostPort: 29999
+        nodePort: 29999
     serviceMonitor:
       enabled: true
     spegel:
