@@ -134,6 +134,13 @@
       matchDepNames: ["1password-cli"],
       enabled: false,
     },
+    {
+      description: "Yattee 1.0.9 bundles yt-dlp 2026.08.19, which rejects curl_cffi >=0.17; revisit with the image update",
+      matchDatasources: ["pypi"],
+      matchPackageNames: ["curl_cffi"],
+      matchFileNames: ["kubernetes/apps/media/yattee-server/app/helmrelease.yaml"],
+      allowedVersions: "<0.17",
+    },
     // Labeling rules
     {
       matchUpdateTypes: ["major"],

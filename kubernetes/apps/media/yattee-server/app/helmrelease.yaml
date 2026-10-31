@@ -29,19 +29,51 @@ spec:
               - pip install --no-cache-dir --no-deps --disable-pip-version-check --target /opt/python-extras "curl_cffi==$CURL_CFFI_VERSION"
             env:
               # renovate: datasource=pypi depName=curl_cffi
-              CURL_CFFI_VERSION: 0.14.0
+              CURL_CFFI_VERSION: 0.16.3
             securityContext:
               allowPrivilegeEscalation: false
               capabilities: { drop: ["ALL"] }
-          # The app (root) creates its key files as 0600; the kopiur mover reads as uid 1000
-          # and the files are already group 1000 (setgid data dir), so give the group read.
-          # The app only sets 0600 when it first creates a file, so this sticks.
+          # v1.0.9 creates keys lazily as 0600; fsGroup alone cannot make those readable by kopiur.
+          # Create missing keys in the upstream formats before the app starts; never replace existing keys.
+          # Set group 1000 explicitly, including when fsGroup's OnRootMismatch skips an existing volume.
           data-permissions:
             image: *image
             command:
-              - /bin/sh
+              - python
               - -c
-              - for f in /app/data/.encryption_key /app/data/.stream_token_secret; do [ -f "$f" ] && chmod 0640 "$f"; done; true
+              - |
+                import os
+                import secrets
+                import stat
+                from pathlib import Path
+                from cryptography.fernet import Fernet
+
+                data = Path(os.environ["DATA_DIR"])
+                data.mkdir(parents=True, exist_ok=True)
+                for name, generate in (
+                    (".encryption_key", Fernet.generate_key),
+                    (".stream_token_secret", lambda: secrets.token_urlsafe(32).encode()),
+                ):
+                    path = data / name
+                    flags = os.O_NOFOLLOW | os.O_NONBLOCK
+                    try:
+                        fd = os.open(path, flags | os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+                    except FileExistsError:
+                        fd = os.open(path, flags | os.O_RDONLY)
+                        created = False
+                    else:
+                        created = True
+                    with os.fdopen(fd, "wb" if created else "rb") as key:
+                        metadata = os.fstat(key.fileno())
+                        if not stat.S_ISREG(metadata.st_mode):
+                            raise RuntimeError("Key path must be a regular file")
+                        if created:
+                            key.write(generate())
+                            key.flush()
+                        if metadata.st_gid != 1000:
+                            os.fchown(key.fileno(), -1, 1000)
+                        if stat.S_IMODE(metadata.st_mode) != 0o640:
+                            os.fchmod(key.fileno(), 0o640)
             securityContext:
               allowPrivilegeEscalation: false
               capabilities: { drop: ["ALL"] }
@@ -88,6 +120,8 @@ spec:
         runAsNonRoot: false
         runAsUser: 0
         runAsGroup: 0
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
     configMaps:
       ytdlp-config:
         data:
