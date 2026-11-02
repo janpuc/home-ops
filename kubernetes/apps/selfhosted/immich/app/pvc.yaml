@@ -1,6 +1,7 @@
 ---
 # The machine-learning models (a few GiB), so a restart does not download them
-# again. Nothing here needs a backup.
+# again. Nothing here needs a backup. Not a -local class: the pod is not tied
+# to one node, which a local volume would do.
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -11,4 +12,4 @@ spec:
   resources:
     requests:
       storage: 10Gi
-  storageClassName: miroir-slow-local
+  storageClassName: miroir-slow

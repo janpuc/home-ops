@@ -110,10 +110,11 @@ spec:
               readiness: *mlProbes
             # Every node's GPU is claimed (bge-embedding, bge-reranker, Plex),
             # so machine learning and video transcoding run on the CPU.
+            # Idles near 160 MiB; models load on demand, up to the limit.
             resources:
               requests:
                 cpu: 100m
-                memory: 1Gi
+                memory: 256Mi
               limits:
                 memory: 4Gi
             securityContext: *securityContext
