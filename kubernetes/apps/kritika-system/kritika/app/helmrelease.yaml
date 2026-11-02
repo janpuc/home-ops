@@ -137,7 +137,9 @@ spec:
         - 443
         - 4000
         - 8080
-      # Only the pods of the PostgreSQL cluster, not every pod in the namespace.
+      # The serve pods reach the PostgreSQL cluster, and only the pods of that
+      # cluster, not every pod in the namespace. Since 0.0.116 the runner pods
+      # do not reach the database at all.
       postgres:
         podSelector:
           cnpg.io/cluster: kritika-postgres
