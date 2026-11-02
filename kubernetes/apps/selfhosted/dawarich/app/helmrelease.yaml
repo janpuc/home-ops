@@ -38,11 +38,36 @@ spec:
               APPLICATION_HOSTS: timeline.janpuc.com
               # TLS ends at Envoy; https comes through X-Forwarded-Proto.
               APPLICATION_PROTOCOL: http
-              DATABASE_URL:
+              # Separate settings, not DATABASE_URL: a postgresql:// URL would
+              # replace database.yml's postgis adapter, and the schema's
+              # geometry columns would be unknown.
+              DATABASE_HOST:
                 valueFrom:
                   secretKeyRef:
                     name: dawarich-postgres-app
-                    key: uri
+                    key: host
+              DATABASE_PORT:
+                valueFrom:
+                  secretKeyRef:
+                    name: dawarich-postgres-app
+                    key: port
+              DATABASE_USERNAME:
+                valueFrom:
+                  secretKeyRef:
+                    name: dawarich-postgres-app
+                    key: username
+              DATABASE_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: dawarich-postgres-app
+                    key: password
+              DATABASE_NAME:
+                valueFrom:
+                  secretKeyRef:
+                    name: dawarich-postgres-app
+                    key: dbname
+              # Bundler wants a writable home; the root filesystem is read-only.
+              HOME: /tmp
               REDIS_URL: redis://dawarich-dragonfly:6379
               # Sign-in through Pocket ID only. The seed creates a demo admin
               # (demo@dawarich.app); with password login off it cannot sign in.
