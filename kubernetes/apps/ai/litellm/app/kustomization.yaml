@@ -8,6 +8,5 @@ resources:
   - ./litellmproxy.yaml
   - ./servicemonitor.yaml
   - ./dashboard/
-  - ./keys/
   - ./mcp/
   - ./models/
