@@ -10,17 +10,14 @@ spec:
     name: spegel
   interval: 1h
   values:
+    # The chart's registry Service takes its node port from the chart default,
+    # 30020. It must stay inside the default NodePort range 30000-32767.
     resources:
       requests:
         cpu: 25m
         memory: 64Mi
       limits:
         memory: 96Mi
-    service:
-      registry:
-        # Must stay inside the default NodePort range 30000-32767.
-        # 30020 is the upstream chart default.
-        nodePort: 30020
     serviceMonitor:
       enabled: true
     spegel:
