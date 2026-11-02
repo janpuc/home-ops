@@ -92,8 +92,6 @@ spec:
         existingSecret: kritika-postgres-app
       owner:
         existingSecret: kritika-postgres-credentials
-      runner:
-        existingSecret: kritika-postgres-runner
     runner:
       # The runner pods run under gVisor and get the room flate needs to render
       # charts, which is more than the reviews alone. The commands themselves
