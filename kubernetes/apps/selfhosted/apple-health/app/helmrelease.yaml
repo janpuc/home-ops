@@ -113,10 +113,12 @@ spec:
       app:
         # The gatus sidecar turns every public HTTPRoute into an endpoint it
         # probes anonymously, and this one answers 401 without the token, so
-        # the sidecar reported it down every minute. The annotation is the
-        # chart's way to leave a route out of the sidecar's endpoints.
+        # the sidecar reported it down every minute. The condition below keeps
+        # the endpoint and tells gatus that 401 is the healthy answer, the
+        # same way the github-webhook route expects 404.
         annotations:
-          gatus.home-operations.com/enabled: "false"
+          gatus.home-operations.com/endpoint: |-
+            conditions: ["[STATUS] == 401"]
         hostnames:
           - health.janpuc.com
         parentRefs:
