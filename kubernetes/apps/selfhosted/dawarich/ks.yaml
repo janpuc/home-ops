@@ -60,16 +60,6 @@ spec:
       failed: status.phase != 'ready'
       current: status.phase == 'ready'
   interval: 1h
-  # Sidekiq runs Lua scripts that touch keys they do not declare, which
-  # Dragonfly refuses by default.
-  patches:
-    - target:
-        group: dragonflydb.io
-        kind: Dragonfly
-      patch: |-
-        - op: add
-          path: /spec/args/-
-          value: --default_lua_flags=allow-undeclared-keys
   path: ./kubernetes/apps/selfhosted/dawarich/app
   postBuild:
     substitute:

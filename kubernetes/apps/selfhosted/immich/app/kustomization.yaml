@@ -7,6 +7,17 @@ resources:
   - ./ocirepository.yaml
   - ./pocketidoidcclient.yaml
   - ./pvc.yaml
+# Immich's job queue (BullMQ) and Sidekiq run Lua scripts that touch keys they
+# do not declare, which Dragonfly refuses by default. The patch lives here, not
+# in the Flux Kustomization: cluster-apps replaces every child's spec.patches.
+patches:
+  - target:
+      group: dragonflydb.io
+      kind: Dragonfly
+    patch: |-
+      - op: add
+        path: /spec/args/-
+        value: --default_lua_flags=allow-undeclared-keys
 # Immich's settings, with placeholders the init container fills from the
 # Pocket ID client's secret. A config file makes those settings read-only in
 # the admin page: change them here.
