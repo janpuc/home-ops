@@ -16,7 +16,7 @@ spec:
           app:
             image:
               repository: ghcr.io/renplay-web/renplay
-              tag: edge@sha256:dfb37b7bded2d34be0ec40db62ade063aa1bd15a7269e028f2ec080390990067
+              tag: edge@sha256:03ec7e66e4e4d6cd23db16c6112e72419e211837141127f616d523729a4601b6
             env:
               # Keeps the pod up while an install job runs (scale-to-zero).
               RENPLAY_KEEPALIVE_URL: http://keda-add-ons-http-interceptor-proxy.observability.svc.cluster.local:8080
