@@ -134,6 +134,13 @@
       matchDepNames: ["1password-cli"],
       enabled: false,
     },
+    {
+      // Sonarr v5 is not stable yet, so hold the image on v4 until a stable v5 exists.
+      description: "Sonarr v5 is not stable yet, hold on v4 until a stable v5 release exists",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["ghcr.io/home-operations/sonarr"],
+      allowedVersions: "<5",
+    },
     // Labeling rules
     {
       matchUpdateTypes: ["major"],
