@@ -35,7 +35,9 @@ spec:
               capabilities: { drop: ["ALL"] }
           # v1.0.9 creates keys lazily as 0600; fsGroup alone cannot make those readable by kopiur.
           # Create missing keys in the upstream formats before the app starts; never replace existing keys.
-          # Set group 1000 explicitly, including when fsGroup's OnRootMismatch skips an existing volume.
+          # The kubelet's fsGroup gives the volume group 1000 and the setgid bit, and it adds gid 1000 to
+          # the container's supplemental groups, so this container only fixes the file mode. It cannot
+          # chown: it runs with all capabilities dropped, so a chown would fail with EPERM.
           data-permissions:
             image: *image
             command:
@@ -70,8 +72,6 @@ spec:
                         if created:
                             key.write(generate())
                             key.flush()
-                        if metadata.st_gid != 1000:
-                            os.fchown(key.fileno(), -1, 1000)
                         if stat.S_IMODE(metadata.st_mode) != 0o640:
                             os.fchmod(key.fileno(), 0o640)
             securityContext:
