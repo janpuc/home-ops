@@ -111,6 +111,12 @@ spec:
     # Only the ingest API is public, and it wants the bearer token.
     route:
       app:
+        # The gatus sidecar turns every public HTTPRoute into an endpoint it
+        # probes anonymously, and this one answers 401 without the token, so
+        # the sidecar reported it down every minute. The annotation is the
+        # chart's way to leave a route out of the sidecar's endpoints.
+        annotations:
+          gatus.home-operations.com/enabled: "false"
         hostnames:
           - health.janpuc.com
         parentRefs:
