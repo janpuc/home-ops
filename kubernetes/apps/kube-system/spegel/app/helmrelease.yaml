@@ -18,7 +18,9 @@ spec:
         memory: 96Mi
     service:
       registry:
-        nodePort: 29999
+        # Must stay inside the default NodePort range 30000-32767.
+        # 30020 is the upstream chart default.
+        nodePort: 30020
     serviceMonitor:
       enabled: true
     spegel:
