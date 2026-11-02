@@ -1,0 +1,14 @@
+---
+# The machine-learning models (a few GiB), so a restart does not download them
+# again. Nothing here needs a backup.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: immich-ml-cache
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: miroir-slow-local

@@ -1,0 +1,197 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: immich
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: immich
+  interval: 1h
+  values:
+    controllers:
+      server:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        initContainers:
+          # Immich reads no environment in its config file, so the Pocket ID
+          # client's values are written into a copy of the template.
+          config:
+            image:
+              repository: mirror.gcr.io/library/busybox
+              tag: 1.37@sha256:a7dbc319b1438115a207e11930dc4bb3e643dcb3ec0bdd694bb36cd8fad289ec
+            command: ["/bin/sh", "-c"]
+            args:
+              - >-
+                sed -e "s|__OIDC_ISSUER__|$OIDC_ISSUER|"
+                -e "s|__OIDC_CLIENT_ID__|$OIDC_CLIENT_ID|"
+                -e "s|__OIDC_CLIENT_SECRET__|$OIDC_CLIENT_SECRET|"
+                /template/immich.json > /config/immich.json
+            envFrom:
+              - secretRef:
+                  name: immich-oidc-credentials
+            securityContext: &securityContext
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+        containers:
+          app:
+            image:
+              repository: ghcr.io/immich-app/immich-server
+              tag: v3.3.5@sha256:485d546a2e31d6a8b4db8423fcba5c109de8c218d93410af115fd1ccfc4352a6
+            env:
+              TZ: Europe/Warsaw
+              IMMICH_CONFIG_FILE: /config/immich.json
+              IMMICH_MACHINE_LEARNING_URL: http://immich-machine-learning:3003
+              IMMICH_TELEMETRY_INCLUDE: all
+              # Envoy runs in the pod network, so client addresses come from
+              # its X-Forwarded-For.
+              IMMICH_TRUSTED_PROXIES: 10.42.0.0/16
+              DB_URL:
+                valueFrom:
+                  secretKeyRef:
+                    name: immich-postgres-app
+                    key: uri
+              DB_VECTOR_EXTENSION: vectorchord
+              REDIS_HOSTNAME: immich-dragonfly
+            probes:
+              liveness: &serverProbes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/server/ping
+                    port: &port 2283
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness: *serverProbes
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/server/ping
+                    port: *port
+                  periodSeconds: 10
+                  failureThreshold: 30
+            resources:
+              requests:
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                memory: 4Gi
+            securityContext: *securityContext
+      machine-learning:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/immich-app/immich-machine-learning
+              tag: v3.3.5@sha256:5b28c9352c8374b8a1ed96fbdd8d6755fea6e43510ec43fdf6538aa02ea40f56
+            env:
+              TZ: Europe/Warsaw
+              MACHINE_LEARNING_CACHE_FOLDER: /cache
+              HF_HOME: /cache/hf
+              # Gunicorn's control socket needs a writable working directory.
+              GUNICORN_CMD_ARGS: --no-control-socket
+              ORT_DISABLE_TELEMETRY: "1"
+            probes:
+              liveness: &mlProbes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /ping
+                    port: &mlPort 3003
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness: *mlProbes
+            # Every node's GPU is claimed (bge-embedding, bge-reranker, Plex),
+            # so machine learning and video transcoding run on the CPU.
+            resources:
+              requests:
+                cpu: 100m
+                memory: 1Gi
+              limits:
+                memory: 4Gi
+            securityContext: *securityContext
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile: { type: RuntimeDefault }
+    service:
+      server:
+        controller: server
+        ports:
+          http:
+            port: *port
+          metrics-api:
+            port: 8081
+          metrics-ms:
+            port: 8082
+      machine-learning:
+        controller: machine-learning
+        ports:
+          http:
+            port: *mlPort
+    serviceMonitor:
+      server:
+        service:
+          identifier: server
+        endpoints:
+          - port: metrics-api
+          - port: metrics-ms
+    route:
+      app:
+        hostnames:
+          - photos.janpuc.com
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: server
+                port: *port
+    persistence:
+      library:
+        type: nfs
+        server: bigmouth.internal
+        path: /mnt/Vault/Media/Photos
+        advancedMounts:
+          server:
+            app:
+              - path: /data
+      config-template:
+        type: configMap
+        name: immich-config
+        advancedMounts:
+          server:
+            config:
+              - path: /template
+                readOnly: true
+      config:
+        type: emptyDir
+        advancedMounts:
+          server:
+            config:
+              - path: /config
+            app:
+              - path: /config
+                readOnly: true
+      cache:
+        existingClaim: immich-ml-cache
+        advancedMounts:
+          machine-learning:
+            app:
+              - path: /cache
+      tmpfs:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp

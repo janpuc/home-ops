@@ -1,0 +1,80 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: immich-database
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: immich
+  dependsOn:
+    - name: cloudnative-pg
+      namespace: cnpg-system
+    - name: miroir-config
+      namespace: miroir-system
+  healthChecks:
+    - apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      name: immich-postgres
+      namespace: selfhosted
+  healthCheckExprs:
+    - apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      current: status.conditions.exists(e, e.type == 'Ready' && e.status == 'True')
+  interval: 1h
+  path: ./kubernetes/apps/selfhosted/immich/database
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: selfhosted
+  timeout: 15m
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app immich
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  components:
+    - ../../../../components/dragonfly
+  dependsOn:
+    - name: immich-database
+    - name: dragonfly-operator
+      namespace: database
+    - name: pocket-id-instance
+      namespace: security
+    - name: miroir-config
+      namespace: miroir-system
+  healthCheckExprs:
+    - apiVersion: dragonflydb.io/v1alpha1
+      kind: Dragonfly
+      failed: status.phase != 'ready'
+      current: status.phase == 'ready'
+  interval: 1h
+  # Immich's job queue (BullMQ) runs Lua scripts that touch keys they do not
+  # declare, which Dragonfly refuses by default.
+  patches:
+    - target:
+        group: dragonflydb.io
+        kind: Dragonfly
+      patch: |-
+        - op: add
+          path: /spec/args/-
+          value: --default_lua_flags=allow-undeclared-keys
+  path: ./kubernetes/apps/selfhosted/immich/app
+  postBuild:
+    substitute:
+      APP: *app
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: selfhosted
+  wait: false

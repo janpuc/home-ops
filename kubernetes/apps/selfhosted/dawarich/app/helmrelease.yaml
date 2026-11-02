@@ -1,0 +1,130 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: dawarich
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: dawarich
+  interval: 1h
+  values:
+    controllers:
+      dawarich:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: mirror.gcr.io/freikin/dawarich
+              tag: 1.20.1@sha256:0640f5adafd7acfcd8a3c79bb3bd0162d5df9108ebcde8734785f8925d2a01a4
+            # The entrypoint migrates the database, seeds it and copies the
+            # built assets into /var/app/public, then runs bundle exec "$@".
+            command: ["web-entrypoint.sh"]
+            args: ["bin/rails", "server", "-p", "3000", "-b", "::"]
+            env:
+              RAILS_ENV: production
+              RAILS_LOG_TO_STDOUT: "true"
+              SELF_HOSTED: "true"
+              STORE_GEODATA: "true"
+              # Sidekiq runs inside the web process (Puma single mode), as in
+              # Dawarich's own compose file: one container.
+              SIDEKIQ_EMBEDDED: "true"
+              WEB_CONCURRENCY: "0"
+              BACKGROUND_PROCESSING_CONCURRENCY: "2"
+              TIME_ZONE: Europe/Warsaw
+              DISTANCE_UNIT: km
+              APPLICATION_HOSTS: timeline.janpuc.com
+              # TLS ends at Envoy; https comes through X-Forwarded-Proto.
+              APPLICATION_PROTOCOL: http
+              DATABASE_URL:
+                valueFrom:
+                  secretKeyRef:
+                    name: dawarich-postgres-app
+                    key: uri
+              REDIS_URL: redis://dawarich-dragonfly:6379
+              # Sign-in through Pocket ID only. The seed creates a demo admin
+              # (demo@dawarich.app); with password login off it cannot sign in.
+              OIDC_PROVIDER_NAME: Pocket ID
+              OIDC_REDIRECT_URI: https://timeline.janpuc.com/users/auth/openid_connect/callback
+              OIDC_PKCE_ENABLED: "true"
+              OIDC_AUTO_REGISTER: "true"
+              ALLOW_EMAIL_PASSWORD_LOGIN: "false"
+              ALLOW_EMAIL_PASSWORD_REGISTRATION: "false"
+            envFrom:
+              # SECRET_KEY_BASE; Dawarich derives its encryption keys from it.
+              - secretRef:
+                  name: dawarich-secret
+              # OIDC_CLIENT_ID, OIDC_CLIENT_SECRET and OIDC_ISSUER.
+              - secretRef:
+                  name: dawarich-oidc-credentials
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/v1/health
+                    port: &port 3000
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness: *probes
+              # The first start migrates and loads the country borders.
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/v1/health
+                    port: *port
+                  periodSeconds: 10
+                  failureThreshold: 60
+            resources:
+              requests:
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                memory: 4Gi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile: { type: RuntimeDefault }
+    service:
+      app:
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        hostnames:
+          - timeline.janpuc.com
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+            sectionName: https
+    persistence:
+      data:
+        existingClaim: "{{ .Release.Name }}"
+        globalMounts:
+          - path: /var/app/storage
+            subPath: storage
+          - path: /var/app/public
+            subPath: public
+          # Ruby refuses a world-writable /tmp without the sticky bit, which
+          # is what an emptyDir is.
+          - path: /tmp
+            subPath: tmp
+      tmpfs:
+        type: emptyDir
+        globalMounts:
+          - path: /var/app/tmp

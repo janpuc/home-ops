@@ -1,0 +1,24 @@
+{
+  "newVersionCheck": {
+    "enabled": false
+  },
+  "oauth": {
+    "enabled": true,
+    "issuerUrl": "__OIDC_ISSUER__",
+    "clientId": "__OIDC_CLIENT_ID__",
+    "clientSecret": "__OIDC_CLIENT_SECRET__",
+    "scope": "openid email profile",
+    "buttonText": "Login with Pocket ID",
+    "autoRegister": true,
+    "autoLaunch": false,
+    "storageLabelClaim": "preferred_username"
+  },
+  "server": {
+    "externalDomain": "https://photos.janpuc.com"
+  },
+  "storageTemplate": {
+    "enabled": true,
+    "hashVerificationEnabled": true,
+    "template": "{{y}}/{{y}}-{{MM}}-{{dd}}/{{filename}}"
+  }
+}

@@ -10,8 +10,11 @@ components:
 
 resources:
   - ./namespace.yaml
+  - ./apple-health/ks.yaml
   - ./atuin/ks.yaml
+  - ./dawarich/ks.yaml
   - ./flaresolverr/ks.yaml
+  - ./immich/ks.yaml
   - ./mealie/ks.yaml
   - ./medibrowserr/ks.yaml
   - ./polished/ks.yaml

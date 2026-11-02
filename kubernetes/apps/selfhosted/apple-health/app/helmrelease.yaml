@@ -1,0 +1,134 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: apple-health
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: apple-health
+  interval: 1h
+  values:
+    controllers:
+      # The iPhone app Health Auto Export posts Apple Health data here as JSON;
+      # the ingester writes it to VictoriaMetrics in Influx line protocol.
+      ingester:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: mirror.gcr.io/irvinlim/apple-health-ingester
+              tag: v0.5.0@sha256:f0072cade435b7f47bc3dbb8425288ec961cc5cd91a5473d799aabc2bc319bce
+            args:
+              - --http.listenAddr=:8080
+              - --http.authToken=$(INGEST_TOKEN)
+              - --backend.influxdb
+              - --influxdb.serverURL=http://apple-health-victoria-metrics:8428
+              # VictoriaMetrics ignores the Influx org, buckets and token.
+              - --influxdb.authToken=unused
+              - --influxdb.orgName=home
+              - --influxdb.metricsBucketName=metrics
+              - --influxdb.workoutsBucketName=workouts
+            env:
+              - name: INGEST_TOKEN
+                valueFrom:
+                  secretKeyRef:
+                    name: apple-health-secret
+                    key: INGEST_TOKEN
+            probes:
+              liveness:
+                enabled: true
+              readiness:
+                enabled: true
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 256Mi
+            securityContext: &securityContext
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+      victoria-metrics:
+        containers:
+          app:
+            image:
+              repository: mirror.gcr.io/victoriametrics/victoria-metrics
+              tag: v1.155.0@sha256:f60dc268b54ecf87f6e09d740c2b732838aa9193090cc741417c9f6386a130df
+            args:
+              - -storageDataPath=/storage
+              - -httpListenAddr=:8428
+              # Health history is kept for good.
+              - -retentionPeriod=100y
+              # A re-export sends the same samples again: keep one per timestamp.
+              - -dedup.minScrapeInterval=1ms
+            probes:
+              liveness: &vmProbes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: &vmPort 8428
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+              readiness: *vmProbes
+            resources:
+              requests:
+                cpu: 20m
+                memory: 128Mi
+              limits:
+                memory: 1Gi
+            securityContext: *securityContext
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile: { type: RuntimeDefault }
+    service:
+      ingester:
+        controller: ingester
+        ports:
+          http:
+            port: &port 8080
+      victoria-metrics:
+        controller: victoria-metrics
+        ports:
+          http:
+            port: *vmPort
+    serviceMonitor:
+      victoria-metrics:
+        service:
+          identifier: victoria-metrics
+        endpoints:
+          - port: http
+    # Only the ingest API is public, and it wants the bearer token.
+    route:
+      app:
+        hostnames:
+          - health.janpuc.com
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+            sectionName: https
+        rules:
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /api/healthautoexport
+            backendRefs:
+              - identifier: ingester
+                port: *port
+    persistence:
+      storage:
+        existingClaim: "{{ .Release.Name }}"
+        advancedMounts:
+          victoria-metrics:
+            app:
+              - path: /storage

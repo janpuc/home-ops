@@ -1,0 +1,34 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/postgresql.cnpg.io/cluster_v1.json
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: dawarich-postgres
+spec:
+  instances: 2
+  imageName: ghcr.io/cloudnative-pg/postgis:18.6-3.7.0-standard-bookworm
+  postgresql:
+    synchronous:
+      method: any
+      number: 1
+      dataDurability: preferred
+  primaryUpdateStrategy: unsupervised
+  primaryUpdateMethod: switchover
+  enableSuperuserAccess: false
+  affinity:
+    podAntiAffinityType: required
+  storage:
+    size: 10Gi
+    storageClass: miroir-fast-local
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
+    limits:
+      memory: 2Gi
+  # No secret: CloudNativePG generates dawarich-postgres-app, whose uri key is
+  # Dawarich's DATABASE_URL.
+  bootstrap:
+    initdb:
+      database: dawarich
+      owner: dawarich

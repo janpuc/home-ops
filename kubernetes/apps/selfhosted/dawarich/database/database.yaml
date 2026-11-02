@@ -1,0 +1,18 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/postgresql.cnpg.io/database_v1.json
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: dawarich
+spec:
+  cluster:
+    name: dawarich-postgres
+  name: dawarich
+  owner: dawarich
+  # Dawarich's schema enables postgis and pgcrypto. PostGIS needs a superuser,
+  # which the dawarich role is not; pgcrypto is trusted.
+  extensions:
+    - name: postgis
+      ensure: present
+    - name: pgcrypto
+      ensure: present
