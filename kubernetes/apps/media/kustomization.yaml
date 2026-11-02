@@ -22,7 +22,5 @@ resources:
   - ./seerr/ks.yaml
   - ./serendip/ks.yaml
   - ./sonarr/ks.yaml
-  - ./stash/ks.yaml
   - ./suwayomi/ks.yaml
-  - ./whisparr/ks.yaml
   - ./yattee-server/ks.yaml
