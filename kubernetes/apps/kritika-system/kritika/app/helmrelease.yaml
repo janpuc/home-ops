@@ -60,8 +60,12 @@ spec:
       egress:
         allow: ["*"]
         deny: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, "*.internal"]
+      # A burst of pushes (Renovate rebasing) gets one review, and a long-lived
+      # pull request at most three automatic ones; `@kritika review` still works.
       trigger:
         exclude: [{ name: forks, expr: pr.fork }]
+        settle: 30m
+        limit: 3
       # Reviews run on MiniMax M3.1 Flash, the MiniMax plan's default text model: a
       # quarter of M3's list price (an eighth for cached input) and about three times
       # faster. Reviews were the plan's biggest user on M3 (~460M input tokens a week),

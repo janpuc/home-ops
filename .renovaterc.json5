@@ -69,6 +69,37 @@
       automergeType: "pr",
       ignoreTests: false,
     },
+    // Routine container image updates merge themselves: Renovate merges once the
+    // checks pass, with no kritika review, agent or broker. Only helmrelease.yaml
+    // images, never charts (an ocirepository.yaml bump can carry CRDs), and never
+    // the namespaces and paths pr-lane protects. Minor updates wait longer. Remove
+    // the minor rule if minor updates cause trouble (Jan, 2026-11-03).
+    {
+      description: "Auto-merge routine image digest and patch updates",
+      matchFileNames: [
+        "kubernetes/apps/*/*/app/helmrelease.yaml",
+        "!kubernetes/apps/{kube-system,flux-system,network,security,cnpg-system,miroir-system,kopiur-system,external-secrets,cert-manager}/**",
+        "!kubernetes/apps/ai/litellm*/**",
+      ],
+      matchUpdateTypes: ["digest", "patch"],
+      automerge: true,
+      automergeType: "pr",
+      minimumReleaseAge: "3 days",
+      ignoreTests: false,
+    },
+    {
+      description: "Auto-merge routine image minor updates",
+      matchFileNames: [
+        "kubernetes/apps/*/*/app/helmrelease.yaml",
+        "!kubernetes/apps/{kube-system,flux-system,network,security,cnpg-system,miroir-system,kopiur-system,external-secrets,cert-manager}/**",
+        "!kubernetes/apps/ai/litellm*/**",
+      ],
+      matchUpdateTypes: ["minor"],
+      automerge: true,
+      automergeType: "pr",
+      minimumReleaseAge: "7 days",
+      ignoreTests: false,
+    },
     {
       description: "Actions Runner Controller Group",
       groupName: "actions-runner-controller",
