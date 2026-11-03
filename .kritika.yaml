@@ -1,5 +1,33 @@
 ---
 # yaml-language-server: $schema=https://kritika.home-operations.com/kritika.schema.json
+# Routine image updates that Renovate merges itself (.renovaterc.json5) get no
+# review: a review would race the merge and nobody would read it. Reviewed: a
+# major update, a pull request without a Renovate type label (agents' and Jan's),
+# a chart (an ocirepository.yaml bump can carry CRDs), and anything under the
+# paths pr-lane protects. Skipped pull requests show `kritika: skipped`.
+trigger:
+  include:
+    - name: not-routine
+      expr: '!pr.labels.exists(l, l.name in ["type/digest", "type/patch", "type/minor"])'
+    - name: charts
+      paths: ["**/ocirepository.yaml"]
+    - name: protected
+      paths:
+        - "talos/**"
+        - ".github/**"
+        - ".renovaterc.json5"
+        - ".mise*"
+        - ".mise/**"
+        - "kubernetes/apps/kube-system/**"
+        - "kubernetes/apps/flux-system/**"
+        - "kubernetes/apps/network/**"
+        - "kubernetes/apps/security/**"
+        - "kubernetes/apps/cnpg-system/**"
+        - "kubernetes/apps/miroir-system/**"
+        - "kubernetes/apps/kopiur-system/**"
+        - "kubernetes/apps/external-secrets/**"
+        - "kubernetes/apps/cert-manager/**"
+        - "kubernetes/apps/ai/litellm*/**"
 skills:
   scope:
     renovate-review:
