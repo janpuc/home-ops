@@ -173,7 +173,9 @@ spec:
         - 10.42.0.0/16
   http2:
     onInvalidMessage: TerminateStream
-  http3: {}
+  # No HTTP/3: every Immich upload from iOS over it stalled with no body bytes
+  # (9 of 9 on 2026-11-03) while 915 over HTTP/2 went through. Remote
+  # clients come through Cloudflare, which speaks HTTP/3 to them anyway.
   targetSelectors:
     - group: gateway.networking.k8s.io
       kind: Gateway
