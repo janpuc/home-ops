@@ -42,3 +42,25 @@ spec:
       value: SmartDeviceInterfaceSlow
     - name: instance
       value: bigmouth.internal:9633
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/observability.giantswarm.io/silence_v1alpha2.json
+apiVersion: observability.giantswarm.io/v1alpha2
+kind: Silence
+metadata:
+  name: renplay-backup-size-collapsed
+spec:
+  # The renplay 2.1 build dropped the engine and SDK copies from the app's
+  # volume (the games themselves live on the NFS volume), so the newest
+  # backup is 14 % of the 7-day peak. The rule compares the newest backup
+  # with the largest of the last seven days, so it keeps paging until that
+  # peak rolls out of the window on 2026-11-09. The pre-change snapshots are
+  # pinned, so the old state is recoverable either way. The silence expires
+  # on its own.
+  duration: 8d
+  matchers:
+    - name: alertname
+      value: KopiurBackupSizeCollapsed
+    - name: namespace
+      value: games
+    - name: policy
+      value: renplay
