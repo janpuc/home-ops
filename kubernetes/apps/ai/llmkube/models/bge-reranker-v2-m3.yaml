@@ -32,9 +32,16 @@ spec:
   parallelSlots: 2
   batchSize: 1024
   uBatchSize: 1024
+  # The request is the scheduler's reservation. The model lives in the iGPU,
+  # not in RAM: the pod's working set peaks at 226 MiB and its usage (the
+  # mapped weights included) at 793 MiB over the last 19 hours, with no OOM
+  # kill. 2 GiB reserved 2 GiB from k8s-2, the node with the least room.
+  # memoryLimit keeps the ceiling where it was, so the workload can still
+  # burst.
   resources:
     cpu: 100m
-    memory: 2Gi
+    memory: 1Gi
+    memoryLimit: 2Gi
   extraArgs:
     - --reranking
     - --pooling
