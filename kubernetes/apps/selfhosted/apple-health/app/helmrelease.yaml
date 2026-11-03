@@ -111,6 +111,15 @@ spec:
     # Only the ingest API is public, and it wants the bearer token.
     route:
       app:
+        annotations:
+          # The gatus-sidecar turns every HTTPRoute into a Gatus endpoint and
+          # checks it from outside. This route only exposes the ingest API,
+          # which needs the bearer token and a POST, so an unauthenticated GET
+          # answers 401. That answer still proves the app is up, so the check
+          # accepts 401; any other status is a real outage.
+          gatus.home-operations.com/endpoint: |
+            conditions:
+              - "[STATUS] == 401"
         hostnames:
           - health.janpuc.com
         parentRefs:
