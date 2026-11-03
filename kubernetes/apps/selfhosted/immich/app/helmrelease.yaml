@@ -96,6 +96,11 @@ spec:
               # Gunicorn's control socket needs a writable working directory.
               GUNICORN_CMD_ARGS: --no-control-socket
               ORT_DISABLE_TELEMETRY: "1"
+              # The request pool defaults to one thread per CPU core, so eight
+              # inferences ran at once and each used two intra-op threads.
+              # That alone put about 16 busy threads on the node. Two request
+              # threads match the job concurrency set in immich.json.
+              MACHINE_LEARNING_REQUEST_THREADS: "2"
             probes:
               liveness: &mlProbes
                 enabled: true
