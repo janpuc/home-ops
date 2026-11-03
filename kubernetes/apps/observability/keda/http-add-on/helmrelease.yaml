@@ -15,11 +15,18 @@ spec:
         min: 1
         max: 2
       resources:
+        # The interceptor caches the ready endpoints of every ScaledObject it
+        # routes to, in every namespace, so its memory follows the number of
+        # pods behind them. On 2026-11-02 it was OOMKilled twice (22:07 and
+        # 22:37 UTC) with 52 MiB of usage against this 48 MiB limit, while
+        # its steady working set is 20-29 MiB; the spike came with the
+        # endpoint churn of a rolling deployment. The chart's own default for
+        # this container is a 64 MiB limit, which that peak already passed.
         requests:
           cpu: 10m
-          memory: 24Mi
-        limits:
           memory: 48Mi
+        limits:
+          memory: 128Mi
     operator:
       resources:
         requests:
