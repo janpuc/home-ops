@@ -171,8 +171,18 @@ spec:
     xForwardedFor:
       trustedCIDRs:
         - 10.42.0.0/16
+  # Envoy Gateway's defaults (a 64 KiB stream window, 1 MiB per connection,
+  # a 32 KiB buffer) cap one upload at a window per round trip: about 1 MB/s
+  # per Immich video from a phone on Wi-Fi (2026-11-03). A 1 MiB stream
+  # window allows about 16 MB/s at that round trip; 8 MiB per connection is the
+  # most one client can make Envoy hold (its limit is 160Mi). The 1 MiB buffer
+  # is Envoy's own default.
+  connection:
+    bufferLimit: 1Mi
   http2:
     onInvalidMessage: TerminateStream
+    initialStreamWindowSize: 1Mi
+    initialConnectionWindowSize: 8Mi
   # No HTTP/3: every Immich upload from iOS over it stalled with no body bytes
   # (9 of 9 on 2026-11-03) while 915 over HTTP/2 went through. Remote
   # clients come through Cloudflare, which speaks HTTP/3 to them anyway.
