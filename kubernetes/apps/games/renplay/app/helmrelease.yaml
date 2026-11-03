@@ -16,12 +16,14 @@ spec:
           app:
             image:
               repository: ghcr.io/renplay-web/renplay
-              tag: 2.4.0@sha256:94518ba96b0d141e30ad7a3852944fb20366db340255b6bdb9619fc6179c7c8f
+              tag: 2.5.0@sha256:289c02656e9b8de602a4b1eaeff6ec3b61dacd3d6e4bfa8810fabe389adf4433
             env:
               # Keeps the pod up while an install job runs (scale-to-zero).
               RENPLAY_KEEPALIVE_URL: http://keda-add-ons-http-interceptor-proxy.observability.svc.cluster.local:8080
               RENPLAY_KEEPALIVE_HOST: ${HTTP_HOST}
               RENPLAY_IMAGE_CONCURRENCY: "4"
+              # Keep downloads after installing, to test reinstalls.
+              RENPLAY_DELETE_ARCHIVES: "false"
             resources:
               requests:
                 cpu: 10m
