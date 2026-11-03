@@ -9,10 +9,15 @@ spec:
   instanceSelector:
     matchLabels:
       dashboards: grafana
-  # VictoriaMetrics answers PromQL, so Grafana's Prometheus type reads it.
-  # Metric names are <measurement>_<field>, e.g. step_count_qty.
+  # VictoriaMetrics' own plugin, not Grafana's Prometheus type: a Prometheus
+  # datasource shows up in every dashboard's Prometheus picker, and sorting
+  # first it became their default. Metric names are <metric>_<unit>_<field>,
+  # e.g. step_count_count_qty.
+  plugins:
+    - name: victoriametrics-metrics-datasource
+      version: 0.26.1
   datasource:
-    type: prometheus
+    type: victoriametrics-metrics-datasource
     name: apple-health
     access: proxy
     url: http://apple-health-victoria-metrics.selfhosted.svc.cluster.local:8428
