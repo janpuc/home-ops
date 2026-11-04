@@ -1,0 +1,29 @@
+---
+# Read access to the health database for Pi Pocket's trainer agent on aether (outside the
+# cluster; see janpuc/dotfiles docs/aether.md). It may GET through the API server's service
+# proxy to this one Service, which is read-only for VictoriaMetrics: writes are POSTs, which
+# this Role does not allow, and deletes and admin calls want the ingest token
+# (helmrelease.yaml).
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: ${APP}-pi-pocket-read
+rules:
+  - apiGroups: [""]
+    resources: ["services/proxy"]
+    resourceNames:
+      ["${APP}-victoria-metrics", "${APP}-victoria-metrics:8428", "${APP}-victoria-metrics:http"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ${APP}-pi-pocket-read
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ${APP}-pi-pocket-read
+subjects:
+  - kind: ServiceAccount
+    name: pi-pocket
+    namespace: ai
