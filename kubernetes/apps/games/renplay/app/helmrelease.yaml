@@ -24,6 +24,15 @@ spec:
               RENPLAY_IMAGE_CONCURRENCY: "4"
               # Keep downloads after installing, to test reinstalls.
               RENPLAY_DELETE_ARCHIVES: "false"
+              # The Node process never gave memory back: the container's
+              # working set grew about 1 GiB an hour until the 4 GiB limit
+              # killed it (2026-11-04, twice). V8 sized its heap from the
+              # node's memory, not from this container's limit, so it
+              # collected too late. A smaller old space collects earlier,
+              # and two malloc arenas keep glibc from holding freed memory
+              # in a per-thread arena.
+              NODE_OPTIONS: "--max-old-space-size=2048"
+              MALLOC_ARENA_MAX: "2"
             resources:
               requests:
                 cpu: 10m
