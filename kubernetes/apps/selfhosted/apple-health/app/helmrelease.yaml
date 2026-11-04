@@ -65,6 +65,21 @@ spec:
               - -retentionPeriod=100y
               # A re-export sends the same samples again: keep one per timestamp.
               - -dedup.minScrapeInterval=1ms
+              # Pi Pocket's trainer reads this database through the API server's service
+              # proxy (rbac.yaml). Every endpoint that deletes or rewrites data, or answers
+              # with flags, wants the ingest token, so a read path can never lose history.
+              - -deleteAuthKey=$(INGEST_TOKEN)
+              - -forceMergeAuthKey=$(INGEST_TOKEN)
+              - -snapshotAuthKey=$(INGEST_TOKEN)
+              - -search.resetCacheAuthKey=$(INGEST_TOKEN)
+              - -flagsAuthKey=$(INGEST_TOKEN)
+              - -pprofAuthKey=$(INGEST_TOKEN)
+            env:
+              - name: INGEST_TOKEN
+                valueFrom:
+                  secretKeyRef:
+                    name: apple-health-secret
+                    key: INGEST_TOKEN
             probes:
               liveness: &vmProbes
                 enabled: true

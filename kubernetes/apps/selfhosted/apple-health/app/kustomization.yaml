@@ -9,3 +9,4 @@ resources:
   - ./grafanadatasource.yaml
   - ./helmrelease.yaml
   - ./ocirepository.yaml
+  - ./rbac.yaml
