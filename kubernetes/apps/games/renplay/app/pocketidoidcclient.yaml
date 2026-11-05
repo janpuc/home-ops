@@ -1,0 +1,22 @@
+---
+# Sign-in to Renplay with Pocket ID (Renplay 3.1, single sign-on). Everyone in id-users may sign
+# in as a player; Renplay makes ID-Admin members admins itself (RENPLAY_OIDC_ADMIN_GROUP).
+# The operator writes the client's credentials to the renplay-oidc-credentials secret.
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: renplay
+spec:
+  name: Renplay
+  callbackUrls:
+    - https://renplay.janpuc.com/api/auth/oidc/callback
+  pkceEnabled: true
+  allowedUserGroups:
+    - name: id-users
+      namespace: security
+    - name: id-admin
+      namespace: security
+  secret:
+    keys:
+      clientID: RENPLAY_OIDC_CLIENT_ID
+      clientSecret: RENPLAY_OIDC_CLIENT_SECRET
