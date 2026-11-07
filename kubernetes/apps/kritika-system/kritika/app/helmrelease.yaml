@@ -96,8 +96,6 @@ spec:
         existingSecret: kritika-postgres-app
       owner:
         existingSecret: kritika-postgres-credentials
-      runner:
-        existingSecret: kritika-postgres-runner
     runner:
       # The runner pods run under gVisor and get the room flate needs to render
       # charts, which is more than the reviews alone. The commands themselves
@@ -143,7 +141,9 @@ spec:
         - 443
         - 4000
         - 8080
-      # Only the pods of the PostgreSQL cluster, not every pod in the namespace.
+      # The serve pods reach the PostgreSQL cluster, and only the pods of that
+      # cluster, not every pod in the namespace. Since 0.0.116 the runner pods
+      # do not reach the database at all.
       postgres:
         podSelector:
           cnpg.io/cluster: kritika-postgres
