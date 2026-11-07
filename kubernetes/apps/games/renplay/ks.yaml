@@ -6,11 +6,8 @@ metadata:
   name: &app renplay
 spec:
   components:
-    - ../../../../components/zeroscaler-http
     - ../../../../components/kopiur/backup
   dependsOn:
-    - name: keda
-      namespace: observability
     - name: miroir-config
       namespace: miroir-system
   interval: 1h
@@ -18,10 +15,6 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      HTTP_SVC: *app
-      HTTP_PORT: "8080"
-      HTTP_HOST: renplay.janpuc.com
-      HTTP_COOLDOWN: "3600"
       KOPIUR_CAPACITY: 10Gi
       KOPIUR_COPYMETHOD: Direct
   prune: true

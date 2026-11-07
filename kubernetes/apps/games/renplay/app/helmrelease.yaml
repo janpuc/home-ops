@@ -10,53 +10,44 @@ spec:
     name: renplay
   interval: 1h
   values:
-    controllers:
-      komf:
-        containers:
-          app:
-            image:
-              repository: ghcr.io/renplay-org/renplay
-              tag: 4.0.0@sha256:150e9497acf5476d6e3f0fc534b6877b1fd2be42371a469ea3ceeaf9caa7e99a
-            env:
-              # Keeps the pod up while an install job runs (scale-to-zero).
-              RENPLAY_KEEPALIVE_URL: http://keda-add-ons-http-interceptor-proxy.observability.svc.cluster.local:8080
-              RENPLAY_KEEPALIVE_HOST: ${HTTP_HOST}
-              RENPLAY_IMAGE_CONCURRENCY: "4"
-              # Keep downloads after installing, to test reinstalls.
-              RENPLAY_KEEP_DOWNLOADS: "true"
-            resources:
-              requests:
-                cpu: 10m
-                memory: 256Mi
-              limits:
-                memory: 4Gi
-            securityContext:
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
-              capabilities: { drop: ["ALL"] }
-    defaultPodOptions:
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
-        fsGroupChangePolicy: OnRootMismatch
-        # /games is owned by 3000:3000 (775); renplay creates _archives/,
-        # _renplay/ and new game folders there.
-        supplementalGroups: [3000]
-    service:
-      app:
-        ports:
-          http:
-            port: ${HTTP_PORT}
+    image:
+      tag: 4.0.1
+      digest: sha256:75840529d1f7ffe5512e31619abfc80074a0814ed81b2f104772502b52994d49
+    config:
+      extraEnv:
+        - name: RENPLAY_IMAGE_CONCURRENCY
+          value: "4"
+        # Keep downloads after installing, to test reinstalls.
+        - name: RENPLAY_KEEP_DOWNLOADS
+          value: "true"
+    podSecurityContext:
+      # /games is owned by 3000:3000 (775); Renplay creates _archives/,
+      # _renplay/ and new game folders there.
+      supplementalGroups: [3000]
+    resources:
+      requests:
+        cpu: 10m
+        memory: 256Mi
+      limits:
+        memory: 4Gi
     persistence:
       data:
-        existingClaim: "{{ .Release.Name }}"
-      media:
-        type: nfs
-        server: bigmouth.internal
-        path: /mnt/Vault/Media/Games
-        globalMounts:
-          - path: /games
-      tmp:
-        type: emptyDir
+        existingClaim: renplay
+      games:
+        nfs:
+          server: bigmouth.internal
+          path: /mnt/Vault/Media/Games
+      # The downloads folder Renplay used inside /games, mounted where the chart expects it.
+      # Downloads are recorded by name, so reinstalls keep working.
+      downloads:
+        enabled: true
+        nfs:
+          server: bigmouth.internal
+          path: /mnt/Vault/Media/Games/_archives
+    httpRoute:
+      enabled: true
+      hostnames:
+        - "{{ .Release.Name }}.janpuc.com"
+      parentRefs:
+        - name: envoy-internal
+          namespace: network
