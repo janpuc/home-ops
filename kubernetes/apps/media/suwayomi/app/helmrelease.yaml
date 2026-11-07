@@ -32,7 +32,12 @@ spec:
             resources:
               requests:
                 cpu: 10m
-                memory: 1280Mi
+                # The request is the scheduler's reservation, not a cap: the pod's
+                # working set peaked at 900 MiB over 30 days (473 MiB on the
+                # current build, 267-303 MiB on days 2-4) and about 700 MiB on the
+                # builds before it. 1280Mi reserved 1280Mi from k8s-0, the node
+                # with the least room; memoryLimit keeps the ceiling where it was.
+                memory: 1024Mi
               limits:
                 memory: 1792Mi
             securityContext:
