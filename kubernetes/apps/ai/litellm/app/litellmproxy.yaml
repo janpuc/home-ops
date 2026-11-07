@@ -17,51 +17,11 @@ spec:
     num_retries: 3
     timeout: 600
     # A 429 from OpenCode Go is almost always the plan's usage limit (GoUsageLimitError,
-    # "resets in N days"), which no retry fixes: those groups go straight to the
-    # fallbacks below. Scoped per model group so MiniMax and anything else still
-    # retry transient 429s (num_retries); other errors keep num_retries everywhere.
+    # "resets in N days"), which no retry fixes: it goes straight to the fallback
+    # below. Scoped to the Go model group so MiniMax still retries transient 429s
+    # (num_retries); other errors keep num_retries everywhere.
     model_group_retry_policy:
-      opencode-go/deepseek-v4-flash:
-        RateLimitErrorRetries: 0
-      opencode-go/deepseek-v4-flash-vision-exp:
-        RateLimitErrorRetries: 0
-      opencode-go/deepseek-v4-pro:
-        RateLimitErrorRetries: 0
       opencode-go/deepseek-v4.1-flash:
-        RateLimitErrorRetries: 0
-      opencode-go/glm-5.2:
-        RateLimitErrorRetries: 0
-      opencode-go/glm-5.3:
-        RateLimitErrorRetries: 0
-      opencode-go/glm-5.3-flash:
-        RateLimitErrorRetries: 0
-      opencode-go/gpt-6-luna:
-        RateLimitErrorRetries: 0
-      opencode-go/grok-4.7:
-        RateLimitErrorRetries: 0
-      opencode-go/hy3:
-        RateLimitErrorRetries: 0
-      opencode-go/hy4-preview:
-        RateLimitErrorRetries: 0
-      opencode-go/kimi-k2.7-code:
-        RateLimitErrorRetries: 0
-      opencode-go/kimi-k3:
-        RateLimitErrorRetries: 0
-      opencode-go/longcat-2.0:
-        RateLimitErrorRetries: 0
-      opencode-go/mimo-v2.6-flash:
-        RateLimitErrorRetries: 0
-      opencode-go/mimo-v2.6-pro:
-        RateLimitErrorRetries: 0
-      opencode-go/minimax-m2.7:
-        RateLimitErrorRetries: 0
-      opencode-go/minimax-m3:
-        RateLimitErrorRetries: 0
-      opencode-go/qwen3.7-plus:
-        RateLimitErrorRetries: 0
-      opencode-go/qwen3.8-flash:
-        RateLimitErrorRetries: 0
-      opencode-go/qwen3.8-max:
         RateLimitErrorRetries: 0
       # The always-on M3 Pro (sisyphus) has one slot, which would queue a retried
       # timeout behind itself: one attempt, then the fallback or the error. Covers
@@ -70,19 +30,7 @@ spec:
         DefaultRetries: 0
       m3pro-local/huihui-qwen3.8-27b:
         DefaultRetries: 0
-      m3pro/huihui-qwen3.8-27b-text:
-        DefaultRetries: 0
-      m3pro-local/huihui-qwen3.8-27b-text:
-        DefaultRetries: 0
-      m3pro/qwen3.8-27b:
-        DefaultRetries: 0
       m3pro-local/qwen3.8-27b:
-        DefaultRetries: 0
-      m3pro/qwen3.6-35b-a3b-heretic:
-        DefaultRetries: 0
-      m3pro-local/qwen3.6-35b-a3b-heretic:
-        DefaultRetries: 0
-      m3pro/qwen3.6-35b-a3b:
         DefaultRetries: 0
       m3pro-local/qwen3.6-35b-a3b:
         DefaultRetries: 0
@@ -91,61 +39,23 @@ spec:
         DefaultRetries: 0
       m3pro/noobai-xl-1.1:
         DefaultRetries: 0
-    # Every Go model shares one weighted allowance, so all of them fail over to
-    # MiniMax M3 on its own plan. MiniMax M3 has no fallback: its Go-hosted copy is
-    # billed per token, and sending MiniMax's overflow there (1,218 requests, 72M
-    # tokens in the week to 2026-11-03, mostly kritika) emptied the Go month. When the
-    # MiniMax plan is out, callers get its limit error and wait for the reset.
-    # The M3 Pro's LAN aliases (m3pro/) fall back one way to MiniMax M3.
+    # The one Go model fails over to MiniMax M3.1 Flash on its own plan. M3.1 Flash
+    # has no fallback: a Go-hosted MiniMax is billed per token, and sending MiniMax's
+    # overflow there (1,218 requests, 72M tokens in the week to 2026-11-03, mostly
+    # kritika) emptied the Go month. When the MiniMax plan is out, callers get its
+    # limit error and wait for the reset.
     fallbacks:
-      - opencode-go/deepseek-v4-flash: ["minimax/MiniMax-M3"]
-      - opencode-go/deepseek-v4-flash-vision-exp: ["minimax/MiniMax-M3"]
-      - opencode-go/deepseek-v4-pro: ["minimax/MiniMax-M3"]
-      - opencode-go/deepseek-v4.1-flash: ["minimax/MiniMax-M3"]
-      - opencode-go/glm-5.2: ["minimax/MiniMax-M3"]
-      - opencode-go/glm-5.3: ["minimax/MiniMax-M3"]
-      - opencode-go/glm-5.3-flash: ["minimax/MiniMax-M3"]
-      - opencode-go/gpt-6-luna: ["minimax/MiniMax-M3"]
-      - opencode-go/grok-4.7: ["minimax/MiniMax-M3"]
-      - opencode-go/hy3: ["minimax/MiniMax-M3"]
-      - opencode-go/hy4-preview: ["minimax/MiniMax-M3"]
-      - opencode-go/kimi-k2.7-code: ["minimax/MiniMax-M3"]
-      - opencode-go/kimi-k3: ["minimax/MiniMax-M3"]
-      - opencode-go/longcat-2.0: ["minimax/MiniMax-M3"]
-      - opencode-go/mimo-v2.6-flash: ["minimax/MiniMax-M3"]
-      - opencode-go/mimo-v2.6-pro: ["minimax/MiniMax-M3"]
-      - opencode-go/minimax-m2.7: ["minimax/MiniMax-M3"]
-      - opencode-go/minimax-m3: ["minimax/MiniMax-M3"]
-      - opencode-go/qwen3.7-plus: ["minimax/MiniMax-M3"]
-      - opencode-go/qwen3.8-flash: ["minimax/MiniMax-M3"]
-      - opencode-go/qwen3.8-max: ["minimax/MiniMax-M3"]
-      - minimax/MiniMax-M3.1-Flash-Preview: ["minimax/MiniMax-M3"]
-      - minimax/MiniMax-M3.1-Flash: ["minimax/MiniMax-M3"]
+      - opencode-go/deepseek-v4.1-flash: ["minimax/MiniMax-M3.1-Flash"]
       # Ordinary chat on the M3 Pro moves to the cloud while the box is down.
       # The m3pro-local/ aliases are deliberately absent here and from
       # context_window_fallbacks: they carry private material and must fail
       # instead. Keep it that way, and keep default_fallbacks unset.
-      - m3pro/huihui-qwen3.8-27b: ["minimax/MiniMax-M3"]
-      - m3pro/huihui-qwen3.8-27b-text: ["minimax/MiniMax-M3"]
-      - m3pro/qwen3.8-27b: ["minimax/MiniMax-M3"]
-      - m3pro/qwen3.6-35b-a3b-heretic: ["minimax/MiniMax-M3"]
-      - m3pro/qwen3.6-35b-a3b: ["minimax/MiniMax-M3"]
-    # Only where the target has a larger context window: a request that overflows a
-    # 1M model overflows the 1M target too. While this list is set, a context error
-    # on a model not listed here is returned as-is, not sent to the fallbacks above.
+      - m3pro/huihui-qwen3.8-27b: ["minimax/MiniMax-M3.1-Flash"]
+    # Only where the target has a larger context window (the M3 Pro's 32K to 1M).
+    # While this list is set, a context error on a model not listed here is
+    # returned as-is, not sent to the fallbacks above.
     context_window_fallbacks:
-      - opencode-go/gpt-6-luna: ["minimax/MiniMax-M3"]
-      - opencode-go/grok-4.7: ["minimax/MiniMax-M3"]
-      - opencode-go/hy3: ["minimax/MiniMax-M3"]
-      - opencode-go/kimi-k2.7-code: ["minimax/MiniMax-M3"]
-      - opencode-go/minimax-m2.7: ["minimax/MiniMax-M3"]
-      - minimax/MiniMax-M2-7: ["minimax/MiniMax-M3"]
-      - minimax/MiniMax-M2-7-anthropic: ["minimax/MiniMax-M3"]
-      - m3pro/huihui-qwen3.8-27b: ["minimax/MiniMax-M3"]
-      - m3pro/huihui-qwen3.8-27b-text: ["minimax/MiniMax-M3"]
-      - m3pro/qwen3.8-27b: ["minimax/MiniMax-M3"]
-      - m3pro/qwen3.6-35b-a3b-heretic: ["minimax/MiniMax-M3"]
-      - m3pro/qwen3.6-35b-a3b: ["minimax/MiniMax-M3"]
+      - m3pro/huihui-qwen3.8-27b: ["minimax/MiniMax-M3.1-Flash"]
   litellmSettings:
     success_callback:
       - prometheus

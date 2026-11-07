@@ -8,7 +8,7 @@ spec:
   # M3 Pro (sisyphus) behind llama-swap: Huihui Qwen3.8-27B abliterated, uncensored, with
   # vision, the default model there. Slow (about 9 tok/s writing, 70 tok/s prompt reading); after
   # an image request the first chat waits about 10 s while the LLM loads again. Ordinary tasks can fall back to
-  # MiniMax M3 (routerSettings.fallbacks). Private material goes to m3pro-local/ instead.
+  # MiniMax M3.1 Flash (routerSettings.fallbacks). Private material goes to m3pro-local/ instead.
   modelName: m3pro/huihui-qwen3.8-27b
   params:
     # Must match LLAMA_ARG_ALIAS on the box.
