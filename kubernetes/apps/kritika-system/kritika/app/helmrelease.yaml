@@ -30,10 +30,18 @@ spec:
           privateKey: { env: KRITIKA_GITHUB_PRIVATE_KEY }
           webhookSecret: { env: KRITIKA_GITHUB_WEBHOOK_SECRET }
       providers:
+        # Two LiteLLM keys (litellmvirtualkey.yaml): MiniMax for reviews, uncapped, and
+        # the OpenCode Go one with a weekly budget, so a spent budget stops only what
+        # runs on Go.
         litellm:
           type: openai
           baseUrl: http://litellm.ai.svc.cluster.local:4000/v1
           apiKey: { env: KRITIKA_LITELLM_API_KEY }
+          retries: 2
+        litellm-go:
+          type: openai
+          baseUrl: http://litellm.ai.svc.cluster.local:4000/v1
+          apiKey: { env: KRITIKA_LITELLM_GO_API_KEY }
           retries: 2
         bge:
           type: openai
@@ -68,14 +76,15 @@ spec:
         limit: 3
       # Reviews run on MiniMax M3.1 Flash, the MiniMax plan's default text model: a
       # quarter of M3's list price (an eighth for cached input) and about three times
-      # faster. No fallback: M3 was on the same plan, so it failed with it (31 Oct,
-      # 4-5 Nov), and the OpenCode Go allowance stays out of reviews.
+      # faster. When the MiniMax plan is out (31 Oct, 4-5 Nov) reviews fall back to the
+      # Go model, on the key whose weekly budget bounds what that can cost.
       review:
         model: litellm/minimax/MiniMax-M3.1-Flash
+        fallback: litellm-go/opencode-go/deepseek-v4.1-flash
       # A second opinion from another vendor scores each review 0-5 and rates its
       # risk; the commit status reports it without gating, and nothing is approved.
       confidence:
-        model: litellm/opencode-go/deepseek-v4.1-flash
+        model: litellm-go/opencode-go/deepseek-v4.1-flash
         fallback: litellm/minimax/MiniMax-M3.1-Flash
       # Reviews averaged about 3M tokens each (707M input over 240 in the two weeks to
       # 7 Nov) at 100 steps / 6M tokens / 45m, sized for M3 at ~30 s a step. M3.1 Flash
@@ -91,6 +100,10 @@ spec:
     envFrom:
       - secretRef:
           name: kritika-secret
+      - secretRef:
+          name: kritika-litellm
+      - secretRef:
+          name: kritika-litellm-go
     database:
       app:
         existingSecret: kritika-postgres-app

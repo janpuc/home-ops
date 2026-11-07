@@ -1,0 +1,51 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmteam_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMTeam
+metadata:
+  name: jan
+spec:
+  alias: jan
+  # LiteLLM gives a virtual key no MCP servers unless they are granted.
+  mcpServers:
+    - context7
+    - ha
+    - prometheus
+    - sidero
+    - victoria_logs
+  models:
+    - all-proxy-models
+  proxyRef: litellm
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmvirtualkey_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMVirtualKey
+metadata:
+  name: jan-laptop
+spec:
+  # Jan's OpenCode, Pi and pi-sec. Every model, through the team, and no budget.
+  keyAlias: jan-laptop
+  proxyRef: litellm
+  secretName: jan-laptop-litellm
+  secretKey: api_key
+  teamID: jan
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/external-secrets.io/pushsecret_v1alpha1.json
+apiVersion: external-secrets.io/v1alpha1
+kind: PushSecret
+metadata:
+  name: jan-laptop-litellm
+spec:
+  # The laptop reads the key from 1Password (litellm-jan-laptop, field api_key).
+  secretStoreRefs:
+    - name: onepassword-connect
+      kind: ClusterSecretStore
+  selector:
+    secret:
+      name: jan-laptop-litellm
+  data:
+    - match:
+        secretKey: &key api_key
+        remoteRef:
+          remoteKey: litellm-jan-laptop
+          property: *key

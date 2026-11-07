@@ -18,6 +18,27 @@ MiniMax's overflow once emptied the Go month. The `m3pro-local/` aliases stay ou
 fallback list (`routerSettings.fallbacks`, `context_window_fallbacks`) because they carry
 private material; keep `default_fallbacks` unset.
 
+## Keys
+
+Each client has its own virtual key (`LiteLLMVirtualKey`), so the dashboard's Per-Client row
+shows who used what. The operator creates the keys through the admin API (`spec.apiAccess`)
+and writes each one into a Secret in the client's namespace. The keys, teams and spend live
+in the `litellm-postgres` CloudNativePG cluster (`../database`).
+
+| Key alias           | Models                                 | Budget       | Secret                              |
+| ------------------- | -------------------------------------- | ------------ | ----------------------------------- |
+| `kritika`           | MiniMax M3.1 Flash                     | none         | `kritika-system/kritika-litellm`    |
+| `kritika-go`        | Go DeepSeek, MiniMax M3.1 Flash        | $10 / 7 days | `kritika-system/kritika-litellm-go` |
+| `memini`            | Go DeepSeek, MiniMax M3.1 Flash        | $10 / 7 days | `ai/memini-litellm`                 |
+| `open-webui`        | Go DeepSeek, MiniMax, `m3pro/huihui`   | none         | `ai/open-webui-litellm`             |
+| `austerity-watcher` | the two `m3pro-local/` Qwens           | none         | `ai/austerity-watcher-litellm`      |
+| `jan-laptop`        | all, plus the MCP servers (team `jan`) | none         | 1Password `litellm-jan-laptop`      |
+
+Budgets count LiteLLM's list prices. Only the Go model has one (set in its `info.extra`):
+MiniMax M3.1 Flash and the M3 Pro record $0, so a budget caps Go spend alone, but a spent
+budget blocks the whole key until it resets. That is why kritika has two keys. The master
+key is for the operator and emergencies only.
+
 ## M3 Pro (`sisyphus`, `janpuc/mac-models`)
 
 An always-on box behind llama-swap at `192.168.69.249`. It never unloads its default model

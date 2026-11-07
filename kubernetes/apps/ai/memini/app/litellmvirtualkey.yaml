@@ -1,0 +1,18 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmvirtualkey_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMVirtualKey
+metadata:
+  name: memini-litellm
+spec:
+  # Fact extraction on the Go plan, capped weekly at LiteLLM's list prices. MiniMax
+  # M3.1 Flash is listed for LiteLLM's fallback from the Go model and spends $0.
+  keyAlias: memini
+  models:
+    - opencode-go/deepseek-v4.1-flash
+    - minimax/MiniMax-M3.1-Flash
+  maxBudget: "10"
+  budgetDuration: 7d
+  proxyRef: litellm
+  secretName: memini-litellm
+  secretKey: LITELLM_API_KEY

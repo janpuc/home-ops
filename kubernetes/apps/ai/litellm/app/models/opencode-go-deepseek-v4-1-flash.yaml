@@ -22,3 +22,8 @@ spec:
     supportsPromptCaching: true
     extra:
       supports_reasoning: true
+      # LiteLLM's price for opencode_go/deepseek-v4.1-flash. The openai/ model name has no
+      # entry of its own, so without these the spend is $0 and key budgets never trip.
+      input_cost_per_token: 0.0000003
+      output_cost_per_token: 0.0000012
+      cache_read_input_token_cost: 0.000000006

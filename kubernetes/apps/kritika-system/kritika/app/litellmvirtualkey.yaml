@@ -1,0 +1,36 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmvirtualkey_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMVirtualKey
+metadata:
+  name: kritika-litellm
+spec:
+  # Reviews, on the MiniMax plan. MiniMax M3.1 Flash has no LiteLLM price, so this key
+  # spends $0 and carries no budget: one would block reviews along with everything else.
+  keyAlias: kritika
+  models:
+    - minimax/MiniMax-M3.1-Flash
+  proxyRef: litellm
+  proxyNamespace: ai
+  secretName: kritika-litellm
+  secretKey: KRITIKA_LITELLM_API_KEY
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmvirtualkey_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMVirtualKey
+metadata:
+  name: kritika-litellm-go
+spec:
+  # The confidence scorer and the review fallback, on the OpenCode Go plan, capped
+  # weekly at LiteLLM's list prices. MiniMax M3.1 Flash is listed for LiteLLM's own
+  # fallback from the Go model; it spends $0 against the budget.
+  keyAlias: kritika-go
+  models:
+    - opencode-go/deepseek-v4.1-flash
+    - minimax/MiniMax-M3.1-Flash
+  maxBudget: "10"
+  budgetDuration: 7d
+  proxyRef: litellm
+  proxyNamespace: ai
+  secretName: kritika-litellm-go
+  secretKey: KRITIKA_LITELLM_GO_API_KEY

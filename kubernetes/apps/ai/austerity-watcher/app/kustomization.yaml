@@ -10,6 +10,7 @@ resources:
   - ./pocketidoidcclient.yaml
   - ./ocirepository.yaml
   - ./helmrelease.yaml
+  - ./litellmvirtualkey.yaml
   - ./servicemonitor.yaml
   - ./prometheusrule.yaml
   - ./curator.yaml

@@ -8,8 +8,15 @@ spec:
   # renovate: datasource=docker depName=ghcr.io/berriai/litellm
   image: ghcr.io/berriai/litellm:v1.106.6@sha256:37e2dafb088a7723beb998590682957386dfc83ffea1848486f8e0e5cfac0b06
   replicas: 1
+  # The admin API the operator creates virtual keys and teams through. Models and MCP
+  # servers stay file-backed: applyMode is left at its default.
+  apiAccess:
+    masterKeyRef:
+      name: litellm
+      key: LITELLM_MASTER_KEY
   generalSettings:
     health_check_endpoint: /v1/health
+    store_model_in_db: false
   routerSettings:
     routing_strategy: simple-shuffle
     redis_host: os.environ/REDIS_HOST
@@ -84,6 +91,13 @@ spec:
         secretKeyRef:
           name: litellm
           key: LITELLM_MASTER_KEY
+    # Keys, teams and spend. No LITELLM_SALT_KEY: it only encrypts credentials stored
+    # in the database, and none are (store_model_in_db false). Set one before that changes.
+    - name: DATABASE_URL
+      valueFrom:
+        secretKeyRef:
+          name: litellm-postgres-app
+          key: uri
   resources:
     requests:
       cpu: 500m
