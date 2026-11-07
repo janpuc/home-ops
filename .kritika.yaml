@@ -40,7 +40,7 @@ tools:
   # renovate: datasource=github-releases depName=home-operations/flate
   aqua:home-operations/flate: v0.6.5
   # renovate: datasource=github-releases depName=sharkdp/fd
-  aqua:sharkdp/fd: v10.5.0
+  aqua:sharkdp/fd: v10.5.2
   # renovate: datasource=github-releases depName=BurntSushi/ripgrep
   aqua:BurntSushi/ripgrep: 15.2.0
   # renovate: datasource=github-releases depName=mikefarah/yq
