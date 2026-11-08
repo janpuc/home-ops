@@ -16,6 +16,18 @@
   "server": {
     "externalDomain": "https://photos.janpuc.com"
   },
+  "job": {
+    "backgroundTask": { "concurrency": 1 },
+    "faceDetection": { "concurrency": 1 },
+    "library": { "concurrency": 2 },
+    "metadataExtraction": { "concurrency": 2 },
+    "migration": { "concurrency": 1 },
+    "notifications": { "concurrency": 1 },
+    "search": { "concurrency": 2 },
+    "sidecar": { "concurrency": 1 },
+    "smartSearch": { "concurrency": 1 },
+    "thumbnailGeneration": { "concurrency": 1 }
+  },
   "storageTemplate": {
     "enabled": true,
     "hashVerificationEnabled": true,
