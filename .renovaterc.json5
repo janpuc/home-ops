@@ -135,6 +135,11 @@
         commitMessageTopic: "{{{groupName}}} group",
       },
       minimumGroupSize: 5,
+      // The cluster runs the Kubernetes version of its Talos release, and Talos
+      // upgrades only through the latest patch of a minor. Keep the patch PR of
+      // the running minor open next to the PR of the next minor, so the
+      // security fixes of the version in use keep coming.
+      separateMinorPatch: true,
     },
     {
       description: "Mise Tools Group",
