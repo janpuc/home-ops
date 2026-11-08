@@ -1,0 +1,17 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmvirtualkey_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMVirtualKey
+metadata:
+  name: open-webui-litellm
+spec:
+  # Chat and its background tasks (TASK_MODEL_EXTERNAL). The private m3pro-local/
+  # aliases stay out of a web chat.
+  keyAlias: open-webui
+  models:
+    - opencode-go/deepseek-v4.1-flash
+    - minimax/MiniMax-M3.1-Flash
+    - m3pro/huihui-qwen3.8-27b
+  proxyRef: litellm
+  secretName: open-webui-litellm
+  secretKey: OPENAI_API_KEY

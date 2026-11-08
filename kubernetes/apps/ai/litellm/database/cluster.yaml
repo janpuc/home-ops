@@ -1,0 +1,36 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/postgresql.cnpg.io/cluster_v1.json
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: litellm-postgres
+spec:
+  instances: 2
+  imageName: ghcr.io/cloudnative-pg/postgresql:18.6-standard-bookworm
+  postgresql:
+    synchronous:
+      method: any
+      number: 1
+      dataDurability: preferred
+  primaryUpdateStrategy: unsupervised
+  primaryUpdateMethod: switchover
+  enableSuperuserAccess: false
+  affinity:
+    podAntiAffinityType: required
+  # Virtual keys, teams, their spend and the per-request spend log. Models and MCP
+  # servers stay in the rendered config.yaml (applyMode file).
+  storage:
+    size: 5Gi
+    storageClass: miroir-fast-local
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
+    limits:
+      memory: 1Gi
+  # No secret: CloudNativePG generates litellm-postgres-app, whose uri key is
+  # LiteLLM's DATABASE_URL.
+  bootstrap:
+    initdb:
+      database: litellm
+      owner: litellm

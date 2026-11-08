@@ -3,11 +3,45 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
+  name: litellm-database
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: litellm
+  dependsOn:
+    - name: cloudnative-pg
+      namespace: cnpg-system
+    - name: miroir-config
+      namespace: miroir-system
+  healthChecks:
+    - apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      name: litellm-postgres
+      namespace: ai
+  healthCheckExprs:
+    - apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      current: status.conditions.exists(e, e.type == 'Ready' && e.status == 'True')
+  interval: 1h
+  path: ./kubernetes/apps/ai/litellm/database
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: ai
+  timeout: 15m
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
   name: litellm
 spec:
   components:
     - ../../../../components/dragonfly
   dependsOn:
+    - name: litellm-database
     - name: dragonfly-operator
       namespace: database
     - name: litellm-operator

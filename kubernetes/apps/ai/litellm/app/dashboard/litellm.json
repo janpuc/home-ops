@@ -118,6 +118,124 @@
     {
       "collapsed": false,
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
+      "id": 24,
+      "panels": [],
+      "title": "Per-Client Usage",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "Requests per virtual key alias in the selected time range",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 12, "x": 0, "y": 6 },
+      "id": 25,
+      "options": {
+        "displayLabels": ["name"],
+        "layout": "horizontal",
+        "showLegend": true
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "label_replace(sum by (api_key_alias) (increase(litellm_requests_metric_total[$__range])), \"api_key_alias\", \"master key\", \"api_key_alias\", \"\")",
+          "legendFormat": "{{api_key_alias}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Requests by Client in Range",
+      "type": "bargauge"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "Tokens per virtual key alias in the selected time range",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 12, "x": 12, "y": 6 },
+      "id": 26,
+      "options": {
+        "displayLabels": ["name"],
+        "layout": "horizontal",
+        "showLegend": true
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "label_replace(sum by (api_key_alias) (increase(litellm_total_tokens_metric_total[$__range])), \"api_key_alias\", \"master key\", \"api_key_alias\", \"\")",
+          "legendFormat": "{{api_key_alias}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Tokens by Client in Range",
+      "type": "bargauge"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "Spend per virtual key alias at LiteLLM's prices (MiniMax and local models = $0)",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyUSD",
+          "currency": "USD"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 12, "x": 0, "y": 11 },
+      "id": 27,
+      "options": {
+        "displayLabels": ["name"],
+        "layout": "horizontal",
+        "showLegend": true
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "label_replace(sum by (api_key_alias) (increase(litellm_spend_metric_total[$__range])), \"api_key_alias\", \"master key\", \"api_key_alias\", \"\")",
+          "legendFormat": "{{api_key_alias}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Spend by Client in Range",
+      "type": "bargauge"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "What is left of each capped key's budget this period",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyUSD",
+          "currency": "USD"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 12, "x": 12, "y": 11 },
+      "id": 28,
+      "options": {
+        "displayLabels": ["name"],
+        "layout": "horizontal",
+        "showLegend": true
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "max by (api_key_alias) (litellm_remaining_api_key_budget_metric{api_key_alias!=\"\"})",
+          "legendFormat": "{{api_key_alias}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Remaining Budget by Client",
+      "type": "bargauge"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 16 },
       "id": 6,
       "panels": [],
       "title": "Per-Model Metrics",
@@ -127,7 +245,7 @@
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "description": "Requests per requested model in the selected time range",
       "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
-      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 6 },
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 17 },
       "id": 7,
       "options": {
         "displayLabels": ["name"],
@@ -149,7 +267,7 @@
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "description": "Request rate over time by requested model",
       "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
-      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 6 },
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 17 },
       "id": 8,
       "options": {
         "legend": { "displayMode": "list", "placement": "bottom" },
@@ -170,7 +288,7 @@
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "description": "Latency percentiles over time by requested model",
       "fieldConfig": { "defaults": { "unit": "ms" }, "overrides": [] },
-      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 12 },
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 23 },
       "id": 9,
       "options": {
         "legend": { "displayMode": "list", "placement": "bottom" },
@@ -203,7 +321,7 @@
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "description": "LLM API latency (time to get response from model) percentiles",
       "fieldConfig": { "defaults": { "unit": "ms" }, "overrides": [] },
-      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 12 },
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 23 },
       "id": 10,
       "options": {
         "legend": { "displayMode": "list", "placement": "bottom" },
@@ -228,7 +346,7 @@
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 18 },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 29 },
       "id": 11,
       "panels": [],
       "title": "Token Usage by Model",
@@ -238,7 +356,7 @@
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "description": "Tokens (input + output) per requested model in the selected time range",
       "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
-      "gridPos": { "h": 5, "w": 12, "x": 0, "y": 19 },
+      "gridPos": { "h": 5, "w": 12, "x": 0, "y": 30 },
       "id": 12,
       "options": { "displayLabels": ["name"], "layout": "horizontal", "showLegend": true },
       "targets": [
@@ -256,7 +374,7 @@
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "description": "Token rate over time by model",
       "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
-      "gridPos": { "h": 5, "w": 12, "x": 12, "y": 19 },
+      "gridPos": { "h": 5, "w": 12, "x": 12, "y": 30 },
       "id": 13,
       "options": {
         "legend": { "displayMode": "list", "placement": "bottom" },
@@ -277,7 +395,7 @@
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "description": "Input vs output tokens per backend model in the selected time range",
       "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
-      "gridPos": { "h": 5, "w": 12, "x": 0, "y": 24 },
+      "gridPos": { "h": 5, "w": 12, "x": 0, "y": 35 },
       "id": 14,
       "options": { "displayLabels": ["name"], "layout": "horizontal", "showLegend": true },
       "targets": [
@@ -301,7 +419,7 @@
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "description": "Spend per backend model in the selected time range (local models = $0)",
       "fieldConfig": { "defaults": { "currency": "USD", "unit": "currencyUSD" }, "overrides": [] },
-      "gridPos": { "h": 5, "w": 12, "x": 12, "y": 24 },
+      "gridPos": { "h": 5, "w": 12, "x": 12, "y": 35 },
       "id": 15,
       "options": { "displayLabels": ["name"], "layout": "horizontal", "showLegend": true },
       "targets": [
@@ -317,7 +435,7 @@
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 29 },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 40 },
       "id": 16,
       "panels": [],
       "title": "Request Status",
@@ -327,7 +445,7 @@
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "description": "Failed requests as a percentage of total requests over the last 5m",
       "fieldConfig": { "defaults": { "max": 1, "min": 0, "unit": "percentunit" }, "overrides": [] },
-      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 30 },
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 41 },
       "id": 23,
       "options": {
         "colorMode": "value",
@@ -352,7 +470,7 @@
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "description": "Request status codes over time",
       "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
-      "gridPos": { "h": 6, "w": 18, "x": 6, "y": 30 },
+      "gridPos": { "h": 6, "w": 18, "x": 6, "y": 41 },
       "id": 17,
       "options": {
         "legend": { "displayMode": "list", "placement": "bottom" },
@@ -373,7 +491,7 @@
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "description": "Requests by route in the selected time range",
       "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
-      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 36 },
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 47 },
       "id": 18,
       "options": { "displayLabels": ["name"], "layout": "horizontal", "showLegend": true },
       "targets": [
@@ -391,7 +509,7 @@
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "description": "Requests by requested model in the selected time range",
       "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
-      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 36 },
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 47 },
       "id": 19,
       "options": { "displayLabels": ["name"], "layout": "horizontal", "showLegend": true },
       "targets": [

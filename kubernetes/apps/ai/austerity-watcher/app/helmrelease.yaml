@@ -65,7 +65,7 @@ spec:
               WATCHER_TRIAGE_CAP: "400"
               WATCHER_ENRICH_CAP: "40"
               WATCHER_LITELLM_BASE_URL: http://litellm.ai.svc.cluster.local:4000/v1
-              WATCHER_LITELLM_KEY_FILE: /secrets/LITELLM_API_KEY
+              WATCHER_LITELLM_KEY_FILE: /litellm/LITELLM_API_KEY
               # The admin site (docs/admin.md): internal gateway only, Pocket ID login for id-admin.
               ADMIN_ENABLED: "true"
               ADMIN_PORT: "8080"
@@ -266,6 +266,15 @@ spec:
           austerity-watcher:
             app:
               - path: /secrets
+                readOnly: true
+      # The analyst's virtual key, which the operator writes (litellmvirtualkey.yaml).
+      litellm:
+        type: secret
+        name: austerity-watcher-litellm
+        advancedMounts:
+          austerity-watcher:
+            app:
+              - path: /litellm
                 readOnly: true
       tmp:
         type: emptyDir

@@ -63,7 +63,7 @@ spec:
               MEMINI_LLM_API_KEY:
                 valueFrom:
                   secretKeyRef:
-                    name: memini-secret
+                    name: memini-litellm
                     key: LITELLM_API_KEY
               MEMINI_TOMBSTONE_TTL: 720h
               MEMINI_WRITE_EMBED_TIMEOUT: "30s"

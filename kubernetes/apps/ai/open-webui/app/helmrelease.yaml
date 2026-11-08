@@ -47,6 +47,9 @@ spec:
             envFrom:
               - secretRef:
                   name: open-webui-secret
+              # OPENAI_API_KEY, the virtual key the operator writes.
+              - secretRef:
+                  name: open-webui-litellm
               - secretRef:
                   name: open-webui-oidc-credentials
             resources:
