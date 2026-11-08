@@ -33,7 +33,7 @@ spec:
               # Both only seed the config: values already saved in the database
               # (Admin Settings) win over these on every start.
               ENABLE_OPENAI_API: true
-              TASK_MODEL_EXTERNAL: opencode-go/glm-5.3-flash
+              TASK_MODEL_EXTERNAL: opencode-go/deepseek-v4.1-flash
               ENABLE_RAG_WEB_SEARCH: true
               ENABLE_SEARCH_QUERY: true
               ENABLE_SIGNUP: false
