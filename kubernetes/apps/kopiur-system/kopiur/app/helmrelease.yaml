@@ -10,6 +10,14 @@ spec:
     name: kopiur
   interval: 1h
   values:
+    # The admission webhook answers in milliseconds, but the API server it
+    # calls back into can stall for tens of seconds when the etcd members are
+    # slow (their fsync p99 is 95 ms on k8s-0 and 174 ms on k8s-2 against
+    # 6 ms on k8s-1). With the default 10 s timeout the API server gave up
+    # on the webhook first and the apply failed hard, which is what left
+    # Flux Kustomizations ReconciliationFailed.
+    webhook:
+      timeoutSeconds: 30
     extraVolumes:
       - name: repo
         nfs:
