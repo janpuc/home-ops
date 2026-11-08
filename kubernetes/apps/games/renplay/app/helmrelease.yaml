@@ -11,8 +11,8 @@ spec:
   interval: 1h
   values:
     image:
-      tag: 4.4.0
-      digest: sha256:4a22794e1e37996b7d2073f2a11fd6f26d040d188239a707377eb561d008d546
+      tag: 4.5.1
+      digest: sha256:05d8d453933abafbcd5021e9c13e9becbcfb39336ccf564b1b627fb6d98c829c
     config:
       extraEnv:
         - name: RENPLAY_IMAGE_CONCURRENCY
