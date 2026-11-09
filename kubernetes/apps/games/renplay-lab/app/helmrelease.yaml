@@ -1,0 +1,47 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/helm.toolkit.fluxcd.io/helmrelease_v2.json
+# A second Renplay for preparing catalog games (renplay-org/lab): games are installed and played here
+# before their recipes go to the catalog. Its games live on the NAS in Games/_lab, which the main
+# Renplay ignores (it skips folders starting with "_").
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: renplay-lab
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: renplay
+  interval: 1h
+  values:
+    image:
+      tag: 4.6.2
+      digest: sha256:6976bba3b738115761e9e53beaa6cae0b4befbe0d716af53c5c3791efa84da86
+    config:
+      extraEnv:
+        - name: RENPLAY_IMAGE_CONCURRENCY
+          value: "2"
+        - name: RENPLAY_KEEP_DOWNLOADS
+          value: "true"
+    podSecurityContext:
+      supplementalGroups: [3000]
+    resources:
+      requests:
+        cpu: 10m
+        memory: 256Mi
+      limits:
+        cpu: "2"
+        memory: 4Gi
+    persistence:
+      data:
+        existingClaim: renplay-lab
+      games:
+        nfs:
+          server: bigmouth.internal
+          path: /mnt/Vault/Media/Games/_lab
+    httpRoute:
+      enabled: true
+      hostnames:
+        - "{{ .Release.Name }}.janpuc.com"
+      parentRefs:
+        - name: envoy-internal
+          namespace: network

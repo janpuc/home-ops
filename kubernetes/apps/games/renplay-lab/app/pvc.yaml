@@ -1,0 +1,15 @@
+---
+# The lab's library database and saves. Not backed up: everything in it can be installed again.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: renplay-lab
+  labels:
+    kustomize.toolkit.fluxcd.io/ssa: IfNotPresent
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: miroir-fast
