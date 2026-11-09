@@ -24,7 +24,7 @@ spec:
             image:
               repository: ghcr.io/renplay-org/lab
               # Pin the digest the image workflow prints, never the tag.
-              tag: latest@sha256:367023502242670efa32afe33b28b3c1e328dd8a64a22f33b59582891cba581e
+              tag: latest@sha256:c1650315933753e98803b7cdb56ea30288469c6fcb6cd9b9d0fe3024c07e89d0
             command: ["node", "service/src/main.ts"]
             env:
               PORT: "8080"
@@ -38,6 +38,8 @@ spec:
               MAIN_URL: http://renplay.games.svc.cluster.local:8080
               TESTER_URL: http://renplay-lab-tester.games.svc.cluster.local:8080
               SMOKE_MINUTES: "2"
+              # The deep test after a smoke pass: a walk through the script, verified at 90% coverage.
+              LAB_DEEP_MINUTES: "10"
               # hold: a game waits at pr until it is retried. auto: it is promoted to the main Renplay by itself.
               LAB_PROMOTE: auto
               PROMOTE_MIN_FREE: "1000000000000"
