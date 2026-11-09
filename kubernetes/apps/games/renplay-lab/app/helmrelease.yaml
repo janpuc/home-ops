@@ -13,9 +13,10 @@ spec:
     name: renplay
   interval: 1h
   values:
+    # The lab runs Renplay's dev (the edge image, by digest) to test fixes before they are released.
     image:
-      tag: 4.6.2
-      digest: sha256:6976bba3b738115761e9e53beaa6cae0b4befbe0d716af53c5c3791efa84da86
+      tag: edge
+      digest: sha256:552b4f3ece3e99e11138c14a8cfc887dc304530363fe5bf1c738d6e40c038bc3
     config:
       extraEnv:
         - name: RENPLAY_IMAGE_CONCURRENCY
