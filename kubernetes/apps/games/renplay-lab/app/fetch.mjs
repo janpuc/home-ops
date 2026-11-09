@@ -6,17 +6,17 @@
 //   GET  /fetch/<id>                                          its state, bytes, size and sha256
 //   GET  /health
 import { createHash, randomUUID } from 'node:crypto'
-import { createWriteStream } from 'node:fs'
-import { access, rename, unlink } from 'node:fs/promises'
+import { access, open, readdir, rename, unlink } from 'node:fs/promises'
 import { createServer } from 'node:http'
 import { join } from 'node:path'
-import { Readable } from 'node:stream'
-import { pipeline } from 'node:stream/promises'
 
 const DIR = process.env.ARCHIVES_DIR ?? '/archives'
 const KEY = process.env.ITCH_API_KEY
 const PORT = Number(process.env.PORT ?? 8080)
 const NAME = /^[A-Za-z0-9][A-Za-z0-9 ._()+-]{0,200}\.(zip|7z|rar)$/
+// Written data is flushed to the NAS this often. Unflushed writes count against the container's
+// memory, and the NAS takes them slower than the download comes in.
+const SYNC_EVERY = 64 << 20
 
 const jobs = new Map()
 let running = null
@@ -35,17 +35,24 @@ async function download(job) {
   job.total = Number(file.headers.get('content-length')) || null
   const hash = createHash('sha256')
   const part = join(DIR, `.${job.name}.part`)
-  const meter = new TransformStream({
-    transform(chunk, controller) {
-      hash.update(chunk)
-      job.bytes += chunk.length
-      controller.enqueue(chunk)
-    },
-  })
+  const out = await open(part, 'wx')
   try {
-    await pipeline(Readable.fromWeb(file.body.pipeThrough(meter)), createWriteStream(part, { flags: 'wx' }))
+    let unsynced = 0
+    for await (const chunk of file.body) {
+      hash.update(chunk)
+      await out.write(chunk)
+      job.bytes += chunk.length
+      unsynced += chunk.length
+      if (unsynced >= SYNC_EVERY) {
+        await out.sync()
+        unsynced = 0
+      }
+    }
+    await out.sync()
+    await out.close()
     await rename(part, join(DIR, job.name))
   } catch (error) {
+    await out.close().catch(() => {})
     await unlink(part).catch(() => {})
     throw error
   }
@@ -105,3 +112,8 @@ createServer(async (req, res) => {
 }).listen(PORT, () => console.log(`renplay-lab-fetch on ${PORT}, into ${DIR}`))
 
 if (!KEY) console.error('ITCH_API_KEY is not set')
+
+// A download cut short by a restart leaves its .part file, and a new try would find it in the way.
+for (const name of await readdir(DIR).catch(() => [])) {
+  if (name.startsWith('.') && name.endsWith('.part')) await unlink(join(DIR, name)).catch(() => {})
+}

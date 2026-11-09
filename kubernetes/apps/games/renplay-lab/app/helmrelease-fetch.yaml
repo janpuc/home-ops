@@ -47,7 +47,7 @@ spec:
                 cpu: 10m
                 memory: 64Mi
               limits:
-                memory: 256Mi
+                memory: 512Mi
     defaultPodOptions:
       # The lab Renplay writes its archives folder as uid 1000 (node), group 3000.
       securityContext:
