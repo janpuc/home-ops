@@ -21,8 +21,8 @@ spec:
         # bigmouth's nvme0 (the Vault special vdev) sits at 74-80°C for 10-65m
         # most nights while kopiur's quick verification runs (03:00 local), so
         # only heat lasting well past that window pages here. A drive past its
-        # own over-temperature threshold sets critical_warning, and
-        # SmartDeviceCriticalWarning pages that within 5m.
+        # own over-temperature threshold sets critical_warning, which
+        # SmartDeviceOverTemperature pages after 90m.
         - alert: SmartDeviceHighTemperatureNvme
           expr: |-
             smartctl_device_temperature{temperature_type="current", device=~"nvme.*"} > 70
@@ -33,9 +33,13 @@ spec:
           labels:
             severity: warning
 
+        # An NVMe drive reports a failed SMART status while it is past its own
+        # temperature threshold, so the temperature-only case is left to
+        # SmartDeviceOverTemperature below.
         - alert: SmartDeviceTestFailed
           expr: |-
             (smartctl_device_smart_status != 1 or smartctl_device_status != 1)
+              unless on (instance, device) smartctl_device_critical_warning == 2
           for: 5m
           annotations:
             summary: >-
@@ -43,13 +47,27 @@ spec:
           labels:
             severity: critical
 
+        # critical_warning is an NVMe bit field. Bit 1 (value 2) means the
+        # drive is past its temperature threshold, which bigmouth's nvme0 hits
+        # for 10-65m most nights during kopiur's verification; that case pages
+        # only when it outlasts the window. Every other bit pages within 5m.
         - alert: SmartDeviceCriticalWarning
           expr: |-
-            smartctl_device_critical_warning != 0
+            smartctl_device_critical_warning != 0 and smartctl_device_critical_warning != 2
           for: 5m
           annotations:
             summary: >-
               Mounted drive {{ $labels.device }} on device {{ $labels.instance }} is in a critical state
+          labels:
+            severity: critical
+
+        - alert: SmartDeviceOverTemperature
+          expr: |-
+            smartctl_device_critical_warning == 2
+          for: 90m
+          annotations:
+            summary: >-
+              Drive {{ $labels.device }} on device {{ $labels.instance }} has been past its own temperature threshold for 90 minutes
           labels:
             severity: critical
 
