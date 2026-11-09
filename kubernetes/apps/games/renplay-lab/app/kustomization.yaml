@@ -12,5 +12,9 @@ configMapGenerator:
   - name: renplay-lab-fetch
     files:
       - ./fetch.mjs
+    options:
+      annotations:
+        # The script's own ${...} templates are JavaScript, not Flux variables.
+        kustomize.toolkit.fluxcd.io/substitute: disabled
 generatorOptions:
   disableNameSuffixHash: true
