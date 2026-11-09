@@ -5,3 +5,12 @@ kind: Kustomization
 resources:
   - ./helmrelease.yaml
   - ./pvc.yaml
+  - ./externalsecret-fetch.yaml
+  - ./ocirepository-fetch.yaml
+  - ./helmrelease-fetch.yaml
+configMapGenerator:
+  - name: renplay-lab-fetch
+    files:
+      - ./fetch.mjs
+generatorOptions:
+  disableNameSuffixHash: true

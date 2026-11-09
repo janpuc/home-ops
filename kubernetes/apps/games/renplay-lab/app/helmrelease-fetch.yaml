@@ -1,0 +1,82 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: renplay-lab-fetch
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: renplay-lab-fetch
+  interval: 1h
+  values:
+    controllers:
+      # Downloads itch.io uploads straight into the lab Renplay's archives folder on the NAS
+      # (fetch.mjs), so big games never pass through a laptop. Internal gateway only.
+      renplay-lab-fetch:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: docker.io/library/node
+              tag: 24-alpine@sha256:a34ab6d7f6f4813f4d0c5469d74685604b962fbdbf5793a7bc7b4998ecb867c8
+            command: ["node", "/app/fetch.mjs"]
+            env:
+              ARCHIVES_DIR: /archives
+              PORT: "8080"
+            envFrom:
+              - secretRef:
+                  name: renplay-lab-fetch-secret
+            probes:
+              liveness: &probe
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: 8080
+              readiness: *probe
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 10m
+                memory: 64Mi
+              limits:
+                memory: 256Mi
+    defaultPodOptions:
+      # The lab Renplay writes its archives folder as uid 1000 (node), group 3000.
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        supplementalGroups: [3000]
+    service:
+      app:
+        ports:
+          http:
+            port: 8080
+    route:
+      app:
+        hostnames:
+          - "{{ .Release.Name }}.janpuc.com"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+    persistence:
+      archives:
+        type: nfs
+        server: bigmouth.internal
+        path: /mnt/Vault/Media/Games/_lab/_archives
+        globalMounts:
+          - path: /archives
+      code:
+        type: configMap
+        name: renplay-lab-fetch
+        globalMounts:
+          - path: /app
+            readOnly: true
