@@ -16,7 +16,7 @@ spec:
     # The lab runs Renplay's dev (the edge image, by digest) to test fixes before they are released.
     image:
       tag: edge
-      digest: sha256:a59239a0f9aa1c4cdb6bb438c870a9041947c5736d0d612bdaf7cd5b02663226
+      digest: sha256:9c6b75f5a8095f615a8e564bd259e6f1e029993f6b059209f01764607fc26611
     config:
       extraEnv:
         - name: RENPLAY_IMAGE_CONCURRENCY
