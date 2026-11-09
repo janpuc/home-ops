@@ -24,7 +24,7 @@ spec:
             image:
               repository: ghcr.io/renplay-org/lab
               # Pin the digest the image workflow prints, never the tag.
-              tag: latest@sha256:4a68b7ae7e9eae21ee1847efff3da7ed214e95e204bd8d6b4aad1f87a619f140
+              tag: latest@sha256:367023502242670efa32afe33b28b3c1e328dd8a64a22f33b59582891cba581e
             command: ["node", "service/src/main.ts"]
             env:
               PORT: "8080"
