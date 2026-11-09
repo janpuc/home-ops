@@ -11,8 +11,9 @@ spec:
   interval: 1h
   values:
     controllers:
-      # Downloads itch.io uploads straight into the lab Renplay's archives folder on the NAS
-      # (fetch.mjs), so big games never pass through a laptop. Internal gateway only.
+      # Downloads itch.io uploads straight into the lab Renplay's archives folder on the NAS, and
+      # moves games that passed the lab's tests into the main Renplay's (fetch.mjs). Internal
+      # gateway only.
       renplay-lab-fetch:
         annotations:
           reloader.stakater.com/auto: "true"
@@ -23,7 +24,8 @@ spec:
               tag: 24-alpine@sha256:a34ab6d7f6f4813f4d0c5469d74685604b962fbdbf5793a7bc7b4998ecb867c8
             command: ["node", "/app/fetch.mjs"]
             env:
-              ARCHIVES_DIR: /archives
+              ARCHIVES_DIR: /games/_lab/_archives
+              MAIN_ARCHIVES_DIR: /games/_archives
               PORT: "8080"
             envFrom:
               - secretRef:
@@ -49,7 +51,7 @@ spec:
               limits:
                 memory: 512Mi
     defaultPodOptions:
-      # The lab Renplay writes its archives folder as uid 1000 (node), group 3000.
+      # Both Renplays write the games folders as uid 1000 (node), group 3000.
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
@@ -68,12 +70,13 @@ spec:
           - name: envoy-internal
             namespace: network
     persistence:
-      archives:
+      # The whole games export, so moving a game from the lab to the main Renplay is a rename.
+      games:
         type: nfs
         server: bigmouth.internal
-        path: /mnt/Vault/Media/Games/_lab/_archives
+        path: /mnt/Vault/Media/Games
         globalMounts:
-          - path: /archives
+          - path: /games
       code:
         type: configMap
         name: renplay-lab-fetch

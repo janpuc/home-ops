@@ -1,16 +1,19 @@
 // The lab's fetcher (renplay-org/lab): downloads an itch.io upload straight into the lab Renplay's
-// archives folder on the NAS, so a big game never passes through a laptop. It fetches only itch.io
-// uploads, by their id, with the lab's API key: no other address can be given to it.
+// archives folder on the NAS, so a big game never passes through a laptop, and moves a game that
+// passed the lab's tests into the main Renplay's archives folder. It fetches only itch.io uploads,
+// by their id, with the lab's API key: no other address can be given to it.
 //
 //   POST /fetch {"upload": 123, "name": "Game-1.0-pc.zip"}   starts a download, answers {"id"}
 //   GET  /fetch/<id>                                          its state, bytes, size and sha256
-//   GET  /health
+//   POST /promote {"name": "Game-1.0-pc.zip"}                 moves it to the main archives folder
+//   GET  /health                                              also the NAS's free bytes
 import { createHash, randomUUID } from 'node:crypto'
-import { access, open, readdir, rename, unlink } from 'node:fs/promises'
+import { access, open, readdir, rename, statfs, unlink } from 'node:fs/promises'
 import { createServer } from 'node:http'
 import { join } from 'node:path'
 
-const DIR = process.env.ARCHIVES_DIR ?? '/archives'
+const DIR = process.env.ARCHIVES_DIR ?? '/games/_lab/_archives'
+const MAIN = process.env.MAIN_ARCHIVES_DIR ?? '/games/_archives'
 const KEY = process.env.ITCH_API_KEY
 const PORT = Number(process.env.PORT ?? 8080)
 const NAME = /^[A-Za-z0-9][A-Za-z0-9 ._()+-]{0,200}\.(zip|7z|rar)$/
@@ -83,7 +86,10 @@ const reply = (res, status, body) => {
 
 createServer(async (req, res) => {
   try {
-    if (req.method === 'GET' && req.url === '/health') return reply(res, 200, { ok: true, busy: !!running })
+    if (req.method === 'GET' && req.url === '/health') {
+      const fs = await statfs(DIR)
+      return reply(res, 200, { ok: true, busy: !!running, free: fs.bavail * fs.bsize, total: fs.blocks * fs.bsize })
+    }
     const status = req.url?.match(/^\/fetch\/([0-9a-f-]{36})$/)
     if (req.method === 'GET' && status) {
       const job = jobs.get(status[1])
@@ -104,6 +110,22 @@ createServer(async (req, res) => {
       jobs.set(job.id, job)
       void start(job)
       return reply(res, 202, { id: job.id })
+    }
+    if (req.method === 'POST' && req.url === '/promote') {
+      let body = ''
+      for await (const chunk of req) {
+        body += chunk
+        if (body.length > 4096) return reply(res, 413, { error: 'Too large' })
+      }
+      const { name } = JSON.parse(body || '{}')
+      if (typeof name !== 'string' || !NAME.test(name)) return reply(res, 400, { error: 'name must be a plain archive file name' })
+      if (running?.name === name) return reply(res, 409, { error: `${name} is still downloading` })
+      if (!(await exists(join(DIR, name)))) return reply(res, 404, { error: `${name} is not in the lab's archives folder` })
+      if (await exists(join(MAIN, name))) return reply(res, 409, { error: `${name} is in the main archives folder already` })
+      // Both folders are on the same NAS export, so this is a rename, not a copy.
+      await rename(join(DIR, name), join(MAIN, name))
+      console.log(JSON.stringify({ promoted: name }))
+      return reply(res, 200, { name })
     }
     reply(res, 404, { error: 'Not found' })
   } catch (error) {
