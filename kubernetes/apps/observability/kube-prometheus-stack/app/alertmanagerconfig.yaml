@@ -25,6 +25,13 @@ spec:
       # in two namespaces in two webhooks.
       # Only warnings and criticals reach the agent: severity info (e.g. CPUThrottlingHigh
       # during a burst of reconciles) is noise that cost quota and once a needless fix.
+      # Only Jan can decide a curator hold in the austerity admin queue, so
+      # the agent has nothing to do with it.
+      - receiver: blackhole
+        matchers:
+          - name: alertname
+            value: AusterityQuarantineWaiting
+            matchType: =
       - receiver: agent
         continue: true
         matchers:
