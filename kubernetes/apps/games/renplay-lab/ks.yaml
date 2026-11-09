@@ -8,6 +8,8 @@ spec:
   dependsOn:
     - name: miroir-config
       namespace: miroir-system
+    - name: kopiur
+      namespace: kopiur-system
   interval: 1h
   path: ./kubernetes/apps/games/renplay-lab/app
   postBuild:

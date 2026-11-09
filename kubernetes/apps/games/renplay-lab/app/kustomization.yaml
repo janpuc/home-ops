@@ -5,16 +5,9 @@ kind: Kustomization
 resources:
   - ./helmrelease.yaml
   - ./pvc.yaml
-  - ./externalsecret-fetch.yaml
-  - ./ocirepository-fetch.yaml
-  - ./helmrelease-fetch.yaml
-configMapGenerator:
-  - name: renplay-lab-fetch
-    files:
-      - ./fetch.mjs
-    options:
-      annotations:
-        # The script's own ${...} templates are JavaScript, not Flux variables.
-        kustomize.toolkit.fluxcd.io/substitute: disabled
-generatorOptions:
-  disableNameSuffixHash: true
+  - ./ocirepository.yaml
+  - ./externalsecret-service.yaml
+  - ./pvc-service.yaml
+  - ./backup-service.yaml
+  - ./helmrelease-service.yaml
+  - ./helmrelease-tester.yaml

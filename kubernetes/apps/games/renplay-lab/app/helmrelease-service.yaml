@@ -1,0 +1,103 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: renplay-lab-service
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: renplay-lab-app-template
+  interval: 1h
+  values:
+    controllers:
+      # The lab service (renplay-org/lab, service/): the queue, the steps, the API and the status page.
+      # It downloads itch.io uploads into the lab Renplay's archives folder, installs them on the lab,
+      # has the tester play them, drafts the recipe and opens the catalog pull request. One SQLite file
+      # on its own volume, so one writer and a Recreate restart: a stop at any point is resumed.
+      renplay-lab-service:
+        strategy: Recreate
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/renplay-org/lab
+              # Pin the digest the image workflow prints, never the tag.
+              tag: latest@sha256:2130279e020c30c1ce2bd28fa041c2a8fd56da83cef77739258c5b4b77c0ef38
+            command: ["node", "service/src/main.ts"]
+            env:
+              PORT: "8080"
+              DB_PATH: /data/lab.db
+              # The whole Games export: promote renames an archive from _lab/_archives to _archives.
+              # The service's file code reaches only those two folders.
+              GAMES_DIR: /games
+              HOME: /tmp
+              # The Renplays and the tester at their in-cluster addresses. Only promote reaches the main one.
+              LAB_URL: http://renplay-lab.games.svc.cluster.local:8080
+              MAIN_URL: http://renplay.games.svc.cluster.local:8080
+              TESTER_URL: http://renplay-lab-tester.games.svc.cluster.local:8080
+              SMOKE_MINUTES: "2"
+              # hold: a game waits at pr until it is retried. auto: it is promoted to the main Renplay by itself.
+              LAB_PROMOTE: auto
+              PROMOTE_MIN_FREE: "1000000000000"
+            envFrom:
+              - secretRef:
+                  name: renplay-lab-service-secret
+            probes:
+              liveness: &probe
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: 8080
+              readiness: *probe
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 20m
+                memory: 256Mi
+              limits:
+                # WebKit reads the itch.io page for a moment, one game at a time.
+                memory: 1Gi
+    defaultPodOptions:
+      # Both Renplays write the games folders as uid 1000, group 3000.
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        supplementalGroups: [3000]
+    service:
+      app:
+        ports:
+          http:
+            port: 8080
+    route:
+      app:
+        hostnames:
+          - lab.janpuc.com
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+    persistence:
+      data:
+        existingClaim: renplay-lab-service
+        globalMounts:
+          - path: /data
+      games:
+        type: nfs
+        server: bigmouth.internal
+        path: /mnt/Vault/Media/Games
+        globalMounts:
+          - path: /games
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp

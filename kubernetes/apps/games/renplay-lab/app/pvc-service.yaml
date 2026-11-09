@@ -1,0 +1,18 @@
+---
+# The lab service's database: every game's state and every attempt. It is the lab's record, so it is
+# backed up (see backup-service.yaml). A restore brings it back before the pod starts.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: renplay-lab-service
+spec:
+  accessModes:
+    - ReadWriteOnce
+  dataSourceRef:
+    apiGroup: kopiur.home-operations.com
+    kind: Restore
+    name: renplay-lab-service
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: miroir-fast

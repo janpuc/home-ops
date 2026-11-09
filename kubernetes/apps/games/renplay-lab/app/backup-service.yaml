@@ -1,0 +1,49 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kopiur.home-operations.com/snapshotpolicy_v1alpha1.json
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: SnapshotPolicy
+metadata:
+  name: renplay-lab-service
+  annotations:
+    kopiur.home-operations.com/allow-identity-change: "true"
+spec:
+  repository:
+    kind: ClusterRepository
+    name: nas
+  retention:
+    keepDaily: 7
+  sources:
+    - pvc:
+        name: renplay-lab-service
+  copyMethod: Direct
+  volumeSnapshotClassName: miroir
+---
+# Written by hand like austerity-watcher's profile backups: the kopiur backup component only covers
+# the Kustomization's own ${APP} claim (renplay-lab, the lab Renplay's, which is not backed up).
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kopiur.home-operations.com/snapshotschedule_v1alpha1.json
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: SnapshotSchedule
+metadata:
+  name: renplay-lab-service
+spec:
+  policyRef:
+    name: renplay-lab-service
+  schedule:
+    cron: H 3 * * *
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kopiur.home-operations.com/restore_v1alpha1.json
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: Restore
+metadata:
+  name: renplay-lab-service
+spec:
+  failurePolicy:
+    backoffLimit: 8
+  policy:
+    onMissingSnapshot: Continue
+  source:
+    fromPolicy:
+      name: renplay-lab-service
+      offset: 0
+  target:
+    populator: {}
