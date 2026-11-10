@@ -23,7 +23,7 @@ spec:
             image:
               repository: ghcr.io/renplay-org/lab
               # The same image as the service. Pin the same digest.
-              tag: latest@sha256:25de14efc832c035071b2311ae915e3a11f6e72da478e9da23e22f07b6dc258b
+              tag: latest@sha256:ece7f9da8f37e24dd32bd0bda0461a6b17ab0e22b58826bd3a82b7e64c0504cf
             command: ["node", "tester/server.mjs"]
             env:
               PORT: "8080"
@@ -33,7 +33,7 @@ spec:
               # In the cluster the lab Renplay's nginx serves its UI and its API on one address.
               LAB_UI_URL: http://renplay-lab.games.svc.cluster.local:8080
               # A game over this size is parked by the service as too big for the automated tester.
-              SMOKE_MAX_BYTES: "3000000000"
+              SMOKE_MAX_BYTES: "2000000000"
             probes:
               liveness: &probe
                 enabled: true
@@ -55,7 +55,7 @@ spec:
               limits:
                 # Chromium with software WebGL and a game's assets in memory.
                 cpu: "4"
-                memory: 5Gi
+                memory: 4Gi
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true

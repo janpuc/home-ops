@@ -24,7 +24,7 @@ spec:
             image:
               repository: ghcr.io/renplay-org/lab
               # Pin the digest the image workflow prints, never the tag.
-              tag: latest@sha256:25de14efc832c035071b2311ae915e3a11f6e72da478e9da23e22f07b6dc258b
+              tag: latest@sha256:ece7f9da8f37e24dd32bd0bda0461a6b17ab0e22b58826bd3a82b7e64c0504cf
             command: ["node", "service/src/main.ts"]
             env:
               PORT: "8080"
@@ -43,6 +43,9 @@ spec:
               # hold: a game waits at pr until it is retried. auto: it is promoted to the main Renplay by itself.
               LAB_PROMOTE: auto
               PROMOTE_MIN_FREE: "1000000000000"
+              # Games up to 2 GB, and two installed games waiting for the tester at most: the cluster's memory is tight.
+              MAX_DOWNLOAD_BYTES: "2000000000"
+              INSTALLED_MAX: "2"
               # The review page (/review): sign-in with Pocket ID, the group id-admin only.
               REVIEW_URL: https://lab.janpuc.com
               REVIEW_OIDC_ISSUER: https://id.janpuc.com

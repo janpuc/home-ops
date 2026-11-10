@@ -29,12 +29,13 @@ spec:
     podSecurityContext:
       supplementalGroups: [3000]
     resources:
+      # Requests as the lab really uses them while it installs, so the scheduler never overfills a node.
       requests:
-        cpu: 10m
-        memory: 256Mi
+        cpu: 100m
+        memory: 1536Mi
       limits:
-        cpu: "4"
-        memory: 4Gi
+        cpu: "3"
+        memory: 3Gi
     persistence:
       data:
         existingClaim: renplay-lab
