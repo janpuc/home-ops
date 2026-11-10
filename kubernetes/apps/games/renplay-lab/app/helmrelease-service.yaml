@@ -24,7 +24,7 @@ spec:
             image:
               repository: ghcr.io/renplay-org/lab
               # Pin the digest the image workflow prints, never the tag.
-              tag: latest@sha256:f75c30df0c99029332938c84b9125c4e47d85e4c1db62d3c395185a2b1b52c82
+              tag: latest@sha256:36bcfc9cceb3e85d0b817dec01db75f55a330b7c59036bbcff89e0ac10ffae58
             command: ["node", "service/src/main.ts"]
             env:
               PORT: "8080"
@@ -79,10 +79,10 @@ spec:
             resources:
               requests:
                 cpu: 20m
-                memory: 256Mi
+                memory: 512Mi
               limits:
-                # WebKit reads the itch.io page for a moment, one game at a time.
-                memory: 1Gi
+                # WebKit reads an itch.io page, and Chromium holds up to three pages of F95zone's check desk.
+                memory: 2Gi
     defaultPodOptions:
       # Both Renplays write the games folders as uid 1000, group 3000.
       securityContext:
