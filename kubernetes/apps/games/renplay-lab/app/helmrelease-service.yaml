@@ -104,7 +104,9 @@ spec:
             port: 8080
     route:
       app:
+        # The console. The old name goes once everything uses the new one.
         hostnames:
+          - renplay-console.janpuc.com
           - lab.janpuc.com
         parentRefs:
           - name: envoy-internal

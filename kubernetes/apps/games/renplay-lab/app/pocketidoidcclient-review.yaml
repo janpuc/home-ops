@@ -6,6 +6,7 @@ metadata:
 spec:
   name: Renplay lab review
   callbackUrls:
+    - https://renplay-console.janpuc.com/auth/callback
     - https://lab.janpuc.com/auth/callback
   pkceEnabled: true
   allowedUserGroups:

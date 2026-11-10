@@ -45,7 +45,10 @@ spec:
           path: /mnt/Vault/Media/Games/_lab
     httpRoute:
       enabled: true
+      # The testbed: the Renplay where the console installs and tests games. The old name goes once
+      # everything uses the new one.
       hostnames:
+        - renplay-testbed.janpuc.com
         - "{{ .Release.Name }}.janpuc.com"
       parentRefs:
         - name: envoy-internal
