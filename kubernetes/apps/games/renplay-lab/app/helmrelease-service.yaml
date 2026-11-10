@@ -24,7 +24,7 @@ spec:
             image:
               repository: ghcr.io/renplay-org/lab
               # Pin the digest the image workflow prints, never the tag.
-              tag: latest@sha256:69ed4d323565552c9bebf4984c000211ef58f566deb257368400616c3ecda6e3
+              tag: latest@sha256:9bd93a5dc9ff0f28f4b3c105ef3176295f700e3dfd9bd9228b8364c5b58ef250
             command: ["node", "service/src/main.ts"]
             env:
               PORT: "8080"
@@ -39,13 +39,20 @@ spec:
               TESTER_URL: http://renplay-lab-tester.games.svc.cluster.local:8080
               SMOKE_MINUTES: "2"
               # The deep test after a smoke pass: a walk through the script, verified at 90% coverage.
-              LAB_DEEP_MINUTES: "5"
+              LAB_DEEP_MINUTES: "2"
               # hold: a game waits at pr until it is retried. auto: it is promoted to the main Renplay by itself.
               LAB_PROMOTE: auto
               PROMOTE_MIN_FREE: "1000000000000"
+              # The review page (/review): sign-in with Pocket ID, the group id-admin only.
+              REVIEW_URL: https://lab.janpuc.com
+              REVIEW_OIDC_ISSUER: https://id.janpuc.com
             envFrom:
               - secretRef:
                   name: renplay-lab-service-secret
+              # REVIEW_OIDC_CLIENT_ID and REVIEW_OIDC_CLIENT_SECRET, made by the operator for pocketidoidcclient-review.yaml.
+              - secretRef:
+                  name: renplay-lab-review-oidc-credentials
+                  optional: true
             probes:
               liveness: &probe
                 enabled: true

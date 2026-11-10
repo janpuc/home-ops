@@ -11,3 +11,4 @@ resources:
   - ./backup-service.yaml
   - ./helmrelease-service.yaml
   - ./helmrelease-tester.yaml
+  - ./pocketidoidcclient-review.yaml

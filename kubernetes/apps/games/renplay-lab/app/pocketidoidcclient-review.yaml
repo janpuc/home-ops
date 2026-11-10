@@ -1,0 +1,17 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: renplay-lab-review
+spec:
+  name: Renplay lab review
+  callbackUrls:
+    - https://lab.janpuc.com/auth/callback
+  pkceEnabled: true
+  allowedUserGroups:
+    - name: id-admin
+      namespace: security
+  secret:
+    keys:
+      clientID: REVIEW_OIDC_CLIENT_ID
+      clientSecret: REVIEW_OIDC_CLIENT_SECRET
