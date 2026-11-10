@@ -24,7 +24,7 @@ spec:
             image:
               repository: ghcr.io/renplay-org/lab
               # Pin the digest the image workflow prints, never the tag.
-              tag: latest@sha256:1487668452c00fd9e904bb36c49c477e7ae4c803fca9c68fe5f3eba8f9561f8e
+              tag: latest@sha256:87440bc35e131194756f1f3041e2eeb58fbb5d887c270d3375ea52098150fe8a
             command: ["node", "service/src/main.ts"]
             env:
               PORT: "8080"
@@ -52,7 +52,7 @@ spec:
               MAX_DOWNLOAD_BYTES: "25000000000"
               INSTALLED_MAX: "2"
               # The review page (/review): sign-in with Pocket ID, the group id-admin only.
-              REVIEW_URL: https://lab.janpuc.com
+              REVIEW_URL: https://renplay-console.janpuc.com
               REVIEW_OIDC_ISSUER: https://id.janpuc.com
               # The group's name in the token is Pocket ID's (synced from LLDAP), not the PocketIDUserGroup's.
               REVIEW_GROUP: ID-Admin
