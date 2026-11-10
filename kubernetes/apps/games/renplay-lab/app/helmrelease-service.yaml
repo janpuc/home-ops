@@ -24,7 +24,7 @@ spec:
             image:
               repository: ghcr.io/renplay-org/lab
               # Pin the digest the image workflow prints, never the tag.
-              tag: latest@sha256:ece7f9da8f37e24dd32bd0bda0461a6b17ab0e22b58826bd3a82b7e64c0504cf
+              tag: latest@sha256:f75c30df0c99029332938c84b9125c4e47d85e4c1db62d3c395185a2b1b52c82
             command: ["node", "service/src/main.ts"]
             env:
               PORT: "8080"
@@ -49,6 +49,8 @@ spec:
               # The review page (/review): sign-in with Pocket ID, the group id-admin only.
               REVIEW_URL: https://lab.janpuc.com
               REVIEW_OIDC_ISSUER: https://id.janpuc.com
+              # The group's name in the token is Pocket ID's (synced from LLDAP), not the PocketIDUserGroup's.
+              REVIEW_GROUP: ID-Admin
             envFrom:
               - secretRef:
                   name: renplay-lab-service-secret
