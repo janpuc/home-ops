@@ -24,7 +24,7 @@ spec:
             image:
               repository: ghcr.io/renplay-org/lab
               # Pin the digest the image workflow prints, never the tag.
-              tag: latest@sha256:bde976b9ecf6a79eee5f020a31ebee9d24b3c2b2c818bea67c59cb59a8bd2678
+              tag: latest@sha256:f58e3ad9c2520cf1278e3652d6b4489cd1d62e42c03cfae720636bef50874986
             command: ["node", "service/src/main.ts"]
             env:
               PORT: "8080"
@@ -37,8 +37,8 @@ spec:
               LAB_URL: http://renplay-lab.games.svc.cluster.local:8080
               MAIN_URL: http://renplay.games.svc.cluster.local:8080
               # The cluster's tester takes games up to 2 GB. Bigger ones go to the tester on sisyphus (an M3 Pro on
-              # the LAN, a container in OrbStack, games up to 25 GB). When it is away they wait.
-              TESTER_URLS: http://renplay-lab-tester.games.svc.cluster.local:8080,http://192.168.69.249:8096
+              # the LAN, native, reached through a relay in OrbStack on 8097, games up to 25 GB). When it is away they wait.
+              TESTER_URLS: http://renplay-lab-tester.games.svc.cluster.local:8080,http://192.168.69.249:8097
               SMOKE_MINUTES: "2"
               # The deep test after a smoke pass: a walk through the script, verified at 90% coverage.
               LAB_DEEP_MINUTES: "2"
