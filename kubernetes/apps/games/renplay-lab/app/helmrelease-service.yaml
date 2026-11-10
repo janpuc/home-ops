@@ -24,7 +24,7 @@ spec:
             image:
               repository: ghcr.io/renplay-org/lab
               # Pin the digest the image workflow prints, never the tag.
-              tag: latest@sha256:1acc04950f51842169830b35d0823222d0bd256535b31af4bd8d54ff48f3c50d
+              tag: latest@sha256:25de14efc832c035071b2311ae915e3a11f6e72da478e9da23e22f07b6dc258b
             command: ["node", "service/src/main.ts"]
             env:
               PORT: "8080"
@@ -36,7 +36,8 @@ spec:
               # The Renplays and the tester at their in-cluster addresses. Only promote reaches the main one.
               LAB_URL: http://renplay-lab.games.svc.cluster.local:8080
               MAIN_URL: http://renplay.games.svc.cluster.local:8080
-              TESTER_URL: http://renplay-lab-tester.games.svc.cluster.local:8080
+              # One game at a time on each tester.
+              TESTER_URLS: http://renplay-lab-tester.games.svc.cluster.local:8080,http://renplay-lab-tester-2.games.svc.cluster.local:8080
               SMOKE_MINUTES: "2"
               # The deep test after a smoke pass: a walk through the script, verified at 90% coverage.
               LAB_DEEP_MINUTES: "2"
