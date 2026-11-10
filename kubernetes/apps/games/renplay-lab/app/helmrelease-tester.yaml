@@ -33,7 +33,7 @@ spec:
               # In the cluster the lab Renplay's nginx serves its UI and its API on one address.
               LAB_UI_URL: http://renplay-lab.games.svc.cluster.local:8080
               # A game over this size is parked by the service as too big for the automated tester.
-              SMOKE_MAX_BYTES: "6000000000"
+              SMOKE_MAX_BYTES: "3000000000"
             probes:
               liveness: &probe
                 enabled: true
@@ -55,7 +55,7 @@ spec:
               limits:
                 # Chromium with software WebGL and a game's assets in memory.
                 cpu: "4"
-                memory: 8Gi
+                memory: 5Gi
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true

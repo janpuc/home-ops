@@ -36,8 +36,7 @@ spec:
               # The Renplays and the tester at their in-cluster addresses. Only promote reaches the main one.
               LAB_URL: http://renplay-lab.games.svc.cluster.local:8080
               MAIN_URL: http://renplay.games.svc.cluster.local:8080
-              # One game at a time on each tester.
-              TESTER_URLS: http://renplay-lab-tester.games.svc.cluster.local:8080,http://renplay-lab-tester-2.games.svc.cluster.local:8080
+              TESTER_URLS: http://renplay-lab-tester.games.svc.cluster.local:8080
               SMOKE_MINUTES: "2"
               # The deep test after a smoke pass: a walk through the script, verified at 90% coverage.
               LAB_DEEP_MINUTES: "2"
