@@ -23,7 +23,7 @@ spec:
             image:
               repository: ghcr.io/renplay-org/lab
               # The same image as the service. Pin the same digest.
-              tag: latest@sha256:36bcfc9cceb3e85d0b817dec01db75f55a330b7c59036bbcff89e0ac10ffae58
+              tag: latest@sha256:38cd1fa8a1ddafb4c38a8ac508edccf61e382276059dfa302b6e496bcf03734c
             command: ["node", "tester/server.mjs"]
             env:
               PORT: "8080"
