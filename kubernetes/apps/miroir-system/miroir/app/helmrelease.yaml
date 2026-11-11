@@ -12,6 +12,13 @@ spec:
   upgrade:
     disableWait: true
   values:
+    agent:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 128Mi
+        limits:
+          memory: 512Mi
     autoEvictAfter: 1h
     autoDiskfulAfter: 1h
     drbd:
