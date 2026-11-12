@@ -44,9 +44,64 @@ spec:
               [.metadata.creationTimestamp, .metadata.name,
               (.status.stats.sizeBytes//0)] | @tsv'`.
         - alert: KopiurBackupStale
+          # The threshold follows the cadence of the policy itself. Most policies
+          # run every two hours, but games/renplay-lab-service runs once a day,
+          # so a flat six hour threshold fires on every healthy cycle.
+          #
+          # The observed interval is the span between the oldest and the newest
+          # last-success timestamp in the window, divided by the number of
+          # changes in that window. It is clamped to the range 6h..36h: the
+          # floor keeps the original two-hour behaviour, the cap keeps a daily
+          # policy from hiding a real stall for a week.
+          #
+          # A policy that stops backing up keeps its old success timestamps
+          # inside the window, so its interval stays at its own cadence and
+          # the alert stays loud.
+          #
+          # A policy with a single success in the window has no cadence to
+          # derive: it is either brand new, or it stalled before it ever ran
+          # twice. Such a policy falls back to a 24h interval, which gives the
+          # 36h cap. This keeps a daily policy from firing on its first day,
+          # and it still alerts, only later, if the policy never runs again.
           expr: >-
-            (time() - max by (namespace, policy) (kopiur_policy_last_backup_success_timestamp_seconds))
-            > 21600
+            (
+              (time() - max by (namespace, policy) (kopiur_policy_last_backup_success_timestamp_seconds))
+              >
+              clamp_max(
+                clamp_min(
+                  1.5
+                  *
+                  (
+                    max by (namespace, policy) (
+                      (
+                        (
+                          max_over_time(kopiur_policy_last_backup_success_timestamp_seconds[7d])
+                          -
+                          min_over_time(kopiur_policy_last_backup_success_timestamp_seconds[7d])
+                        )
+                        /
+                        clamp_min(changes(kopiur_policy_last_backup_success_timestamp_seconds[7d]), 1)
+                      )
+                      and on (namespace, policy)
+                      (
+                        changes(kopiur_policy_last_backup_success_timestamp_seconds[7d]) > 0
+                      )
+                    )
+                    or on (namespace, policy)
+                    (
+                      86400
+                      *
+                      (
+                        sum by (namespace, policy) (changes(kopiur_policy_last_backup_success_timestamp_seconds[7d]))
+                        == bool 0
+                      )
+                    )
+                  ),
+                  21600
+                ),
+                129600
+              )
+            )
           for: 30m
           labels:
             severity: warning
@@ -55,8 +110,8 @@ spec:
               No successful kopiur backup for {{ $labels.namespace }}/{{ $labels.policy }}
               in {{ $value | humanizeDuration }}
             description: >-
-              Schedules run roughly every two hours, so six hours without a
-              success means the policy is wedged, not idle. A stalled policy is
+              The policy missed more than one and a half of its own backup
+              cycles, so the schedule is wedged, not idle. A stalled policy is
               silent until the day it is needed, and it removes the only recovery
               path from a PVC wipe. Check the Snapshot CRs for StagingTimedOut
               and the miroir agents for frozen DRBD devices.
