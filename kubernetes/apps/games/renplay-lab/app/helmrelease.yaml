@@ -13,10 +13,10 @@ spec:
     name: renplay
   interval: 1h
   values:
-    # The lab runs Renplay's dev (the edge image, by digest) to test fixes before they are released.
+    # The lab runs a Renplay release by digest (an edge image of a branch when a fix needs testing first).
     image:
-      tag: edge
-      digest: sha256:9c6b75f5a8095f615a8e564bd259e6f1e029993f6b059209f01764607fc26611
+      tag: 4.10.0
+      digest: sha256:17fcd4a8b8cdfe0e834c7064e5830ac7713ea369a643feef4f6804051f459672
     config:
       extraEnv:
         - name: RENPLAY_IMAGE_CONCURRENCY
@@ -26,6 +26,10 @@ spec:
         # Like the main Renplay: no sign-in. The lab is reached only through the internal gateway.
         - name: RENPLAY_AUTH
           value: "off"
+        # No earlier versions of saves: the tester's play overwrote autosaves thousands of times and filled
+        # the 5 GB data volume with history nobody reads (2026-11-11). Saves a game deletes still stay 30 days.
+        - name: RENPLAY_SAVE_HISTORY
+          value: "0"
     podSecurityContext:
       supplementalGroups: [3000]
     resources:
