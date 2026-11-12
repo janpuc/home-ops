@@ -11,6 +11,14 @@ spec:
       name: llmkube
       namespace: ai
   interval: 1h
+  # The reconciliation failed on 2026-11-12, at 08:55:45Z, with
+  # "failed to update status: etcdserver: request timed out". The API server
+  # was in an etcd leader change at that moment, so the status patch, not the
+  # manifests, failed. Without this, a failed reconciliation is retried after
+  # the whole interval, so one transient control-plane failure held this
+  # Kustomization, and the llmkube-models that depends on it, not Ready for an
+  # hour.
+  retryInterval: 5m
   path: ./kubernetes/apps/ai/llmkube/app
   prune: true
   sourceRef:
@@ -34,6 +42,9 @@ spec:
     - name: k8s-gpu-dra-driver
       namespace: kube-system
   interval: 1h
+  # Same reason as the llmkube Kustomization above: a failed reconciliation
+  # would otherwise be retried only after the whole interval.
+  retryInterval: 5m
   path: ./kubernetes/apps/ai/llmkube/models
   postBuild:
     substitute:
