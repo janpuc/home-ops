@@ -43,65 +43,70 @@ spec:
               `kubectl get kopiasnap -A -o json | jq -r '.items[] |
               [.metadata.creationTimestamp, .metadata.name,
               (.status.stats.sizeBytes//0)] | @tsv'`.
+        # Stage 1 of the staleness alert: the per-policy age after which a
+        # missing success counts as a wedged policy, not an idle one.
+        #
+        # Cadence comes from kopiur_snapshots_completed_total{result="succeeded"}:
+        # a durable counter, incremented once per terminal transition and kept
+        # after the Snapshot CR is pruned, so retention cannot shorten it. It is
+        # summed by (namespace, policy) BEFORE the arithmetic, because one
+        # policy can emit several series (per-repository fan-out, a new series
+        # per controller incarnation) while cadence is a property of the policy.
+        #
+        # The numbers, in order of appearance:
+        #   604800 = 7 days, the window the count is taken over;
+        #   1.5    = one and a half cycles missed before alerting;
+        #   21600  = 6h floor, the previous flat threshold, kept for the usual
+        #            two-hourly policy (and an extra run cannot shorten it);
+        #   129600 = 36h cap, so a daily policy pages within a day and a half
+        #            instead of hiding a stall until the week is out.
+        #
+        # A policy with no success in the window has no counter series; the
+        # `or` supplies a 0 for it from the presence of its last-success gauge,
+        # which lands it on the cap. A policy that never succeeded at all has
+        # neither series and is left to the kopiur chart's own KopiurBackupStale
+        # rule (monitoring.prometheusRule is enabled), whose second branch
+        # reads kopiur_snapshot_consecutive_failures for exactly that case.
+        - record: kopiur:policy_backup_stale_after_seconds
+          expr: >-
+            clamp_max(
+              clamp_min(
+                1.5
+                *
+                (
+                  604800
+                  /
+                  clamp_min(
+                    (
+                      sum by (namespace, policy) (
+                        increase(kopiur_snapshots_completed_total{result="succeeded"}[7d])
+                      )
+                      or on (namespace, policy)
+                      (
+                        max by (namespace, policy) (
+                          kopiur_policy_last_backup_success_timestamp_seconds
+                        )
+                        * 0
+                      )
+                    ),
+                    1
+                  )
+                ),
+                21600
+              ),
+              129600
+            )
+        # Stage 2: the age of the last success against that policy's own
+        # threshold. A policy that stops backing up keeps its last success
+        # series, so its age keeps growing against a threshold that stays put.
         - alert: KopiurBackupStale
-          # The threshold follows the cadence of the policy itself. Most policies
-          # run every two hours, but games/renplay-lab-service runs once a day,
-          # so a flat six hour threshold fires on every healthy cycle.
-          #
-          # The observed interval is the span between the oldest and the newest
-          # last-success timestamp in the window, divided by the number of
-          # changes in that window. It is clamped to the range 6h..36h: the
-          # floor keeps the original two-hour behaviour, the cap keeps a daily
-          # policy from hiding a real stall for a week.
-          #
-          # A policy that stops backing up keeps its old success timestamps
-          # inside the window, so its interval stays at its own cadence and
-          # the alert stays loud.
-          #
-          # A policy with a single success in the window has no cadence to
-          # derive: it is either brand new, or it stalled before it ever ran
-          # twice. Such a policy falls back to a 24h interval, which gives the
-          # 36h cap. This keeps a daily policy from firing on its first day,
-          # and it still alerts, only later, if the policy never runs again.
           expr: >-
             (
-              (time() - max by (namespace, policy) (kopiur_policy_last_backup_success_timestamp_seconds))
-              >
-              clamp_max(
-                clamp_min(
-                  1.5
-                  *
-                  (
-                    max by (namespace, policy) (
-                      (
-                        (
-                          max_over_time(kopiur_policy_last_backup_success_timestamp_seconds[7d])
-                          -
-                          min_over_time(kopiur_policy_last_backup_success_timestamp_seconds[7d])
-                        )
-                        /
-                        clamp_min(changes(kopiur_policy_last_backup_success_timestamp_seconds[7d]), 1)
-                      )
-                      and on (namespace, policy)
-                      (
-                        changes(kopiur_policy_last_backup_success_timestamp_seconds[7d]) > 0
-                      )
-                    )
-                    or on (namespace, policy)
-                    (
-                      86400
-                      *
-                      (
-                        sum by (namespace, policy) (changes(kopiur_policy_last_backup_success_timestamp_seconds[7d]))
-                        == bool 0
-                      )
-                    )
-                  ),
-                  21600
-                ),
-                129600
-              )
+              time() - max by (namespace, policy) (kopiur_policy_last_backup_success_timestamp_seconds)
             )
+            >
+            on (namespace, policy)
+            kopiur:policy_backup_stale_after_seconds
           for: 30m
           labels:
             severity: warning
