@@ -27,7 +27,7 @@ spec:
           containers:
             - name: pgdump
               # The cluster's own image, so pg_dump matches the server.
-              image: ghcr.io/cloudnative-pg/postgis:18.6-3.7.0-standard-bookworm
+              image: ghcr.io/cloudnative-pg/postgis:18.7-3.7.0-standard-bookworm
               command: ["/bin/bash", "-c"]
               args:
                 - |
