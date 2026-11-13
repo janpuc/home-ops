@@ -21,7 +21,14 @@ spec:
       enabled: true
       mode: perService
       size: 20Gi
-      storageClass: miroir-slow-local
+      # The fast pool is the NVMe disk. The slow pool is the SATA SSD that also
+      # carries the Talos OS disk and etcd's WAL on every node, and a model
+      # load reads the whole weight file from the cache: on the slow pool that
+      # read stalled the API server's etcd requests and the controllers that
+      # renew their leases. The class of a claim never changes, so the claims
+      # that already exist stay where they are; the services that use them
+      # name a claim of their own (see models/model-cache-pvc.yaml).
+      storageClass: miroir-fast-local
     prometheus:
       inferencePodMonitor:
         enabled: false

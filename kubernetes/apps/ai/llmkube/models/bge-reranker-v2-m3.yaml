@@ -25,6 +25,13 @@ metadata:
   name: bge-reranker-v2-m3
 spec:
   modelRef: bge-reranker-v2-m3
+  # The weights are read from this claim in full on every model load. The
+  # operator's own claim for this service is on the slow pool, which shares the
+  # SATA SSD with etcd's WAL on k8s-2: reading the weights there would stall
+  # the API server's etcd requests the same way it did on k8s-0. The fast pool
+  # is the NVMe disk.
+  modelCache:
+    claimName: bge-reranker-v2-m3-model-cache-fast
   runtime: llamacpp
   image: ghcr.io/ggml-org/llama.cpp:server-vulkan-b12211@sha256:15fd15e1f1d2ab2daf4b0b88f5849d95764c155237f36e8f5d36b32a4cec1be9
   replicas: 1
