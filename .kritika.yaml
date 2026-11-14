@@ -38,7 +38,7 @@ tools:
   # review needs, the other three are the search and query tools the old
   # agent command list named.
   # renovate: datasource=github-releases depName=home-operations/flate
-  aqua:home-operations/flate: v0.7.1
+  aqua:home-operations/flate: v0.7.3
   # renovate: datasource=github-releases depName=sharkdp/fd
   aqua:sharkdp/fd: v10.5.2
   # renovate: datasource=github-releases depName=BurntSushi/ripgrep
