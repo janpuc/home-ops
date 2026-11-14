@@ -5,4 +5,5 @@ kind: Kustomization
 resources:
   - ./bge-embedding-m3.yaml
   - ./bge-reranker-v2-m3.yaml
+  - ./model-cache-pvc.yaml
   - ./servicemonitor.yaml

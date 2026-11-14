@@ -1,0 +1,39 @@
+---
+# The model caches are read in full on every model load: llama-server maps the
+# weights from the cache and reads the whole file. The operator's own cache
+# claims sat on the slow pool, which is the SATA SSD that also carries the
+# Talos OS disk and etcd's WAL on the node that runs the model. A 1.2 GiB read
+# there pushed the disk's fsync latency to 0.2-0.33 s, and the API server on
+# that node lost its etcd requests (see the PR body). The fast pool is the
+# NVMe disk, so the same read no longer touches the disk that etcd depends on.
+#
+# llmkube creates and owns a cache claim per service, but the class of a claim
+# never changes once it exists, so the operator cannot move a bound claim.
+# spec.modelCache.claimName points the service at a claim we own instead, and
+# llmkube downloads the weights into it as usual.
+#
+# These claims are node-local (a -local class, one replica) and hold no state
+# that cannot be downloaded again, so nothing here needs a backup.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bge-embedding-m3-model-cache-fast
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: miroir-fast-local
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bge-reranker-v2-m3-model-cache-fast
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: miroir-fast-local
