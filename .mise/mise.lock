@@ -5,24 +5,31 @@ version = "2.35.0"
 backend = "vfox:1password-cli"
 
 [tools.1password-cli."platforms.linux-arm64"]
+checksum = "sha256:28153b3e1b379cc117a2b8478fc29c73e4a391d0a9b7876c360d305e98390a78"
 url = "https://cache.agilebits.com/dist/1P/op2/pkg/v2.35.0/op_linux_arm64_v2.35.0.zip"
 
 [tools.1password-cli."platforms.linux-arm64-musl"]
+checksum = "sha256:28153b3e1b379cc117a2b8478fc29c73e4a391d0a9b7876c360d305e98390a78"
 url = "https://cache.agilebits.com/dist/1P/op2/pkg/v2.35.0/op_linux_arm64_v2.35.0.zip"
 
 [tools.1password-cli."platforms.linux-x64"]
+checksum = "sha256:4457ade59850b852c64c77164235b34dd0b984ef7826eb0ccd32f1fd78a2ceb7"
 url = "https://cache.agilebits.com/dist/1P/op2/pkg/v2.35.0/op_linux_amd64_v2.35.0.zip"
 
 [tools.1password-cli."platforms.linux-x64-musl"]
+checksum = "sha256:4457ade59850b852c64c77164235b34dd0b984ef7826eb0ccd32f1fd78a2ceb7"
 url = "https://cache.agilebits.com/dist/1P/op2/pkg/v2.35.0/op_linux_amd64_v2.35.0.zip"
 
 [tools.1password-cli."platforms.macos-arm64"]
+checksum = "sha256:6dcb9528c1ace2f18f7808418afe5dd58ed1376038aa4f907af7e0462582712b"
 url = "https://cache.agilebits.com/dist/1P/op2/pkg/v2.35.0/op_darwin_arm64_v2.35.0.zip"
 
 [tools.1password-cli."platforms.macos-x64"]
+checksum = "sha256:174ed82e76002a0589aed0996fe068d8cdee9997e6b9b3acee409cdc4862cd3e"
 url = "https://cache.agilebits.com/dist/1P/op2/pkg/v2.35.0/op_darwin_amd64_v2.35.0.zip"
 
 [tools.1password-cli."platforms.windows-x64"]
+checksum = "sha256:f99f974f38c114c341fa589e4f4cc5e7b13fa1bf19a302283e438360636a796b"
 url = "https://cache.agilebits.com/dist/1P/op2/pkg/v2.35.0/op_windows_amd64_v2.35.0.zip"
 
 [[tools.actionlint]]
@@ -286,45 +293,6 @@ checksum = "sha256:a6fc67fedaf9128a3309a1e2ebb8b986aeccf70122ee46d2cb4849e423f0c
 url = "https://github.com/jqlang/jq/releases/download/jq-1.8.2/jq-windows-amd64.exe"
 url_api = "https://api.github.com/repos/jqlang/jq/releases/assets/453012788"
 provenance = "github-attestations"
-
-[[tools.just]]
-version = "1.59.0"
-backend = "aqua:casey/just"
-
-[tools.just."platforms.linux-arm64"]
-checksum = "sha256:23871b1702bfd550fb5f901778fd4290ecf2ee034a45a889fbe96d89b188086d"
-url = "https://github.com/casey/just/releases/download/1.59.0/just-1.59.0-aarch64-unknown-linux-musl.tar.gz"
-url_api = "https://api.github.com/repos/casey/just/releases/assets/642950086"
-
-[tools.just."platforms.linux-arm64-musl"]
-checksum = "sha256:23871b1702bfd550fb5f901778fd4290ecf2ee034a45a889fbe96d89b188086d"
-url = "https://github.com/casey/just/releases/download/1.59.0/just-1.59.0-aarch64-unknown-linux-musl.tar.gz"
-url_api = "https://api.github.com/repos/casey/just/releases/assets/642950086"
-
-[tools.just."platforms.linux-x64"]
-checksum = "sha256:409044617b6f06517c1035e55ca38c8c856ff8b650e41bc2aa1ef82d5903a23e"
-url = "https://github.com/casey/just/releases/download/1.59.0/just-1.59.0-x86_64-unknown-linux-musl.tar.gz"
-url_api = "https://api.github.com/repos/casey/just/releases/assets/642949555"
-
-[tools.just."platforms.linux-x64-musl"]
-checksum = "sha256:409044617b6f06517c1035e55ca38c8c856ff8b650e41bc2aa1ef82d5903a23e"
-url = "https://github.com/casey/just/releases/download/1.59.0/just-1.59.0-x86_64-unknown-linux-musl.tar.gz"
-url_api = "https://api.github.com/repos/casey/just/releases/assets/642949555"
-
-[tools.just."platforms.macos-arm64"]
-checksum = "sha256:6574cea774ed4cae12e24b6aa11857de33e80dab4667cf628fd5840df96a2a9d"
-url = "https://github.com/casey/just/releases/download/1.59.0/just-1.59.0-aarch64-apple-darwin.tar.gz"
-url_api = "https://api.github.com/repos/casey/just/releases/assets/643129724"
-
-[tools.just."platforms.macos-x64"]
-checksum = "sha256:036ead9df9bc31dbae9934ae3b4236ed124d0bafcffd33439460ae084d5c9cb7"
-url = "https://github.com/casey/just/releases/download/1.59.0/just-1.59.0-x86_64-apple-darwin.tar.gz"
-url_api = "https://api.github.com/repos/casey/just/releases/assets/643131819"
-
-[tools.just."platforms.windows-x64"]
-checksum = "sha256:9c5463e2d0974e31bee71346aa5cbf19167de1585a4abc1bae7b3b04604ea9c0"
-url = "https://github.com/casey/just/releases/download/1.59.0/just-1.59.0-x86_64-pc-windows-msvc.zip"
-url_api = "https://api.github.com/repos/casey/just/releases/assets/643131303"
 
 [[tools.kubectl]]
 version = "1.37.2"
