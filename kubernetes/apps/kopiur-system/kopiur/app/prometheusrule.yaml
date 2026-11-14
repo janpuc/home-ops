@@ -43,10 +43,70 @@ spec:
               `kubectl get kopiasnap -A -o json | jq -r '.items[] |
               [.metadata.creationTimestamp, .metadata.name,
               (.status.stats.sizeBytes//0)] | @tsv'`.
+        # Stage 1 of the staleness alert: the per-policy age after which a
+        # missing success counts as a wedged policy, not an idle one.
+        #
+        # Cadence comes from kopiur_snapshots_completed_total{result="succeeded"}:
+        # a durable counter, incremented once per terminal transition and kept
+        # after the Snapshot CR is pruned, so retention cannot shorten it. It is
+        # summed by (namespace, policy) BEFORE the arithmetic, because one
+        # policy can emit several series (per-repository fan-out, a new series
+        # per controller incarnation) while cadence is a property of the policy.
+        #
+        # The numbers, in order of appearance:
+        #   604800 = 7 days, the window the count is taken over;
+        #   1.5    = one and a half cycles missed before alerting;
+        #   21600  = 6h floor, the previous flat threshold, kept for the usual
+        #            two-hourly policy (and an extra run cannot shorten it);
+        #   129600 = 36h cap, so a daily policy pages within a day and a half
+        #            instead of hiding a stall until the week is out.
+        #
+        # A policy with no success in the window has no counter series; the
+        # `or` supplies a 0 for it from the presence of its last-success gauge,
+        # which lands it on the cap. A policy that never succeeded at all has
+        # neither series and is left to the kopiur chart's own KopiurBackupStale
+        # rule (monitoring.prometheusRule is enabled), whose second branch
+        # reads kopiur_snapshot_consecutive_failures for exactly that case.
+        - record: kopiur:policy_backup_stale_after_seconds
+          expr: >-
+            clamp_max(
+              clamp_min(
+                1.5
+                *
+                (
+                  604800
+                  /
+                  clamp_min(
+                    (
+                      sum by (namespace, policy) (
+                        increase(kopiur_snapshots_completed_total{result="succeeded"}[7d])
+                      )
+                      or on (namespace, policy)
+                      (
+                        max by (namespace, policy) (
+                          kopiur_policy_last_backup_success_timestamp_seconds
+                        )
+                        * 0
+                      )
+                    ),
+                    1
+                  )
+                ),
+                21600
+              ),
+              129600
+            )
+        # Stage 2: the age of the last success against that policy's own
+        # threshold. A policy that stops backing up keeps its last success
+        # series, so its age keeps growing against a threshold that stays put.
         - alert: KopiurBackupStale
           expr: >-
-            (time() - max by (namespace, policy) (kopiur_policy_last_backup_success_timestamp_seconds))
-            > 21600
+            (
+              time() - max by (namespace, policy) (kopiur_policy_last_backup_success_timestamp_seconds)
+            )
+            >
+            on (namespace, policy)
+            kopiur:policy_backup_stale_after_seconds
           for: 30m
           labels:
             severity: warning
@@ -55,8 +115,8 @@ spec:
               No successful kopiur backup for {{ $labels.namespace }}/{{ $labels.policy }}
               in {{ $value | humanizeDuration }}
             description: >-
-              Schedules run roughly every two hours, so six hours without a
-              success means the policy is wedged, not idle. A stalled policy is
+              The policy missed more than one and a half of its own backup
+              cycles, so the schedule is wedged, not idle. A stalled policy is
               silent until the day it is needed, and it removes the only recovery
               path from a PVC wipe. Check the Snapshot CRs for StagingTimedOut
               and the miroir agents for frozen DRBD devices.
