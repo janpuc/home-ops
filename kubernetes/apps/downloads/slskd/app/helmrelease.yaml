@@ -88,9 +88,11 @@ spec:
                     port: *port
                   initialDelaySeconds: 0
                   periodSeconds: 10
-                  # /health talks to Soulseek, so it stalls for seconds when the
-                  # network behind gluetun does: a 1s timeout restarted the app
-                  # (SIGTERM, exit 0) 8 times in the 24h to 2026-11-15 07:00Z.
+                  # /health runs no checks: slskd calls AddHealthChecks() without
+                  # adding any, so it only reports that the HTTP host is up. The
+                  # app still stopped answering it while Soulseek calls stalled,
+                  # and a 1s timeout restarted it (SIGTERM, exit 0) 8 times in
+                  # the 24h to 2026-11-15 07:00Z.
                   timeoutSeconds: 5
                   failureThreshold: 3
               readiness: *probes
@@ -106,7 +108,7 @@ spec:
                 cpu: 10m
                 memory: 128Mi
               limits:
-                memory: 1Gi
+                memory: 1536Mi
     defaultPodOptions:
       securityContext:
         fsGroup: 1000
