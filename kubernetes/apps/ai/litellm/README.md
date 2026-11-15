@@ -1,22 +1,29 @@
 # litellm
 
-Eight models, each one in use. Add a model back only when a client needs it.
+Fourteen models, each one in use. Add a model back only when a client needs it.
 
-| Model                             | Plan        | When it fails                    | Used by                                      |
-| --------------------------------- | ----------- | -------------------------------- | -------------------------------------------- |
-| `minimax/MiniMax-M3.1-Flash`      | MiniMax     | limit error, no fallback         | kritika reviews, Jan's OpenCode              |
-| `opencode-go/deepseek-v4.1-flash` | OpenCode Go | falls back to MiniMax M3.1 Flash | memini, kritika confidence, Open WebUI tasks |
-| `m3pro/huihui-qwen3.8-27b`        | M3 Pro      | falls back to MiniMax M3.1 Flash | Jan's Pi                                     |
-| `m3pro-local/huihui-qwen3.8-27b`  | M3 Pro      | fails, never leaves the LAN      | Jan's Pi, private material                   |
-| `m3pro-local/qwen3.8-27b`         | M3 Pro      | fails, never leaves the LAN      | austerity-watcher, pi-sec                    |
-| `m3pro-local/qwen3.6-35b-a3b`     | M3 Pro      | fails, never leaves the LAN      | austerity-watcher, pi-sec                    |
-| `m3pro/lustify-v2`                | M3 Pro      | fails                            | image generation on request                  |
-| `m3pro/noobai-xl-1.1`             | M3 Pro      | fails                            | image generation on request                  |
+| Model                             | Plan               | When it fails                                  | Used by                                       |
+| --------------------------------- | ------------------ | ---------------------------------------------- | --------------------------------------------- |
+| `minimax/MiniMax-M3.1-Flash`      | MiniMax            | limit error, no fallback                       | kritika reviews, Jan's OpenCode               |
+| `opencode-go/deepseek-v4.1-flash` | OpenCode Go        | falls back to MiniMax M3.1 Flash               | memini, kritika confidence, Open WebUI tasks  |
+| `m3pro/huihui-qwen3.8-27b`        | M3 Pro             | falls back to MiniMax M3.1 Flash               | Jan's Pi                                      |
+| `m3pro-local/huihui-qwen3.8-27b`  | M3 Pro             | fails, never leaves the LAN                    | Jan's Pi, private material                    |
+| `m3pro-local/qwen3.8-27b`         | M3 Pro             | fails, never leaves the LAN                    | austerity-watcher, pi-sec                     |
+| `m3pro-local/qwen3.6-35b-a3b`     | M3 Pro             | fails, never leaves the LAN                    | austerity-watcher, pi-sec                     |
+| `m3pro/lustify-v2`                | M3 Pro             | fails                                          | image generation on request                   |
+| `m3pro/noobai-xl-1.1`             | M3 Pro             | fails                                          | image generation on request                   |
+| `alibaba/qwen3.8-max`             | Alibaba Token Plan | limit or `data_inspection_failed`, no fallback | Jan's Pi and OpenCode, interactive only       |
+| `alibaba/qwen3.8-flash`           | Alibaba Token Plan | limit or `data_inspection_failed`, no fallback | Jan's Pi and OpenCode, interactive only       |
+| `alibaba/deepseek-v4.1-flash`     | Alibaba Token Plan | limit or `data_inspection_failed`, no fallback | Jan's Pi and OpenCode, interactive only       |
+| `alibaba/qwen-image-3.0-pro`      | Alibaba Token Plan | limit or `data_inspection_failed`, no fallback | image generation on request, interactive only |
+| `alibaba/wan2.7-image-pro`        | Alibaba Token Plan | limit or `data_inspection_failed`, no fallback | image generation on request, interactive only |
+| `alibaba/wan3.0-video`            | Alibaba Token Plan | limit or `data_inspection_failed`, no fallback | video generation on request, interactive only |
 
 MiniMax M3.1 Flash has no fallback on purpose: a Go-hosted MiniMax is billed per token, and
 MiniMax's overflow once emptied the Go month. The `m3pro-local/` aliases stay out of every
 fallback list (`routerSettings.fallbacks`, `context_window_fallbacks`) because they carry
-private material; keep `default_fallbacks` unset.
+private material; keep `default_fallbacks` unset. The `alibaba/` aliases are absent from
+every fallback list for the plan's sake (see below).
 
 ## Keys
 
@@ -38,6 +45,30 @@ Budgets count LiteLLM's list prices. Only the Go model has one (set in its `info
 MiniMax M3.1 Flash and the M3 Pro record $0, so a budget caps Go spend alone, but a spent
 budget blocks the whole key until it resets. That is why kritika has two keys. The master
 key is for the operator and emergencies only.
+
+## Alibaba Token Plan
+
+Model Studio's Token Plan, Personal Standard: 80,000 credits a month. It bills credits, not
+tokens, so the aliases record $0 instead of LiteLLM's DashScope list prices (the Alibaba
+console's Usage page is the only honest meter). Its terms cover interactive use in tools
+only, no scripts and no batch calls: that is why only the `jan` team (Jan's `jan-laptop`
+key, Pi and OpenCode) holds the `alibaba/` aliases, and why none of them is in a fallback
+list. A plan limit or Alibaba's content filter (`data_inspection_failed`) is returned to the
+caller as-is.
+
+- Chat uses the `openai/` prefix on the plan's `compatible-mode/v1` base, so thinking stays
+  a request field instead of a DashScope translation.
+- The image models use `qwencloud/` and a **full** native endpoint as `apiBase`: at
+  v1.109.1 the DashScope image config replaces a `/compatible-mode/v1` base with
+  dashscope-intl and reads a bare host as a path-less URL
+  (`litellm/llms/dashscope/common_utils.py`). Output is a signed URL that expires, never
+  `b64_json`; aspect goes through `size` (`1024x1024`, or `1K`/`2K`/`4K` on wan2.7).
+- The video model uses the bare origin: LiteLLM submits to
+  `/api/v1/services/aigc/video-generation/video-synthesis` and polls `/api/v1/tasks/{id}`,
+  and the task id lives 24 h. Resolution, ratio and duration belong in a `parameters`
+  object; `duration: -1` is rejected.
+- Image and video carry no retries, and no `alibaba/` model is health-checked: every one of
+  those calls is a billed generation.
 
 ## M3 Pro (`sisyphus`, `janpuc/mac-models`)
 

@@ -1,0 +1,29 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmmodel_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: alibaba-qwen3-8-flash
+spec:
+  # The Token Plan's cheaper chat model, on the same OpenAI-compatible base as
+  # alibaba/qwen3.8-max: the plan bills credits so spend reads $0, its terms cover
+  # interactive use only, and this alias is in no fallback list.
+  modelName: alibaba/qwen3.8-flash
+  params:
+    model: openai/qwen3.8-flash
+    apiBase: https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1
+    apiKeyRef:
+      name: litellm
+      key: ALIBABA_API_KEY
+    dropParams: true
+  info:
+    # 1M context, 128K output.
+    maxTokens: 1000000
+    maxInputTokens: 1000000
+    maxOutputTokens: 131072
+    supportsFunctionCalling: true
+    supportsVision: true
+    extra:
+      supports_reasoning: true
+      # A health check is a billed chat completion on the plan, so no polling.
+      disable_background_health_check: true

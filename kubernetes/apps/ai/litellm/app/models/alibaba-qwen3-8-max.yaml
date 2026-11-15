@@ -1,0 +1,31 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmmodel_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: alibaba-qwen3-8-max
+spec:
+  # Alibaba Model Studio Token Plan (Personal Standard: 80,000 credits a month) on the
+  # plan's OpenAI-compatible base. The plan bills credits, not tokens, and LiteLLM has no
+  # price for openai/qwen3.8-max, so spend reads $0 like the M3 Pro models. Its terms
+  # cover interactive use only (no scripts, no batch calls), and this alias is in no
+  # fallback list: a failure is returned to the caller as-is.
+  modelName: alibaba/qwen3.8-max
+  params:
+    model: openai/qwen3.8-max
+    apiBase: https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1
+    apiKeyRef:
+      name: litellm
+      key: ALIBABA_API_KEY
+    dropParams: true
+  info:
+    # 1M context, 128K output.
+    maxTokens: 1000000
+    maxInputTokens: 1000000
+    maxOutputTokens: 131072
+    supportsFunctionCalling: true
+    supportsVision: true
+    extra:
+      supports_reasoning: true
+      # A health check is a billed chat completion on the plan, so no polling.
+      disable_background_health_check: true

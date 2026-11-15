@@ -1,0 +1,30 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmmodel_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: alibaba-wan2-7-image-pro
+spec:
+  # Image editing and generation on the Token Plan, highest resolution. Same full native
+  # endpoint as alibaba/qwen-image-3.0-pro (see there for why the apiBase cannot be the
+  # compatible-mode base). Size via "size": 1K, 2K or 4K (4K is text-to-image only); up to
+  # 9 reference images for edits. Output is a signed URL only, no b64_json. No retries.
+  modelName: alibaba/wan2.7-image-pro
+  params:
+    model: qwencloud/wan2.7-image-pro
+    apiBase: https://token-plan.ap-southeast-1.maas.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation
+    apiKeyRef:
+      name: litellm
+      key: ALIBABA_API_KEY
+    dropParams: true
+    additional:
+      # A 4K image takes minutes; the router's 600 s can fall short.
+      timeout: 900
+  info:
+    mode: image_generation
+    extra:
+      # The plan bills credits: record $0 like the M3 Pro models. LiteLLM has no price
+      # entry for this model at all.
+      output_cost_per_image: 0
+      # A health check would spend credits. No polling.
+      disable_background_health_check: true
