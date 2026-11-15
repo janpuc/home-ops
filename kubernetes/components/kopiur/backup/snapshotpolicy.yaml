@@ -28,6 +28,17 @@ spec:
       schedule:
         cron: H 5 1 * *
     quick:
+      # kopia verifies blobs with 8 workers by default. Every worker waits on
+      # the NFS repository, and each waiting worker counts towards the node's
+      # load average, so one mover job adds roughly 5 to node_load1 on its
+      # node. The movers are not CPU bound (they wait on the repo), so fewer
+      # workers cost little wall time and halve the load they put on a node.
+      parallel: 4
       schedule:
         cron: H 3 * * *
+        # The hashed minute alone starts every app's verification inside the
+        # same ~25 minutes, so ten movers ran at once and six of them landed on
+        # k8s-0. The jitter window spreads the start times over half an hour
+        # and keeps the per-node mover count low.
+        jitter: 30m
   volumeSnapshotClassName: ${KOPIUR_SNAPSHOTCLASS:=miroir}
