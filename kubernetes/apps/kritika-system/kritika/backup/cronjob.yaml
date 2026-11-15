@@ -1,0 +1,69 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/batch/cronjob_v1.json
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: kritika-pgdump
+spec:
+  # Between litellm's 01:10 dump and immich's 02:20 one, and away from Kopiur's
+  # 03:00-04:30 verification window; the next two-hourly snapshot of the dump
+  # volume picks it up.
+  schedule: "40 1 * * *"
+  timeZone: Europe/Warsaw
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            fsGroupChangePolicy: OnRootMismatch
+            seccompProfile: { type: RuntimeDefault }
+          containers:
+            - name: pgdump
+              # The cluster's own image, so pg_dump matches the server.
+              image: ghcr.io/cloudnative-pg/postgresql:18.6-standard-bookworm
+              command: ["/bin/bash", "-c"]
+              args:
+                - |
+                  set -euo pipefail
+                  # A dump killed mid-write leaves a .part file the retention below never matches.
+                  rm -f /dumps/kritika-*.dump.part
+                  out="/dumps/kritika-$(date -u +%Y%m%dT%H%MZ).dump"
+                  pg_dump --format=custom --no-owner --dbname="$DATABASE_URL" --file="$out.part"
+                  mv "$out.part" "$out"
+                  ls -1t /dumps/kritika-*.dump | tail -n +8 | xargs -r rm -f --
+                  ls -lh /dumps
+              env:
+                - name: DATABASE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      # The initdb secret, i.e. the `kritika` database owner.
+                      # kritika_app, the role in kritika-postgres-app, cannot
+                      # read kritika's sequences, so pg_dump as it fails.
+                      name: kritika-postgres-credentials
+                      key: uri
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 64Mi
+                limits:
+                  memory: 512Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities: { drop: ["ALL"] }
+              volumeMounts:
+                - name: dumps
+                  mountPath: /dumps
+          volumes:
+            - name: dumps
+              persistentVolumeClaim:
+                claimName: kritika-pgdump
