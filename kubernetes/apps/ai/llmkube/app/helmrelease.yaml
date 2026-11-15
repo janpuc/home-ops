@@ -17,6 +17,16 @@ spec:
     remediation:
       retries: 3
   values:
+    controllerManager:
+      # The manager reserves 512Mi by chart default but peaks at 86Mi over 7d
+      # (2Gi limit unchanged). k8s-1 reserved 90.2% of its memory on 2026-11-15.
+      resources:
+        requests:
+          cpu: 10m
+          memory: 256Mi
+        limits:
+          cpu: 500m
+          memory: 2Gi
     modelCache:
       enabled: true
       mode: perService
