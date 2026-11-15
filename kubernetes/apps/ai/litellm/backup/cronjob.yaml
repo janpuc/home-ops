@@ -33,6 +33,8 @@ spec:
               args:
                 - |
                   set -euo pipefail
+                  # A dump killed mid-write leaves a .part file the retention below never matches.
+                  rm -f /dumps/litellm-*.dump.part
                   out="/dumps/litellm-$(date -u +%Y%m%dT%H%MZ).dump"
                   pg_dump --format=custom --no-owner --dbname="$DATABASE_URL" --file="$out.part"
                   mv "$out.part" "$out"
