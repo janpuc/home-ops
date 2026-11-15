@@ -1,0 +1,34 @@
+---
+# Grafana's database, users and annotations. Written by hand because the kopiur
+# backup component also creates the PVC, and the Grafana operator owns this claim.
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kopiur.home-operations.com/snapshotpolicy_v1alpha1.json
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: SnapshotPolicy
+metadata:
+  name: grafana-pvc
+  annotations:
+    kopiur.home-operations.com/allow-identity-change: "true"
+spec:
+  repository:
+    kind: ClusterRepository
+    name: nas
+  retention:
+    keepDaily: 7
+  sources:
+    - pvc:
+        name: grafana-pvc
+  copyMethod: Direct
+  volumeSnapshotClassName: miroir
+---
+# The kopiur backup component creates a SnapshotSchedule for every policy. This
+# policy is written by hand, so it needs one too or kopiur never runs it.
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kopiur.home-operations.com/snapshotschedule_v1alpha1.json
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: SnapshotSchedule
+metadata:
+  name: grafana-pvc
+spec:
+  policyRef:
+    name: grafana-pvc
+  schedule:
+    cron: H 3 * * *
