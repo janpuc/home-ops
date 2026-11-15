@@ -88,7 +88,10 @@ spec:
                     port: *port
                   initialDelaySeconds: 0
                   periodSeconds: 10
-                  timeoutSeconds: 1
+                  # /health talks to Soulseek, so it stalls for seconds when the
+                  # network behind gluetun does: a 1s timeout restarted the app
+                  # (SIGTERM, exit 0) 8 times in the 24h to 2026-11-15 07:00Z.
+                  timeoutSeconds: 5
                   failureThreshold: 3
               readiness: *probes
             securityContext:
