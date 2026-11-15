@@ -45,6 +45,13 @@ spec:
             memory: 96Mi
     triggerLoopOnEvent: true
     policy: sync
+    extraArgs:
+      # external-dns sums the webhook read and write timeouts into the client
+      # timeout for every call to the localhost webhook. The default 5s + 10s
+      # gave /records only 15s, and a UniFi stall hit it, which external-dns
+      # treats as fatal. 30s + 10s = 40s stays below the webhook's 60s
+      # SERVER_WRITE_TIMEOUT.
+      webhook-provider-read-timeout: 30s
     resources:
       requests:
         cpu: 10m
