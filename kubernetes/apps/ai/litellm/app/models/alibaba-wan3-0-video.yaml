@@ -1,0 +1,29 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmmodel_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: alibaba-wan3-0-video
+spec:
+  # Video generation on the Token Plan, async. apiBase is the bare origin because
+  # qwencloud/ appends /api/v1/services/aigc/video-generation/video-synthesis and polls
+  # /api/v1/tasks/{id} itself; the task id lives 24 h, so the router's 600 s covers every
+  # call. Resolution (480P/720P/1080P), ratio and duration are safest in a "parameters"
+  # object; outside the priced tiers a resolution is dropped, not an error, and duration
+  # -1 (smart duration) is rejected. No retries: a retry is a second billed clip.
+  modelName: alibaba/wan3.0-video
+  params:
+    model: qwencloud/wan3.0-video
+    apiBase: https://token-plan.ap-southeast-1.maas.aliyuncs.com
+    apiKeyRef:
+      name: litellm
+      key: ALIBABA_API_KEY
+    dropParams: true
+  info:
+    mode: video_generation
+    extra:
+      # LiteLLM prices qwencloud/wan3.0-video from $0.04 to $0.20 a second; the plan bills
+      # credits, so record $0 like the M3 Pro models.
+      output_cost_per_second: 0
+      # A health check would submit a clip and spend credits. No polling.
+      disable_background_health_check: true

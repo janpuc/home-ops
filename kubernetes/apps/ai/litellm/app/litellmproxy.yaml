@@ -46,6 +46,14 @@ spec:
         DefaultRetries: 0
       m3pro/noobai-xl-1.1:
         DefaultRetries: 0
+      # A retried Alibaba image or video call is a second paid generation, and the Token
+      # Plan bills credits: one attempt. The alibaba/ chat groups keep num_retries.
+      alibaba/qwen-image-3.0-pro:
+        DefaultRetries: 0
+      alibaba/wan2.7-image-pro:
+        DefaultRetries: 0
+      alibaba/wan3.0-video:
+        DefaultRetries: 0
     # The one Go model fails over to MiniMax M3.1 Flash on its own plan. M3.1 Flash
     # has no fallback: a Go-hosted MiniMax is billed per token, and sending MiniMax's
     # overflow there (1,218 requests, 72M tokens in the week to 2026-11-03, mostly

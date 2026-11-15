@@ -1,0 +1,33 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmmodel_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: alibaba-qwen-image-3-0-pro
+spec:
+  # Image generation on the Token Plan, sync. apiBase is the full native endpoint because
+  # qwencloud/ reuses the DashScope image config: at v1.109.1 it swaps a /compatible-mode/v1
+  # base for dashscope-intl, reads a bare host as a path-less URL, and counts no
+  # token-plan.* host as DashScope at all (litellm/llms/dashscope/common_utils.py). Output
+  # is a signed URL only, no b64_json. Size via "size" (1024x1024 goes out as 1024*1024;
+  # up to 2048x2048, up to 6 variants). Retries are off in routerSettings: a retry is a
+  # second billed image, and the plan's terms allow interactive use only.
+  modelName: alibaba/qwen-image-3.0-pro
+  params:
+    model: qwencloud/qwen-image-3.0-pro
+    apiBase: https://token-plan.ap-southeast-1.maas.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation
+    apiKeyRef:
+      name: litellm
+      key: ALIBABA_API_KEY
+    dropParams: true
+    additional:
+      # A minute or two per image, six variants in one request; the router's 600 s can fall short.
+      timeout: 900
+  info:
+    mode: image_generation
+    extra:
+      # The plan bills credits, and LiteLLM's entry for this model carries no per-image
+      # price: record $0 like the M3 Pro models.
+      output_cost_per_image: 0
+      # A health check would spend credits. No polling.
+      disable_background_health_check: true
