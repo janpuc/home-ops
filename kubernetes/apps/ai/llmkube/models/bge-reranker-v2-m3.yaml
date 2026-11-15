@@ -33,7 +33,7 @@ spec:
   modelCache:
     claimName: bge-reranker-v2-m3-model-cache-fast
   runtime: llamacpp
-  image: ghcr.io/ggml-org/llama.cpp:server-vulkan-b12375@sha256:f885c1137a997b318eede280b76b3f35cb84b757c218f41480a33be2b129b8a9
+  image: ghcr.io/ggml-org/llama.cpp:server-vulkan-b12407@sha256:8af21639d085883fe5147a25a2ee29ce38302d950faa7e42355556d9f9a5af6c
   replicas: 1
   contextSize: 4096
   parallelSlots: 2
