@@ -5,9 +5,12 @@ kind: PersistentVolumeClaim
 metadata:
   name: renplay-lab
   labels:
-    # Always, so a size change in git reaches the claim (the size grew from 5Gi to 10Gi
-    # on 2026-11-16, when the daily save backups filled the volume).
-    kustomize.toolkit.fluxcd.io/ssa: Always
+    # Merge, so a size change in git reaches the claim (the size grew from 5Gi to 10Gi
+    # on 2026-11-16, when the daily save backups filled the volume). The apply policy values
+    # are Override, Merge, IfNotPresent and Ignore; IfNotPresent skips the claim and the
+    # size change never reaches it. Merge keeps the fields the CSI driver sets on the bound
+    # claim and applies the storage request from git.
+    kustomize.toolkit.fluxcd.io/ssa: Merge
 spec:
   accessModes:
     - ReadWriteOnce
