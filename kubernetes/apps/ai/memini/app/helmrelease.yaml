@@ -125,7 +125,7 @@ spec:
         annotations:
           gatus.home-operations.com/enabled: "false"
         parentRefs:
-          - name: envoy-external
+          - name: envoy-internal
             namespace: network
         hostnames:
           - memini.janpuc.com
