@@ -30,6 +30,11 @@ spec:
         # the 5 GB data volume with history nobody reads (2026-11-11). Saves a game deletes still stay 30 days.
         - name: RENPLAY_SAVE_HISTORY
           value: "0"
+        # The daily save backups stay two days, not fourteen (2026-11-16). The tester's saves are
+        # about 1.4 GB, so each daily zip is about 740 MB; fourteen of them do not fit on the data
+        # volume. Two zips and the library database copies fit in 10 GB.
+        - name: RENPLAY_BACKUP_KEEP
+          value: "2"
     podSecurityContext:
       supplementalGroups: [3000]
     resources:
