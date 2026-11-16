@@ -133,3 +133,19 @@ spec:
     - datasourceName: prometheus
       inputName: DS_PROMETHEUS
   url: https://grafana.com/api/dashboards/19105/revisions/9/download
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/grafana.integreatly.org/grafanadashboard_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: speakers
+spec:
+  allowCrossNamespaceImport: true
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  # The DietPi AirPlay speaker nodes: speaker_* metrics from the node-exporter ScrapeConfig and
+  # their journals in VictoriaLogs. The JSON picks both datasources through hidden variables.
+  configMapRef:
+    name: speakers-dashboard
+    key: speakers.json

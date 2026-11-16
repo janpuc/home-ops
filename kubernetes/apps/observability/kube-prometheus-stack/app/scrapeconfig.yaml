@@ -9,6 +9,8 @@ spec:
     - targets:
         - bigmouth.internal:9100
         - bc250.internal:9100
+        # DietPi AirPlay speaker node: node_exporter plus speaker_* gauges from speaker-health.
+        - dietpibedroomspeaker.internal:9100
   metricsPath: /metrics
   relabelings:
     - action: replace
