@@ -14,6 +14,15 @@ spec:
       slskd:
         annotations:
           reloader.stakater.com/auto: "true"
+        pod:
+          # One-off restage marker (2026-11-16). The volume lost a write under
+          # the mounted filesystem when k8s-2 rebooted during the Talos upgrade
+          # and the DRBD quorum went away, so the ext4 carries a latent
+          # writeback error (miroir_volume_needs_restage). A new pod template
+          # makes a new pod; a new pod unstages the volume and the next stage
+          # runs fsck. The annotation can go once the volume is clean.
+          annotations:
+            miroir.home-operations.com/restage: "2026-11-16"
         initContainers:
           gluetun:
             image:
