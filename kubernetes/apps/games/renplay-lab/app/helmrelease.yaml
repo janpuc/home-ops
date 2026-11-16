@@ -16,7 +16,7 @@ spec:
     # The lab runs a Renplay release by digest (an edge image of a branch when a fix needs testing first).
     image:
       tag: edge
-      digest: sha256:c6f5f9181afa2b14566dfebc494541b9e29400ebd538074b29e26c71797ea82c
+      digest: sha256:e0e1b4bbbb86aca762fb4ed4246f07c61102d9f1e361bd39e4a13e6c2b1ccde0
     config:
       extraEnv:
         - name: RENPLAY_IMAGE_CONCURRENCY
