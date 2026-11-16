@@ -5,11 +5,13 @@ kind: PersistentVolumeClaim
 metadata:
   name: renplay-lab
   labels:
-    kustomize.toolkit.fluxcd.io/ssa: IfNotPresent
+    # Always, so a size change in git reaches the claim (the size grew from 5Gi to 10Gi
+    # on 2026-11-16, when the daily save backups filled the volume).
+    kustomize.toolkit.fluxcd.io/ssa: Always
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 5Gi
+      storage: 10Gi
   storageClassName: miroir-fast
