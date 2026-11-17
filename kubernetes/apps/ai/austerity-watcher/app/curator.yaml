@@ -1,6 +1,6 @@
 ---
 # The curator bot (janpuc/austerity-watch docs/curator.md): twice a day it reads the admin's
-# queue, researches each lead with Sol through the Codex CLI, and writes through the admin API.
+# queue, researches each lead with Luna through the Codex CLI, and writes through the admin API.
 # Its PRs merge themselves only when every check passes. Suspended until the one-time login.
 # yaml-language-server: $schema=https://k8s-schemas.home-operations.com/external-secrets.io/externalsecret_v1.json
 apiVersion: external-secrets.io/v1
@@ -104,15 +104,16 @@ spec:
                     secretKeyRef:
                       name: austerity-watcher-secret
                       key: ADMIN_API_TOKEN
-                # Sol is gone from the model catalog of ChatGPT accounts: since
-                # 2026-11-16 the server rejects it with HTTP 400 "The 'gpt-6.1-sol'
-                # model is not supported when using Codex with a ChatGPT account",
-                # and the CLI resolves only gpt-6-luna, gpt-5.6-terra, gpt-5.6-luna,
-                # codex-auto-review and gpt-reserve for a signed-in account
-                # (openai/codex#60970, #55617). Luna is the strongest of those and
-                # the one the same accounts still run.
+                # Sol was removed from the model catalog of ChatGPT accounts: the server
+                # rejects it with HTTP 400 "model is not supported when using Codex with a
+                # ChatGPT account" (openai/codex#60970, #55617). Luna is the strongest model
+                # such an account can still use, and the curator image ships a CLI new enough
+                # for it (minimum 0.155.0, image has 0.161.0).
                 - name: CURATOR_MODEL
                   value: gpt-6-luna
+                # Deliberately the same model as the research model above: the safety
+                # review runs on the same account, so the safety model has the same
+                # catalog to choose from, and Luna is the strongest one it can use.
                 - name: CURATOR_SAFETY_MODEL
                   value: gpt-6-luna
                 - name: PUSHOVER_TOKEN
