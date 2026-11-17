@@ -28,8 +28,8 @@ spec:
           # members are slow, and every apply that goes through the kopiur
           # admission webhook waits on the API server twice. A single stalled
           # admission call used to leave the Kustomization not Ready for an
-          # hour, which is also how long the FluxResourceNotReady alert rule
-          # takes to fire.
+          # hour. The FluxResourceNotReady alert rule fires after 15m of the
+          # Kustomization being not Ready.
           retryInterval: 5m
           patches:
             - patch: |-
