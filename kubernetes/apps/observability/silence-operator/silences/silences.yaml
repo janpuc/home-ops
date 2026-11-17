@@ -64,3 +64,24 @@ spec:
       value: games
     - name: policy
       value: renplay
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/observability.giantswarm.io/silence_v1alpha2.json
+apiVersion: observability.giantswarm.io/v1alpha2
+kind: Silence
+metadata:
+  name: bedroom-speaker-clock-not-synchronising
+spec:
+  # The bedroom speaker is a Raspberry Pi without an RTC. Its NTP client
+  # (nqptd) steps the clock but never disciplines it with adjtimex, so the
+  # kernel timex status keeps a frequency ratio of 1.0 and its maxerror
+  # grows until it reaches the 16 s limit. At 2026-11-17 09:18Z the kernel
+  # set STA_UNSYNCED and node_timex_sync_status fell to 0. The clock itself
+  # is accurate: time() - node_time_seconds stayed at 0.77 s for 12 h.
+  # The real fix is a clock discipline on the speaker (chrony), which is
+  # outside this repository. This silence expires on its own.
+  duration: 30d
+  matchers:
+    - name: alertname
+      value: NodeClockNotSynchronising
+    - name: instance
+      value: dietpibedroomspeaker.internal:9100
