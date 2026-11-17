@@ -104,10 +104,17 @@ spec:
                     secretKeyRef:
                       name: austerity-watcher-secret
                       key: ADMIN_API_TOKEN
+                # Sol is gone from the model catalog of ChatGPT accounts: since
+                # 2026-11-16 the server rejects it with HTTP 400 "The 'gpt-6.1-sol'
+                # model is not supported when using Codex with a ChatGPT account",
+                # and the CLI resolves only gpt-6-luna, gpt-5.6-terra, gpt-5.6-luna,
+                # codex-auto-review and gpt-reserve for a signed-in account
+                # (openai/codex#60970, #55617). Luna is the strongest of those and
+                # the one the same accounts still run.
                 - name: CURATOR_MODEL
-                  value: gpt-6.1-sol
+                  value: gpt-6-luna
                 - name: CURATOR_SAFETY_MODEL
-                  value: gpt-6.1-sol
+                  value: gpt-6-luna
                 - name: PUSHOVER_TOKEN
                   valueFrom:
                     secretKeyRef:
