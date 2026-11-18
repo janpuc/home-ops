@@ -32,7 +32,10 @@ spec:
       providers:
         # Two LiteLLM keys (litellmvirtualkey.yaml): MiniMax for reviews, uncapped, and
         # the OpenCode Go one with a weekly budget, so a spent budget stops only what
-        # runs on Go.
+        # runs on Go. The ChatGPT plan carries the confidence score, through a sign-in
+        # kritika keeps in its database (`/kritika chatgpt login chatgpt`) rather than a key.
+        chatgpt:
+          type: chatgpt
         litellm:
           type: openai
           baseUrl: http://litellm.ai.svc.cluster.local:4000/v1
@@ -83,8 +86,10 @@ spec:
         fallback: litellm-go/opencode-go/deepseek-v4.1-flash
       # A second opinion from another vendor scores each review 0-5 and rates its
       # risk; the commit status reports it without gating, and nothing is approved.
+      # Sol on the ChatGPT plan: one call of about 10K tokens a review, about 60 a
+      # week, and off the OpenCode Go allowance.
       confidence:
-        model: litellm-go/opencode-go/deepseek-v4.1-flash
+        model: chatgpt/~sol-latest
         fallback: litellm/minimax/MiniMax-M3.1-Flash
       # Reviews averaged about 3M tokens each (707M input over 240 in the two weeks to
       # 7 Nov) at 100 steps / 6M tokens / 45m, sized for M3 at ~30 s a step. M3.1 Flash
