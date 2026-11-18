@@ -1,0 +1,34 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: prometheus-adapter
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: prometheus-adapter
+  interval: 1h
+  # Serves external.metrics.k8s.io for the zeroscaler HorizontalPodAutoscalers,
+  # which KEDA served before. Until KEDA's own APIService of that name is gone
+  # the install fails on it, so it retries rather than stalling after one try.
+  install:
+    strategy:
+      name: RetryOnFailure
+      retryInterval: 2m
+  values:
+    logLevel: 1
+    prometheus:
+      url: http://prometheus-operated.observability.svc.cluster.local
+      port: 9090
+    rules:
+      default: false
+      # The NAS probe (blackbox-exporter's lan-nfs Probe, job nfs_probe) as an
+      # external metric: 1 when the NFS port answers, 0 when it does not.
+      external:
+        - seriesQuery: '{__name__="probe_success"}'
+          resources:
+            namespaced: false
+          name:
+            as: probe_success
+          metricsQuery: max_over_time(<<.Series>>{<<.LabelMatchers>>}[1m])
