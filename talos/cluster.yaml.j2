@@ -149,6 +149,16 @@ kind: SysfsConfig
 params:
   class.scsi_host.host0.link_power_management_policy: max_performance
 ---
+# Read-ahead for NFS mounts, applied by the nfsrahead extension (kernel default is 128 KB)
+apiVersion: v1alpha1
+kind: EtcFileConfig
+name: nfs.conf
+mode: 0o644
+contents: |
+  [nfsrahead]
+  nfs4=16384
+  default=128
+---
 apiVersion: v1alpha1
 kind: EtcFileConfig
 name: nfsmount.conf

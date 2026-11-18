@@ -41,6 +41,11 @@ spec:
     ipam:
       mode: kubernetes
     ipv4NativeRoutingCIDR: 10.42.0.0/16
+    # L2 announcement leases share the agent's API budget (default 10/20) with endpoint updates;
+    # renewals were being throttled ("client rate limiter Wait returned an error")
+    k8sClientRateLimit:
+      qps: 30
+      burst: 60
     k8sServiceHost: 127.0.0.1
     k8sServicePort: 7445
     kubeProxyReplacement: true
