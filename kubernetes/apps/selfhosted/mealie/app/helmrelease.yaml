@@ -94,6 +94,14 @@ spec:
         ports:
           http:
             port: ${HTTP_PORT}
+    route:
+      app:
+        hostnames:
+          - recipes.janpuc.com
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
     persistence:
       config:
         existingClaim: "{{ .Release.Name }}"
