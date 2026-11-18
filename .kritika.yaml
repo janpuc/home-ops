@@ -30,6 +30,10 @@ trigger:
         - "kubernetes/apps/ai/litellm*/**"
 skills:
   scope:
+    # Every review gets review-focus whole: it keeps the agent on the change
+    # and has it submit once the change's questions are answered.
+    review-focus:
+      load: true
     renovate-review:
       when: [{ expr: pr.headRef.startsWith("renovate/") }]
 tools:

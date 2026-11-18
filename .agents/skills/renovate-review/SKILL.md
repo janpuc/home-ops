@@ -23,6 +23,20 @@ excerpts. Read it first. Go upstream when it is missing, truncated or
 ambiguous, and always for a major update or a jump over several versions:
 read every intermediate release, breaking changes land in the middle.
 
+## How deep to go
+
+The depth follows what the update can break.
+
+- A patch or minor update of a mise tool, a GitHub Action or an app's
+  image: read the release notes of each version it crosses, check the
+  lockfile entry or the pinned digest, find where it is used here, and
+  submit. That takes about ten steps.
+- A chart, a major update, an operator or controller, and anything under
+  the paths `.kritika.yaml` lists as protected: everything below,
+  rendering included.
+- Renovate's presets, the lefthook configuration and the CI workflows are
+  read only when the diff touches them or a release note names them.
+
 ## Finding the upstream
 
 - An image at `<registry>/<owner>/<repo>` usually comes from `<owner>/<repo>`
