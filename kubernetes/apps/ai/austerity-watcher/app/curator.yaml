@@ -26,17 +26,25 @@ spec:
 ---
 # Holds the Codex CLI's ChatGPT login so it can refresh itself. Not backed up: a lost volume
 # means one new device login.
+#
+# A single-replica fast-local volume pins the only pod that mounts it to one node. On
+# 2026-11-15 the 14:00Z run stayed Pending for its whole 100 minute deadline: the scheduler
+# had 0/3 nodes available, two of them for memory requests and the third excluded by this
+# volume's node affinity. k8s-0 and k8s-1 held 14608 Mi and 14576 Mi of memory requests
+# against 14628 Mi allocatable, while k8s-2 had 3580 Mi free. A 1 Gi file of login tokens
+# is not worth a node pin: on the two-replica pool the pod can follow the rest of this app
+# to k8s-2. The new name forces one fresh device login (docs/curator.md in janpuc/austerity-watch).
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: austerity-curator-codex
+  name: austerity-curator-codex-fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 1Gi
-  storageClassName: miroir-fast-local
+  storageClassName: miroir-fast
 ---
 # yaml-language-server: $schema=https://k8s-schemas.home-operations.com/batch/cronjob_v1.json
 apiVersion: batch/v1
@@ -126,7 +134,7 @@ spec:
           volumes:
             - name: codex
               persistentVolumeClaim:
-                claimName: austerity-curator-codex
+                claimName: austerity-curator-codex-fast
             - name: tmp
               emptyDir:
                 sizeLimit: 256Mi
