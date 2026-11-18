@@ -18,6 +18,15 @@ spec:
       retryInterval: 2m
   values:
     logLevel: 1
+    # The metrics server it replaces asked for 15m and 64Mi; without a request
+    # the adapter would be BestEffort and the first evicted, taking the
+    # metric every zeroscaler HPA reads with it.
+    resources:
+      requests:
+        cpu: 15m
+        memory: 64Mi
+      limits:
+        memory: 128Mi
     prometheus:
       url: http://prometheus-operated.observability.svc.cluster.local
       port: 9090
