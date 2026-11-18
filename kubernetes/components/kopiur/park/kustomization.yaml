@@ -1,25 +1,43 @@
 ---
 # yaml-language-server: $schema=https://json.schemastore.org/kustomization
 # Temporary, per app, while its volume is rebuilt (e.g. a storage-class move):
-# - KEDA holds the zeroscaler ScaledObject at 0 replicas, so the app can't run
-#   until the rebuilt volume has been verified;
+# - the zeroscaler HorizontalPodAutoscaler is left out and the HelmRelease
+#   renders the app's Deployment at 0 replicas, so the app can't run until the
+#   rebuilt volume has been verified (an HPA cannot be paused, and one holding
+#   1 replica while the NAS answers would start the app);
 # - the SnapshotSchedule is suspended, so no scheduled backup can capture an
 #   empty or half-restored volume and become the "latest" a later restore uses
 #   (it happened during the 2026-09-03 migration).
-# Remove it only after the new volume is verified.
+# List it after the zeroscaler component. Remove it only after the new volume
+# is verified.
 apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
 patches:
   - target:
-      group: keda.sh
-      kind: ScaledObject
+      group: autoscaling
+      kind: HorizontalPodAutoscaler
     patch: |-
-      apiVersion: keda.sh/v1alpha1
-      kind: ScaledObject
+      $patch: delete
+      apiVersion: autoscaling/v2
+      kind: HorizontalPodAutoscaler
       metadata:
         name: _
-        annotations:
-          autoscaling.keda.sh/paused-replicas: "0"
+  - target:
+      group: helm.toolkit.fluxcd.io
+      kind: HelmRelease
+    patch: |-
+      - op: add
+        path: /spec/postRenderers
+        value:
+          - kustomize:
+              patches:
+                - target:
+                    kind: ${CONTROLLER:=Deployment}
+                    name: ${APP}
+                  patch: |-
+                    - op: add
+                      path: /spec/replicas
+                      value: 0
   - target:
       group: kopiur.home-operations.com
       kind: SnapshotSchedule
