@@ -33,7 +33,7 @@ spec:
             image:
               repository: ghcr.io/renplay-org/lab
               # Pin the digest the image workflow prints, never the tag.
-              tag: latest@sha256:0f4c5306c2b478cdb7f07755871bcd1504533d5a8b27c4c56f577cee3bfdd6e9
+              tag: latest@sha256:5387fc8a462b05d03595864663fc3bb7bd31bc56f1b729a32ac811d3ec1360a2
             command: ["node", "service/src/main.ts"]
             env:
               PORT: "8080"
@@ -51,11 +51,15 @@ spec:
               SMOKE_MINUTES: "2"
               # The deep test after a smoke pass: a walk through the script, verified at 90% coverage.
               LAB_DEEP_MINUTES: "2"
+              # One longer walk for a game whose first walk ran out of time at 40% or more. 0 turns it off.
+              LAB_DEEP_LONG_MINUTES: "15"
               # hold: a game waits at pr until it is retried. auto: it is promoted to the main Renplay by itself.
               LAB_PROMOTE: auto
               # A game's catalog pull request is merged by itself once GitHub allows it (its build check passed),
               # when the recipe has tags and a version. The rest wait on the review page.
               LAB_MERGE: auto
+              # Version-watch pull requests merge once GitHub allows them too. off leaves them for a person.
+              LAB_MERGE_WATCH: auto
               PROMOTE_MIN_FREE: "1000000000000"
               # Games up to sisyphus's 25 GB, and two installed games waiting for the cluster's tester at most.
               MAX_DOWNLOAD_BYTES: "25000000000"
@@ -85,6 +89,17 @@ spec:
                   periodSeconds: 15
                   failureThreshold: 6
               readiness: *probe
+              # Start-up opens the database and tidies old attempts before /health answers.
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: 8080
+                  timeoutSeconds: 5
+                  periodSeconds: 5
+                  failureThreshold: 60
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
@@ -92,7 +107,8 @@ spec:
                 drop: ["ALL"]
             resources:
               requests:
-                cpu: 20m
+                # What it uses while it works (0.3 to 1.3 CPU on 2026-11-18), so a busy node does not starve its probes.
+                cpu: 300m
                 memory: 512Mi
               limits:
                 # WebKit reads an itch.io page, and Chromium holds up to three pages of F95zone's check desk.

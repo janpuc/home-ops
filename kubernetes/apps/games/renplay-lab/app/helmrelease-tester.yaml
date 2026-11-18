@@ -23,7 +23,7 @@ spec:
             image:
               repository: ghcr.io/renplay-org/lab
               # The same image as the service. Pin the same digest.
-              tag: latest@sha256:0f4c5306c2b478cdb7f07755871bcd1504533d5a8b27c4c56f577cee3bfdd6e9
+              tag: latest@sha256:5387fc8a462b05d03595864663fc3bb7bd31bc56f1b729a32ac811d3ec1360a2
             command: ["node", "tester/server.mjs"]
             env:
               PORT: "8080"
@@ -51,7 +51,8 @@ spec:
             resources:
               requests:
                 cpu: 500m
-                memory: 2Gi
+                # About 75 MiB idle. The limit below covers a game in Chromium, so the request only needs to schedule.
+                memory: 1Gi
               limits:
                 # Chromium with software WebGL and a game's assets in memory.
                 cpu: "4"

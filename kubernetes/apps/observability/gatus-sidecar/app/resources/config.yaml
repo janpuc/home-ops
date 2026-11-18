@@ -51,6 +51,17 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
 
+  # The Renplay lab's console: its /health says ok:false when its database cannot be written.
+  - name: renplay-console
+    group: services
+    url: http://renplay-lab-service.games.svc.cluster.local:8080/health
+    interval: 1m
+    client:
+      timeout: 5s
+    conditions:
+      - "[STATUS] == 200"
+      - "[BODY].ok == true"
+
 metrics: true
 
 storage:
