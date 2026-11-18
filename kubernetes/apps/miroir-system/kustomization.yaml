@@ -8,4 +8,3 @@ components:
 resources:
   - ./namespace.yaml
   - ./miroir/ks.yaml
-  - ./miroir-medic/ks.yaml
