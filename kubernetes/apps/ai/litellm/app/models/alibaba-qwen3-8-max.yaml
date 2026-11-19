@@ -7,7 +7,7 @@ metadata:
 spec:
   # Alibaba Model Studio Token Plan (Personal Standard: 80,000 credits a month) on the
   # plan's OpenAI-compatible base. The plan bills credits, not tokens, and LiteLLM has no
-  # price for openai/qwen3.8-max, so spend reads $0 like the M3 Pro models. Its terms
+  # price for openai/qwen3.8-max, so spend reads $0. Its terms
   # cover interactive use only (no scripts, no batch calls), and this alias is in no
   # fallback list: a failure is returned to the caller as-is.
   modelName: alibaba/qwen3.8-max

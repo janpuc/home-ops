@@ -23,7 +23,7 @@ spec:
   info:
     mode: image_generation
     extra:
-      # The plan bills credits: record $0 like the M3 Pro models. LiteLLM has no price
+      # The plan bills credits: record $0. LiteLLM has no price
       # entry for this model at all.
       output_cost_per_image: 0
       # A health check would spend credits. No polling.

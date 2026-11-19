@@ -5,13 +5,11 @@ kind: LiteLLMVirtualKey
 metadata:
   name: open-webui-litellm
 spec:
-  # Chat and its background tasks (TASK_MODEL_EXTERNAL). The private m3pro-local/
-  # aliases stay out of a web chat.
+  # Chat and its background tasks (TASK_MODEL_EXTERNAL).
   keyAlias: open-webui
   models:
     - opencode-go/deepseek-v4.1-flash
     - minimax/MiniMax-M3.1-Flash
-    - m3pro/huihui-qwen3.8-27b
   proxyRef: litellm
   secretName: open-webui-litellm
   secretKey: OPENAI_API_KEY

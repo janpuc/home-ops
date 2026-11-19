@@ -23,7 +23,7 @@ spec:
     mode: video_generation
     extra:
       # LiteLLM prices qwencloud/wan3.0-video from $0.04 to $0.20 a second; the plan bills
-      # credits, so record $0 like the M3 Pro models.
+      # credits, so record $0.
       output_cost_per_second: 0
       # A health check would submit a clip and spend credits. No polling.
       disable_background_health_check: true
