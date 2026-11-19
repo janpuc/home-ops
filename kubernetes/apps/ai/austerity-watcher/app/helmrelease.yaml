@@ -56,16 +56,9 @@ spec:
               WATCHER_GITHUB_TOKEN_FILE: /secrets/GITHUB_TOKEN
               WATCHER_TEXT_RETENTION_DAYS: "30"
               WATCHER_METRICS_PORT: "9090"
-              # The analyst: press sweep plus local-LLM triage and enrichment every 3 hours
-              # (docs/analyst.md). The models are local to the m3pro.
-              WATCHER_ANALYST_ENABLED: "true"
-              WATCHER_ANALYST_INTERVAL_HOURS: "3"
-              WATCHER_TRIAGE_MODEL: m3pro-local/qwen3.6-35b-a3b
-              WATCHER_ENRICH_MODEL: m3pro-local/qwen3.8-27b
-              WATCHER_TRIAGE_CAP: "400"
-              WATCHER_ENRICH_CAP: "40"
-              WATCHER_LITELLM_BASE_URL: http://litellm.ai.svc.cluster.local:4000/v1
-              WATCHER_LITELLM_KEY_FILE: /litellm/LITELLM_API_KEY
+              # The analyst (docs/analyst.md) is off: its local models ran on sisyphus, which no
+              # longer serves models. Turning it back on needs a model, a virtual key and its mount.
+              WATCHER_ANALYST_ENABLED: "false"
               # The admin site (docs/admin.md): internal gateway only, Pocket ID login for id-admin.
               ADMIN_ENABLED: "true"
               ADMIN_PORT: "8080"
@@ -266,15 +259,6 @@ spec:
           austerity-watcher:
             app:
               - path: /secrets
-                readOnly: true
-      # The analyst's virtual key, which the operator writes (litellmvirtualkey.yaml).
-      litellm:
-        type: secret
-        name: austerity-watcher-litellm
-        advancedMounts:
-          austerity-watcher:
-            app:
-              - path: /litellm
                 readOnly: true
       tmp:
         type: emptyDir

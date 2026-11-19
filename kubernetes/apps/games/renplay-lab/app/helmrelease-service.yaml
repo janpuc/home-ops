@@ -45,9 +45,8 @@ spec:
               # The Renplays and the tester at their in-cluster addresses. Only promote reaches the main one.
               LAB_URL: http://renplay-lab.games.svc.cluster.local:8080
               MAIN_URL: http://renplay.games.svc.cluster.local:8080
-              # The cluster's tester takes games up to 2 GB. Bigger ones go to the tester on sisyphus (an M3 Pro on
-              # the LAN, native, reached through a relay in OrbStack on 8097, games up to 25 GB). When it is away they wait.
-              TESTER_URLS: http://renplay-lab-tester.games.svc.cluster.local:8080,http://192.168.69.249:8097
+              # The cluster's tester, games up to 2 GB.
+              TESTER_URLS: http://renplay-lab-tester.games.svc.cluster.local:8080
               SMOKE_MINUTES: "2"
               # The deep test after a smoke pass: a walk through the script, verified at 90% coverage.
               LAB_DEEP_MINUTES: "2"
@@ -61,8 +60,8 @@ spec:
               # Version-watch pull requests merge once GitHub allows them too. off leaves them for a person.
               LAB_MERGE_WATCH: auto
               PROMOTE_MIN_FREE: "1000000000000"
-              # Games up to sisyphus's 25 GB, and two installed games waiting for the cluster's tester at most.
-              MAX_DOWNLOAD_BYTES: "25000000000"
+              # Games up to the tester's 2 GB, and two installed games waiting for it at most.
+              MAX_DOWNLOAD_BYTES: "2000000000"
               INSTALLED_MAX: "2"
               # The review page (/review): sign-in with Pocket ID, the group id-admin only.
               REVIEW_URL: https://renplay-console.janpuc.com
