@@ -22,3 +22,7 @@ data:
       - name: open-webui
         hash: "{{ index . "MEMINI_API_KEY_open-webui" | sha256sum }}"
         home: personal/jan
+      # sisyphus, Jan's work machine: non-admin and unbound, so its agents pick
+      # the work namespace per request instead of writing into personal/jan.
+      - name: sisyphus
+        hash: "{{ index . "MEMINI_API_KEY_sisyphus" | sha256sum }}"
