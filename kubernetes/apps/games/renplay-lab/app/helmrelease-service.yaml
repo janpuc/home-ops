@@ -33,7 +33,7 @@ spec:
             image:
               repository: ghcr.io/renplay-org/lab
               # Pin the digest the image workflow prints, never the tag.
-              tag: latest@sha256:5387fc8a462b05d03595864663fc3bb7bd31bc56f1b729a32ac811d3ec1360a2
+              tag: latest@sha256:e0713bed827e9701bd09ba33e1f96c5ee9fa3c9daaef5240c1d1264f8fbfaccd
             command: ["node", "service/src/main.ts"]
             env:
               PORT: "8080"
@@ -59,6 +59,8 @@ spec:
               LAB_MERGE: auto
               # Version-watch pull requests merge once GitHub allows them too. off leaves them for a person.
               LAB_MERGE_WATCH: auto
+              # The lab deletes a game's saves on the testbed when it forgets the game. off keeps them.
+              LAB_DELETE_SAVES: "on"
               PROMOTE_MIN_FREE: "1000000000000"
               # Games up to the tester's 2 GB, and two installed games waiting for it at most.
               MAX_DOWNLOAD_BYTES: "2000000000"
