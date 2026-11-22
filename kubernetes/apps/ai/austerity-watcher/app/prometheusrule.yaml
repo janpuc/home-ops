@@ -65,7 +65,7 @@ spec:
         # previous pod's errors are never divided by a new pod's calls after a restart.
         - alert: AusterityAnalystLLMErrors
           expr: |-
-            (sum by (pod) (increase(watcher_analyst_llm_errors_total{kind=~"invalid_json|timeout"}[6h])) / sum by (pod) (increase(austerity_watcher_analyst_llm_calls_total[6h])) > 0.5) and on(pod) (sum by (pod) (increase(austerity_watcher_analyst_llm_calls_total[6h])) > 20)
+            (sum by (pod) (increase(watcher_analyst_llm_errors_total{kind=~"invalid_json|timeout"}[6h])) / sum by (pod) (increase(austerity_watcher_analyst_llm_calls_total[6h])) > 0.5) and on(pod) (sum by (pod) (increase(austerity_watcher_analyst_llm_calls_total[6h])) > 20) and on(pod) (austerity_watcher_analyst_enabled == 1)
           for: 15m
           annotations:
             summary: >-
