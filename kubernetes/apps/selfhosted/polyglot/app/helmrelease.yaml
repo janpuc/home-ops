@@ -18,7 +18,7 @@ spec:
           app:
             image:
               repository: ghcr.io/janpuc/polyglot
-              tag: sha-f0925da@sha256:240262050a49d67690b86b9fcc6d3a729c659f9d81c5b8f3398104ba48baf2af
+              tag: sha-5da49ba@sha256:ec43c6fb8e0376edd2d3e72c65dcee8595bc4ecf669fcc20eb6adb3b5bb93598
             probes:
               liveness: &probe
                 enabled: true
