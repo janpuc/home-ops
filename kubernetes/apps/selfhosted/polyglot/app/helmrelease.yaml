@@ -14,11 +14,25 @@ spec:
       polyglot:
         annotations:
           reloader.stakater.com/auto: "true"
+        # One writer on the SQLite volume.
+        strategy: Recreate
         containers:
           app:
+            envFrom:
+              - secretRef:
+                  name: "{{ .Release.Name }}-secret"
+              - secretRef:
+                  name: "{{ .Release.Name }}-oidc-credentials"
+            env:
+              POLYGLOT_DB: /data/polyglot.db
+              POLYGLOT_PUBLIC_URL: https://polyglot.janpuc.com
+              POLYGLOT_AUTH_MODE: oidc
+              POLYGLOT_OIDC_ISSUER: https://id.janpuc.com
+              # Exact match against the token's groups claim (Pocket ID's names).
+              POLYGLOT_OIDC_ALLOWED_GROUPS: ID-Users,ID-Admin
             image:
               repository: ghcr.io/janpuc/polyglot
-              tag: sha-5da49ba@sha256:ec43c6fb8e0376edd2d3e72c65dcee8595bc4ecf669fcc20eb6adb3b5bb93598
+              tag: sha-645f2ba@sha256:83eb686eb12c2bbe61fd292ee51ad435d7bfc63b7ae507156a4d748bb2065d56
             probes:
               liveness: &probe
                 enabled: true
@@ -34,7 +48,7 @@ spec:
             resources:
               requests:
                 cpu: 10m
-                memory: 96Mi
+                memory: 128Mi
               limits:
                 memory: 256Mi
             securityContext:
@@ -46,6 +60,8 @@ spec:
         runAsNonRoot: true
         runAsUser: 1000
         runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
     service:
       app:
         ports:
@@ -63,6 +79,10 @@ spec:
           - name: envoy-internal
             namespace: network
     persistence:
+      data:
+        existingClaim: "{{ .Release.Name }}"
+        globalMounts:
+          - path: /data
       tmp:
         type: emptyDir
         globalMounts:

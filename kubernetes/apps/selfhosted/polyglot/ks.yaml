@@ -5,10 +5,22 @@ kind: Kustomization
 metadata:
   name: polyglot
 spec:
-  # Stage 1: stateless. Authored scenes and prebuilt audio only, no database, so no kopiur backup
-  # and no Pocket ID yet. Both come with stage 2, before any personal data is stored.
+  # Stage 2: the practice record lives in SQLite on a kopiur backed volume, sign-in is Pocket ID.
+  # Backup only, no zeroscaler.
+  components:
+    - ../../../../components/kopiur/backup
+  dependsOn:
+    - name: miroir-config
+      namespace: miroir-system
+    - name: pocket-id-instance
+      namespace: security
   interval: 1h
   path: ./kubernetes/apps/selfhosted/polyglot/app
+  postBuild:
+    substitute:
+      APP: polyglot
+      KOPIUR_CAPACITY: 1Gi
+      KOPIUR_COPYMETHOD: Direct
   prune: true
   sourceRef:
     kind: GitRepository
