@@ -18,4 +18,5 @@ resources:
   - ./mealie/ks.yaml
   - ./medibrowserr/ks.yaml
   - ./polished/ks.yaml
+  - ./polyglot/ks.yaml
   - ./searxng/ks.yaml
