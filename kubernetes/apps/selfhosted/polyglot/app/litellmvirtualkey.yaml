@@ -1,0 +1,20 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmvirtualkey_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMVirtualKey
+metadata:
+  name: polyglot
+spec:
+  # The tutor: text conversation with corrections. OpenCode Go first, MiniMax as the
+  # app's own fallback (LiteLLM has no MiniMax fallback for it). Capped weekly at
+  # LiteLLM's list prices. MiniMax M3.1 Flash has no LiteLLM price and spends $0.
+  keyAlias: polyglot
+  models:
+    - opencode-go/deepseek-v4.1-flash
+    - minimax/MiniMax-M3.1-Flash
+  maxBudget: "3"
+  budgetDuration: 7d
+  proxyRef: litellm
+  proxyNamespace: ai
+  secretName: polyglot-litellm
+  secretKey: POLYGLOT_LLM_KEY

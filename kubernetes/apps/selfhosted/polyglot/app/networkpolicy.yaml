@@ -1,0 +1,53 @@
+---
+# Egress only to what the app needs: DNS, LiteLLM and Pocket ID. id.janpuc.com resolves
+# in the cluster to envoy-external (192.168.69.54), so the OIDC discovery, token and JWKS
+# calls go through the external gateway. Kubelet probes come from the node and are not
+# affected. Ingress stays open, the internal gateway is the only route in.
+# yaml-language-server: $schema=https://json.schemastore.org/kubernetes-networkpolicy.json
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: polyglot-egress
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: polyglot
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ai
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: litellm
+      ports:
+        - protocol: TCP
+          port: 4000
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: network
+          podSelector:
+            matchLabels:
+              gateway.envoyproxy.io/owning-gateway-name: envoy-external
+        - ipBlock:
+            cidr: 192.168.69.54/32
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 10443
