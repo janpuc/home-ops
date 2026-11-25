@@ -28,6 +28,30 @@ spec:
           - name: alertname
             value: AusterityQuarantineWaiting
             matchType: =
+      # Austerity alerts never page (Jan, 2026-11-25). They still fire and show
+      # in Alertmanager and Grafana, and the austerity admin queue is the place
+      # to look. Covers its own alerts, the curator cronjob runs and its pods.
+      - receiver: blackhole
+        matchers:
+          - name: alertname
+            value: Austerity.*
+            matchType: =~
+      - receiver: blackhole
+        matchers:
+          - name: namespace
+            value: ai
+            matchType: =
+          - name: job_name
+            value: austerity-.*
+            matchType: =~
+      - receiver: blackhole
+        matchers:
+          - name: namespace
+            value: ai
+            matchType: =
+          - name: pod
+            value: austerity-.*
+            matchType: =~
       - receiver: pushover
         matchers:
           - name: severity
