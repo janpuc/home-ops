@@ -32,7 +32,7 @@ spec:
               POLYGLOT_OIDC_ALLOWED_GROUPS: ID-Users,ID-Admin
             image:
               repository: ghcr.io/janpuc/polyglot
-              tag: sha-fe26561@sha256:e40edb6a31492356eae530d93aacc7d7cd79f8fa061634b2d065c624ad8507a6
+              tag: sha-aa0dd14@sha256:39a66352cb48d344bb54aed976a0ac1acdda3e89a64079734ecf16e617333071
             probes:
               liveness: &probe
                 enabled: true
