@@ -2,6 +2,11 @@ monorepo_root = true
 
 [env]
 FLATE_PATH = '{{config_root}}/kubernetes/flux/cluster'
+# The cloudflare tunnel Kustomization substitutes from a Secret that the
+# bootstrap tree applies, so it is not part of the flux path flate renders.
+# Supply it as reference data, or flate fails with
+# "Secret network/cloudflare-tunnel-id-secret not found" on every diff.
+FLATE_SUPPLY = '{{config_root}}/bootstrap/kustomize/personal/network/secret.yaml'
 KUBECONFIG = "{{config_root}}/kubeconfig"
 MINIJINJA_CONFIG_FILE = "{{config_root}}/.minijinja.toml"
 TALOSCONFIG = "{{config_root}}/talosconfig"
