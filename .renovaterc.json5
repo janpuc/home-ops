@@ -178,6 +178,18 @@
       matchFileNames: ["kubernetes/apps/media/yattee-server/app/helmrelease.yaml"],
       allowedVersions: "<0.17",
     },
+    {
+      description: "Keep CloudNativePG on Postgres 18 until the extension images move with it",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["ghcr.io/cloudnative-pg/postgresql"],
+      allowedVersions: "/^18\\./",
+    },
+    {
+      description: "The vchord Database version follows ghcr.io/home-operations/vchord, not the cnpg preset's vchord-scratch",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["ghcr.io/tensorchord/vchord-scratch"],
+      enabled: false,
+    },
     // Labeling rules
     {
       matchUpdateTypes: ["major"],
