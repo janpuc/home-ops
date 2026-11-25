@@ -21,6 +21,20 @@ spec:
           memory: 512Mi
     autoEvictAfter: 1h
     autoDiskfulAfter: 1h
+    # Keep the two controller replicas on different nodes. On 2026-11-15 both
+    # sat on k8s-0, so the node reboot restarted both (5 container restarts on
+    # miroir-controller-fdf8b7cb-r8mks) and no replica was left to serve
+    # volume provisioning, snapshots or expansion.
+    global:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: miroir
+                  app.kubernetes.io/component: controller
+                  app.kubernetes.io/instance: miroir
+              topologyKey: kubernetes.io/hostname
     drbd:
       alExtents: 6007
     groupSnapshots:
