@@ -7,5 +7,7 @@ resources:
   - ./helmrelease.yaml
   - ./litellmvirtualkey.yaml
   - ./networkpolicy.yaml
+  - ./networkpolicy-speech.yaml
   - ./ocirepository.yaml
   - ./pocketidoidcclient.yaml
+  - ./speech.yaml
