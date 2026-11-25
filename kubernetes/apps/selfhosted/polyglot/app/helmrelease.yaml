@@ -30,14 +30,13 @@ spec:
               POLYGLOT_OIDC_ISSUER: https://id.janpuc.com
               # Exact match against the token's groups claim (Pocket ID's names).
               POLYGLOT_OIDC_ALLOWED_GROUPS: ID-Users,ID-Admin
-              # The tutor key. A missing key hides the tutor, so the pod starts without it.
+              # The tutor key, from the LiteLLMVirtualKey in this app. The chart schema has no optional.
               POLYGLOT_LLM_BASE_URL: http://litellm.ai.svc.cluster.local:4000/v1
               POLYGLOT_LLM_KEY:
                 valueFrom:
                   secretKeyRef:
                     name: polyglot-litellm
                     key: POLYGLOT_LLM_KEY
-                    optional: true
             image:
               repository: ghcr.io/janpuc/polyglot
               tag: sha-aa0dd14@sha256:39a66352cb48d344bb54aed976a0ac1acdda3e89a64079734ecf16e617333071
