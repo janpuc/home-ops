@@ -36,7 +36,7 @@ spec:
   modelCache:
     claimName: bge-embedding-m3-model-cache-fast
   runtime: llamacpp
-  image: ghcr.io/ggml-org/llama.cpp:server-vulkan-b12464@sha256:5c73025f2072135ad37e306db9a57c685d8a349cfa5cb82b5c0f385b97567c94
+  image: ghcr.io/ggml-org/llama.cpp:server-vulkan-b12723@sha256:4e88890069ad09665bf3b8f430f49b308198b5326329693022fef8abc25d2930
   replicas: 1
   contextSize: 8192
   parallelSlots: 2
