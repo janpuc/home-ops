@@ -37,6 +37,8 @@ spec:
                   secretKeyRef:
                     name: polyglot-litellm
                     key: POLYGLOT_LLM_KEY
+              # Speech check service in this namespace (speech.yaml). Unset turns the automatic checks off.
+              POLYGLOT_SPEECH_URL: http://polyglot-speech.selfhosted.svc.cluster.local:8080
             image:
               repository: ghcr.io/janpuc/polyglot
               tag: sha-70f758f@sha256:43a8c4f736819fa268005d8de414ef6ce5127e59f7e8067f638956694be93059
