@@ -39,7 +39,7 @@ spec:
                     key: POLYGLOT_LLM_KEY
             image:
               repository: ghcr.io/janpuc/polyglot
-              tag: sha-8cbee7e@sha256:89c46d84bb61a3496b715869e809f731f4d5da5e41768734aaa1175dafc3d9b3
+              tag: sha-70f758f@sha256:43a8c4f736819fa268005d8de414ef6ce5127e59f7e8067f638956694be93059
             probes:
               liveness: &probe
                 enabled: true

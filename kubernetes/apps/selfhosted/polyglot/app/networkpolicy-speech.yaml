@@ -1,0 +1,52 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kubernetes-networkpolicy.json
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: polyglot-speech-isolated
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: polyglot-speech
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: polyglot
+              app.kubernetes.io/instance: polyglot
+      ports:
+        - protocol: TCP
+          port: 8080
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: polyglot-to-speech
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: polyglot
+      app.kubernetes.io/instance: polyglot
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: polyglot-speech
+      ports:
+        - protocol: TCP
+          port: 8080

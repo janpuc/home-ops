@@ -1,0 +1,78 @@
+---
+# Speech check service for polyglot: offline ASR, no ingress route, no volume, no external egress.
+# Reached only by the polyglot app pod on 8080 (networkpolicy-speech.yaml). Memory request and limit
+# are the draft values from the polyglot project, to be set from the measured peak.
+# yaml-language-server: $schema=https://json.schemastore.org/kubernetes-deployment.json
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: polyglot-speech
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: polyglot-speech
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: polyglot-speech
+        app.kubernetes.io/instance: polyglot-speech
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: speech
+          image: ghcr.io/janpuc/polyglot-speech:sha-70f758f@sha256:097f392ea1f867850927a54eb1d42a4d85eae00c0a7439c44f87bf52a6c4f808
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: POLYGLOT_ASR_CPU_THREADS
+              value: "2"
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
+            limits:
+              memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 5
+            failureThreshold: 36
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 20
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: polyglot-speech
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: polyglot-speech
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
