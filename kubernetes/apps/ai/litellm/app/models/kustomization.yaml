@@ -10,4 +10,5 @@ resources:
   - alibaba-wan2-7-image-pro.yaml
   - alibaba-wan3-0-video.yaml
   - minimax-m3-1-flash.yaml
+  - openai-gpt-6-2-sol.yaml
   - opencode-go-deepseek-v4-1-flash.yaml
