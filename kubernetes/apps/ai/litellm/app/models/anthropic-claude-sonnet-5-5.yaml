@@ -6,7 +6,7 @@ metadata:
   name: anthropic-claude-sonnet-5-5
 spec:
   # The Anthropic API, pay per token on CLAUDE_API_KEY from 1Password item claude, not the
-  # Claude subscription. Only the capped paperclip key may use it. LiteLLM has a list price
+  # Claude subscription. Only a capped virtual key may use it (none holds it since the Paperclip trial ended 2026-11-26). LiteLLM has a list price
   # for sonnet-5-5, so key budgets count it.
   modelName: anthropic/claude-sonnet-5-5
   params:
