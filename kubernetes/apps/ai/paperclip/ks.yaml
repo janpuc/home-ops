@@ -1,0 +1,59 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: paperclip-database
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: paperclip
+  dependsOn:
+    - name: cloudnative-pg
+      namespace: cnpg-system
+    - name: miroir-config
+      namespace: miroir-system
+  healthChecks:
+    - apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      name: paperclip-postgres
+      namespace: ai
+  healthCheckExprs:
+    - apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      current: status.conditions.exists(e, e.type == 'Ready' && e.status == 'True')
+  interval: 1h
+  path: ./kubernetes/apps/ai/paperclip/database
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: ai
+  timeout: 15m
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: paperclip
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: paperclip
+  dependsOn:
+    - name: paperclip-database
+    - name: miroir-config
+      namespace: miroir-system
+  interval: 1h
+  path: ./kubernetes/apps/ai/paperclip/app
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: ai
+  # Has to outlast the HelmRelease timeout (15m): the image is about 10 GB
+  # unpacked and the first start runs the database migrations.
+  timeout: 20m
+  wait: true
