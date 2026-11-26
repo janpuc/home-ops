@@ -15,6 +15,9 @@ spec:
       name: litellm
       key: OPENAI_API_KEY
   info:
+    # Chat completions. Without it LiteLLM bridges this model to the Responses API, which
+    # the restricted OpenAI key may not be allowed to call.
+    mode: chat
     maxInputTokens: 922000
     maxOutputTokens: 128000
     supportsFunctionCalling: true
