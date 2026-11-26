@@ -31,6 +31,68 @@ spec:
         strategy: Recreate
         annotations:
           reloader.stakater.com/auto: "true"
+        initContainers:
+          # Pi, uv and Python 3.12 go into the data volume in user space, so the stock
+          # image stays as it is. Pi is always the latest release. A failed download keeps
+          # the copy already on the volume instead of blocking the app. models.json is
+          # written on every start: change the models in git, not in the volume.
+          01-tools:
+            image:
+              repository: ghcr.io/paperclipai/paperclip
+              tag: 2026.1117.0@sha256:bdf38d10544dc6c831e16dc027f23ad586353ef3be1a1b2c6979e63b956aceb1
+            command:
+              - /bin/sh
+              - -c
+            args:
+              - |
+                set -eu
+                T=/paperclip/tools
+                mkdir -p "$T/bin" /paperclip/.pi/agent
+                npm install --no-audit --no-fund --prefix "$T" @earendil-works/pi-coding-agent@latest || [ -x "$T/node_modules/.bin/pi" ]
+                ln -sf ../node_modules/.bin/pi "$T/bin/pi"
+                if [ ! -x "$T/bin/uv" ]; then
+                  curl -LsSf https://astral.sh/uv/install.sh | UV_INSTALL_DIR="$T/bin" UV_NO_MODIFY_PATH=1 sh
+                fi
+                UV_PYTHON_INSTALL_DIR="$T/python" UV_PYTHON_BIN_DIR="$T/bin" "$T/bin/uv" python install 3.12 || [ -x "$T/bin/python3.12" ]
+                cat > /paperclip/.pi/agent/models.json <<'JSON'
+                {
+                  "providers": {
+                    "litellm": {
+                      "baseUrl": "http://litellm.ai.svc.cluster.local:4000/v1",
+                      "api": "openai-completions",
+                      "apiKey": "$LITELLM_API_KEY",
+                      "models": [
+                        {
+                          "id": "minimax/MiniMax-M3.1-Flash",
+                          "name": "MiniMax M3.1 Flash",
+                          "reasoning": true,
+                          "input": ["text", "image"],
+                          "contextWindow": 1000000,
+                          "maxTokens": 128000
+                        },
+                        {
+                          "id": "openai/gpt-6.2-sol",
+                          "name": "GPT-6.2 Sol",
+                          "reasoning": true,
+                          "input": ["text", "image"],
+                          "contextWindow": 922000,
+                          "maxTokens": 128000
+                        }
+                      ]
+                    }
+                  }
+                }
+                JSON
+            env:
+              HOME: /paperclip
+            securityContext:
+              runAsUser: 1000
+              runAsGroup: 1000
+              runAsNonRoot: true
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                  - ALL
         containers:
           app:
             image:
@@ -54,9 +116,16 @@ spec:
                     name: paperclip-postgres-app
                     key: uri
               TZ: Europe/Warsaw
+              # Pi, uv and Python 3.12 from the init container come first.
+              PATH: /paperclip/tools/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+              PI_SKIP_VERSION_CHECK: "1"
+              PI_TELEMETRY: "0"
             envFrom:
               - secretRef:
                   name: paperclip-secret
+              # LITELLM_API_KEY, the capped virtual key the operator writes.
+              - secretRef:
+                  name: paperclip-litellm
             resources:
               requests:
                 cpu: 100m

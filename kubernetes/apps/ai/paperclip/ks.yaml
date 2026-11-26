@@ -43,6 +43,8 @@ spec:
       app.kubernetes.io/name: paperclip
   dependsOn:
     - name: paperclip-database
+    # The capped virtual key and the models it names.
+    - name: litellm
     - name: miroir-config
       namespace: miroir-system
   interval: 1h

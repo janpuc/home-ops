@@ -1,0 +1,19 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmvirtualkey_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMVirtualKey
+metadata:
+  name: paperclip
+spec:
+  # The Pi agents Jan runs in Paperclip. MiniMax M3.1 Flash records $0, so the weekly
+  # cap counts GPT-6.2 Sol spend alone, at LiteLLM's list price.
+  keyAlias: paperclip
+  models:
+    - minimax/MiniMax-M3.1-Flash
+    - openai/gpt-6.2-sol
+  maxBudget: "5"
+  budgetDuration: 7d
+  proxyRef: litellm
+  proxyNamespace: ai
+  secretName: paperclip-litellm
+  secretKey: LITELLM_API_KEY
