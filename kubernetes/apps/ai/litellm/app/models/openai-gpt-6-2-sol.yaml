@@ -6,7 +6,7 @@ metadata:
   name: openai-gpt-6-2-sol
 spec:
   # The OpenAI API, pay per token on the key in 1Password item openai. Only a capped
-  # virtual key may use it (paperclip). LiteLLM has a list price for gpt-6.2-sol, so key
+  # virtual key may use it (none holds it since the Paperclip trial ended 2026-11-26). LiteLLM has a list price for gpt-6.2-sol, so key
   # budgets count it. Agents send function tools with reasoning, and LiteLLM then calls
   # /v1/responses for gpt-5.4+ models (pinning mode chat does not stop it), so the key
   # needs the Responses write scope as well as model requests.
