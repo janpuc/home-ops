@@ -1,0 +1,24 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmmodel_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: openai-gpt-6-2-sol
+spec:
+  # The OpenAI API, pay per token on the key in 1Password item openai. Only a capped
+  # virtual key may use it (paperclip). LiteLLM has a list price for gpt-6.2-sol, so key
+  # budgets count it.
+  modelName: openai/gpt-6.2-sol
+  params:
+    model: openai/gpt-6.2-sol
+    apiKeyRef:
+      name: litellm
+      key: OPENAI_API_KEY
+  info:
+    maxInputTokens: 922000
+    maxOutputTokens: 128000
+    supportsFunctionCalling: true
+    supportsPromptCaching: true
+    supportsVision: true
+    extra:
+      supports_reasoning: true

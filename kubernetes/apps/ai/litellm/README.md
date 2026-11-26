@@ -1,10 +1,11 @@
 # litellm
 
-Eight models, each one in use. Add a model back only when a client needs it.
+Nine models, each one in use. Add a model back only when a client needs it.
 
 | Model                             | Plan               | When it fails                                  | Used by                                       |
 | --------------------------------- | ------------------ | ---------------------------------------------- | --------------------------------------------- |
 | `minimax/MiniMax-M3.1-Flash`      | MiniMax            | limit error, no fallback                       | kritika reviews, Jan's OpenCode               |
+| `openai/gpt-6.2-sol`              | OpenAI API         | billed per token, no fallback                  | Paperclip agents (capped key `paperclip`)     |
 | `opencode-go/deepseek-v4.1-flash` | OpenCode Go        | falls back to MiniMax M3.1 Flash               | memini, kritika confidence, Open WebUI tasks  |
 | `alibaba/qwen3.8-max`             | Alibaba Token Plan | limit or `data_inspection_failed`, no fallback | Jan's Pi and OpenCode, interactive only       |
 | `alibaba/qwen3.8-flash`           | Alibaba Token Plan | limit or `data_inspection_failed`, no fallback | Jan's Pi and OpenCode, interactive only       |
@@ -31,6 +32,7 @@ in the `litellm-postgres` CloudNativePG cluster (`../database`).
 | `memini`     | Go DeepSeek, MiniMax M3.1 Flash        | $10 / 7 days | `ai/memini-litellm`                 |
 | `open-webui` | Go DeepSeek, MiniMax M3.1 Flash        | none         | `ai/open-webui-litellm`             |
 | `jan-laptop` | all, plus the MCP servers (team `jan`) | none         | 1Password `litellm-jan-laptop`      |
+| `paperclip`  | MiniMax M3.1 Flash, GPT-6.2 Sol        | $5 / 7 days  | `ai/paperclip-litellm`              |
 
 Budgets count LiteLLM's list prices. Only the Go model has one (set in its `info.extra`):
 MiniMax M3.1 Flash records $0, so a budget caps Go spend alone, but a spent budget blocks
