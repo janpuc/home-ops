@@ -5,8 +5,9 @@ kind: LiteLLMVirtualKey
 metadata:
   name: paperclip
 spec:
-  # The Pi agents Jan runs in Paperclip. MiniMax M3.1 Flash records $0, so the weekly
-  # cap counts GPT-6.2 Sol and the Anthropic models, at LiteLLM's list price. No Opus.
+  # The Pi agents Jan runs in Paperclip. The weekly cap counts all four models at LiteLLM's
+  # list price. MiniMax M3.1 Flash is notional (0.15 in, 0.60 out per M tokens, its public
+  # pay-as-you-go price), the OpenAI and Anthropic API keys are really billed. No Opus.
   keyAlias: paperclip
   models:
     - minimax/MiniMax-M3.1-Flash

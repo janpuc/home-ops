@@ -36,9 +36,10 @@ in the `litellm-postgres` CloudNativePG cluster (`../database`).
 | `jan-laptop` | all, plus the MCP servers (team `jan`)                           | none         | 1Password `litellm-jan-laptop`      |
 | `paperclip`  | MiniMax M3.1 Flash, GPT-6.2 Sol, Claude Sonnet 5.5 and Haiku 5.5 | $15 / 7 days | `ai/paperclip-litellm`              |
 
-Budgets count LiteLLM's list prices. Only the Go model has one (set in its `info.extra`):
-MiniMax M3.1 Flash records $0, so a budget caps Go spend alone, but a spent budget blocks
-the whole key until it resets. That is why kritika has two keys. The master key is for the
+Budgets count LiteLLM's list prices (MiniMax M3.1 Flash 0.15 in, 0.60 out, 0.015 cache read
+per million tokens, from platform.minimax.io). For MiniMax that is a notional number: the plan
+is flat. The OpenAI and Anthropic API keys bill per token. The M3 Pro records $0. A spent
+budget blocks the whole key until it resets. That is why kritika has two keys. The master key is for the
 operator and emergencies only.
 
 ## Alibaba Token Plan
