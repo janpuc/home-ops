@@ -1,0 +1,126 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: paperclip
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: paperclip
+  interval: 30m
+  # The image is about 10 GB unpacked, so a cold pull plus the first start with
+  # its database migrations outlasts the default 5m. Three clocks run in this
+  # chain and none may be shorter than the next: the Deployment progress
+  # deadline (patched below), this timeout and the Flux Kustomization timeout.
+  timeout: 15m
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: paperclip
+            patch: |-
+              - op: add
+                path: /spec/progressDeadlineSeconds
+                value: 900
+  values:
+    controllers:
+      paperclip:
+        # Single replica on an RWO claim, and the migrations run at startup.
+        strategy: Recreate
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/paperclipai/paperclip
+              tag: 2026.1117.0@sha256:bdf38d10544dc6c831e16dc027f23ad586353ef3be1a1b2c6979e63b956aceb1
+            env:
+              NODE_ENV: production
+              PORT: &port 3100
+              HOST: 0.0.0.0
+              PAPERCLIP_HOME: /paperclip
+              PAPERCLIP_DEPLOYMENT_MODE: authenticated
+              PAPERCLIP_DEPLOYMENT_EXPOSURE: private
+              # Paperclip answers 403 to any Host header other than this one.
+              PAPERCLIP_PUBLIC_URL: https://paperclip.janpuc.com
+              PAPERCLIP_ALLOWED_HOSTNAMES: paperclip.janpuc.com
+              BETTER_AUTH_URL: https://paperclip.janpuc.com
+              # With DATABASE_URL set the image skips its embedded Postgres.
+              DATABASE_URL:
+                valueFrom:
+                  secretKeyRef:
+                    name: paperclip-postgres-app
+                    key: uri
+              TZ: Europe/Warsaw
+            envFrom:
+              - secretRef:
+                  name: paperclip-secret
+            resources:
+              requests:
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                memory: 2Gi
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet: &healthGet
+                    path: /api/health
+                    port: *port
+                    # The kubelet probes the pod IP and Paperclip rejects every
+                    # other Host with 403, so the probe has to send this one.
+                    httpHeaders:
+                      - name: Host
+                        value: paperclip.janpuc.com
+                  initialDelaySeconds: 15
+                  periodSeconds: 10
+                  timeoutSeconds: 2
+                  failureThreshold: 3
+              readiness: *probes
+              # Holds liveness off for up to 10 minutes while the first start
+              # applies the migrations.
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet: *healthGet
+                  periodSeconds: 10
+                  timeoutSeconds: 2
+                  failureThreshold: 60
+            securityContext:
+              runAsUser: 1000
+              runAsGroup: 1000
+              runAsNonRoot: true
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities:
+                drop:
+                  - ALL
+    defaultPodOptions:
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    persistence:
+      home:
+        existingClaim: paperclip
+        globalMounts:
+          - path: /paperclip
+    route:
+      app:
+        annotations:
+          # A test app: a failing probe must not page.
+          gatus.home-operations.com/enabled: "false"
+        hostnames:
+          - paperclip.janpuc.com
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+    service:
+      app:
+        ports:
+          http:
+            port: *port
