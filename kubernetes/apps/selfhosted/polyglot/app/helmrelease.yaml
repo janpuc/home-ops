@@ -41,7 +41,7 @@ spec:
               POLYGLOT_SPEECH_URL: http://polyglot-speech.selfhosted.svc.cluster.local:8080
             image:
               repository: ghcr.io/janpuc/polyglot
-              tag: sha-c5e3303@sha256:075c5f529b23fd9de368cae6ba24bce13e0ae71b01adddab3c8ca477432e3be7
+              tag: sha-aa26418@sha256:2bb0ce0cc81b13ce626053c3f6d27061531f151112a935cb52d1ac3f2fc60d52
             probes:
               liveness: &probe
                 enabled: true
