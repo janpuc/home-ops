@@ -34,8 +34,8 @@ spec:
         initContainers:
           # Pi, uv and Python 3.12 go into the data volume in user space, so the stock
           # image stays as it is. Pi is always the latest release. A failed download keeps
-          # the copy already on the volume instead of blocking the app. models.json is
-          # written on every start: change the models in git, not in the volume.
+          # the copy already on the volume instead of blocking the app. The Pi provider
+          # config is not here: Paperclip writes it per run from PAPERCLIP_PI_PROVIDERS.
           01-tools:
             image:
               repository: ghcr.io/paperclipai/paperclip
@@ -47,42 +47,13 @@ spec:
               - |
                 set -eu
                 T=/paperclip/tools
-                mkdir -p "$T/bin" /paperclip/.pi/agent
+                mkdir -p "$T/bin"
                 npm install --no-audit --no-fund --prefix "$T" @earendil-works/pi-coding-agent@latest || [ -x "$T/node_modules/.bin/pi" ]
                 ln -sf ../node_modules/.bin/pi "$T/bin/pi"
                 if [ ! -x "$T/bin/uv" ]; then
                   curl -LsSf https://astral.sh/uv/install.sh | UV_INSTALL_DIR="$T/bin" UV_NO_MODIFY_PATH=1 sh
                 fi
                 UV_PYTHON_INSTALL_DIR="$T/python" UV_PYTHON_BIN_DIR="$T/bin" "$T/bin/uv" python install 3.12 || [ -x "$T/bin/python3.12" ]
-                cat > /paperclip/.pi/agent/models.json <<'JSON'
-                {
-                  "providers": {
-                    "litellm": {
-                      "baseUrl": "http://litellm.ai.svc.cluster.local:4000/v1",
-                      "api": "openai-completions",
-                      "apiKey": "$LITELLM_API_KEY",
-                      "models": [
-                        {
-                          "id": "minimax/MiniMax-M3.1-Flash",
-                          "name": "MiniMax M3.1 Flash",
-                          "reasoning": true,
-                          "input": ["text", "image"],
-                          "contextWindow": 1000000,
-                          "maxTokens": 128000
-                        },
-                        {
-                          "id": "openai/gpt-6.2-sol",
-                          "name": "GPT-6.2 Sol",
-                          "reasoning": true,
-                          "input": ["text", "image"],
-                          "contextWindow": 922000,
-                          "maxTokens": 128000
-                        }
-                      ]
-                    }
-                  }
-                }
-                JSON
             env:
               HOME: /paperclip
             securityContext:
@@ -118,6 +89,35 @@ spec:
               TZ: Europe/Warsaw
               # Pi, uv and Python 3.12 from the init container come first.
               PATH: /paperclip/tools/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+              # Pi's models.json providers shape. Paperclip writes it into a managed agent
+              # dir for every pi_local run and expands {env:LITELLM_API_KEY} from the
+              # paperclip-litellm Secret below, so no key is in git or on the volume.
+              PAPERCLIP_PI_PROVIDERS: |-
+                {
+                  "litellm": {
+                    "baseUrl": "http://litellm.ai.svc.cluster.local:4000/v1",
+                    "api": "openai-completions",
+                    "apiKey": "{env:LITELLM_API_KEY}",
+                    "models": [
+                      {
+                        "id": "minimax/MiniMax-M3.1-Flash",
+                        "name": "MiniMax M3.1 Flash",
+                        "reasoning": true,
+                        "input": ["text", "image"],
+                        "contextWindow": 1000000,
+                        "maxTokens": 128000
+                      },
+                      {
+                        "id": "openai/gpt-6.2-sol",
+                        "name": "GPT-6.2 Sol",
+                        "reasoning": true,
+                        "input": ["text", "image"],
+                        "contextWindow": 922000,
+                        "maxTokens": 128000
+                      }
+                    ]
+                  }
+                }
               PI_SKIP_VERSION_CHECK: "1"
               PI_TELEMETRY: "0"
             envFrom:
