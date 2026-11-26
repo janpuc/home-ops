@@ -81,6 +81,22 @@ spec:
                           "input": ["text", "image"],
                           "contextWindow": 922000,
                           "maxTokens": 128000
+                        },
+                        {
+                          "id": "anthropic/claude-sonnet-5-5",
+                          "name": "Claude Sonnet 5.5",
+                          "reasoning": true,
+                          "input": ["text", "image"],
+                          "contextWindow": 1000000,
+                          "maxTokens": 128000
+                        },
+                        {
+                          "id": "anthropic/claude-haiku-5-5",
+                          "name": "Claude Haiku 5.5",
+                          "reasoning": true,
+                          "input": ["text", "image"],
+                          "contextWindow": 1000000,
+                          "maxTokens": 128000
                         }
                       ]
                     }
@@ -146,6 +162,22 @@ spec:
                         "reasoning": true,
                         "input": ["text", "image"],
                         "contextWindow": 922000,
+                        "maxTokens": 128000
+                      },
+                      {
+                        "id": "anthropic/claude-sonnet-5-5",
+                        "name": "Claude Sonnet 5.5",
+                        "reasoning": true,
+                        "input": ["text", "image"],
+                        "contextWindow": 1000000,
+                        "maxTokens": 128000
+                      },
+                      {
+                        "id": "anthropic/claude-haiku-5-5",
+                        "name": "Claude Haiku 5.5",
+                        "reasoning": true,
+                        "input": ["text", "image"],
+                        "contextWindow": 1000000,
                         "maxTokens": 128000
                       }
                     ]

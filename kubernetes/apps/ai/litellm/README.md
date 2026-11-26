@@ -27,14 +27,14 @@ shows who used what. The operator creates the keys through the admin API (`spec.
 and writes each one into a Secret in the client's namespace. The keys, teams and spend live
 in the `litellm-postgres` CloudNativePG cluster (`../database`).
 
-| Key alias    | Models                                 | Budget       | Secret                              |
-| ------------ | -------------------------------------- | ------------ | ----------------------------------- |
-| `kritika`    | MiniMax M3.1 Flash                     | none         | `kritika-system/kritika-litellm`    |
-| `kritika-go` | Go DeepSeek, MiniMax M3.1 Flash        | $10 / 7 days | `kritika-system/kritika-litellm-go` |
-| `memini`     | Go DeepSeek, MiniMax M3.1 Flash        | $10 / 7 days | `ai/memini-litellm`                 |
-| `open-webui` | Go DeepSeek, MiniMax M3.1 Flash        | none         | `ai/open-webui-litellm`             |
-| `jan-laptop` | all, plus the MCP servers (team `jan`) | none         | 1Password `litellm-jan-laptop`      |
-| `paperclip`  | MiniMax M3.1 Flash, GPT-6.2 Sol        | $5 / 7 days  | `ai/paperclip-litellm`              |
+| Key alias    | Models                                                           | Budget       | Secret                              |
+| ------------ | ---------------------------------------------------------------- | ------------ | ----------------------------------- |
+| `kritika`    | MiniMax M3.1 Flash                                               | none         | `kritika-system/kritika-litellm`    |
+| `kritika-go` | Go DeepSeek, MiniMax M3.1 Flash                                  | $10 / 7 days | `kritika-system/kritika-litellm-go` |
+| `memini`     | Go DeepSeek, MiniMax M3.1 Flash                                  | $10 / 7 days | `ai/memini-litellm`                 |
+| `open-webui` | Go DeepSeek, MiniMax M3.1 Flash                                  | none         | `ai/open-webui-litellm`             |
+| `jan-laptop` | all, plus the MCP servers (team `jan`)                           | none         | 1Password `litellm-jan-laptop`      |
+| `paperclip`  | MiniMax M3.1 Flash, GPT-6.2 Sol, Claude Sonnet 5.5 and Haiku 5.5 | $15 / 7 days | `ai/paperclip-litellm`              |
 
 Budgets count LiteLLM's list prices. Only the Go model has one (set in its `info.extra`):
 MiniMax M3.1 Flash records $0, so a budget caps Go spend alone, but a spent budget blocks

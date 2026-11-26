@@ -6,12 +6,14 @@ metadata:
   name: paperclip
 spec:
   # The Pi agents Jan runs in Paperclip. MiniMax M3.1 Flash records $0, so the weekly
-  # cap counts GPT-6.2 Sol spend alone, at LiteLLM's list price.
+  # cap counts GPT-6.2 Sol and the Anthropic models, at LiteLLM's list price. No Opus.
   keyAlias: paperclip
   models:
     - minimax/MiniMax-M3.1-Flash
     - openai/gpt-6.2-sol
-  maxBudget: "5"
+    - anthropic/claude-sonnet-5-5
+    - anthropic/claude-haiku-5-5
+  maxBudget: "15"
   budgetDuration: 7d
   proxyRef: litellm
   proxyNamespace: ai
