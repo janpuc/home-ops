@@ -1,0 +1,24 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmmodel_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: anthropic-claude-haiku-5-5
+spec:
+  # The Anthropic API, pay per token on CLAUDE_API_KEY from 1Password item claude, not the
+  # Claude subscription. Only the capped paperclip key may use it. LiteLLM has a list price
+  # for haiku-5-5, so key budgets count it.
+  modelName: anthropic/claude-haiku-5-5
+  params:
+    model: anthropic/claude-haiku-5-5
+    apiKeyRef:
+      name: litellm
+      key: ANTHROPIC_API_KEY
+  info:
+    maxInputTokens: 1000000
+    maxOutputTokens: 128000
+    supportsFunctionCalling: true
+    supportsPromptCaching: true
+    supportsVision: true
+    extra:
+      supports_reasoning: true
