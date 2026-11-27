@@ -52,6 +52,10 @@ spec:
               # 760-770 tokens and holds up for content as dense as 1.76
               # chars/token.
               MEMINI_EMBED_MAX_ITEM_CHARS: "1800"
+              # Memories over the cap above are embedded as overlapping segments
+              # (defaults 1200 chars with 200 overlap) so their tails are
+              # searchable too. Additive, the backfill loop does the work.
+              MEMINI_CHUNK_EMBED: "true"
               MEMINI_LOG_FORMAT: json
               MEMINI_LLM_API: openai
               MEMINI_LLM_BASE_URL: http://litellm.ai.svc.cluster.local:4000/v1
