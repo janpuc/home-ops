@@ -12,6 +12,9 @@ spec:
   models:
     - opencode-go/deepseek-v4.1-flash
     - minimax/MiniMax-M3.1-Flash
+    # Tutor eval of Haiku 5.5 (request 20261127T094645-03cbf2), Anthropic API credit, so
+    # the 3 USD weekly cap is the guard.
+    - anthropic/claude-haiku-5-5
   maxBudget: "3"
   budgetDuration: 7d
   proxyRef: litellm
