@@ -64,6 +64,11 @@ spec:
               # client default of 4096 cut JSON answers short (finish_reason=length).
               MEMINI_LLM_MODEL: opencode-go/deepseek-v4.1-flash
               MEMINI_LLM_MAX_TOKENS: "8192"
+              # Merged into every chat body. LiteLLM ignores a top-level
+              # thinking object for this model (measured 120-460 hidden
+              # reasoning tokens per call), reasoning_effort none turns the
+              # reasoning off on both the Go model and the MiniMax fallback.
+              MEMINI_LLM_EXTRA_BODY: '{"reasoning_effort":"none"}'
               MEMINI_LLM_API_KEY:
                 valueFrom:
                   secretKeyRef:
