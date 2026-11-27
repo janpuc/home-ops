@@ -7,7 +7,7 @@ Fourteen models. Add a model back only when a client needs it. The three Gemini 
 | `minimax/MiniMax-M3.1-Flash`      | MiniMax            | limit error, no fallback                       | kritika reviews, Jan's OpenCode               |
 | `openai/gpt-6.2-sol`              | OpenAI API         | billed per token, no fallback                  | a capped virtual key, none holds it now       |
 | `anthropic/claude-sonnet-5-5`     | Anthropic API      | billed per token, no fallback                  | a capped virtual key, none holds it now       |
-| `anthropic/claude-haiku-5-5`      | Anthropic API      | billed per token, no fallback                  | a capped virtual key, none holds it now       |
+| `anthropic/claude-haiku-5-5`      | Anthropic API      | falls back to Go, then MiniMax M3.1 Flash      | memini, polyglot (tutor eval)                 |
 | `gemini/gemini-4-neon`            | Gemini API prepaid | stops when the prepaid balance is gone         | `gemini-test` key only, reserve pool          |
 | `gemini/gemini-4-hydrogen`        | Gemini API prepaid | stops when the prepaid balance is gone         | `gemini-test` key only, reserve pool          |
 | `gemini/gemini-3.5-flash-lite`    | Gemini API prepaid | stops when the prepaid balance is gone         | `gemini-test` key only, reserve pool          |
@@ -30,14 +30,14 @@ shows who used what. The operator creates the keys through the admin API (`spec.
 and writes each one into a Secret in the client's namespace. The keys, teams and spend live
 in the `litellm-postgres` CloudNativePG cluster (`../database`).
 
-| Key alias     | Models                                 | Budget        | Secret                              |
-| ------------- | -------------------------------------- | ------------- | ----------------------------------- |
-| `kritika`     | MiniMax M3.1 Flash                     | $20 / 7 days  | `kritika-system/kritika-litellm`    |
-| `kritika-go`  | Go DeepSeek, MiniMax M3.1 Flash        | $10 / 7 days  | `kritika-system/kritika-litellm-go` |
-| `memini`      | Go DeepSeek, MiniMax M3.1 Flash        | $10 / 7 days  | `ai/memini-litellm`                 |
-| `open-webui`  | Go DeepSeek, MiniMax M3.1 Flash        | $5 / 7 days   | `ai/open-webui-litellm`             |
-| `gemini-test` | the three Gemini models                | $3 / 7 days   | `ai/gemini-test-litellm`            |
-| `jan-laptop`  | all, plus the MCP servers (team `jan`) | $20 / 30 days | 1Password `litellm-jan-laptop`      |
+| Key alias     | Models                                     | Budget        | Secret                              |
+| ------------- | ------------------------------------------ | ------------- | ----------------------------------- |
+| `kritika`     | MiniMax M3.1 Flash                         | $20 / 7 days  | `kritika-system/kritika-litellm`    |
+| `kritika-go`  | Go DeepSeek, MiniMax M3.1 Flash            | $10 / 7 days  | `kritika-system/kritika-litellm-go` |
+| `memini`      | Haiku 5.5, Go DeepSeek, MiniMax M3.1 Flash | $15 / 7 days  | `ai/memini-litellm`                 |
+| `open-webui`  | Go DeepSeek, MiniMax M3.1 Flash            | $5 / 7 days   | `ai/open-webui-litellm`             |
+| `gemini-test` | the three Gemini models                    | $3 / 7 days   | `ai/gemini-test-litellm`            |
+| `jan-laptop`  | all, plus the MCP servers (team `jan`)     | $20 / 30 days | 1Password `litellm-jan-laptop`      |
 
 Budgets count LiteLLM's list prices (MiniMax M3.1 Flash 0.15 in, 0.60 out, 0.015 cache read
 per million tokens, from platform.minimax.io). For MiniMax that is a notional number: the plan

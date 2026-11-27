@@ -5,13 +5,15 @@ kind: LiteLLMVirtualKey
 metadata:
   name: memini-litellm
 spec:
-  # Fact extraction on the Go plan, capped weekly at LiteLLM's list prices. MiniMax
-  # M3.1 Flash is listed for LiteLLM's fallback from the Go model and counts at its list price.
+  # Fact extraction on Haiku 5.5 (Anthropic API credit), capped weekly at LiteLLM's list
+  # prices. The Go model and MiniMax M3.1 Flash are listed for LiteLLM's fallback from
+  # Haiku and count at their list price.
   keyAlias: memini
   models:
+    - anthropic/claude-haiku-5-5
     - opencode-go/deepseek-v4.1-flash
     - minimax/MiniMax-M3.1-Flash
-  maxBudget: "10"
+  maxBudget: "15"
   budgetDuration: 7d
   proxyRef: litellm
   secretName: memini-litellm
