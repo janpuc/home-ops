@@ -1,0 +1,31 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmmodel_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: gemini-4-neon
+spec:
+  # The Gemini API on GEMINI_API_KEY from 1Password item gemini (AI Studio project on a
+  # prepaid billing account, auto-reload off, so spend stops with an error when the balance
+  # is gone). A reserve pool: no fallback points at it and only a capped virtual key may
+  # use it. LiteLLM cannot see the prepaid balance.
+  modelName: gemini/gemini-4-neon
+  params:
+    model: gemini/gemini-4-neon
+    apiKeyRef:
+      name: litellm
+      key: GEMINI_API_KEY
+  info:
+    maxInputTokens: 1048576
+    maxOutputTokens: 65536
+    supportsFunctionCalling: true
+    supportsVision: true
+    supportsPromptCaching: true
+    extra:
+      supports_reasoning: true
+      # Gemini API pricing page (https://ai.google.dev/gemini-api/docs/pricing), Standard
+      # tier, checked 2026-11-27, USD per token (3.00 in, 15.00 out, 0.15 cache read per MTok). Paid tier content is
+      # not used for training. Set here so nothing depends on LiteLLM's built-in map.
+      input_cost_per_token: 0.000003
+      output_cost_per_token: 0.000015
+      cache_read_input_token_cost: 0.00000015

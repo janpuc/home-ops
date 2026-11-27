@@ -11,6 +11,9 @@ resources:
   - alibaba-wan3-0-video.yaml
   - anthropic-claude-haiku-5-5.yaml
   - anthropic-claude-sonnet-5-5.yaml
+  - gemini-4-neon.yaml
+  - gemini-4-hydrogen.yaml
+  - gemini-3-5-flash-lite.yaml
   - minimax-m3-1-flash.yaml
   - openai-gpt-6-2-sol.yaml
   - opencode-go-deepseek-v4-1-flash.yaml
