@@ -1,6 +1,6 @@
 # litellm
 
-Eleven models, each one in use. Add a model back only when a client needs it.
+Fourteen models. Add a model back only when a client needs it. The three Gemini models are a reserve pool nothing uses yet.
 
 | Model                             | Plan               | When it fails                                  | Used by                                       |
 | --------------------------------- | ------------------ | ---------------------------------------------- | --------------------------------------------- |
@@ -8,6 +8,9 @@ Eleven models, each one in use. Add a model back only when a client needs it.
 | `openai/gpt-6.2-sol`              | OpenAI API         | billed per token, no fallback                  | a capped virtual key, none holds it now       |
 | `anthropic/claude-sonnet-5-5`     | Anthropic API      | billed per token, no fallback                  | a capped virtual key, none holds it now       |
 | `anthropic/claude-haiku-5-5`      | Anthropic API      | billed per token, no fallback                  | a capped virtual key, none holds it now       |
+| `gemini/gemini-4-neon`            | Gemini API prepaid | stops when the prepaid balance is gone         | `gemini-test` key only, reserve pool          |
+| `gemini/gemini-4-hydrogen`        | Gemini API prepaid | stops when the prepaid balance is gone         | `gemini-test` key only, reserve pool          |
+| `gemini/gemini-3.5-flash-lite`    | Gemini API prepaid | stops when the prepaid balance is gone         | `gemini-test` key only, reserve pool          |
 | `opencode-go/deepseek-v4.1-flash` | OpenCode Go        | falls back to MiniMax M3.1 Flash               | memini, kritika confidence, Open WebUI tasks  |
 | `alibaba/qwen3.8-max`             | Alibaba Token Plan | limit or `data_inspection_failed`, no fallback | Jan's Pi and OpenCode, interactive only       |
 | `alibaba/qwen3.8-flash`           | Alibaba Token Plan | limit or `data_inspection_failed`, no fallback | Jan's Pi and OpenCode, interactive only       |
@@ -27,13 +30,14 @@ shows who used what. The operator creates the keys through the admin API (`spec.
 and writes each one into a Secret in the client's namespace. The keys, teams and spend live
 in the `litellm-postgres` CloudNativePG cluster (`../database`).
 
-| Key alias    | Models                                 | Budget       | Secret                              |
-| ------------ | -------------------------------------- | ------------ | ----------------------------------- |
-| `kritika`    | MiniMax M3.1 Flash                     | none         | `kritika-system/kritika-litellm`    |
-| `kritika-go` | Go DeepSeek, MiniMax M3.1 Flash        | $10 / 7 days | `kritika-system/kritika-litellm-go` |
-| `memini`     | Go DeepSeek, MiniMax M3.1 Flash        | $10 / 7 days | `ai/memini-litellm`                 |
-| `open-webui` | Go DeepSeek, MiniMax M3.1 Flash        | none         | `ai/open-webui-litellm`             |
-| `jan-laptop` | all, plus the MCP servers (team `jan`) | none         | 1Password `litellm-jan-laptop`      |
+| Key alias     | Models                                 | Budget        | Secret                              |
+| ------------- | -------------------------------------- | ------------- | ----------------------------------- |
+| `kritika`     | MiniMax M3.1 Flash                     | $20 / 7 days  | `kritika-system/kritika-litellm`    |
+| `kritika-go`  | Go DeepSeek, MiniMax M3.1 Flash        | $10 / 7 days  | `kritika-system/kritika-litellm-go` |
+| `memini`      | Go DeepSeek, MiniMax M3.1 Flash        | $10 / 7 days  | `ai/memini-litellm`                 |
+| `open-webui`  | Go DeepSeek, MiniMax M3.1 Flash        | $5 / 7 days   | `ai/open-webui-litellm`             |
+| `gemini-test` | the three Gemini models                | $3 / 7 days   | `ai/gemini-test-litellm`            |
+| `jan-laptop`  | all, plus the MCP servers (team `jan`) | $20 / 30 days | 1Password `litellm-jan-laptop`      |
 
 Budgets count LiteLLM's list prices (MiniMax M3.1 Flash 0.15 in, 0.60 out, 0.015 cache read
 per million tokens, from platform.minimax.io). For MiniMax that is a notional number: the plan

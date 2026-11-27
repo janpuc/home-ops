@@ -1,0 +1,19 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmvirtualkey_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMVirtualKey
+metadata:
+  name: gemini-test
+spec:
+  # Manual checks of the Gemini reserve pool. Spend counts at the CR prices and stops at
+  # the cap. The prepaid balance behind it is not visible to LiteLLM.
+  keyAlias: gemini-test
+  models:
+    - gemini/gemini-4-neon
+    - gemini/gemini-4-hydrogen
+    - gemini/gemini-3.5-flash-lite
+  maxBudget: "3"
+  budgetDuration: 7d
+  proxyRef: litellm
+  secretName: gemini-test-litellm
+  secretKey: api_key
