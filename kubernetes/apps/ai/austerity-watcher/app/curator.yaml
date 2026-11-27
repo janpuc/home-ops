@@ -37,104 +37,106 @@ spec:
     requests:
       storage: 1Gi
   storageClassName: miroir-fast-local
----
-# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/batch/cronjob_v1.json
-apiVersion: batch/v1
-kind: CronJob
-metadata:
-  name: austerity-curator
-spec:
-  suspend: false
-  # k8tz sets every CronJob to Europe/Warsaw, so the schedule is in Warsaw time: twice a day,
-  # well after the watcher's 00:05 UTC export.
-  schedule: "0 3,15 * * *"
-  timeZone: Europe/Warsaw
-  concurrencyPolicy: Forbid
-  startingDeadlineSeconds: 1800
-  successfulJobsHistoryLimit: 2
-  failedJobsHistoryLimit: 3
-  jobTemplate:
-    spec:
-      backoffLimit: 0
-      # The curator stops starting new work at its own 65 minute budget, but an
-      # item already running can take longer: each Codex call is capped at 8
-      # minutes and a research item runs research, facts, evidence and safety,
-      # with the evidence check retried once. That is up to about 50 minutes for
-      # the last item, so the deadline has to sit above 65 + 50 plus the
-      # summary write. At 75 minutes Kubernetes killed the run of 2026-10-30
-      # mid-item, which deleted the pod, lost the logs and left no summary.
-      activeDeadlineSeconds: 6000
-      ttlSecondsAfterFinished: 172800
-      template:
-        metadata:
-          labels:
-            app.kubernetes.io/name: austerity-curator
-        spec:
-          restartPolicy: Never
-          automountServiceAccountToken: false
-          terminationGracePeriodSeconds: 30
-          securityContext:
-            runAsNonRoot: true
-            runAsUser: 10001
-            runAsGroup: 10001
-            fsGroup: 10001
-            fsGroupChangePolicy: OnRootMismatch
-            seccompProfile:
-              type: RuntimeDefault
-          containers:
-            - name: curator
-              image: ghcr.io/janpuc/austerity-curator:0.2.1@sha256:98c1750672ddbdd45762962c558ed6c2cbe187cf6b39724bedf0e6ca0e9a4765
-              securityContext:
-                allowPrivilegeEscalation: false
-                readOnlyRootFilesystem: true
-                capabilities:
-                  drop:
-                    - ALL
-              resources:
-                requests:
-                  cpu: 250m
-                  memory: 512Mi
-                limits:
-                  memory: 2Gi
-              env:
-                - name: ADMIN_API_BASE_URL
-                  value: http://austerity-watcher-app.ai.svc.cluster.local:8080
-                - name: ADMIN_API_TOKEN
-                  valueFrom:
-                    secretKeyRef:
-                      name: austerity-watcher-secret
-                      key: ADMIN_API_TOKEN
-                # Sol was removed from the model catalog of ChatGPT accounts: the server
-                # rejects it with HTTP 400 "model is not supported when using Codex with a
-                # ChatGPT account" (openai/codex#60970, #55617). Luna is the strongest model
-                # such an account can still use, and the curator image ships a CLI new enough
-                # for it (minimum 0.155.0, image has 0.161.0).
-                - name: CURATOR_MODEL
-                  value: gpt-6-luna
-                # Deliberately the same model as the research model above: the safety
-                # review runs on the same account, so the safety model has the same
-                # catalog to choose from, and Luna is the strongest one it can use.
-                - name: CURATOR_SAFETY_MODEL
-                  value: gpt-6-luna
-                - name: PUSHOVER_TOKEN
-                  valueFrom:
-                    secretKeyRef:
-                      name: austerity-curator
-                      key: PUSHOVER_TOKEN
-                - name: PUSHOVER_USER
-                  valueFrom:
-                    secretKeyRef:
-                      name: austerity-curator
-                      key: PUSHOVER_USER
-              volumeMounts:
-                - name: codex
-                  mountPath: /home/curator/.codex
-                - name: tmp
-                  mountPath: /tmp
-          volumes:
-            - name: codex
-              persistentVolumeClaim:
-                claimName: austerity-curator-codex
-            - name: tmp
-              emptyDir:
-                sizeLimit: 256Mi
+# Austerity is switched off (Jan, 2026-11-27): the CronJob below is commented out, the PVC above
+# stays so the Codex login survives. Un-comment to bring it back.
+# ---
+# # yaml-language-server: $schema=https://k8s-schemas.home-operations.com/batch/cronjob_v1.json
+# apiVersion: batch/v1
+# kind: CronJob
+# metadata:
+#   name: austerity-curator
+# spec:
+#   suspend: false
+#   # k8tz sets every CronJob to Europe/Warsaw, so the schedule is in Warsaw time: twice a day,
+#   # well after the watcher's 00:05 UTC export.
+#   schedule: "0 3,15 * * *"
+#   timeZone: Europe/Warsaw
+#   concurrencyPolicy: Forbid
+#   startingDeadlineSeconds: 1800
+#   successfulJobsHistoryLimit: 2
+#   failedJobsHistoryLimit: 3
+#   jobTemplate:
+#     spec:
+#       backoffLimit: 0
+#       # The curator stops starting new work at its own 65 minute budget, but an
+#       # item already running can take longer: each Codex call is capped at 8
+#       # minutes and a research item runs research, facts, evidence and safety,
+#       # with the evidence check retried once. That is up to about 50 minutes for
+#       # the last item, so the deadline has to sit above 65 + 50 plus the
+#       # summary write. At 75 minutes Kubernetes killed the run of 2026-10-30
+#       # mid-item, which deleted the pod, lost the logs and left no summary.
+#       activeDeadlineSeconds: 6000
+#       ttlSecondsAfterFinished: 172800
+#       template:
+#         metadata:
+#           labels:
+#             app.kubernetes.io/name: austerity-curator
+#         spec:
+#           restartPolicy: Never
+#           automountServiceAccountToken: false
+#           terminationGracePeriodSeconds: 30
+#           securityContext:
+#             runAsNonRoot: true
+#             runAsUser: 10001
+#             runAsGroup: 10001
+#             fsGroup: 10001
+#             fsGroupChangePolicy: OnRootMismatch
+#             seccompProfile:
+#               type: RuntimeDefault
+#           containers:
+#             - name: curator
+#               image: ghcr.io/janpuc/austerity-curator:0.2.1@sha256:98c1750672ddbdd45762962c558ed6c2cbe187cf6b39724bedf0e6ca0e9a4765
+#               securityContext:
+#                 allowPrivilegeEscalation: false
+#                 readOnlyRootFilesystem: true
+#                 capabilities:
+#                   drop:
+#                     - ALL
+#               resources:
+#                 requests:
+#                   cpu: 250m
+#                   memory: 512Mi
+#                 limits:
+#                   memory: 2Gi
+#               env:
+#                 - name: ADMIN_API_BASE_URL
+#                   value: http://austerity-watcher-app.ai.svc.cluster.local:8080
+#                 - name: ADMIN_API_TOKEN
+#                   valueFrom:
+#                     secretKeyRef:
+#                       name: austerity-watcher-secret
+#                       key: ADMIN_API_TOKEN
+#                 # Sol was removed from the model catalog of ChatGPT accounts: the server
+#                 # rejects it with HTTP 400 "model is not supported when using Codex with a
+#                 # ChatGPT account" (openai/codex#60970, #55617). Luna is the strongest model
+#                 # such an account can still use, and the curator image ships a CLI new enough
+#                 # for it (minimum 0.155.0, image has 0.161.0).
+#                 - name: CURATOR_MODEL
+#                   value: gpt-6-luna
+#                 # Deliberately the same model as the research model above: the safety
+#                 # review runs on the same account, so the safety model has the same
+#                 # catalog to choose from, and Luna is the strongest one it can use.
+#                 - name: CURATOR_SAFETY_MODEL
+#                   value: gpt-6-luna
+#                 - name: PUSHOVER_TOKEN
+#                   valueFrom:
+#                     secretKeyRef:
+#                       name: austerity-curator
+#                       key: PUSHOVER_TOKEN
+#                 - name: PUSHOVER_USER
+#                   valueFrom:
+#                     secretKeyRef:
+#                       name: austerity-curator
+#                       key: PUSHOVER_USER
+#               volumeMounts:
+#                 - name: codex
+#                   mountPath: /home/curator/.codex
+#                 - name: tmp
+#                   mountPath: /tmp
+#           volumes:
+#             - name: codex
+#               persistentVolumeClaim:
+#                 claimName: austerity-curator-codex
+#             - name: tmp
+#               emptyDir:
+#                 sizeLimit: 256Mi

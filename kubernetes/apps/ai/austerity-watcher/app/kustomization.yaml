@@ -3,13 +3,16 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
+  # Austerity is switched off (Jan, 2026-11-27) to free about 1.2 GiB of memory requests before
+  # the Talos and Kubernetes node rolls. The PVCs, kopiur backups, ExternalSecret and Pocket ID
+  # client stay so that un-commenting the four lines below brings everything back with its data.
   - ./externalsecret.yaml
   - ./pvc.yaml
   - ./profile-backup.yaml
   - ./networkpolicy.yaml
   - ./pocketidoidcclient.yaml
-  - ./ocirepository.yaml
-  - ./helmrelease.yaml
-  - ./servicemonitor.yaml
-  - ./prometheusrule.yaml
+  # - ./ocirepository.yaml
+  # - ./helmrelease.yaml
+  # - ./servicemonitor.yaml
+  # - ./prometheusrule.yaml
   - ./curator.yaml
