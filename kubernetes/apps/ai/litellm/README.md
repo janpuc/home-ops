@@ -7,7 +7,7 @@ Fourteen models. Add a model back only when a client needs it. The three Gemini 
 | `minimax/MiniMax-M3.1-Flash`      | MiniMax            | limit error, no fallback                       | kritika reviews, Jan's OpenCode               |
 | `openai/gpt-6.2-sol`              | OpenAI API         | billed per token, no fallback                  | a capped virtual key, none holds it now       |
 | `anthropic/claude-sonnet-5-5`     | Anthropic API      | billed per token, no fallback                  | a capped virtual key, none holds it now       |
-| `anthropic/claude-haiku-5-5`      | Anthropic API      | falls back to Go, then MiniMax M3.1 Flash      | polyglot (tutor eval), no memini (work data)  |
+| `anthropic/claude-haiku-5-5`      | Anthropic API      | falls back to Go, then MiniMax M3.1 Flash      | memini, polyglot (tutor eval)                 |
 | `gemini/gemini-4-neon`            | Gemini API prepaid | stops when the prepaid balance is gone         | `gemini-test` key only, reserve pool          |
 | `gemini/gemini-4-hydrogen`        | Gemini API prepaid | stops when the prepaid balance is gone         | `gemini-test` key only, reserve pool          |
 | `gemini/gemini-3.5-flash-lite`    | Gemini API prepaid | stops when the prepaid balance is gone         | `gemini-test` key only, reserve pool          |
