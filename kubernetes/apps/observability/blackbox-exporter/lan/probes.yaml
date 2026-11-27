@@ -38,3 +38,28 @@ spec:
     - targetLabel: service
       replacement: blackbox-exporter-lan
       action: replace
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/monitoring.coreos.com/probe_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: aether-ssh
+spec:
+  jobName: aether_probe
+  module: tcp_connect
+  prober:
+    url: blackbox-exporter-lan.observability.svc.cluster.local:9115
+  targets:
+    staticConfig:
+      static:
+        # aether is outside the cluster and serves only sshd (22) on every interface. aether.internal
+        # is a UDR record for its tailnet address. Nodes reach it over the UDR static route
+        # 100.64.0.0/10 via the ts-router LXC (192.168.69.72), and the Tailscale policy must grant
+        # tcp 22 from 192.168.69.20 to .22. A bare TCP connect, no login.
+        - aether.internal:22
+  # Its own service label, so the LAN rule (LanProbeFailed, service blackbox-exporter-lan) does not
+  # page for aether. Nothing in the cluster depends on aether, so this is a metric only.
+  metricRelabelings:
+    - targetLabel: service
+      replacement: blackbox-exporter-aether
+      action: replace
