@@ -10,6 +10,8 @@ spec:
   models:
     - opencode-go/deepseek-v4.1-flash
     - minimax/MiniMax-M3.1-Flash
+  maxBudget: "5"
+  budgetDuration: 7d
   proxyRef: litellm
   secretName: open-webui-litellm
   secretKey: OPENAI_API_KEY

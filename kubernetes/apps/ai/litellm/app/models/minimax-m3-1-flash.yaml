@@ -24,3 +24,8 @@ spec:
     supportsVision: true
     extra:
       supports_reasoning: true
+      # MiniMax pricing page, checked 2026-11-27 (dotfiles subscription review), USD per
+      # token. The Token Plan is flat, so spend is notional, but key budgets count it.
+      input_cost_per_token: 0.00000015
+      output_cost_per_token: 0.0000006
+      cache_read_input_token_cost: 0.000000015

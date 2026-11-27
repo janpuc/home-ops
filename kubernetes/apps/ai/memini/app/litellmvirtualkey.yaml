@@ -6,7 +6,7 @@ metadata:
   name: memini-litellm
 spec:
   # Fact extraction on the Go plan, capped weekly at LiteLLM's list prices. MiniMax
-  # M3.1 Flash is listed for LiteLLM's fallback from the Go model and spends $0.
+  # M3.1 Flash is listed for LiteLLM's fallback from the Go model and counts at its list price.
   keyAlias: memini
   models:
     - opencode-go/deepseek-v4.1-flash

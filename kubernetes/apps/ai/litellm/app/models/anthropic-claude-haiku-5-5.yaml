@@ -5,9 +5,10 @@ kind: LiteLLMModel
 metadata:
   name: anthropic-claude-haiku-5-5
 spec:
-  # The Anthropic API, pay per token on CLAUDE_API_KEY from 1Password item claude, not the
-  # Claude subscription. Only a capped virtual key may use it (none holds it since the Paperclip trial ended 2026-11-26). LiteLLM has a list price
-  # for haiku-5-5, so key budgets count it.
+  # The Anthropic API on ANTHROPIC_API_KEY from 1Password item claude, not the Claude
+  # subscription. Billed to the Max API credit when the key's Console org is the linked
+  # one, otherwise pay as you go. Only a capped virtual key may use it (none holds it
+  # yet). LiteLLM falls back from it to the Go model and then MiniMax (litellmproxy.yaml).
   modelName: anthropic/claude-haiku-5-5
   params:
     model: anthropic/claude-haiku-5-5
@@ -22,3 +23,14 @@ spec:
     supportsVision: true
     extra:
       supports_reasoning: true
+      # Anthropic pricing page, checked 2026-11-27 (dotfiles subscription review, equal to
+      # LiteLLM's built-in map), USD per token. Set here so nothing depends on that map.
+      input_cost_per_token: 0.0000001
+      output_cost_per_token: 0.0000005
+      cache_read_input_token_cost: 0.00000001
+      cache_creation_input_token_cost: 0.000000125
+      # Prompts over 100K tokens are billed at the higher tier.
+      input_cost_per_token_above_100k_tokens: 0.0000005
+      output_cost_per_token_above_100k_tokens: 0.0000025
+      cache_read_input_token_cost_above_100k_tokens: 0.00000005
+      cache_creation_input_token_cost_above_100k_tokens: 0.000000625

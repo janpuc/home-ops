@@ -23,8 +23,10 @@ kind: LiteLLMVirtualKey
 metadata:
   name: jan-laptop
 spec:
-  # Jan's OpenCode, Pi and pi-sec. Every model, through the team, and no budget.
+  # Jan's OpenCode, Pi and pi-sec. Every model, through the team, capped at 20 USD a month.
   keyAlias: jan-laptop
+  maxBudget: "20"
+  budgetDuration: 30d
   proxyRef: litellm
   secretName: jan-laptop-litellm
   secretKey: api_key
