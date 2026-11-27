@@ -25,5 +25,9 @@ spec:
     supportsVision: true
     extra:
       supports_reasoning: true
+      # Token Plan credits, not USD: record $0 explicitly (no price page in USD, checked 2026-11-27).
+      input_cost_per_token: 0
+      output_cost_per_token: 0
+      cache_read_input_token_cost: 0
       # A health check is a billed chat completion on the plan, so no polling.
       disable_background_health_check: true

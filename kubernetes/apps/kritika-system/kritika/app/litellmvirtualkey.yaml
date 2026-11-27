@@ -5,11 +5,13 @@ kind: LiteLLMVirtualKey
 metadata:
   name: kritika-litellm
 spec:
-  # Reviews, on the MiniMax plan. MiniMax M3.1 Flash has no LiteLLM price, so this key
-  # spends $0 and carries no budget: one would block reviews along with everything else.
+  # Reviews, on the MiniMax plan. Spend is notional at MiniMax's list price (the plan is
+  # flat), about 7.6 USD a week in November, so the cap is a runaway guard.
   keyAlias: kritika
   models:
     - minimax/MiniMax-M3.1-Flash
+  maxBudget: "20"
+  budgetDuration: 7d
   proxyRef: litellm
   proxyNamespace: ai
   secretName: kritika-litellm
@@ -23,7 +25,7 @@ metadata:
 spec:
   # The confidence scorer and the review fallback, on the OpenCode Go plan, capped
   # weekly at LiteLLM's list prices. MiniMax M3.1 Flash is listed for LiteLLM's own
-  # fallback from the Go model; it spends $0 against the budget.
+  # fallback from the Go model; it counts against the budget at its list price.
   keyAlias: kritika-go
   models:
     - opencode-go/deepseek-v4.1-flash

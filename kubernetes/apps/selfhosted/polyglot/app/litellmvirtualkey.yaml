@@ -7,7 +7,7 @@ metadata:
 spec:
   # The tutor: text conversation with corrections. OpenCode Go first, MiniMax as the
   # app's own fallback (LiteLLM has no MiniMax fallback for it). Capped weekly at
-  # LiteLLM's list prices. MiniMax M3.1 Flash has no LiteLLM price and spends $0.
+  # LiteLLM's list prices. MiniMax M3.1 Flash spends at its list price too.
   keyAlias: polyglot
   models:
     - opencode-go/deepseek-v4.1-flash

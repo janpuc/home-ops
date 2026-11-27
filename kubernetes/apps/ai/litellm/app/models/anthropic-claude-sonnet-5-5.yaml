@@ -5,9 +5,10 @@ kind: LiteLLMModel
 metadata:
   name: anthropic-claude-sonnet-5-5
 spec:
-  # The Anthropic API, pay per token on CLAUDE_API_KEY from 1Password item claude, not the
-  # Claude subscription. Only a capped virtual key may use it (none holds it since the Paperclip trial ended 2026-11-26). LiteLLM has a list price
-  # for sonnet-5-5, so key budgets count it.
+  # The Anthropic API on ANTHROPIC_API_KEY from 1Password item claude, not the Claude
+  # subscription. Billed to the Max API credit when the key's Console org is the linked
+  # one, otherwise pay as you go. Only a capped virtual key may use it (none holds it
+  # since the Paperclip trial ended 2026-11-26).
   modelName: anthropic/claude-sonnet-5-5
   params:
     model: anthropic/claude-sonnet-5-5
@@ -22,3 +23,9 @@ spec:
     supportsVision: true
     extra:
       supports_reasoning: true
+      # Anthropic pricing page, checked 2026-11-27 (dotfiles subscription review, equal to
+      # LiteLLM's built-in map), USD per token.
+      input_cost_per_token: 0.000002
+      output_cost_per_token: 0.00001
+      cache_read_input_token_cost: 0.0000001
+      cache_creation_input_token_cost: 0.0000025

@@ -7,7 +7,7 @@ spec:
   modelName: opencode-go/deepseek-v4.1-flash
   params:
     model: openai/deepseek-v4.1-flash
-    apiBase: https://opencode.ai/zen/go/v1
+    apiBase: https://opencode.ai/inference/go/openai/v1
     apiKeyRef:
       name: litellm
       key: OPENCODE_GO_API_KEY

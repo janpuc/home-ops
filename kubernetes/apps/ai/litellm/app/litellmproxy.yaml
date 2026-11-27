@@ -45,6 +45,10 @@ spec:
     # limit error and wait for the reset.
     fallbacks:
       - opencode-go/deepseek-v4.1-flash: ["minimax/MiniMax-M3.1-Flash"]
+      # Haiku on the API credit fails over to Go, then MiniMax. No key holds the Haiku
+      # alias yet, so this only applies once one does.
+      - anthropic/claude-haiku-5-5:
+          ["opencode-go/deepseek-v4.1-flash", "minimax/MiniMax-M3.1-Flash"]
   litellmSettings:
     success_callback:
       - prometheus
