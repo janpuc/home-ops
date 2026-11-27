@@ -22,8 +22,12 @@ spec:
     supportsPromptCaching: true
     extra:
       supports_reasoning: true
-      # LiteLLM's price for opencode_go/deepseek-v4.1-flash. The openai/ model name has no
-      # entry of its own, so without these the spend is $0 and key budgets never trip.
-      input_cost_per_token: 0.0000003
-      output_cost_per_token: 0.0000012
-      cache_read_input_token_cost: 0.000000006
+      # What OpenCode Go meters for deepseek-v4.1-flash (cost block of
+      # https://opencode.ai/inference/go/v1/models, 2026-11-27), half of the Zen list
+      # price LiteLLM carries for opencode_go/deepseek-v4.1-flash. Go doubles the price on
+      # weekdays 01:00-04:00 and 06:00-10:00 UTC, which LiteLLM cannot model, so this is
+      # the base price. The openai/ model name has no entry of its own, so without these
+      # the spend is $0 and key budgets never trip.
+      input_cost_per_token: 0.00000015
+      output_cost_per_token: 0.0000006
+      cache_read_input_token_cost: 0.000000003
