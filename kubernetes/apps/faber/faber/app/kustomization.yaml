@@ -6,6 +6,7 @@ resources:
   - ./rbac.yaml
   - ./sandbox-namespace-default-deny.yaml
   - ./operator-networkpolicy.yaml
+  - ./kopiur-mover-networkpolicy.yaml
   - ./sandbox-template.yaml
   - ./externalsecret.yaml
   - ./litellmvirtualkey.yaml

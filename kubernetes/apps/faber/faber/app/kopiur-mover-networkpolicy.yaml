@@ -1,0 +1,29 @@
+---
+# The namespace default deny also catches the kopiur mover pods that restore and snapshot
+# faber-data. They need DNS and the Kubernetes API to report progress and nothing else:
+# the repository is an NFS volume mounted by the kubelet, not a pod connection.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: faber-kopiur-mover
+  labels:
+    app.kubernetes.io/part-of: faber
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/managed-by: kopiur
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    - ports:
+        - protocol: TCP
+          port: 6443
