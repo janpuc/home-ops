@@ -23,9 +23,8 @@ kind: Kustomization
 metadata:
   name: faber
 spec:
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: faber
+  # No commonMetadata name label: it would overwrite app.kubernetes.io/name on the
+  # Service and the ServiceMonitor would no longer select it.
   components:
     - ../../../../components/kopiur/backup
   dependsOn:
