@@ -8,3 +8,8 @@
   color: "ff9800"
 - name: type/major
   color: "f6412d"
+
+# Opt-outs
+- name: skip-kritika
+  color: "bfd4f2"
+  description: No kritika review (see trigger.exclude in .kritika.yaml)

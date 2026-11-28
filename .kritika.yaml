@@ -28,6 +28,14 @@ trigger:
         - "kubernetes/apps/external-secrets/**"
         - "kubernetes/apps/cert-manager/**"
         - "kubernetes/apps/ai/litellm*/**"
+  # Throwaway pipeline tests and pull requests that opt out get no review, whatever
+  # include says. faber's smoke tests use branches named agent/smoke-<name>, its
+  # regular remediation pull requests (agent/<policy>/<key>) are reviewed as before.
+  exclude:
+    - name: skip-label
+      expr: 'pr.labels.exists(l, l.name == "skip-kritika")'
+    - name: smoke-branch
+      expr: 'pr.headRef.startsWith("agent/smoke-")'
 skills:
   scope:
     # Every review gets review-focus whole: it keeps the agent on the change
