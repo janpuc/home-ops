@@ -273,6 +273,16 @@ spec:
                           - EmitCloudEvent
                           - TriggerPolicy
                         type: string
+                      draft:
+                        description: Draft opens new pull requests in draft mode when
+                          action is OpenPR.
+                        type: boolean
+                      labels:
+                        description: Labels applies GitHub labels to pull requests when
+                          action is OpenPR.
+                        items:
+                          type: string
+                        type: array
                       maxDepth:
                         default: 1
                         description: MaxDepth bounds follow-up policy fan-out depth

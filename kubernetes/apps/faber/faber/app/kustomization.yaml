@@ -17,3 +17,5 @@ resources:
   - ./dashboard/
   - ./gitopsrepository.yaml
   - ./maintenancepolicy.yaml
+  - ./flux-failure-fixer.yaml
+  - ./renovate-cochange-fixer.yaml

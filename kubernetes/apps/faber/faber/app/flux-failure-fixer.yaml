@@ -1,0 +1,127 @@
+apiVersion: faber.janpuc.com/v1alpha1
+kind: MaintenancePolicy
+metadata:
+  name: flux-failure-fixer
+  namespace: faber
+spec:
+  suspended: true
+  repositoryRef:
+    name: home-ops
+  model:
+    endpointRef:
+      baseUrl: http://litellm.ai.svc.cluster.local:4000/v1
+      protocol: openai
+      apiKeySecretRef:
+        name: faber-litellm
+        key: apiKey
+    primary: opencode-go/deepseek-v4.1-flash
+    verifier: minimax/MiniMax-M3.1-Flash
+    reasoningEffort: medium
+    maxOutputTokens: 4096
+  triggers:
+    - name: flux-kustomization-not-ready
+      kubernetes:
+        apiVersion: kustomize.toolkit.fluxcd.io/v1
+        kind: Kustomization
+        match: 'event.type in ["Added", "Modified"] && has(event.object.status) && has(event.object.status.conditions) && event.object.status.conditions.exists(c, c.type == "Ready" && c.status == "False")'
+        input: '{"kind": "Kustomization", "namespace": event.object.metadata.namespace, "name": event.object.metadata.name, "path": has(event.object.spec) && has(event.object.spec.path) ? event.object.spec.path : "", "conditions": event.object.status.conditions}'
+    - name: flux-helmrelease-not-ready
+      kubernetes:
+        apiVersion: helm.toolkit.fluxcd.io/v2
+        kind: HelmRelease
+        match: 'event.type in ["Added", "Modified"] && has(event.object.status) && has(event.object.status.conditions) && event.object.status.conditions.exists(c, c.type == "Ready" && c.status == "False")'
+        input: '{"kind": "HelmRelease", "namespace": event.object.metadata.namespace, "name": event.object.metadata.name, "conditions": event.object.status.conditions}'
+  policy:
+    dedupeKey: 'input.kind + "/" + input.namespace + "/" + input.name'
+    settleWindow: 2m
+    cooldown: 2h
+    maxConcurrent: 1
+    maxRunsPerKey: 2
+  limits:
+    maxSteps: 30
+    maxCostUsd: "0.20"
+    timeout: 6m
+    toolOutputBytes: 16384
+  systemPrompt: |
+    Diagnose and fix Flux Kustomization or HelmRelease Ready=False reconciliation failures in janpuc/home-ops:
+    1. Inspect the failing Flux object status, related Kubernetes events and pod logs using read-only K8s tools plus victoria-logs-mcp and prometheus-mcp.
+    2. Identify whether the failure is a transient cluster/upstream issue (if so, call submit_result with action noop or notify without editing files) or a clear manifest error under kubernetes/apps/.
+    3. Before editing any manifest inside the sandbox, check git log -n 10 -- <path> and review inline # Note: comments.
+    4. Never touch talos/, .github/workflows/ or flux/, and never reduce memory requests or limits on AMD iGPU workloads (bge-embedding, bge-reranker, llmkube, plex).
+    5. Apply the minimal manifest fix inside the sandbox, validate offline with kubeconform and call submit_result with structured evidence.
+  tools:
+    mcp:
+      - name: victoria-logs
+        url: http://victoria-logs-mcp.ai.svc.cluster.local:8081/mcp
+      - name: prometheus
+        url: http://prometheus-mcp.ai.svc.cluster.local:8080/mcp
+        allowTools:
+          - execute_query
+          - execute_range_query
+    kubernetes:
+      - apiGroups:
+          - ""
+        resources:
+          - pods
+          - pods/log
+          - events
+        verbs:
+          - get
+          - list
+      - apiGroups:
+          - kustomize.toolkit.fluxcd.io
+        resources:
+          - kustomizations
+        verbs:
+          - get
+          - list
+      - apiGroups:
+          - helm.toolkit.fluxcd.io
+        resources:
+          - helmreleases
+        verbs:
+          - get
+          - list
+    sandbox:
+      enabled: true
+      templateRef:
+        name: faber-validator
+        namespace: faber
+      timeout: 4m
+      validationCommands:
+        - "kubeconform -strict -ignore-missing-schemas kubernetes/apps"
+  diffPolicy:
+    allowPaths:
+      - "kubernetes/apps/**"
+    maxChangedFiles: 5
+    maxChangedLines: 150
+    requireValidation: true
+  outputSchema:
+    type: object
+    required:
+      - action
+      - summary
+    properties:
+      action:
+        type: string
+        enum:
+          - noop
+          - notify
+          - open_pr
+      prTitle:
+        type: string
+      summary:
+        type: string
+      rootCause:
+        type: string
+      targetPath:
+        type: string
+      lesson:
+        type: string
+      suggestedRule:
+        type: string
+  routes:
+    - name: open-flux-fix-pr
+      when: 'output.action == "open_pr"'
+      action: OpenPR
+      # Use labels: [skip-kritika] only for opt-out or throwaway smoke policies.

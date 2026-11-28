@@ -1,8 +1,9 @@
 ---
-# Strict least-privilege RBAC for faber-controller.
+# Strict least-privilege RBAC for faber-controller on home-ops.
 # - Secrets and ConfigMaps are readable ONLY inside the faber namespace, NEVER cluster-wide.
 # - agent-sandbox SandboxClaims and Sandboxes are scoped strictly to the faber namespace.
-# - Cluster-wide read-only inspection is narrowed to pods, pods/log, events and Flux CRs.
+# - Cluster-wide read-only inspection and K8s watch triggers are narrowed to pods, pods/log,
+#   events, kustomize.toolkit.fluxcd.io kustomizations and helm.toolkit.fluxcd.io helmreleases.
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -141,7 +142,7 @@ rules:
       - remediationruns/finalizers
     verbs:
       - update
-  # Narrow cluster-wide read-only inspection for agent k8s tools (NEVER secrets or configmaps)
+  # Narrow cluster-wide read-only inspection and K8s watch triggers (NEVER secrets or configmaps)
   - apiGroups:
       - ""
     resources:
