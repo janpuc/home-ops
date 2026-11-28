@@ -61,7 +61,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: sandboxd
-          image: ghcr.io/janpuc/faber-sandbox:v0.1.6@sha256:edc47bb2b87d311a9440d8f2943a42e4cd8f333dce402e34ee23ce386da4480b
+          image: ghcr.io/janpuc/faber-sandbox:v0.2.0@sha256:f74a966f47f0ee85faa309727daf2fb94668710085acb2582ca99bcfc18a0fa6
           imagePullPolicy: IfNotPresent
           securityContext:
             runAsNonRoot: true

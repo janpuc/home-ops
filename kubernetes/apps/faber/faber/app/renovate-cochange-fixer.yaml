@@ -1,0 +1,90 @@
+apiVersion: faber.janpuc.com/v1alpha1
+kind: MaintenancePolicy
+metadata:
+  name: renovate-cochange-fixer
+  namespace: faber
+spec:
+  suspended: true
+  repositoryRef:
+    name: home-ops
+  model:
+    endpointRef:
+      baseUrl: http://litellm.ai.svc.cluster.local:4000/v1
+      protocol: openai
+      apiKeySecretRef:
+        name: faber-litellm
+        key: apiKey
+    primary: opencode-go/deepseek-v4.1-flash
+    verifier: minimax/MiniMax-M3.1-Flash
+    reasoningEffort: medium
+    maxOutputTokens: 4096
+  triggers:
+    - name: renovate-pr-check-failed
+      webhook:
+        path: /renovate-cochange
+        cloudEvent: true
+        match: 'event.type == "homelab.renovate.check_failed"'
+        input: '{"prNumber": event.data.prNumber, "branch": event.data.branch, "path": has(event.data.path) ? event.data.path : "", "failureSummary": has(event.data.failureSummary) ? event.data.failureSummary : ""}'
+  policy:
+    dedupeKey: 'has(input.branch) && input.branch != "" ? input.branch : ("pr-" + string(input.prNumber))'
+    settleWindow: 1m
+    cooldown: 4h
+    maxConcurrent: 1
+    maxRunsPerKey: 2
+  limits:
+    maxSteps: 30
+    maxCostUsd: "0.20"
+    timeout: 6m
+    toolOutputBytes: 16384
+  systemPrompt: |
+    Assist with failing Renovate dependency update PRs in janpuc/home-ops (strictly additional to Renovate, never replacing Renovate):
+    1. Inspect the failing Renovate PR metadata and target manifest path under kubernetes/apps/.
+    2. Identify required manifest co-changes such as renamed Helm chart values, updated CRD schema fields or template updates caused by the bumped version.
+    3. Check git log -n 10 -- <path> inside the sandbox before modifying files and preserve inline # Note: comments.
+    4. Never touch talos/, .github/workflows/ or flux/, never disable Renovate rules and never reduce memory requests or limits on AMD iGPU workloads (bge-embedding, bge-reranker, llmkube, plex).
+    5. Validate all proposed co-changes offline with kubeconform inside the sandbox. If no safe co-change is clear, call submit_result with action noop.
+  tools:
+    sandbox:
+      enabled: true
+      templateRef:
+        name: faber-validator
+        namespace: faber
+      timeout: 4m
+      validationCommands:
+        - "kubeconform -strict -ignore-missing-schemas kubernetes/apps"
+  diffPolicy:
+    allowPaths:
+      - "kubernetes/apps/**"
+    maxChangedFiles: 6
+    maxChangedLines: 200
+    requireValidation: true
+  outputSchema:
+    type: object
+    required:
+      - action
+      - summary
+    properties:
+      action:
+        type: string
+        enum:
+          - noop
+          - notify
+          - open_pr
+      prTitle:
+        type: string
+      summary:
+        type: string
+      rootCause:
+        type: string
+      targetPath:
+        type: string
+      lesson:
+        type: string
+      suggestedRule:
+        type: string
+  routes:
+    - name: open-renovate-cochange-pr
+      when: 'output.action == "open_pr"'
+      action: OpenPR
+      draft: true
+      # Use labels: [skip-kritika] only for opt-out or throwaway smoke policies.
