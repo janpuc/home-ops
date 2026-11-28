@@ -1,0 +1,120 @@
+# agent-sandbox v1.0.12 (v1beta1) SandboxTemplate and zero-replica SandboxWarmPool
+# matching home-ops cluster readiness conditions:
+# - RuntimeClass: gvisor (runsc), automountServiceAccountToken: false
+# - Direct ConnectivityInClusterService (spec.service: true, no sandbox-router pod)
+# - Explicit empty egress list blocking both RFC1918 and tailnet 100.64.0.0/10
+# - Ingress restricted strictly to the faber operator pod on TCP 8080 and 9090
+# - Pinned off k8s-0 (k8s-1 and k8s-2 only) with 256Mi request and 1Gi limit
+apiVersion: extensions.agents.x-k8s.io/v1beta1
+kind: SandboxTemplate
+metadata:
+  name: faber-validator
+  namespace: faber
+  labels:
+    app.kubernetes.io/part-of: faber
+    app.kubernetes.io/component: sandbox
+spec:
+  service: true
+  networkPolicyManagement: Managed
+  envVarsInjectionPolicy: Disallowed
+  volumeClaimTemplatesPolicy: Disallowed
+  networkPolicy:
+    ingress:
+      - from:
+          - namespaceSelector:
+              matchLabels:
+                kubernetes.io/metadata.name: faber
+            podSelector:
+              matchLabels:
+                app.kubernetes.io/name: faber-controller
+        ports:
+          - protocol: TCP
+            port: 8080
+          - protocol: TCP
+            port: 9090
+    egress: []
+  podTemplate:
+    metadata:
+      labels:
+        app.kubernetes.io/part-of: faber
+        app.kubernetes.io/component: sandbox
+    spec:
+      runtimeClassName: gvisor
+      automountServiceAccountToken: false
+      restartPolicy: Never
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - k8s-1
+                      - k8s-2
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: sandboxd
+          image: ghcr.io/janpuc/faber-sandbox:v0.1.1@sha256:af4cd3296923a9df6b52b39ad8cd26e1b2a00a45d8121b5699fe11c8377ef9d7
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          ports:
+            - name: http-fs
+              containerPort: 8080
+              protocol: TCP
+            - name: grpc-proc
+              containerPort: 9090
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /v1/health
+              port: 8080
+            initialDelaySeconds: 1
+            periodSeconds: 2
+            timeoutSeconds: 2
+          volumeMounts:
+            - name: workspace
+              mountPath: /workspace
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: workspace
+          emptyDir:
+            sizeLimit: 1Gi
+        - name: tmp
+          emptyDir:
+            sizeLimit: 256Mi
+---
+apiVersion: extensions.agents.x-k8s.io/v1beta1
+kind: SandboxWarmPool
+metadata:
+  name: faber-validator
+  namespace: faber
+  labels:
+    app.kubernetes.io/part-of: faber
+    app.kubernetes.io/component: sandbox
+spec:
+  replicas: 0
+  sandboxTemplateRef:
+    name: faber-validator

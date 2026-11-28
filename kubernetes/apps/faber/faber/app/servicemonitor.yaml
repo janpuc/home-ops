@@ -1,0 +1,23 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/monitoring.coreos.com/servicemonitor_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: faber-controller
+  namespace: faber
+  labels:
+    app.kubernetes.io/part-of: faber
+    app.kubernetes.io/name: faber-controller
+spec:
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s
+  jobLabel: app.kubernetes.io/name
+  namespaceSelector:
+    matchNames:
+      - faber
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: faber-controller

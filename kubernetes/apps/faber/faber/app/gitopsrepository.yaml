@@ -1,0 +1,53 @@
+apiVersion: faber.home-operations.com/v1alpha1
+kind: GitOpsRepository
+metadata:
+  name: home-ops
+  namespace: faber
+spec:
+  github:
+    owner: janpuc
+    repo: home-ops
+    defaultBranch: main
+    appId: 5966491
+    installationId: 186824143
+    privateKeySecretRef:
+      name: faber-github-app
+      key: privateKey
+    branchPrefix: agent/
+  context:
+    inline: |
+      Repository: janpuc/home-ops (Talos Linux + Kubernetes + Flux v2 + Cilium).
+      Layout: workloads live under kubernetes/apps/<namespace>/<app>/.
+      Never modify talos/, .github/workflows/ or flux/.
+      Never reduce memory requests or limits on AMD iGPU workloads (bge-embedding, bge-reranker, llmkube, plex) because GTT memory is invisible to cgroup metrics.
+      Keep edits minimal, add a brief inline # Note: comment for non-obvious fixes and inspect git log -n 10 -- <path> before editing.
+      Validate manifest changes offline with flate, helm or kubeconform inside the sandbox before submitting.
+  validation:
+    sandboxTemplateRef:
+      name: faber-validator
+      namespace: faber
+    commands:
+      - "flate build --path kubernetes/apps"
+    timeout: 3m
+  guardrails:
+    denyPaths:
+      - "talos/**"
+      - ".github/workflows/**"
+      - "flux/**"
+    maxChangedFiles: 10
+    maxChangedLines: 250
+    secretScan: true
+    protectedPodSelectors:
+      - name: amd-igpu-workloads
+        workloadNames:
+          - bge-embedding
+          - bge-reranker
+          - llmkube
+          - plex
+        pathPatterns:
+          - "**/bge-embedding/**"
+          - "**/bge-reranker/**"
+          - "**/llmkube/**"
+          - "**/plex/**"
+        forbidMemoryReduction: true
+        reason: "AMD iGPU GTT memory is invisible to cgroup working-set metrics."

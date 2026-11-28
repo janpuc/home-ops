@@ -1,0 +1,8 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./faber.home-operations.com_gitopsrepositories.yaml
+  - ./faber.home-operations.com_maintenancepolicies.yaml
+  - ./faber.home-operations.com_remediationruns.yaml

@@ -1,0 +1,23 @@
+---
+# Internal-only Envoy Gateway route for the embedded faber web GUI and read-only API.
+# Intentionally omits Gatus HTTP endpoint conditions.
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/gateway.networking.k8s.io/httproute_v1.json
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: faber
+  namespace: faber
+  labels:
+    app.kubernetes.io/part-of: faber
+    app.kubernetes.io/name: faber-controller
+spec:
+  hostnames:
+    - faber.janpuc.com
+  parentRefs:
+    - name: envoy-internal
+      namespace: network
+  rules:
+    - backendRefs:
+        - name: faber-controller
+          namespace: faber
+          port: 8080
