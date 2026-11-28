@@ -36,7 +36,7 @@ spec:
     maxConcurrent: 1
     maxRunsPerKey: 2
   limits:
-    maxSteps: 16
+    maxSteps: 30
     maxCostUsd: "0.10"
     timeout: 5m
     toolOutputBytes: 16384
@@ -46,6 +46,9 @@ spec:
     2. Optionally review 7-day non-GPU container memory working-set usage via prometheus-mcp (never propose shrinking GPU workloads: bge-embedding, bge-reranker, llmkube, plex).
     3. Check git log -n 10 -- <path> inside the sandbox before editing a manifest.
     4. Keep diffs focused and call submit_result with structured output.
+    5. Do not investigate beyond step 1 unless an expired silence exists. When no silence has an
+       expiry timestamp in the past (relative duration silences expire on their own, leave them),
+       call submit_result with action noop right away. Never spend more than 12 tool calls.
   tools:
     mcp:
       - name: prometheus
