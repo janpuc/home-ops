@@ -61,18 +61,8 @@ spec:
           type: RuntimeDefault
       containers:
         - name: sandboxd
-          image: ghcr.io/janpuc/faber-sandbox:v0.1.4@sha256:0369f693ab75e523b92a6af54eeffab4ab0d28fcd9ca2bdae5fd70ba6a9287f4
+          image: ghcr.io/janpuc/faber-sandbox:v0.1.5@sha256:dd79adbd4b51bf733076734821640359cc0d3644335888846cb97479f29297ea
           imagePullPolicy: IfNotPresent
-          # /workspace is an emptyDir owned by root, the repo is created by uid 1000,
-          # so git refuses it as dubious ownership and git config fails. The sandbox
-          # holds nothing but a throwaway copy of the repository.
-          env:
-            - name: GIT_CONFIG_COUNT
-              value: "1"
-            - name: GIT_CONFIG_KEY_0
-              value: safe.directory
-            - name: GIT_CONFIG_VALUE_0
-              value: /workspace
           securityContext:
             runAsNonRoot: true
             runAsUser: 1000
