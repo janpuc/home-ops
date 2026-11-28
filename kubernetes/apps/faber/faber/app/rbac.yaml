@@ -110,7 +110,7 @@ metadata:
 rules:
   # Manage faber custom resources and status subresources
   - apiGroups:
-      - faber.home-operations.com
+      - faber.janpuc.com
     resources:
       - gitopsrepositories
       - maintenancepolicies
@@ -124,7 +124,7 @@ rules:
       - patch
       - delete
   - apiGroups:
-      - faber.home-operations.com
+      - faber.janpuc.com
     resources:
       - gitopsrepositories/status
       - maintenancepolicies/status
@@ -134,7 +134,7 @@ rules:
       - update
       - patch
   - apiGroups:
-      - faber.home-operations.com
+      - faber.janpuc.com
     resources:
       - gitopsrepositories/finalizers
       - maintenancepolicies/finalizers

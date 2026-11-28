@@ -4,9 +4,9 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.23.0
-  name: gitopsrepositories.faber.home-operations.com
+  name: gitopsrepositories.faber.janpuc.com
 spec:
-  group: faber.home-operations.com
+  group: faber.janpuc.com
   names:
     kind: GitOpsRepository
     listKind: GitOpsRepositoryList

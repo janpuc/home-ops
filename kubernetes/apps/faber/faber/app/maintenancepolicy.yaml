@@ -1,4 +1,4 @@
-apiVersion: faber.home-operations.com/v1alpha1
+apiVersion: faber.janpuc.com/v1alpha1
 kind: MaintenancePolicy
 metadata:
   name: ops-hygiene

@@ -45,7 +45,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: controller
-          image: ghcr.io/janpuc/faber-controller:v0.1.3@sha256:f6407a4763b31246ca98b5c958856b0d5afdd4125b9f798ffee234c523c73d79
+          image: ghcr.io/janpuc/faber-controller:v0.1.4@sha256:96c9c7ec5f247a0cfea90ca5bec36a9fa4abc4343fa6e9914b9d778f87d8c862
           imagePullPolicy: IfNotPresent
           args:
             - --api-bind-address=:8080
