@@ -4,7 +4,7 @@ metadata:
   name: ops-hygiene
   namespace: faber
 spec:
-  suspended: true
+  suspended: false
   repositoryRef:
     name: home-ops
   model:
