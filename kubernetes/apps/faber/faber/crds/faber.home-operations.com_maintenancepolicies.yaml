@@ -1,0 +1,687 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.23.0
+  name: maintenancepolicies.faber.home-operations.com
+spec:
+  group: faber.home-operations.com
+  names:
+    kind: MaintenancePolicy
+    listKind: MaintenancePolicyList
+    plural: maintenancepolicies
+    shortNames:
+      - mpolicy
+      - mp
+    singular: maintenancepolicy
+  scope: Namespaced
+  versions:
+    - additionalPrinterColumns:
+        - jsonPath: .spec.repositoryRef.name
+          name: Repository
+          type: string
+        - jsonPath: .spec.model.primary
+          name: Model
+          type: string
+        - jsonPath: .spec.suspended
+          name: Suspended
+          type: boolean
+        - jsonPath: .status.activeRuns
+          name: Active
+          type: integer
+        - jsonPath: .status.ready
+          name: Ready
+          type: boolean
+        - jsonPath: .metadata.creationTimestamp
+          name: Age
+          type: date
+      name: v1alpha1
+      schema:
+        openAPIV3Schema:
+          description: MaintenancePolicy declares one bounded GitOps maintenance job
+            bound to a GitOpsRepository.
+          properties:
+            apiVersion:
+              description: |-
+                APIVersion defines the versioned schema of this representation of an object.
+                Servers should convert recognized schemas to the latest internal value, and
+                may reject unrecognized values.
+                More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+              type: string
+            kind:
+              description: |-
+                Kind is a string value representing the REST resource this object represents.
+                Servers may infer this from the endpoint the client submits requests to.
+                Cannot be updated.
+                In CamelCase.
+                More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+              type: string
+            metadata:
+              type: object
+            spec:
+              description: MaintenancePolicySpec defines the desired state of a MaintenancePolicy.
+              properties:
+                diffPolicy:
+                  description: DiffPolicy configures allowed and denied paths and validation
+                    requirements for proposed changes.
+                  properties:
+                    allowPaths:
+                      description: AllowPaths restricts modified files to matching globs
+                        (for example kubernetes/apps/**).
+                      items:
+                        type: string
+                      type: array
+                    denyPaths:
+                      description: DenyPaths adds policy-specific forbidden path globs
+                        on top of GitOpsRepository guardrails.
+                      items:
+                        type: string
+                      type: array
+                    maxChangedFiles:
+                      description: MaxChangedFiles optionally lowers the file count
+                        cap for this policy.
+                      format: int32
+                      minimum: 1
+                      type: integer
+                    maxChangedLines:
+                      description: MaxChangedLines optionally lowers the changed line
+                        cap for this policy.
+                      format: int32
+                      minimum: 1
+                      type: integer
+                    requireValidation:
+                      default: true
+                      description: RequireValidation requires sandbox validation commands
+                        to pass before opening a PR.
+                      type: boolean
+                  type: object
+                inputSchema:
+                  description: InputSchema is an optional OpenAPI v3 JSON Schema validated
+                    before starting a run.
+                  x-kubernetes-preserve-unknown-fields: true
+                limits:
+                  description: Limits configures hard execution caps enforced by the
+                    engine governor.
+                  properties:
+                    maxCostUsd:
+                      description: MaxCostUSD caps cumulative estimated spend in USD
+                        as a decimal string (for example "0.10").
+                      pattern: ^[0-9]+(\.[0-9]+)?$
+                      type: string
+                    maxInputTokens:
+                      description: MaxInputTokens caps cumulative input tokens per run.
+                      format: int64
+                      minimum: 1
+                      type: integer
+                    maxOutputTokens:
+                      description: MaxOutputTokens caps cumulative output tokens per
+                        run.
+                      format: int64
+                      minimum: 1
+                      type: integer
+                    maxSteps:
+                      default: 20
+                      description: MaxSteps caps the number of ReAct loop steps per
+                        run.
+                      format: int32
+                      minimum: 1
+                      type: integer
+                    timeout:
+                      description: Timeout bounds total wall-clock execution duration
+                        for one run.
+                      type: string
+                    toolOutputBytes:
+                      default: 16384
+                      description: ToolOutputBytes caps inline tool stdout/stderr before
+                        spilling full output to the store.
+                      format: int32
+                      minimum: 1024
+                      type: integer
+                  type: object
+                model:
+                  description: Model configures the LLM endpoint, primary/fallback/verifier
+                    models and generation limits.
+                  properties:
+                    endpointRef:
+                      description: EndpointRef configures the LLM API endpoint and credentials.
+                      properties:
+                        apiKeySecretRef:
+                          description: APIKeySecretRef points to the Secret key holding
+                            the API key.
+                          properties:
+                            key:
+                              description: Key within the Secret data map.
+                              minLength: 1
+                              type: string
+                            name:
+                              description: Name of the Secret in the same namespace.
+                              minLength: 1
+                              type: string
+                          required:
+                            - key
+                            - name
+                          type: object
+                        baseUrl:
+                          description: BaseURL is the base HTTP URL for the model API
+                            endpoint.
+                          minLength: 1
+                          type: string
+                        protocol:
+                          default: openai
+                          description: Protocol selects the wire protocol (openai or
+                            anthropic).
+                          enum:
+                            - openai
+                            - anthropic
+                          type: string
+                      required:
+                        - apiKeySecretRef
+                        - baseUrl
+                      type: object
+                    fallback:
+                      description: Fallback is an optional backup model identifier when
+                        the primary is unavailable.
+                      type: string
+                    maxOutputTokens:
+                      default: 4096
+                      description: MaxOutputTokens sets the per-turn output token ceiling
+                        (must leave headroom for reasoning tokens).
+                      format: int32
+                      minimum: 256
+                      type: integer
+                    primary:
+                      description: Primary is the main model identifier used for the
+                        remediation loop.
+                      minLength: 1
+                      type: string
+                    reasoningEffort:
+                      description: ReasoningEffort hints reasoning token effort for
+                        reasoning-capable models.
+                      enum:
+                        - none
+                        - low
+                        - medium
+                        - high
+                        - xhigh
+                      type: string
+                    verifier:
+                      description: Verifier is an optional second model used for independent
+                        diff verification (v0.2).
+                      type: string
+                  required:
+                    - endpointRef
+                    - primary
+                  type: object
+                outputSchema:
+                  description: OutputSchema is an optional OpenAPI v3 JSON Schema enforced
+                    on completion.
+                  x-kubernetes-preserve-unknown-fields: true
+                policy:
+                  description: Policy configures deduplication, settle window, cooldown
+                    and concurrency limits.
+                  properties:
+                    cooldown:
+                      description: Cooldown enforces a minimum interval between completed
+                        runs for the same dedupe key.
+                      type: string
+                    dedupeKey:
+                      description: DedupeKey is a CEL expression deriving the deduplication
+                        key from the run input.
+                      type: string
+                    maxConcurrent:
+                      default: 1
+                      description: MaxConcurrent limits simultaneous active runs for
+                        this policy.
+                      format: int32
+                      minimum: 1
+                      type: integer
+                    maxRunsPerKey:
+                      description: MaxRunsPerKey limits total runs executed for a single
+                        dedupe key within the cooldown window.
+                      format: int32
+                      minimum: 1
+                      type: integer
+                    settleWindow:
+                      description: SettleWindow waits before starting a run so transient
+                        flapping events coalesce.
+                      type: string
+                  type: object
+                repositoryRef:
+                  description: RepositoryRef references the target GitOpsRepository
+                    in the same namespace.
+                  properties:
+                    name:
+                      description: Name of the referenced object in the same namespace.
+                      minLength: 1
+                      type: string
+                  required:
+                    - name
+                  type: object
+                routes:
+                  description: Routes declares deterministic CEL post-run routing rules.
+                  items:
+                    description: RouteRule defines one deterministic CEL post-run routing
+                      rule.
+                    properties:
+                      action:
+                        description: Action selects the post-run action to perform when
+                          the expression evaluates true.
+                        enum:
+                          - OpenPR
+                          - Notify
+                          - EmitCloudEvent
+                          - TriggerPolicy
+                        type: string
+                      maxDepth:
+                        default: 1
+                        description: MaxDepth bounds follow-up policy fan-out depth
+                          (capped at 1 to prevent cycles).
+                        format: int32
+                        maximum: 1
+                        minimum: 0
+                        type: integer
+                      name:
+                        description: Name identifies the route rule.
+                        minLength: 1
+                        type: string
+                      target:
+                        description: Target identifies the destination (for example
+                          follow-up policy name or notification sink).
+                        type: string
+                      when:
+                        description: When is a CEL boolean expression evaluated against
+                          status.output.
+                        minLength: 1
+                        type: string
+                    required:
+                      - action
+                      - name
+                      - when
+                    type: object
+                  type: array
+                suspended:
+                  description: Suspended pauses automatic triggers for this policy while
+                    keeping manual runs possible.
+                  type: boolean
+                systemPrompt:
+                  description: SystemPrompt provides concise task instructions appended
+                    after the cached repository standards.
+                  minLength: 1
+                  type: string
+                tools:
+                  description: Tools configures MCP servers, scoped read-only Kubernetes
+                    tools and optional sandbox execution.
+                  properties:
+                    kubernetes:
+                      description: Kubernetes configures scoped read-only cluster inspection
+                        tools.
+                      items:
+                        description: K8sToolScope grants scoped read-only Kubernetes
+                          inspection access to a policy.
+                        properties:
+                          apiGroups:
+                            description: APIGroups lists allowed API groups ("" for
+                              core).
+                            items:
+                              type: string
+                            type: array
+                          namespaces:
+                            description: Namespaces scopes reads to specific namespaces.
+                              Empty allows all namespaces the operator may read.
+                            items:
+                              type: string
+                            type: array
+                          resources:
+                            description: Resources lists allowed resource plural names
+                              (for example pods, deployments).
+                            items:
+                              type: string
+                            minItems: 1
+                            type: array
+                          verbs:
+                            default:
+                              - get
+                              - list
+                            description: Verbs restricts Kubernetes access strictly
+                              to read-only verbs (get, list, watch).
+                            items:
+                              description: K8sReadVerb enumerates read-only Kubernetes
+                                API verbs permitted for agent tools.
+                              enum:
+                                - get
+                                - list
+                                - watch
+                              type: string
+                            type: array
+                        required:
+                          - apiGroups
+                          - resources
+                        type: object
+                      type: array
+                    mcp:
+                      description: MCP configures external Streamable HTTP MCP tool
+                        servers.
+                      items:
+                        description: MCPServerConfig declares a Streamable HTTP MCP
+                          server and its tool allowlist.
+                        properties:
+                          allowTools:
+                            description: AllowTools restricts callable MCP tools to
+                              this allowlist.
+                            items:
+                              type: string
+                            type: array
+                          authSecretRef:
+                            description: AuthSecretRef optionally supplies a bearer
+                              token Secret for the MCP server.
+                            properties:
+                              key:
+                                description: Key within the Secret data map.
+                                minLength: 1
+                                type: string
+                              name:
+                                description: Name of the Secret in the same namespace.
+                                minLength: 1
+                                type: string
+                            required:
+                              - key
+                              - name
+                            type: object
+                          name:
+                            description: Name identifies this MCP server in tool names
+                              and metrics.
+                            minLength: 1
+                            type: string
+                          url:
+                            description: URL is the Streamable HTTP endpoint of the
+                              MCP server.
+                            minLength: 1
+                            type: string
+                        required:
+                          - name
+                          - url
+                        type: object
+                      type: array
+                    sandbox:
+                      description: Sandbox configures optional Tier 1 gvisor sandbox
+                        execution.
+                      properties:
+                        enabled:
+                          description: Enabled turns on Tier 1 sandbox execution for
+                            file editing and offline validation.
+                          type: boolean
+                        templateRef:
+                          description: TemplateRef overrides the GitOpsRepository default
+                            SandboxTemplate.
+                          properties:
+                            name:
+                              description: Name of the referenced object.
+                              minLength: 1
+                              type: string
+                            namespace:
+                              description: Namespace of the referenced object. Defaults
+                                to the referrer's namespace when omitted.
+                              type: string
+                          required:
+                            - name
+                          type: object
+                        timeout:
+                          description: Timeout bounds sandbox lifetime for one run.
+                          type: string
+                        validationCommands:
+                          description: ValidationCommands overrides or appends validation
+                            commands executed inside the sandbox.
+                          items:
+                            type: string
+                          type: array
+                      required:
+                        - enabled
+                      type: object
+                  type: object
+                triggers:
+                  description: Triggers declares cron, webhook/CloudEvents or Kubernetes
+                    watch triggers.
+                  items:
+                    description: TriggerSpec defines one event source for a MaintenancePolicy.
+                    properties:
+                      cron:
+                        description: Cron schedules runs on a cron cadence.
+                        properties:
+                          concurrencyPolicy:
+                            default: Forbid
+                            description: ConcurrencyPolicy specifies how to treat concurrent
+                              executions of the cron trigger.
+                            enum:
+                              - Allow
+                              - Forbid
+                              - Replace
+                            type: string
+                          schedule:
+                            description: Schedule is a standard 5-field cron expression.
+                            minLength: 1
+                            type: string
+                          timeZone:
+                            description: TimeZone is an optional IANA time zone name
+                              (for example Europe/Warsaw).
+                            type: string
+                        required:
+                          - schedule
+                        type: object
+                      kubernetes:
+                        description: Kubernetes watches cluster objects for condition
+                          transitions (v0.2).
+                        properties:
+                          apiVersion:
+                            description: APIVersion is the watched resource apiVersion
+                              (for example kustomize.toolkit.fluxcd.io/v1).
+                            minLength: 1
+                            type: string
+                          input:
+                            description: Input is an optional CEL expression building
+                              run input JSON from the watched object.
+                            type: string
+                          kind:
+                            description: Kind is the watched resource Kind (for example
+                              Kustomization).
+                            minLength: 1
+                            type: string
+                          labelSelector:
+                            description: LabelSelector filters watched objects by labels.
+                            properties:
+                              matchExpressions:
+                                description: matchExpressions is a list of label selector
+                                  requirements. The requirements are ANDed.
+                                items:
+                                  description: |-
+                                    A label selector requirement is a selector that contains values, a key, and an operator that
+                                    relates the key and values.
+                                  properties:
+                                    key:
+                                      description: key is the label key that the selector
+                                        applies to.
+                                      type: string
+                                    operator:
+                                      description: |-
+                                        operator represents a key's relationship to a set of values.
+                                        Valid operators are In, NotIn, Exists and DoesNotExist.
+                                      type: string
+                                    values:
+                                      description: |-
+                                        values is an array of string values. If the operator is In or NotIn,
+                                        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+                                        the values array must be empty. This array is replaced during a strategic
+                                        merge patch.
+                                      items:
+                                        type: string
+                                      type: array
+                                      x-kubernetes-list-type: atomic
+                                  required:
+                                    - key
+                                    - operator
+                                  type: object
+                                type: array
+                                x-kubernetes-list-type: atomic
+                              matchLabels:
+                                additionalProperties:
+                                  type: string
+                                description: |-
+                                  matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+                                  map is equivalent to an element of matchExpressions, whose key field is "key", the
+                                  operator is "In", and the values array contains only "value". The requirements are ANDed.
+                                type: object
+                            type: object
+                            x-kubernetes-map-type: atomic
+                          match:
+                            description: Match is an optional CEL boolean expression
+                              filtering watched object events.
+                            type: string
+                          namespaces:
+                            description: Namespaces restricts the watch to specific
+                              namespaces. Empty watches all namespaces.
+                            items:
+                              type: string
+                            type: array
+                        required:
+                          - apiVersion
+                          - kind
+                        type: object
+                      name:
+                        description: Name uniquely identifies this trigger within the
+                          policy.
+                        type: string
+                      webhook:
+                        description: Webhook accepts HTTP webhook or CloudEvent payloads.
+                        properties:
+                          authSecretRef:
+                            description: AuthSecretRef optionally validates incoming
+                              webhook signatures or bearer tokens.
+                            properties:
+                              key:
+                                description: Key within the Secret data map.
+                                minLength: 1
+                                type: string
+                              name:
+                                description: Name of the Secret in the same namespace.
+                                minLength: 1
+                                type: string
+                            required:
+                              - key
+                              - name
+                            type: object
+                          cloudEvent:
+                            description: CloudEvent expects CloudEvents v1.0 structured
+                              or binary encoding when true.
+                            type: boolean
+                          input:
+                            description: Input is an optional CEL expression transforming
+                              the incoming event into run input JSON.
+                            type: string
+                          match:
+                            description: Match is an optional CEL boolean expression
+                              filtering incoming events.
+                            type: string
+                          path:
+                            description: Path is the HTTP path suffix handled by the
+                              operator webhook server.
+                            minLength: 1
+                            type: string
+                        required:
+                          - path
+                        type: object
+                    type: object
+                  type: array
+              required:
+                - model
+                - repositoryRef
+                - systemPrompt
+              type: object
+            status:
+              description: MaintenancePolicyStatus defines the observed state of a MaintenancePolicy.
+              properties:
+                activeRuns:
+                  description: ActiveRuns counts currently running RemediationRun objects
+                    for this policy.
+                  format: int32
+                  type: integer
+                conditions:
+                  description: Conditions represent the latest available observations
+                    of the policy state.
+                  items:
+                    description: Condition contains details for one aspect of the current
+                      state of this API Resource.
+                    properties:
+                      lastTransitionTime:
+                        description: |-
+                          lastTransitionTime is the last time the condition transitioned from one status to another.
+                          This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+                        format: date-time
+                        type: string
+                      message:
+                        description: |-
+                          message is a human readable message indicating details about the transition.
+                          This may be an empty string.
+                        maxLength: 32768
+                        type: string
+                      observedGeneration:
+                        description: |-
+                          observedGeneration represents the .metadata.generation that the condition was set based upon.
+                          For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+                          with respect to the current state of the instance.
+                        format: int64
+                        minimum: 0
+                        type: integer
+                      reason:
+                        description: |-
+                          reason contains a programmatic identifier indicating the reason for the condition's last transition.
+                          Producers of specific condition types may define expected values and meanings for this field,
+                          and whether the values are considered a guaranteed API.
+                          The value should be a CamelCase string.
+                          This field may not be empty.
+                        maxLength: 1024
+                        minLength: 1
+                        pattern: ^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$
+                        type: string
+                      status:
+                        description: status of the condition, one of True, False, Unknown.
+                        enum:
+                          - "True"
+                          - "False"
+                          - Unknown
+                        type: string
+                      type:
+                        description: type of condition in CamelCase or in foo.example.com/CamelCase.
+                        maxLength: 316
+                        pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
+                        type: string
+                    required:
+                      - lastTransitionTime
+                      - message
+                      - reason
+                      - status
+                      - type
+                    type: object
+                  type: array
+                  x-kubernetes-list-map-keys:
+                    - type
+                  x-kubernetes-list-type: map
+                lastRunTime:
+                  description: LastRunTime records when the most recent RemediationRun
+                    started.
+                  format: date-time
+                  type: string
+                observedGeneration:
+                  description: ObservedGeneration is the most recent generation observed
+                    by the controller.
+                  format: int64
+                  type: integer
+                ready:
+                  description: Ready indicates whether the policy and its referenced
+                    repository are valid.
+                  type: boolean
+              type: object
+          type: object
+      served: true
+      storage: true
+      subresources:
+        status: {}

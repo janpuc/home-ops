@@ -1,0 +1,60 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: faber-crds
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: faber
+  interval: 1h
+  path: ./kubernetes/apps/faber/faber/crds
+  prune: false
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  wait: true
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: faber
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: faber
+  components:
+    - ../../../../components/kopiur/backup
+  dependsOn:
+    - name: faber-crds
+    - name: agent-sandbox
+      namespace: agent-sandbox-system
+    - name: litellm-operator
+      namespace: ai
+    - name: gvisor
+      namespace: kube-system
+    - name: kopiur
+      namespace: kopiur-system
+    - name: miroir-config
+      namespace: miroir-system
+    - name: onepassword-connect
+      namespace: external-secrets
+  interval: 1h
+  path: ./kubernetes/apps/faber/faber/app
+  postBuild:
+    substitute:
+      APP: faber-data
+      KOPIUR_CAPACITY: 2Gi
+      # SQLite in WAL mode, a volume snapshot is crash consistent.
+      KOPIUR_COPYMETHOD: Snapshot
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: faber
+  timeout: 10m
+  wait: false

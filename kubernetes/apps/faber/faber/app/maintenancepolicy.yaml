@@ -1,0 +1,97 @@
+apiVersion: faber.home-operations.com/v1alpha1
+kind: MaintenancePolicy
+metadata:
+  name: ops-hygiene
+  namespace: faber
+spec:
+  suspended: true
+  repositoryRef:
+    name: home-ops
+  model:
+    endpointRef:
+      baseUrl: http://litellm.ai.svc.cluster.local:4000/v1
+      protocol: openai
+      apiKeySecretRef:
+        name: faber-litellm
+        key: apiKey
+    primary: opencode-go/deepseek-v4.1-flash
+    reasoningEffort: medium
+    maxOutputTokens: 4096
+  triggers:
+    - name: weekly-ops-hygiene
+      cron:
+        schedule: "0 6 * * 1"
+        timeZone: Europe/Warsaw
+        concurrencyPolicy: Forbid
+    - name: on-demand-cloudevent
+      webhook:
+        path: /ops-hygiene
+        cloudEvent: true
+        match: 'event.type == "homelab.hygiene.requested"'
+        input: '{"scope": event.data.scope, "path": event.data.path}'
+  policy:
+    dedupeKey: 'has(input.scope) ? input.scope : "weekly-hygiene"'
+    settleWindow: 15s
+    cooldown: 1h
+    maxConcurrent: 1
+    maxRunsPerKey: 2
+  limits:
+    maxSteps: 16
+    maxCostUsd: "0.10"
+    timeout: 5m
+    toolOutputBytes: 16384
+  systemPrompt: |
+    Audit janpuc/home-ops for operational hygiene:
+    1. Inspect kubernetes/apps/observability/silence-operator/silences/silences.yaml and remove Alertmanager Silence entries whose expiry timestamp has passed (never remove permanent silences).
+    2. Optionally review 7-day non-GPU container memory working-set usage via prometheus-mcp (never propose shrinking GPU workloads: bge-embedding, bge-reranker, llmkube, plex).
+    3. Check git log -n 10 -- <path> inside the sandbox before editing a manifest.
+    4. Keep diffs focused and call submit_result with structured output.
+  tools:
+    mcp:
+      - name: prometheus
+        url: http://prometheus-mcp.ai.svc.cluster.local:8080/mcp
+        allowTools:
+          - execute_query
+          - execute_range_query
+    sandbox:
+      enabled: true
+      templateRef:
+        name: faber-validator
+        namespace: faber
+      timeout: 4m
+      validationCommands:
+        - "kubeconform -strict -ignore-missing-schemas kubernetes/apps/observability/silence-operator/silences/silences.yaml"
+  diffPolicy:
+    allowPaths:
+      - "kubernetes/apps/**"
+    maxChangedFiles: 5
+    maxChangedLines: 150
+    requireValidation: true
+  outputSchema:
+    type: object
+    required:
+      - action
+      - summary
+    properties:
+      action:
+        type: string
+        enum:
+          - noop
+          - notify
+          - open_pr
+      prTitle:
+        type: string
+      summary:
+        type: string
+      rootCause:
+        type: string
+      targetPath:
+        type: string
+      lesson:
+        type: string
+      suggestedRule:
+        type: string
+  routes:
+    - name: open-hygiene-pr
+      when: 'output.action == "open_pr"'
+      action: OpenPR

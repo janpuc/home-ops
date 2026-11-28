@@ -1,0 +1,13 @@
+---
+# The chart (./helm, version 0.1.5) is only published in the source repository
+# at the release tag, not as an OCI artifact.
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/source.toolkit.fluxcd.io/gitrepository_v1.json
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: agent-sandbox
+spec:
+  interval: 1h
+  url: https://github.com/kubernetes-sigs/agent-sandbox.git
+  ref:
+    tag: v1.0.12

@@ -1,0 +1,186 @@
+---
+# Strict least-privilege RBAC for faber-controller.
+# - Secrets and ConfigMaps are readable ONLY inside the faber namespace, NEVER cluster-wide.
+# - agent-sandbox SandboxClaims and Sandboxes are scoped strictly to the faber namespace.
+# - Cluster-wide read-only inspection is narrowed to pods, pods/log, events and Flux CRs.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: faber-controller
+  namespace: faber
+  labels:
+    app.kubernetes.io/part-of: faber
+    app.kubernetes.io/name: faber-controller
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: faber-controller-namespace-role
+  namespace: faber
+  labels:
+    app.kubernetes.io/part-of: faber
+    app.kubernetes.io/name: faber-controller
+rules:
+  # Manage Tier 1 ephemeral gVisor SandboxClaims and read SandboxTemplates in faber namespace only
+  - apiGroups:
+      - extensions.agents.x-k8s.io
+    resources:
+      - sandboxclaims
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - extensions.agents.x-k8s.io
+    resources:
+      - sandboxtemplates
+    verbs:
+      - get
+      - list
+      - watch
+  # Read Sandbox status and service endpoint metadata in faber namespace only
+  - apiGroups:
+      - agents.x-k8s.io
+    resources:
+      - sandboxes
+    verbs:
+      - get
+      - list
+      - watch
+  # Read LiteLLM API keys, GitHub App private key and optional context ConfigMaps ONLY in faber namespace
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+      - configmaps
+    verbs:
+      - get
+      - list
+      - watch
+  # Emit Kubernetes events in faber namespace
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs:
+      - create
+      - patch
+  # Optional leader election lease in faber namespace
+  - apiGroups:
+      - coordination.k8s.io
+    resources:
+      - leases
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: faber-controller-namespace-rolebinding
+  namespace: faber
+  labels:
+    app.kubernetes.io/part-of: faber
+    app.kubernetes.io/name: faber-controller
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: faber-controller-namespace-role
+subjects:
+  - kind: ServiceAccount
+    name: faber-controller
+    namespace: faber
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: faber-controller-cluster-role
+  labels:
+    app.kubernetes.io/part-of: faber
+    app.kubernetes.io/name: faber-controller
+rules:
+  # Manage faber custom resources and status subresources
+  - apiGroups:
+      - faber.home-operations.com
+    resources:
+      - gitopsrepositories
+      - maintenancepolicies
+      - remediationruns
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - faber.home-operations.com
+    resources:
+      - gitopsrepositories/status
+      - maintenancepolicies/status
+      - remediationruns/status
+    verbs:
+      - get
+      - update
+      - patch
+  - apiGroups:
+      - faber.home-operations.com
+    resources:
+      - gitopsrepositories/finalizers
+      - maintenancepolicies/finalizers
+      - remediationruns/finalizers
+    verbs:
+      - update
+  # Narrow cluster-wide read-only inspection for agent k8s tools (NEVER secrets or configmaps)
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - pods/log
+      - events
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - helm.toolkit.fluxcd.io
+    resources:
+      - helmreleases
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - kustomize.toolkit.fluxcd.io
+    resources:
+      - kustomizations
+    verbs:
+      - get
+      - list
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: faber-controller-cluster-rolebinding
+  labels:
+    app.kubernetes.io/part-of: faber
+    app.kubernetes.io/name: faber-controller
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: faber-controller-cluster-role
+subjects:
+  - kind: ServiceAccount
+    name: faber-controller
+    namespace: faber

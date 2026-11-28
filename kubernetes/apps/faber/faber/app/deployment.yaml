@@ -1,0 +1,117 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: faber-controller
+  namespace: faber
+  labels:
+    app.kubernetes.io/part-of: faber
+    app.kubernetes.io/name: faber-controller
+  annotations:
+    secret.reloader.stakater.com/auto: "true"
+spec:
+  # Single replica while backed by RWO SQLite PVC (v0.1).
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: faber-controller
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/part-of: faber
+        app.kubernetes.io/name: faber-controller
+    spec:
+      serviceAccountName: faber-controller
+      # Pin faber off k8s-0 (99% memory requested) onto k8s-1 and k8s-2 only.
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - k8s-1
+                      - k8s-2
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: controller
+          image: ghcr.io/janpuc/faber-controller:v0.1.1@sha256:68c4dab7f3e09454cf188fa23898ab384bbb517df9b408ffb270ee452f2c6aa0
+          imagePullPolicy: IfNotPresent
+          args:
+            - --api-bind-address=:8080
+            - --health-probe-bind-address=:8081
+            - --metrics-bind-address=:9090
+            - --store-path=/data/faber.db
+            - --log-level=info
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: probes
+              containerPort: 8081
+              protocol: TCP
+            - name: metrics
+              containerPort: 9090
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: probes
+            initialDelaySeconds: 5
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: probes
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: faber-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: faber-controller
+  namespace: faber
+  labels:
+    app.kubernetes.io/part-of: faber
+    app.kubernetes.io/name: faber-controller
+spec:
+  selector:
+    app.kubernetes.io/name: faber-controller
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      protocol: TCP
+    - name: metrics
+      port: 9090
+      targetPort: metrics
+      protocol: TCP

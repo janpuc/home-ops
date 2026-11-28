@@ -1,0 +1,22 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmvirtualkey_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMVirtualKey
+metadata:
+  name: faber-litellm
+  namespace: faber
+  labels:
+    app.kubernetes.io/part-of: faber
+spec:
+  # Narrow virtual key for faber v0.1 pilot capped at 5 USD per 7 days.
+  # Mounted only in the trusted faber namespace, never inside gVisor sandboxes.
+  keyAlias: faber
+  models:
+    - opencode-go/deepseek-v4.1-flash
+    - minimax/MiniMax-M3.1-Flash
+  maxBudget: "5"
+  budgetDuration: 7d
+  proxyRef: litellm
+  proxyNamespace: ai
+  secretName: faber-litellm
+  secretKey: apiKey

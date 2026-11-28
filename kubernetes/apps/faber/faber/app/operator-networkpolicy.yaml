@@ -1,0 +1,77 @@
+# NetworkPolicy for the trusted faber-controller operator pod.
+# Permits egress only to DNS, Kubernetes API, LiteLLM, in-cluster MCP servers,
+# ephemeral sandboxd endpoints on 8080/9090 and public HTTPS (api.github.com)
+# while excluding RFC1918 and tailnet 100.64.0.0/10 from broad internet egress.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: faber-operator-networkpolicy
+  namespace: faber
+  labels:
+    app.kubernetes.io/part-of: faber
+    app.kubernetes.io/name: faber-controller
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: faber-controller
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: 8080
+        - protocol: TCP
+          port: 8081
+        - protocol: TCP
+          port: 9090
+  egress:
+    # Cluster DNS
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # LiteLLM gateway (:4000) and HTTP MCP servers (:8080 prometheus-mcp, :8081 victoria-logs-mcp)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ai
+      ports:
+        - protocol: TCP
+          port: 4000
+        - protocol: TCP
+          port: 8080
+        - protocol: TCP
+          port: 8081
+    # Direct in-cluster ConnectivityInClusterService to sandboxd pods in faber namespace
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: sandbox
+      ports:
+        - protocol: TCP
+          port: 8080
+        - protocol: TCP
+          port: 9090
+    # Kubernetes API server
+    - ports:
+        - protocol: TCP
+          port: 6443
+    # Public HTTPS (api.github.com and tarball redirects), blocking RFC1918 and tailnet 100.64.0.0/10
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+              - 100.64.0.0/10
+              - 169.254.0.0/16
+      ports:
+        - protocol: TCP
+          port: 443
